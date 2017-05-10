@@ -1,0 +1,38 @@
+{
+  "devWatch": {
+    "cmd": "dev",
+    "runs": [
+      {
+        "type": "typescript",
+        "browserify": false,
+        "configFile": "src/tsconfig.json"
+      }
+    ]
+  },
+  "engines": {
+    "node": "*"
+  },
+  "main": "./lib/index",
+  "keywords": [
+    "webdav",
+    "server",
+    "virtual"
+  ],
+  "scripts": {
+    "dev": "dev-watch package.json dev",
+    "build": "dev-watch package.json prod",
+    "test": "cd test && node root.js"
+  },
+  "name": "framework",
+  "version": "1.0.0",
+  "author": "Adrien Castex <adrien.castex@gmail.com>",
+  "license": "Unlicense",
+  "description": "WebDAV Server",
+  "dependencies": {
+    "mime-types": "^2.1.15"
+  },
+  "devDependencies": {
+    "@types/mime-types": "^2.1.0",
+    "@types/node": "^7.0.18"
+  }
+}
