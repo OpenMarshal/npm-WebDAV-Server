@@ -15,6 +15,7 @@ export class WebDAVServer
     protected unknownMethod : WebDAVRequest
     protected options : WebDAVServerOptions
     protected methods : Object
+    protected server : http.Server
 
     constructor(options ?: WebDAVServerOptions)
     {
@@ -41,7 +42,7 @@ export class WebDAVServer
 
     start(port : number = this.options.port)
     {
-        http.createServer((req : http.IncomingMessage, res : http.ServerResponse) =>
+        this.server = http.createServer((req : http.IncomingMessage, res : http.ServerResponse) =>
         {
             var method : WebDAVRequest = this.methods[this.normalizeMethodName(req.method)];
             if(!method)
@@ -55,7 +56,19 @@ export class WebDAVServer
                     this.invokeAfterRequest(base, null);
                 });
             })
-        }).listen(port);
+        })
+        this.server.listen(port);
+    }
+
+    stop(callback : () => void)
+    {
+        if(this.server)
+        {
+            this.server.close(() => callback());
+            this.server = null;
+        }
+        else
+            process.nextTick(callback);
     }
 
     protected createMethodCallArgs(req : http.IncomingMessage, res : http.ServerResponse) : MethodCallArgs
