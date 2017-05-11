@@ -1,7 +1,7 @@
 var path = require('path'),
     fs = require('fs')
 
-module.exports = callback => {
+module.exports = (callback, options) => {
     var successes = [];
     var errors = [];
 
@@ -26,17 +26,24 @@ module.exports = callback => {
     {
         try
         {
-            fn((valid, details) => {
+            let callback = (valid, details) => {
+                callback = (valid, details) => { }
+
                 details = details ? ' :: ' + details : '';
                 if(valid)
                     success(name + details)
                 else
                     error(name + details)
                 callCallback();
-            })
+            }
+            setTimeout(() => callback(false, 'Timeout'), options.timeout);
+            fn(callback)
         }
         catch(ex)
         {
+            if(options.showExceptions)
+                console.error(ex);
+            
             error(name + '\r\n' + ex)
             callCallback();
         }
@@ -48,11 +55,11 @@ module.exports = callback => {
             throw e;
         
         nb = files.length;
-        files.forEach(f => {
+        files.forEach((f, index) => {
             f = path.join(root, f);
             try
             {
-                require(f)(isValid);
+                require(f)(isValid, options, index);
             }
             catch(ex)
             {
@@ -83,4 +90,10 @@ if(!module.parent)
         console.log();
         console.log(' ' + successes.length + ' successe(s).');
         console.log(' ' + errors.length + ' error(s).');
+
+        process.exit(errors.length > 0 ? 1 : 0);
+    }, {
+        port: 1900,
+        showExceptions : true,
+        timeout: 3000
     })
