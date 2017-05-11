@@ -3,6 +3,8 @@ import { IResource } from '../resource/Resource'
 import * as http from 'http'
 import * as url from 'url'
 
+import Commands from './commands/Commands'
+
 export class WebDAVServerOptions
 {
     port ?: number = 1900
@@ -24,15 +26,12 @@ export class WebDAVServer
         this.methods = new Object();
         this.options = options;
 
-        this.method('GET', (arg, callback) => {
-            arg.response.write('<html><body>ok</body></html>');
-            callback();
-        });
-
-        this.onUnknownMethod((arg, callback) => {
-            arg.setCode(HTTPCodes.NotImplemented);
-            callback();
-        });
+        // Implement all methods in commands/Commands.ts
+        for(var k in Commands)
+            if(k === 'NotImplemented')
+                this.onUnknownMethod(Commands[k]);
+            else
+                this.method(k, Commands[k]);
     }
 
     onUnknownMethod(unknownMethod : WebDAVRequest)
@@ -49,13 +48,39 @@ export class WebDAVServer
                 method = this.unknownMethod;
 
             var base : MethodCallArgs = this.createMethodCallArgs(req, res)
-            this.invokeBeforeRequest(base, () => {
-                method(base, () =>
+
+            if(!method.chunked)
+            {
+                var data = '';
+                var go = () =>
                 {
-                    res.end();
-                    this.invokeAfterRequest(base, null);
-                });
-            })
+                    base.data = data;
+                    this.invokeBeforeRequest(base, () => {
+                        method(base, () =>
+                        {
+                            res.end();
+                            this.invokeAfterRequest(base, null);
+                        });
+                    })
+                }
+                
+                if(base.contentLength === 0)
+                {
+                    go();
+                }
+                else
+                {
+                    req.on('data', chunk => {
+                        data += chunk.toString();
+                        if(data.length >= base.contentLength)
+                        {
+                            if(data.length > base.contentLength)
+                                data = data.substring(0, base.contentLength);
+                            go();
+                        }
+                    });
+                }
+            }
         })
         this.server.listen(port);
     }
@@ -73,10 +98,7 @@ export class WebDAVServer
 
     protected createMethodCallArgs(req : http.IncomingMessage, res : http.ServerResponse) : MethodCallArgs
     {
-        var uri = url.parse(req.url).pathname;
-        
         return new MethodCallArgs(
-            uri,
             req,
             res,
             null,

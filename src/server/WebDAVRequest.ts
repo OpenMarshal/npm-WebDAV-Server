@@ -64,13 +64,26 @@ export var HTTPCodes = {
 
 export class MethodCallArgs
 {
+    contentLength : number
+    uri : string
+    data : string
+
     constructor(
-        public uri : string,
         public request : http.IncomingMessage,
         public response : http.ServerResponse,
         public resource : IResource,
         public callback : () => void
-    ) { }
+    ) {
+        this.contentLength = 0;
+        for(var k in request.headers)
+            if(k.replace(/(-| )/g, '').toLowerCase() === 'contentlength')
+            {
+                this.contentLength = parseInt(request.headers[k], 10);
+                break;
+            }
+        
+        this.uri = url.parse(request.url).pathname;
+    }
     
     setCode(code : number, message? : string)
     {
@@ -91,4 +104,6 @@ export class MethodCallArgs
 export interface WebDAVRequest
 {
     (arg : MethodCallArgs, callback : () => void) : void
+
+    chunked ?: boolean
 }
