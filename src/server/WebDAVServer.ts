@@ -1,5 +1,7 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from './WebDAVRequest'
-import { IResource } from '../resource/Resource'
+import { RootResource } from '../resource/RootResource'
+import { IResource, ReturnCallback } from '../resource/Resource'
+import { FSManager } from '../manager/FSManager'
 import * as http from 'http'
 import * as url from 'url'
 
@@ -18,12 +20,14 @@ export class WebDAVServer
     protected options : WebDAVServerOptions
     protected methods : Object
     protected server : http.Server
+    public rootResource : IResource
 
     constructor(options ?: WebDAVServerOptions)
     {
         this.beforeManagers = [];
+        this.rootResource = new RootResource();
         this.afterManagers = [];
-        this.methods = new Object();
+        this.methods = {};
         this.options = options;
 
         // Implement all methods in commands/Commands.ts
@@ -32,6 +36,71 @@ export class WebDAVServer
                 this.onUnknownMethod(Commands[k]);
             else
                 this.method(k, Commands[k]);
+    }
+
+    getResourceFromPath(path : Array<string> | string, callback : ReturnCallback<IResource>)
+    getResourceFromPath(path : Array<string> | string, rootResource : IResource, callback : ReturnCallback<IResource>)
+    getResourceFromPath(path : Array<string> | string, callbackOrRootResource : ReturnCallback<IResource> | IResource, callback? : ReturnCallback<IResource>)
+    {
+        var rootResource : IResource;
+
+        if(callbackOrRootResource instanceof Function)
+        {
+            callback = callbackOrRootResource;
+            rootResource = this.rootResource;
+        }
+        else
+            rootResource = callbackOrRootResource;
+
+        var paths : Array<string>
+        if(path.constructor === String)
+            paths = (path as string).replace(/(^\/|\/$)/g, '').split('/');
+        else
+            paths = path as Array<string>;
+        
+        if(paths.length === 0 || paths.length === 1 && paths[0].length === 0)
+        {
+            callback(null, rootResource);
+            return;
+        }
+
+        rootResource.getChildren((e, children) => {
+            if(e)
+            {
+                callback(e, null);
+                return;
+            }
+            if(children.length === 0)
+            {
+                callback(new Error('404 Not Found'), null);
+                return;
+            }
+
+            let found = false;
+            let nb = children.length;
+            function done()
+            {
+                --nb;
+                if(nb === 0 && !found)
+                    callback(new Error('404 Not Found'), null);
+            }
+
+            for(var k in children)
+            {
+                if(found)
+                    break;
+
+                children[k].webName((e, name) => {
+                    if(name === paths[0])
+                    {
+                        found = true;
+                        paths.splice(0, 1);
+                        this.getResourceFromPath(paths, children[k], callback);
+                    }
+                    done();
+                })
+            }
+        })
     }
 
     onUnknownMethod(unknownMethod : WebDAVRequest)
@@ -99,9 +168,9 @@ export class WebDAVServer
     protected createMethodCallArgs(req : http.IncomingMessage, res : http.ServerResponse) : MethodCallArgs
     {
         return new MethodCallArgs(
+            this,
             req,
             res,
-            null,
             null
         )
     }
