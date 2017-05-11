@@ -5,7 +5,8 @@
       {
         "type": "typescript",
         "browserify": false,
-        "configFile": "src/tsconfig.json"
+        "configFile": "src/tsconfig.json",
+        "declarations": true
       }
     ]
   },
@@ -21,7 +22,7 @@
   "scripts": {
     "dev": "dev-watch package.json dev",
     "build": "dev-watch package.json prod",
-    "test": "cd test && node root.js"
+    "test": "node test/root.js"
   },
   "name": "framework",
   "version": "1.0.0",
@@ -29,10 +30,13 @@
   "license": "Unlicense",
   "description": "WebDAV Server",
   "dependencies": {
-    "mime-types": "^2.1.15"
+    "mime-types": "^2.1.15",
+    "xmlbuilder": "^9.0.0"
   },
   "devDependencies": {
     "@types/mime-types": "^2.1.0",
-    "@types/node": "^7.0.18"
+    "@types/node": "^7.0.18",
+    "@types/xmlbuilder": "0.0.30",
+    "webdav-fs": "^1.0.0"
   }
 }
