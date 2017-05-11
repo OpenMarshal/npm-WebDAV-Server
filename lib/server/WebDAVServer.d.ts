@@ -1,0 +1,30 @@
+/// <reference types="node" />
+import { MethodCallArgs, WebDAVRequest } from './WebDAVRequest';
+import { IResource, ReturnCallback } from '../resource/Resource';
+import * as http from 'http';
+export declare class WebDAVServerOptions {
+    port?: number;
+}
+export declare class WebDAVServer {
+    protected beforeManagers: Array<WebDAVRequest>;
+    protected afterManagers: Array<WebDAVRequest>;
+    protected unknownMethod: WebDAVRequest;
+    protected options: WebDAVServerOptions;
+    protected methods: Object;
+    protected server: http.Server;
+    rootResource: IResource;
+    constructor(options?: WebDAVServerOptions);
+    getResourceFromPath(path: Array<string> | string, callback: ReturnCallback<IResource>): any;
+    getResourceFromPath(path: Array<string> | string, rootResource: IResource, callback: ReturnCallback<IResource>): any;
+    onUnknownMethod(unknownMethod: WebDAVRequest): void;
+    start(port?: number): void;
+    stop(callback: () => void): void;
+    protected createMethodCallArgs(req: http.IncomingMessage, res: http.ServerResponse): MethodCallArgs;
+    protected normalizeMethodName(method: string): string;
+    method(name: string, manager: WebDAVRequest): void;
+    beforeRequest(manager: WebDAVRequest): void;
+    afterRequest(manager: WebDAVRequest): void;
+    protected invokeBARequest(collection: Array<WebDAVRequest>, base: MethodCallArgs, callback: any): void;
+    protected invokeBeforeRequest(base: MethodCallArgs, callback: any): void;
+    protected invokeAfterRequest(base: MethodCallArgs, callback: any): void;
+}
