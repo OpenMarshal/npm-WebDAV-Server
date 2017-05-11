@@ -1,13 +1,29 @@
 
-export enum LockType
+export class LockType
 {
-    Write
+    constructor(public value:string)
+    { }
+
+    toString()
+    {
+        return this.value;
+    }
+
+    static Write = new LockType('write')
 }
 
-export enum LockScope
+export class LockScope
 {
-    Shared,
-    Esclusive
+    constructor(public value:string)
+    { }
+
+    toString()
+    {
+        return this.value;
+    }
+
+    static Shared = new LockScope('shared')
+    static Exclusive = new LockScope('exclusive')
 }
 
 export class LockKind
@@ -117,7 +133,7 @@ export class LockBag
     {
         this.cleanLocks();
         return !this.locks.some(l => {
-            return l.lockKind.scope === LockScope.Esclusive;
+            return l.lockKind.scope === LockScope.Exclusive;
         });
     }
 }

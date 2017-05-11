@@ -1,6 +1,7 @@
-import { StandardResource, IResource, SimpleCallback, ReturnCallback, Return2Callback } from './Resource'
+import { StandardResource, IResource, SimpleCallback, ReturnCallback, Return2Callback, ResourceType } from './Resource'
 import { ResourceChildren, forAll } from './ResourceChildren'
 import { FSManager, FSPath } from '../manager/FSManager'
+import * as mimeTypes from 'mime-types'
 import * as path from 'path'
 import * as fs from 'fs'
 
@@ -43,6 +44,7 @@ export abstract class PhysicalResource extends StandardResource
     {
         callback(null, path.dirname(this.realPath));
     }
+    abstract type(callback : ReturnCallback<ResourceType>)
 
     //****************************** Content ******************************//
     abstract append(data : Int8Array, callback : SimpleCallback)
@@ -66,6 +68,12 @@ export class PhysicalFolder extends PhysicalResource
         super(realPath, parent, fsManager);
 
         this.children = new ResourceChildren();
+    }
+
+    //****************************** Std meta-data ******************************//
+    type(callback : ReturnCallback<ResourceType>)
+    {
+        callback(null, ResourceType.Directory)
     }
     
     //****************************** Actions ******************************//
@@ -114,22 +122,7 @@ export class PhysicalFolder extends PhysicalResource
     }
     size(callback : ReturnCallback<number>)
     {
-        this.getChildren((e, children) => {
-            if(e)
-            {
-                callback(e, null);
-                return;
-            }
-
-            var size = 0;
-            forAll<IResource>(children, (child, cb) => {
-                child.size((e, s) => {
-                    if(e)
-                        size += s;
-                    cb(null);
-                })
-            }, () => callback(null, size), e => callback(e, null));
-        })
+        StandardResource.sizeOfSubFiles(this, callback);
     }
     
     //****************************** Children ******************************//
@@ -147,13 +140,17 @@ export class PhysicalFolder extends PhysicalResource
     }
 }
 
-import * as mimeTypes from 'mime-types'
-
-export abstract class PhysicalFile extends PhysicalResource
+export class PhysicalFile extends PhysicalResource
 {
     constructor(realPath : string, parent : IResource, fsManager : FSManager)
     {
         super(realPath, parent, fsManager);
+    }
+
+    //****************************** Std meta-data ******************************//
+    type(callback : ReturnCallback<ResourceType>)
+    {
+        callback(null, ResourceType.File)
     }
     
     //****************************** Actions ******************************//

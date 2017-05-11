@@ -1,5 +1,6 @@
 import { LockKind, Lock, LockScope, LockType, LockBag } from './Lock'
 import { FSManager, FSPath } from '../manager/FSManager'
+import { forAll } from './ResourceChildren'
 import * as path from 'path'
 import * as fs from 'fs'
 
@@ -14,6 +15,18 @@ export interface ReturnCallback<T>
 export interface Return2Callback<T, Q>
 {
     (error : Error, x : T, y : Q) : void;
+}
+
+export class ResourceType
+{
+    constructor(public isFile : boolean, public isDirectory : boolean)
+    { }
+
+    static File = new ResourceType(true, false)
+    static Directory = new ResourceType(false, true)
+
+    static Hibrid = new ResourceType(true, true)
+    static NoResource = new ResourceType(false, false)
 }
 
 export interface IResource
@@ -55,11 +68,13 @@ export interface IResource
     setProperty(name : string, value : string, callback : SimpleCallback)
     getProperty(name : string, callback : ReturnCallback<string>)
     removeProperty(name : string, callback : SimpleCallback)
+    getProperties(callback : ReturnCallback<Object>)
     
     //****************************** Std meta-data ******************************//
-    creationDate(callback : ReturnCallback<number | Date>)
-    lastModifiedDate(callback : ReturnCallback<number | Date>)
+    creationDate(callback : ReturnCallback<number>)
+    lastModifiedDate(callback : ReturnCallback<number>)
     webName(callback : ReturnCallback<string>)
+    type(callback : ReturnCallback<ResourceType>)
 }
 
 export abstract class StandardResource implements IResource
@@ -74,7 +89,7 @@ export abstract class StandardResource implements IResource
     constructor(parent : IResource, fsManager : FSManager)
     {
         this.dateCreation = Date.now();
-        this.properties = new Object();
+        this.properties = {};
         this.fsManager = fsManager;
         this.lockBag = new LockBag();
         this.parent = parent;
@@ -109,7 +124,7 @@ export abstract class StandardResource implements IResource
     getAvailableLocks(callback : ReturnCallback<Array<LockKind>>)
     {
         callback(null, [
-            new LockKind(LockScope.Esclusive, LockType.Write),
+            new LockKind(LockScope.Exclusive, LockType.Write),
             new LockKind(LockScope.Shared, LockType.Write)
         ])
     }
@@ -191,6 +206,10 @@ export abstract class StandardResource implements IResource
         this.updateLastModified();
         callback(null);
     }
+    getProperties(callback : ReturnCallback<Object>)
+    {
+        callback(null, this.properties);
+    }
     
     //****************************** Actions ******************************//
     abstract create(callback : SimpleCallback)
@@ -206,18 +225,40 @@ export abstract class StandardResource implements IResource
     abstract size(callback : ReturnCallback<number>)
     
     //****************************** Std meta-data ******************************//
-    creationDate(callback : ReturnCallback<number | Date>)
+    creationDate(callback : ReturnCallback<number>)
     {
         callback(null, this.dateCreation);
     }
-    lastModifiedDate(callback : ReturnCallback<number | Date>)
+    lastModifiedDate(callback : ReturnCallback<number>)
     {
         callback(null, this.dateLastModified);
     }
     abstract webName(callback : ReturnCallback<string>)
+    abstract type(callback : ReturnCallback<ResourceType>)
     
     //****************************** Children ******************************//
     abstract addChild(resource : IResource, callback : SimpleCallback)
     abstract removeChild(resource : IResource, callback : SimpleCallback)
     abstract getChildren(callback : ReturnCallback<Array<IResource>>)
+
+    
+    static sizeOfSubFiles(resource : IResource, callback : ReturnCallback<number>)
+    {
+        resource.getChildren((e, children) => {
+            if(e)
+            {
+                callback(e, null);
+                return;
+            }
+
+            var size = 0;
+            forAll<IResource>(children, (child, cb) => {
+                child.size((e, s) => {
+                    if(e)
+                        size += s;
+                    cb(null);
+                })
+            }, () => callback(null, size), e => callback(e, null));
+        })
+    }
 }

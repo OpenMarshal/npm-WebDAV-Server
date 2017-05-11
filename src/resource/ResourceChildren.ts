@@ -4,6 +4,11 @@ export class ResourceChildren
 {
     children : Array<IResource>
 
+    constructor()
+    {
+        this.children = [];
+    }
+
     add(resource : IResource, callback : SimpleCallback)
     {
         if(this.children.some(c => c === resource))
@@ -24,7 +29,7 @@ export class ResourceChildren
             return;
         }
 
-        this.children = this.children.splice(index, 1);
+        this.children.splice(index, 1);
         callback(null);
     }
 }
