@@ -14,13 +14,14 @@ export class WebDAVServerOptions
 
 export class WebDAVServer
 {
+    public rootResource : IResource
+
     protected beforeManagers : WebDAVRequest[]
     protected afterManagers : WebDAVRequest[]
     protected unknownMethod : WebDAVRequest
     protected options : WebDAVServerOptions
     protected methods : object
     protected server : http.Server
-    public rootResource : IResource
 
     constructor(options ?: WebDAVServerOptions)
     {
@@ -31,7 +32,7 @@ export class WebDAVServer
         this.options = options;
 
         // Implement all methods in commands/Commands.ts
-        for(let k in Commands)
+        for(const k in Commands)
             if(k === 'NotImplemented')
                 this.onUnknownMethod(Commands[k]);
             else
@@ -85,7 +86,7 @@ export class WebDAVServer
                     callback(new Error('404 Not Found'), null);
             }
 
-            for(let k in children)
+            for(const k in children)
             {
                 if(found)
                     break;
@@ -116,12 +117,12 @@ export class WebDAVServer
             if(!method)
                 method = this.unknownMethod;
 
-            let base : MethodCallArgs = this.createMethodCallArgs(req, res)
+            const base : MethodCallArgs = this.createMethodCallArgs(req, res)
 
             if(!method.chunked)
             {
                 let data = '';
-                let go = () =>
+                const go = () =>
                 {
                     base.data = data;
                     this.invokeBeforeRequest(base, () => {
@@ -165,6 +166,20 @@ export class WebDAVServer
             process.nextTick(callback);
     }
 
+    method(name : string, manager : WebDAVRequest)
+    {
+        this.methods[this.normalizeMethodName(name)] = manager;
+    }
+
+    beforeRequest(manager : WebDAVRequest)
+    {
+        this.beforeManagers.push(manager);
+    }
+    afterRequest(manager : WebDAVRequest)
+    {
+        this.afterManagers.push(manager);
+    }
+
     protected createMethodCallArgs(req : http.IncomingMessage, res : http.ServerResponse) : MethodCallArgs
     {
         return new MethodCallArgs(
@@ -178,20 +193,6 @@ export class WebDAVServer
     protected normalizeMethodName(method : string) : string
     {
         return method.toLowerCase();
-    }
-
-    method(name : string, manager : WebDAVRequest)
-    {
-        this.methods[this.normalizeMethodName(name)] = manager;
-    }
-
-    beforeRequest(manager : WebDAVRequest)
-    {
-        this.beforeManagers.push(manager);
-    }
-    afterRequest(manager : WebDAVRequest)
-    {
-        this.afterManagers.push(manager);
     }
 
     protected invokeBARequest(collection : WebDAVRequest[], base : MethodCallArgs, callback)

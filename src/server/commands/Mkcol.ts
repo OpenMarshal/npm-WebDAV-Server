@@ -20,7 +20,7 @@ export default function(arg : MethodCallArgs, callback)
             return;
         }
         
-        let resource = r.fsManager.newResource(arg.uri, path.basename(arg.uri), ResourceType.Directory, r);
+        const resource = r.fsManager.newResource(arg.uri, path.basename(arg.uri), ResourceType.Directory, r);
         resource.create((e) => {
             if(e)
             {

@@ -12,7 +12,7 @@ export default function(arg : MethodCallArgs, callback)
             return;
         }
 
-        let multistatus = xml.create('D:multistatus', ['xmlns:D="DAV:"'])
+        const multistatus = xml.create('D:multistatus', ['xmlns:D="DAV:"'])
 
         resource.type((e, type) => {
             if(!type.isDirectory || arg.depth === 0)
@@ -39,16 +39,15 @@ export default function(arg : MethodCallArgs, callback)
             })
         })
 
-
         function addXMLInfo(resource, multistatus, callback)
         {
-            let response = multistatus.ele('D:response')
+            const response = multistatus.ele('D:response')
 
-            let propstat = response.ele('D:propstat')
+            const propstat = response.ele('D:propstat')
 
-            let status = propstat.ele('D:status', null, 'HTTP/1.1 200 OK')
+            propstat.ele('D:status', null, 'HTTP/1.1 200 OK')
 
-            let prop = propstat.ele('D:prop')
+            const prop = propstat.ele('D:prop')
             
             let nb = 7;
             function nbOut()
@@ -73,24 +72,24 @@ export default function(arg : MethodCallArgs, callback)
                 nbOut();
             })
 
-            let supportedlock = prop.ele('D:supportedlock')
+            const supportedlock = prop.ele('D:supportedlock')
             resource.getAvailableLocks((e, lockKinds) => {
                 lockKinds.forEach((lockKind) => {
-                    let lockentry = supportedlock.ele('D:lockentry')
+                    const lockentry = supportedlock.ele('D:lockentry')
 
-                    let lockscope = lockentry.ele('D:lockscope')
+                    const lockscope = lockentry.ele('D:lockscope')
                     lockscope.ele('D:' + lockKind.scope.value.toLowerCase())
 
-                    let locktype = lockentry.ele('D:locktype')
+                    const locktype = lockentry.ele('D:locktype')
                     locktype.ele('D:' + lockKind.type.value.toLowerCase())
                 })
                 nbOut();
             })
 
             resource.getProperties((e, properties) => {
-                for(let name in properties)
+                for(const name in properties)
                 {
-                    let value = properties[name];
+                    const value = properties[name];
                     prop.ele(name, null, value)
                 }
                 nbOut();
@@ -98,7 +97,7 @@ export default function(arg : MethodCallArgs, callback)
 
             resource.type((e, type) => {
 
-                let resourcetype = prop.ele('D:resourcetype')
+                const resourcetype = prop.ele('D:resourcetype')
                 if(type.isDirectory)
                     resourcetype.ele('D:collection')
                 
@@ -127,7 +126,7 @@ export default function(arg : MethodCallArgs, callback)
 
         function done(multistatus)
         {
-            let content = '<?xml version="1.0" encoding="utf-8" ?>\r\n' + multistatus.toString({pretty: false})
+            const content = '<?xml version="1.0" encoding="utf-8" ?>\r\n' + multistatus.toString({pretty: false})
             arg.setCode(HTTPCodes.MultiStatus);
             arg.response.setHeader('Content-Type', 'text/xml; charset="utf-8"')
             arg.response.setHeader('Content-Length', content.length.toString())

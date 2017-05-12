@@ -137,4 +137,3 @@ export class LockBag
         this.locks = this.locks.filter(this.notExpired);
     }
 }
-

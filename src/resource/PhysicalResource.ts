@@ -106,15 +106,15 @@ export class PhysicalFolder extends PhysicalResource
     // ****************************** Content ****************************** //
     append(data : Int8Array, callback : SimpleCallback)
     {
-        callback(new Error("Invalid operation"));
+        callback(new Error('Invalid operation'));
     }
     write(data : Int8Array, callback : SimpleCallback)
     {
-        callback(new Error("Invalid operation"));
+        callback(new Error('Invalid operation'));
     }
     read(callback : ReturnCallback<Int8Array>)
     {
-        callback(new Error("Invalid operation"), null);
+        callback(new Error('Invalid operation'), null);
     }
     mimeType(callback : ReturnCallback<string>)
     {
@@ -191,7 +191,7 @@ export class PhysicalFile extends PhysicalResource
     mimeType(callback : ReturnCallback<string>)
     {
         const mt = mimeTypes.lookup(this.realPath);
-        callback(mt ? null : new Error("application/octet-stream"), mt as string);
+        callback(mt ? null : new Error('application/octet-stream'), mt as string);
     }
     size(callback : ReturnCallback<number>)
     {
@@ -201,14 +201,14 @@ export class PhysicalFile extends PhysicalResource
     // ****************************** Children ****************************** //
     addChild(resource : IResource, callback : SimpleCallback)
     {
-        callback(new Error("Invalid operation"));
+        callback(new Error('Invalid operation'));
     }
     removeChild(resource : IResource, callback : SimpleCallback)
     {
-        callback(new Error("Invalid operation"));
+        callback(new Error('Invalid operation'));
     }
     getChildren(callback : ReturnCallback<IResource[]>)
     {
-        callback(new Error("Invalid operation"), null);
+        callback(new Error('Invalid operation'), null);
     }
 }

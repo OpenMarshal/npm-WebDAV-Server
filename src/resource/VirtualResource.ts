@@ -31,7 +31,7 @@ export abstract class VirtualResource extends StandardResource
     }
     rename(newName : string, callback : Return2Callback<string, string>)
     {
-        let oldName = this.name;
+        const oldName = this.name;
         this.name = newName;
         callback(null, oldName, newName);
     }
@@ -76,15 +76,15 @@ export class VirtualFolder extends VirtualResource
     // ****************************** Content ****************************** //
     append(data : Int8Array, callback : SimpleCallback)
     {
-        callback(new Error("Invalid operation"));
+        callback(new Error('Invalid operation'));
     }
     write(data : Int8Array, callback : SimpleCallback)
     {
-        callback(new Error("Invalid operation"));
+        callback(new Error('Invalid operation'));
     }
     read(callback : ReturnCallback<Int8Array>)
     {
-        callback(new Error("Invalid operation"), null);
+        callback(new Error('Invalid operation'), null);
     }
     mimeType(callback : ReturnCallback<string>)
     {
@@ -140,7 +140,7 @@ export class VirtualFile extends VirtualResource
     // ****************************** Content ****************************** //
     append(data : Int8Array, callback : SimpleCallback)
     {
-        let newContent = new Int8Array(this.content.length + data.length)
+        const newContent = new Int8Array(this.content.length + data.length)
 
         for(let i = 0; i < this.content.length; ++i)
             newContent[i] = this.content[i];
@@ -161,8 +161,8 @@ export class VirtualFile extends VirtualResource
     }
     mimeType(callback : ReturnCallback<string>)
     {
-        let mt = mimeTypes.lookup(this.name);
-        callback(mt ? null : new Error("Unkown mime type"), mt as string);
+        const mt = mimeTypes.lookup(this.name);
+        callback(mt ? null : new Error('Unkown mime type'), mt as string);
     }
     size(callback : ReturnCallback<number>)
     {
@@ -172,14 +172,14 @@ export class VirtualFile extends VirtualResource
     // ****************************** Children ****************************** //
     addChild(resource : IResource, callback : SimpleCallback)
     {
-        callback(new Error("Invalid operation"));
+        callback(new Error('Invalid operation'));
     }
     removeChild(resource : IResource, callback : SimpleCallback)
     {
-        callback(new Error("Invalid operation"));
+        callback(new Error('Invalid operation'));
     }
     getChildren(callback : ReturnCallback<IResource[]>)
     {
-        callback(new Error("Invalid operation"), null);
+        callback(new Error('Invalid operation'), null);
     }
 }

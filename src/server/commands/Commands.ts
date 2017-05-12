@@ -5,9 +5,9 @@ import Post from './Post'
 import Get from './Get'
 
 export default {
-    NotImplemented: NotImplemented,
-    Propfind: Propfind,
-    Mkcol: Mkcol,
-    Post: Post,
-    Get: Get
+    NotImplemented,
+    Propfind,
+    Mkcol,
+    Post,
+    Get
 }

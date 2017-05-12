@@ -73,6 +73,20 @@ export class MethodCallArgs
     
     data : string
 
+    constructor(
+        public server : WebDAVServer,
+        public request : http.IncomingMessage,
+        public response : http.ServerResponse,
+        public callback : () => void
+    ) {
+        this.contentLength = parseInt(this.findHeader('Content-length', '0'), 10);
+        this.depth = parseInt(this.findHeader('Depth', '0'), 10);
+        this.host = this.findHeader('Host');
+        
+        this.uri = url.parse(request.url).pathname;
+        this.path = new FSPath(this.uri);
+    }
+
     findHeader(name : string, defaultValue : string = null) : string
     {
         name = name.replace(/(-| )/g, '').toLowerCase();
@@ -84,20 +98,6 @@ export class MethodCallArgs
         return defaultValue;
     }
 
-    constructor(
-        public server : WebDAVServer,
-        public request : http.IncomingMessage,
-        public response : http.ServerResponse,
-        public callback : () => void
-    ) {
-        this.contentLength = parseInt(this.findHeader('Content-length', '0'));
-        this.depth = parseInt(this.findHeader('Depth', '0'));
-        this.host = this.findHeader('Host');
-        
-        this.uri = url.parse(request.url).pathname;
-        this.path = new FSPath(this.uri);
-    }
-
     getResource(callback : ReturnCallback<IResource>)
     {
         this.server.getResourceFromPath(this.uri, callback);
@@ -106,7 +106,7 @@ export class MethodCallArgs
     dateISO8601(ticks : number) : string
     {
         // Adding date
-        let date = new Date(ticks);
+        const date = new Date(ticks);
         let result = date.toISOString().substring(0, '0000-00-00T00:00:00'.length);
         
         // Adding timezone offset

@@ -1,6 +1,5 @@
 import { IResource, ResourceType } from '../resource/Resource'
 
-
 export interface FSManager
 {
     serialize(resource : IResource) : object;

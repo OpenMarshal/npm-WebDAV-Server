@@ -2,7 +2,6 @@ import { VirtualFile, VirtualFolder, VirtualResource } from '../resource/Virtual
 import { IResource, ResourceType } from '../resource/Resource'
 import { FSManager } from './FSManager'
 
-
 export class VirtualFSManager implements FSManager
 {
     serialize(resource : any) : object
@@ -25,14 +24,14 @@ export class VirtualFSManager implements FSManager
     {
         if(serializedResource.children)
         {
-            let rs = new VirtualFolder(serializedResource.name, null, this);
+            const rs = new VirtualFolder(serializedResource.name, null, this);
             rs.children = serializedResource.children;
             return rs;
         }
 
         if(serializedResource.content)
         {
-            let rs = new VirtualFile(serializedResource.name, null, this);
+            const rs = new VirtualFile(serializedResource.name, null, this);
             rs.content = serializedResource.content;
             return rs;
         }

@@ -13,7 +13,7 @@ export class ResourceChildren
     {
         if(this.children.some((c) => c === resource))
         {
-            callback(new Error("The resource already exists."));
+            callback(new Error('The resource already exists.'));
             return;
         }
 
@@ -25,7 +25,7 @@ export class ResourceChildren
         let index = this.children.indexOf(resource);
         if(index === -1)
         {
-            callback(new Error("Can't find the resource."));
+            callback(new Error('Can\'t find the resource.'));
             return;
         }
 

@@ -72,8 +72,8 @@ export declare class MethodCallArgs {
     path: FSPath;
     uri: string;
     data: string;
-    findHeader(name: string, defaultValue?: string): string;
     constructor(server: WebDAVServer, request: http.IncomingMessage, response: http.ServerResponse, callback: () => void);
+    findHeader(name: string, defaultValue?: string): string;
     getResource(callback: ReturnCallback<IResource>): void;
     dateISO8601(ticks: number): string;
     fullUri(uri?: string): string;
