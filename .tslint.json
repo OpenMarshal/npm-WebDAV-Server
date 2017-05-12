@@ -1,0 +1,11 @@
+{
+    "rules": {
+        "no-bitwise:": false,
+        "one-line:": false,
+        "semicolon:": false,
+        "typedef-whitespace:": false,
+        "no-shadowed-variable:": false,
+        "max-line-length:": false,
+        "forin:": false
+    }
+}
