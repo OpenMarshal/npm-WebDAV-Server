@@ -29,6 +29,10 @@
   "version": "0.1.0",
   "author": "Adrien Castex <adrien.castex@gmail.com>",
   "license": "Unlicense",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OpenMarshal/npm-WebDAV-Server.git"
+  },
   "description": "WebDAV Server",
   "dependencies": {
     "mime-types": "^2.1.15",
