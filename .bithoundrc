@@ -3,5 +3,10 @@
     "lib/**",
     "node_modules/**",
     "test/**"
-  ]
+  ],
+  "critics": {
+		"lint": {
+			"engine": "tslint"
+		}
+	}
 }
