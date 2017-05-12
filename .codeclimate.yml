@@ -2,21 +2,7 @@ engines:
   tslint:
     enabled: true
     channel: beta
-    checks:
-      no-bitwise:
-        enabled: false
-      one-line:
-        enabled: false
-      semicolon:
-        enabled: false
-      typedef-whitespace:
-        enabled: false
-      no-shadowed-variable:
-        enabled: false
-      max-line-length:
-        enabled: false
-      forin:
-        enabled: false
+    config: tslint.json
   grep:
     enabled: true
     config:
