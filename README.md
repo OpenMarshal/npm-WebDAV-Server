@@ -1,6 +1,77 @@
-# npm-WebDAV-Server
+# WebDAV Server for npm
+
 [![Build Status](https://travis-ci.org/OpenMarshal/npm-WebDAV-Server.svg?branch=master)](https://travis-ci.org/OpenMarshal/npm-WebDAV-Server)
 [![Code Climate Rate](https://codeclimate.com/github/OpenMarshal/npm-WebDAV-Server/badges/gpa.svg)](https://codeclimate.com/github/OpenMarshal/npm-WebDAV-Server)
-[![Dependencies Status](https://david-dm.org/OpenMarshal/npm-WebDAV-Server.svg)](https://david-dm.org/OpenMarshal/npm-WebDAV-Server.svg)
-[![License](https://img.shields.io/:license-unlicense-green.svg)](http://unlicense.org/)
+[![Dependencies Status](https://img.shields.io/david/OpenMarshal/npm-WebDAV-Server.svg)](https://david-dm.org/OpenMarshal/npm-WebDAV-Server.svg)
+[![License](https://img.shields.io/npm/l/webdav-server.svg)](http://unlicense.org/)
+[![License](https://img.shields.io/npm/v/webdav-server.svg)](https://www.npmjs.com/package/webdav-server)
 
+# Install
+
+```bash
+npm install webdav-server
+```
+
+# Usage
+
+## Import
+
+### NodeJS
+```javascript
+const webdav = require('webdav-server')
+```
+
+### TypeScript
+```typescript
+import * as webdav from 'webdav-server'
+```
+
+## Create server
+
+### NodeJS / TypeScript
+```javascript
+const server = new webdav.WebDAVServer(options);
+```
+
+*options* is of type `WebDAVServerOptions`. This interface can be found in `webdav.WebDAVServerOptions`
+
+### Options
+Key | Default value | Description
+-|-|-
+port | 1900 | The default port to use if no port is specified when calling `server.start()`.
+
+## Sample
+
+### NodeJS / TypeScript
+```javascript
+// Typescript
+import * as webdav from 'webdav-server'
+// Javascript
+const webdav = require('webdav-server');
+
+// Create a WebDAV server with options
+const server = new webdav.WebDAVServer({
+    port: 1900
+});
+
+// Create a virtual file
+var file = new webdav.VirtualFile('testFile.txt');
+// Set the content of the virtual file
+file.content = 'The content of the virtual file.';
+
+// Add the virtual file to the root folder
+server.rootResource.addChild(file, e => {
+    if(e)
+        throw e;
+});
+
+// Start the server
+server.start();
+
+// [...]
+
+// Stop the server
+server.stop(() => {
+    console.log('Server stopped with success!');
+})
+```
