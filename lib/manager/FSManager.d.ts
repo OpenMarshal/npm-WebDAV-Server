@@ -5,8 +5,8 @@ export interface FSManager {
     newResource(fullPath: string, name: string, type: ResourceType, parent: IResource): IResource;
 }
 export declare class FSPath {
-    paths: Array<string>;
-    constructor(path: FSPath | Array<string> | string);
+    paths: string[];
+    constructor(path: FSPath | string[] | string);
     isRoot(): boolean;
     fileName(): string;
     rootName(): string;

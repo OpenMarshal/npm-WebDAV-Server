@@ -17,7 +17,7 @@ export declare abstract class PhysicalResource extends StandardResource {
     abstract size(callback: ReturnCallback<number>): any;
     abstract addChild(resource: IResource, callback: SimpleCallback): any;
     abstract removeChild(resource: IResource, callback: SimpleCallback): any;
-    abstract getChildren(callback: ReturnCallback<Array<IResource>>): any;
+    abstract getChildren(callback: ReturnCallback<IResource[]>): any;
 }
 export declare class PhysicalFolder extends PhysicalResource {
     children: ResourceChildren;
@@ -32,7 +32,7 @@ export declare class PhysicalFolder extends PhysicalResource {
     size(callback: ReturnCallback<number>): void;
     addChild(resource: IResource, callback: SimpleCallback): void;
     removeChild(resource: IResource, callback: SimpleCallback): void;
-    getChildren(callback: ReturnCallback<Array<IResource>>): void;
+    getChildren(callback: ReturnCallback<IResource[]>): void;
 }
 export declare class PhysicalFile extends PhysicalResource {
     constructor(realPath: string, parent: IResource, fsManager: FSManager);
@@ -46,5 +46,5 @@ export declare class PhysicalFile extends PhysicalResource {
     size(callback: ReturnCallback<number>): void;
     addChild(resource: IResource, callback: SimpleCallback): void;
     removeChild(resource: IResource, callback: SimpleCallback): void;
-    getChildren(callback: ReturnCallback<Array<IResource>>): void;
+    getChildren(callback: ReturnCallback<IResource[]>): void;
 }

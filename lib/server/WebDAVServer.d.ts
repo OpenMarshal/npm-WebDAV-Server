@@ -7,16 +7,16 @@ export declare class WebDAVServerOptions {
     port?: number;
 }
 export declare class WebDAVServer {
-    protected beforeManagers: Array<WebDAVRequest>;
-    protected afterManagers: Array<WebDAVRequest>;
+    protected beforeManagers: WebDAVRequest[];
+    protected afterManagers: WebDAVRequest[];
     protected unknownMethod: WebDAVRequest;
     protected options: WebDAVServerOptions;
     protected methods: Object;
     protected server: http.Server;
     rootResource: IResource;
     constructor(options?: WebDAVServerOptions);
-    getResourceFromPath(path: FSPath | Array<string> | string, callback: ReturnCallback<IResource>): any;
-    getResourceFromPath(path: FSPath | Array<string> | string, rootResource: IResource, callback: ReturnCallback<IResource>): any;
+    getResourceFromPath(path: FSPath | string[] | string, callback: ReturnCallback<IResource>): any;
+    getResourceFromPath(path: FSPath | string[] | string, rootResource: IResource, callback: ReturnCallback<IResource>): any;
     onUnknownMethod(unknownMethod: WebDAVRequest): void;
     start(port?: number): void;
     stop(callback: () => void): void;
@@ -25,7 +25,7 @@ export declare class WebDAVServer {
     method(name: string, manager: WebDAVRequest): void;
     beforeRequest(manager: WebDAVRequest): void;
     afterRequest(manager: WebDAVRequest): void;
-    protected invokeBARequest(collection: Array<WebDAVRequest>, base: MethodCallArgs, callback: any): void;
+    protected invokeBARequest(collection: WebDAVRequest[], base: MethodCallArgs, callback: any): void;
     protected invokeBeforeRequest(base: MethodCallArgs, callback: any): void;
     protected invokeAfterRequest(base: MethodCallArgs, callback: any): void;
 }

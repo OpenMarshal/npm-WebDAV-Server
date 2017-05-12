@@ -1,29 +1,29 @@
 
 export class LockType
 {
-    constructor(public value:string)
+    static Write = new LockType('write')
+
+    constructor(public value : string)
     { }
 
     toString()
     {
         return this.value;
     }
-
-    static Write = new LockType('write')
 }
 
 export class LockScope
 {
-    constructor(public value:string)
+    static Shared = new LockScope('shared')
+    static Exclusive = new LockScope('exclusive')
+
+    constructor(public value : string)
     { }
 
     toString()
     {
         return this.value;
     }
-
-    static Shared = new LockScope('shared')
-    static Exclusive = new LockScope('exclusive')
 }
 
 export class LockKind
@@ -42,33 +42,20 @@ export class LockKind
 
 export class Lock
 {
-    lockKind : LockKind
-    expirationDate : number
-    owner : string
-    uuid : string
-
-    constructor(lockKind : LockKind, owner : string)
-    {
-        this.expirationDate = Date.now() + lockKind.timeout;
-        this.lockKind = lockKind;
-        this.owner = owner;
-        this.uuid = Lock.generateUUID(this.expirationDate);
-    }
-
     static generateUUID(expirationDate : number) : string
     {
-        var rnd1 = Math.ceil(Math.random() * 0x3FFF) + 0x8000;
-        var rnd2 = Math.ceil(Math.random() * 0xFFFFFFFF);
+        const rnd1 = Math.ceil(Math.random() * 0x3FFF) + 0x8000;
+        const rnd2 = Math.ceil(Math.random() * 0xFFFFFFFF);
 
         function pad(value : number, nb : number)
         {
-            var str = Math.ceil(value).toString(16);
+            let str = Math.ceil(value).toString(16);
             while(str.length < nb)
                 str = '0' + str;
             return str;
         }
 
-        var uuid = 'urn:uuid:';
+        let uuid = 'urn:uuid:';
         // time_low
         uuid += pad(expirationDate & 0xFFFFFFFF, 8);
         // time_mid
@@ -85,6 +72,19 @@ export class Lock
         return uuid;
     }
 
+    lockKind : LockKind
+    expirationDate : number
+    owner : string
+    uuid : string
+
+    constructor(lockKind : LockKind, owner : string)
+    {
+        this.expirationDate = Date.now() + lockKind.timeout;
+        this.lockKind = lockKind;
+        this.owner = owner;
+        this.uuid = Lock.generateUUID(this.expirationDate);
+    }
+
     expired() : boolean
     {
         return Date.now() > this.expirationDate;
@@ -93,21 +93,12 @@ export class Lock
 
 export class LockBag
 {
-    locks : Array<Lock>
+    locks : Lock[]
 
-    private notExpired(l : Lock)
-    {
-        return !l.expired();
-    }
-    private cleanLocks()
-    {
-        this.locks = this.locks.filter(this.notExpired);
-    }
-
-    getLocks(lockKind : LockKind) : Array<Lock>
+    getLocks(lockKind : LockKind) : Lock[]
     {
         this.cleanLocks();
-        return this.locks.filter(l => l.lockKind.isSimilar(lockKind))
+        return this.locks.filter((l) => l.lockKind.isSimilar(lockKind))
     }
 
     setLock(lock : Lock) : boolean
@@ -121,20 +112,29 @@ export class LockBag
 
     removeLock(uuid : string, owner : string) : void
     {
-        this.locks = this.locks.filter(l => this.notExpired(l) && (l.uuid !== uuid || l.owner !== owner));
+        this.locks = this.locks.filter((l) => this.notExpired(l) && (l.uuid !== uuid || l.owner !== owner));
     }
     canRemoveLock(uuid : string, owner : string) : boolean
     {
         this.cleanLocks();
-        return this.locks.some(l => l.uuid === uuid && l.owner !== owner);
+        return this.locks.some((l) => l.uuid === uuid && l.owner !== owner);
     }
 
     canLock(lockKind : LockKind) : boolean
     {
         this.cleanLocks();
-        return !this.locks.some(l => {
+        return !this.locks.some((l) => {
             return l.lockKind.scope === LockScope.Exclusive;
         });
+    }
+
+    private notExpired(l : Lock)
+    {
+        return !l.expired();
+    }
+    private cleanLocks()
+    {
+        this.locks = this.locks.filter(this.notExpired);
     }
 }
 

@@ -20,8 +20,8 @@ export default function(arg : MethodCallArgs, callback)
             return;
         }
         
-        var resource = r.fsManager.newResource(arg.uri, path.basename(arg.uri), ResourceType.Directory, r);
-        resource.create(e => {
+        let resource = r.fsManager.newResource(arg.uri, path.basename(arg.uri), ResourceType.Directory, r);
+        resource.create((e) => {
             if(e)
             {
                 arg.setCode(HTTPCodes.InternalServerError)
@@ -29,7 +29,7 @@ export default function(arg : MethodCallArgs, callback)
                 return;
             }
         
-            r.addChild(resource, e => {
+            r.addChild(resource, (e) => {
                 if(e)
                     arg.setCode(HTTPCodes.InternalServerError)
                 else

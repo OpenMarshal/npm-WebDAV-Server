@@ -11,16 +11,16 @@ export interface FSManager
 
 export class FSPath
 {
-    paths : Array<string>
+    paths : string[]
 
-    constructor(path : FSPath | Array<string> | string)
+    constructor(path : FSPath | string[] | string)
     {
         if(path.constructor === String)
             this.paths = (path as string).replace(/(^\/|\/$)/g, '').split('/');
         else if(path.constructor === FSPath)
-            this.paths = (path as FSPath).paths.filter(x => true); // clone
+            this.paths = (path as FSPath).paths.filter((x) => true); // clone
         else
-            this.paths = path as Array<string>;
+            this.paths = path as string[];
     }
 
     isRoot() : boolean

@@ -17,5 +17,5 @@ export declare class RootResource extends StandardResource {
     size(callback: ReturnCallback<number>): void;
     addChild(resource: IResource, callback: SimpleCallback): void;
     removeChild(resource: IResource, callback: SimpleCallback): void;
-    getChildren(callback: ReturnCallback<Array<IResource>>): void;
+    getChildren(callback: ReturnCallback<IResource[]>): void;
 }

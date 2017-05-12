@@ -4,7 +4,7 @@ import { FSPath } from '../manager/FSManager'
 import * as http from 'http'
 import * as url from 'url'
 
-export var HTTPCodes = {
+export let HTTPCodes = {
     Continue: 100,
     SwitchingProtocols: 101,
     Processing: 102,
@@ -77,7 +77,7 @@ export class MethodCallArgs
     {
         name = name.replace(/(-| )/g, '').toLowerCase();
 
-        for(var k in this.request.headers)
+        for(let k in this.request.headers)
             if(k.replace(/(-| )/g, '').toLowerCase() === name)
                 return this.request.headers[k];
         
@@ -106,19 +106,19 @@ export class MethodCallArgs
     dateISO8601(ticks : number) : string
     {
         // Adding date
-        var date = new Date(ticks);
-        var result = date.toISOString().substring(0, '0000-00-00T00:00:00'.length);
+        let date = new Date(ticks);
+        let result = date.toISOString().substring(0, '0000-00-00T00:00:00'.length);
         
         // Adding timezone offset
-        var offset = date.getTimezoneOffset();
+        let offset = date.getTimezoneOffset();
         result += offset < 0 ? '-' : '+'
         offset = Math.abs(offset)
 
-        var h = Math.ceil(offset / 60).toString(10);
+        let h = Math.ceil(offset / 60).toString(10);
         while(h.length < 2)
             h = '0' + h;
 
-        var m = (offset % 60).toString(10);
+        let m = (offset % 60).toString(10);
         while(m.length < 2)
             m = '0' + m;
             
@@ -152,7 +152,7 @@ export class MethodCallArgs
             })
     }
     
-    setCode(code : number, message? : string)
+    setCode(code : number, message ?: string)
     {
         if(!message)
             message = http.STATUS_CODES[code];

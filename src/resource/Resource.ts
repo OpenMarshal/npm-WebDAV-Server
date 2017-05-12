@@ -19,14 +19,14 @@ export interface Return2Callback<T, Q>
 
 export class ResourceType
 {
-    constructor(public isFile : boolean, public isDirectory : boolean)
-    { }
-
     static File = new ResourceType(true, false)
     static Directory = new ResourceType(false, true)
 
     static Hibrid = new ResourceType(true, true)
     static NoResource = new ResourceType(false, false)
+
+    constructor(public isFile : boolean, public isDirectory : boolean)
+    { }
 }
 
 export interface IResource
@@ -52,17 +52,17 @@ export interface IResource
     size(callback : ReturnCallback<number>)
     
     //****************************** Locks ******************************//
-    getLocks(lockKind : LockKind, callback : ReturnCallback<Array<Lock>>)
+    getLocks(lockKind : LockKind, callback : ReturnCallback<Lock[]>)
     setLock(lock : Lock, callback : SimpleCallback)
     removeLock(uuid : string, owner : string, callback : ReturnCallback<boolean>)
     canLock(lockKind : LockKind, callback : ReturnCallback<boolean>)
-    getAvailableLocks(callback : ReturnCallback<Array<LockKind>>)
+    getAvailableLocks(callback : ReturnCallback<LockKind[]>)
     canRemoveLock(uuid : string, owner : string, callback : ReturnCallback<boolean>)
 
     //****************************** Children ******************************//
     addChild(resource : IResource, callback : SimpleCallback)
     removeChild(resource : IResource, callback : SimpleCallback)
-    getChildren(callback : ReturnCallback<Array<IResource>>)
+    getChildren(callback : ReturnCallback<IResource[]>)
 
     //****************************** Properties ******************************//
     setProperty(name : string, value : string, callback : SimpleCallback)
@@ -79,6 +79,26 @@ export interface IResource
 
 export abstract class StandardResource implements IResource
 {
+    static sizeOfSubFiles(resource : IResource, callback : ReturnCallback<number>)
+    {
+        resource.getChildren((e, children) => {
+            if(e)
+            {
+                callback(e, null);
+                return;
+            }
+
+            let size = 0;
+            forAll<IResource>(children, (child, cb) => {
+                child.size((e, s) => {
+                    if(e)
+                        size += s;
+                    cb(null);
+                })
+            }, () => callback(null, size), (e) => callback(e, null));
+        })
+    }
+
     properties : Object
     fsManager : FSManager
     lockBag : LockBag
@@ -121,20 +141,20 @@ export abstract class StandardResource implements IResource
     }
 
     //****************************** Locks ******************************//
-    getAvailableLocks(callback : ReturnCallback<Array<LockKind>>)
+    getAvailableLocks(callback : ReturnCallback<LockKind[]>)
     {
         callback(null, [
             new LockKind(LockScope.Exclusive, LockType.Write),
             new LockKind(LockScope.Shared, LockType.Write)
         ])
     }
-    getLocks(lockKind : LockKind, callback : ReturnCallback<Array<Lock>>)
+    getLocks(lockKind : LockKind, callback : ReturnCallback<Lock[]>)
     {
         callback(null, this.lockBag.getLocks(lockKind));
     }
     setLock(lock : Lock, callback : SimpleCallback)
     {
-        var locked = this.lockBag.setLock(lock);
+        const locked = this.lockBag.setLock(lock);
         callback(locked ? null : new Error('Can\'t lock the resource.'));
     }
     removeLock(uuid : string, owner : string, callback : ReturnCallback<boolean>)
@@ -146,8 +166,8 @@ export abstract class StandardResource implements IResource
                 return;
             }
 
-            var nb = children.length + 1;
-            children.forEach(child => {
+            let nb = children.length + 1;
+            children.forEach((child) => {
                 child.canRemoveLock(uuid, owner, go);
             });
             go(null, true);
@@ -194,7 +214,7 @@ export abstract class StandardResource implements IResource
     }
     getProperty(name : string, callback : ReturnCallback<string>)
     {
-        var value = this.properties[name];
+        let value = this.properties[name];
         if(value === undefined)
             callback(new Error('No property with such name.'), null);
         else
@@ -239,26 +259,5 @@ export abstract class StandardResource implements IResource
     //****************************** Children ******************************//
     abstract addChild(resource : IResource, callback : SimpleCallback)
     abstract removeChild(resource : IResource, callback : SimpleCallback)
-    abstract getChildren(callback : ReturnCallback<Array<IResource>>)
-
-    
-    static sizeOfSubFiles(resource : IResource, callback : ReturnCallback<number>)
-    {
-        resource.getChildren((e, children) => {
-            if(e)
-            {
-                callback(e, null);
-                return;
-            }
-
-            var size = 0;
-            forAll<IResource>(children, (child, cb) => {
-                child.size((e, s) => {
-                    if(e)
-                        size += s;
-                    cb(null);
-                })
-            }, () => callback(null, size), e => callback(e, null));
-        })
-    }
+    abstract getChildren(callback : ReturnCallback<IResource[]>)
 }

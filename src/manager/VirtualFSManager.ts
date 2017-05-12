@@ -7,7 +7,7 @@ export class VirtualFSManager implements FSManager
 {
     serialize(resource : any) : object
     {
-        var obj : {
+        let obj : {
             name,
             children,
             content

@@ -2,7 +2,7 @@ import { IResource, SimpleCallback } from './Resource'
 
 export class ResourceChildren
 {
-    children : Array<IResource>
+    children : IResource[]
 
     constructor()
     {
@@ -11,7 +11,7 @@ export class ResourceChildren
 
     add(resource : IResource, callback : SimpleCallback)
     {
-        if(this.children.some(c => c === resource))
+        if(this.children.some((c) => c === resource))
         {
             callback(new Error("The resource already exists."));
             return;
@@ -22,7 +22,7 @@ export class ResourceChildren
     }
     remove(resource : IResource, callback : SimpleCallback)
     {
-        var index = this.children.indexOf(resource);
+        let index = this.children.indexOf(resource);
         if(index === -1)
         {
             callback(new Error("Can't find the resource."));
@@ -34,15 +34,15 @@ export class ResourceChildren
     }
 }
 
-export function forAll<T>(array : Array<T>, itemFn : (item : T, callback : (e) => void) => void, onAllAndSuccess : () => void, onError : (e) => void) : void
+export function forAll<T>(array : T[], itemFn : (item : T, callback : (e) => void) => void, onAllAndSuccess : () => void, onError : (e) => void) : void
 {
-    var nb = array.length + 1;
-    var error = null;
+    let nb = array.length + 1;
+    let error = null;
 
-    array.forEach(child => {
+    array.forEach((child) => {
         if(error)
             return;
-        itemFn(child, e => {
+        itemFn(child, (e) => {
             if(e)
             {
                 error = e;

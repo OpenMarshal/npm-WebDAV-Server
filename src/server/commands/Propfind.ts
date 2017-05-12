@@ -12,7 +12,7 @@ export default function(arg : MethodCallArgs, callback)
             return;
         }
 
-        var multistatus = xml.create('D:multistatus', ['xmlns:D="DAV:"'])
+        let multistatus = xml.create('D:multistatus', ['xmlns:D="DAV:"'])
 
         resource.type((e, type) => {
             if(!type.isDirectory || arg.depth === 0)
@@ -33,7 +33,7 @@ export default function(arg : MethodCallArgs, callback)
 
                 addXMLInfo(resource, multistatus, nbOut)
                 
-                children.forEach(child => {
+                children.forEach((child) => {
                     addXMLInfo(child, multistatus, nbOut)
                 })
             })
@@ -42,13 +42,13 @@ export default function(arg : MethodCallArgs, callback)
 
         function addXMLInfo(resource, multistatus, callback)
         {
-            var response = multistatus.ele('D:response')
+            let response = multistatus.ele('D:response')
 
-            var propstat = response.ele('D:propstat')
+            let propstat = response.ele('D:propstat')
 
-            var status = propstat.ele('D:status', null, 'HTTP/1.1 200 OK')
+            let status = propstat.ele('D:status', null, 'HTTP/1.1 200 OK')
 
-            var prop = propstat.ele('D:prop')
+            let prop = propstat.ele('D:prop')
             
             let nb = 7;
             function nbOut()
@@ -73,24 +73,24 @@ export default function(arg : MethodCallArgs, callback)
                 nbOut();
             })
 
-            var supportedlock = prop.ele('D:supportedlock')
+            let supportedlock = prop.ele('D:supportedlock')
             resource.getAvailableLocks((e, lockKinds) => {
-                lockKinds.forEach(lockKind => {
-                    var lockentry = supportedlock.ele('D:lockentry')
+                lockKinds.forEach((lockKind) => {
+                    let lockentry = supportedlock.ele('D:lockentry')
 
-                    var lockscope = lockentry.ele('D:lockscope')
+                    let lockscope = lockentry.ele('D:lockscope')
                     lockscope.ele('D:' + lockKind.scope.value.toLowerCase())
 
-                    var lockscope = lockentry.ele('D:locktype')
-                    lockscope.ele('D:' + lockKind.type.value.toLowerCase())
+                    let locktype = lockentry.ele('D:locktype')
+                    locktype.ele('D:' + lockKind.type.value.toLowerCase())
                 })
                 nbOut();
             })
 
             resource.getProperties((e, properties) => {
-                for(var name in properties)
+                for(let name in properties)
                 {
-                    var value = properties[name];
+                    let value = properties[name];
                     prop.ele(name, null, value)
                 }
                 nbOut();
@@ -98,7 +98,7 @@ export default function(arg : MethodCallArgs, callback)
 
             resource.type((e, type) => {
 
-                var resourcetype = prop.ele('D:resourcetype')
+                let resourcetype = prop.ele('D:resourcetype')
                 if(type.isDirectory)
                     resourcetype.ele('D:collection')
                 
@@ -127,7 +127,7 @@ export default function(arg : MethodCallArgs, callback)
 
         function done(multistatus)
         {
-            var content = '<?xml version="1.0" encoding="utf-8" ?>\r\n' + multistatus.toString({pretty: false})
+            let content = '<?xml version="1.0" encoding="utf-8" ?>\r\n' + multistatus.toString({pretty: false})
             arg.setCode(HTTPCodes.MultiStatus);
             arg.response.setHeader('Content-Type', 'text/xml; charset="utf-8"')
             arg.response.setHeader('Content-Length', content.length.toString())

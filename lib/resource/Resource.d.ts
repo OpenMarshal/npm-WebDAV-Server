@@ -12,11 +12,11 @@ export interface Return2Callback<T, Q> {
 export declare class ResourceType {
     isFile: boolean;
     isDirectory: boolean;
-    constructor(isFile: boolean, isDirectory: boolean);
     static File: ResourceType;
     static Directory: ResourceType;
     static Hibrid: ResourceType;
     static NoResource: ResourceType;
+    constructor(isFile: boolean, isDirectory: boolean);
 }
 export interface IResource {
     parent: IResource;
@@ -32,15 +32,15 @@ export interface IResource {
     read(callback: ReturnCallback<Int8Array>): any;
     mimeType(callback: ReturnCallback<string>): any;
     size(callback: ReturnCallback<number>): any;
-    getLocks(lockKind: LockKind, callback: ReturnCallback<Array<Lock>>): any;
+    getLocks(lockKind: LockKind, callback: ReturnCallback<Lock[]>): any;
     setLock(lock: Lock, callback: SimpleCallback): any;
     removeLock(uuid: string, owner: string, callback: ReturnCallback<boolean>): any;
     canLock(lockKind: LockKind, callback: ReturnCallback<boolean>): any;
-    getAvailableLocks(callback: ReturnCallback<Array<LockKind>>): any;
+    getAvailableLocks(callback: ReturnCallback<LockKind[]>): any;
     canRemoveLock(uuid: string, owner: string, callback: ReturnCallback<boolean>): any;
     addChild(resource: IResource, callback: SimpleCallback): any;
     removeChild(resource: IResource, callback: SimpleCallback): any;
-    getChildren(callback: ReturnCallback<Array<IResource>>): any;
+    getChildren(callback: ReturnCallback<IResource[]>): any;
     setProperty(name: string, value: string, callback: SimpleCallback): any;
     getProperty(name: string, callback: ReturnCallback<string>): any;
     removeProperty(name: string, callback: SimpleCallback): any;
@@ -51,6 +51,7 @@ export interface IResource {
     type(callback: ReturnCallback<ResourceType>): any;
 }
 export declare abstract class StandardResource implements IResource {
+    static sizeOfSubFiles(resource: IResource, callback: ReturnCallback<number>): void;
     properties: Object;
     fsManager: FSManager;
     lockBag: LockBag;
@@ -62,8 +63,8 @@ export declare abstract class StandardResource implements IResource {
     protected removeFromParent(callback: SimpleCallback): void;
     isSame(resource: IResource, callback: ReturnCallback<boolean>): void;
     isOnTheSameFSWith(resource: IResource, callback: ReturnCallback<boolean>): void;
-    getAvailableLocks(callback: ReturnCallback<Array<LockKind>>): void;
-    getLocks(lockKind: LockKind, callback: ReturnCallback<Array<Lock>>): void;
+    getAvailableLocks(callback: ReturnCallback<LockKind[]>): void;
+    getLocks(lockKind: LockKind, callback: ReturnCallback<Lock[]>): void;
     setLock(lock: Lock, callback: SimpleCallback): void;
     removeLock(uuid: string, owner: string, callback: ReturnCallback<boolean>): void;
     canRemoveLock(uuid: string, owner: string, callback: ReturnCallback<boolean>): void;
@@ -87,6 +88,5 @@ export declare abstract class StandardResource implements IResource {
     abstract type(callback: ReturnCallback<ResourceType>): any;
     abstract addChild(resource: IResource, callback: SimpleCallback): any;
     abstract removeChild(resource: IResource, callback: SimpleCallback): any;
-    abstract getChildren(callback: ReturnCallback<Array<IResource>>): any;
-    static sizeOfSubFiles(resource: IResource, callback: ReturnCallback<number>): void;
+    abstract getChildren(callback: ReturnCallback<IResource[]>): any;
 }

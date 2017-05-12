@@ -17,7 +17,7 @@ export declare abstract class VirtualResource extends StandardResource {
     abstract size(callback: ReturnCallback<number>): any;
     abstract addChild(resource: IResource, callback: SimpleCallback): any;
     abstract removeChild(resource: IResource, callback: SimpleCallback): any;
-    abstract getChildren(callback: ReturnCallback<Array<IResource>>): any;
+    abstract getChildren(callback: ReturnCallback<IResource[]>): any;
 }
 export declare class VirtualFolder extends VirtualResource {
     children: ResourceChildren;
@@ -30,7 +30,7 @@ export declare class VirtualFolder extends VirtualResource {
     size(callback: ReturnCallback<number>): void;
     addChild(resource: IResource, callback: SimpleCallback): void;
     removeChild(resource: IResource, callback: SimpleCallback): void;
-    getChildren(callback: ReturnCallback<Array<IResource>>): void;
+    getChildren(callback: ReturnCallback<IResource[]>): void;
 }
 export declare class VirtualFile extends VirtualResource {
     content: Int8Array;
@@ -45,5 +45,5 @@ export declare class VirtualFile extends VirtualResource {
     size(callback: ReturnCallback<number>): void;
     addChild(resource: IResource, callback: SimpleCallback): void;
     removeChild(resource: IResource, callback: SimpleCallback): void;
-    getChildren(callback: ReturnCallback<Array<IResource>>): void;
+    getChildren(callback: ReturnCallback<IResource[]>): void;
 }

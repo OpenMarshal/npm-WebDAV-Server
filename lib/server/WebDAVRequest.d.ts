@@ -3,7 +3,7 @@ import { IResource, ReturnCallback } from '../resource/Resource';
 import { WebDAVServer } from '../server/WebDAVServer';
 import { FSPath } from '../manager/FSManager';
 import * as http from 'http';
-export declare var HTTPCodes: {
+export declare let HTTPCodes: {
     Continue: number;
     SwitchingProtocols: number;
     Processing: number;

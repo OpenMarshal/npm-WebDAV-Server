@@ -73,7 +73,7 @@ export class RootResource extends StandardResource
     {
         this.children.remove(resource, callback);
     }
-    getChildren(callback : ReturnCallback<Array<IResource>>)
+    getChildren(callback : ReturnCallback<IResource[]>)
     {
         callback(null, this.children.children);
     }

@@ -25,14 +25,14 @@ export abstract class PhysicalResource extends StandardResource
     }
     rename(newName : string, callback : Return2Callback<string, string>)
     {
-        var newPath = path.join(this.realPath, '..', newName);
-        fs.rename(this.realPath, newPath, e => {
+        let newPath = path.join(this.realPath, '..', newName);
+        fs.rename(this.realPath, newPath, (e) => {
             if(e)
             {
                 callback(e, null, null);
                 return;
             }
-            var oldName = path.basename(this.realPath);
+            let oldName = path.basename(this.realPath);
             this.realPath = newPath;
             this.updateLastModified();
             callback(e, oldName, newName);
@@ -56,7 +56,7 @@ export abstract class PhysicalResource extends StandardResource
     //****************************** Children ******************************//
     abstract addChild(resource : IResource, callback : SimpleCallback)
     abstract removeChild(resource : IResource, callback : SimpleCallback)
-    abstract getChildren(callback : ReturnCallback<Array<IResource>>)
+    abstract getChildren(callback : ReturnCallback<IResource[]>)
 }
 
 export class PhysicalFolder extends PhysicalResource
@@ -93,7 +93,7 @@ export class PhysicalFolder extends PhysicalResource
             forAll<IResource>(children, (child, cb) => {
                 child.delete(cb);
             }, () => {
-                fs.unlink(this.realPath, e => {
+                fs.unlink(this.realPath, (e) => {
                     if(e)
                         callback(e);
                     else
@@ -134,7 +134,7 @@ export class PhysicalFolder extends PhysicalResource
     {
         this.children.remove(resource, callback);
     }
-    getChildren(callback : ReturnCallback<Array<IResource>>)
+    getChildren(callback : ReturnCallback<IResource[]>)
     {
         callback(null, this.children.children);
     }
@@ -160,14 +160,14 @@ export class PhysicalFile extends PhysicalResource
             if(e)
                 callback(e);
             else
-                fs.close(fd, e => {
+                fs.close(fd, (e) => {
                     callback(e);
                 });
         })
     }
     delete(callback : SimpleCallback)
     {
-        fs.unlink(this.realPath, e => {
+        fs.unlink(this.realPath, (e) => {
             if(e)
                 callback(e);
             else
@@ -190,7 +190,7 @@ export class PhysicalFile extends PhysicalResource
     }
     mimeType(callback : ReturnCallback<string>)
     {
-        var mt = mimeTypes.lookup(this.realPath);
+        const mt = mimeTypes.lookup(this.realPath);
         callback(mt ? null : new Error("application/octet-stream"), mt as string);
     }
     size(callback : ReturnCallback<number>)
@@ -207,7 +207,7 @@ export class PhysicalFile extends PhysicalResource
     {
         callback(new Error("Invalid operation"));
     }
-    getChildren(callback : ReturnCallback<Array<IResource>>)
+    getChildren(callback : ReturnCallback<IResource[]>)
     {
         callback(new Error("Invalid operation"), null);
     }

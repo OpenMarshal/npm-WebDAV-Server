@@ -31,7 +31,7 @@ export abstract class VirtualResource extends StandardResource
     }
     rename(newName : string, callback : Return2Callback<string, string>)
     {
-        var oldName = this.name;
+        let oldName = this.name;
         this.name = newName;
         callback(null, oldName, newName);
     }
@@ -53,7 +53,7 @@ export abstract class VirtualResource extends StandardResource
     //****************************** Children ******************************//
     abstract addChild(resource : IResource, callback : SimpleCallback)
     abstract removeChild(resource : IResource, callback : SimpleCallback)
-    abstract getChildren(callback : ReturnCallback<Array<IResource>>)
+    abstract getChildren(callback : ReturnCallback<IResource[]>)
 }
 
 export class VirtualFolder extends VirtualResource
@@ -104,7 +104,7 @@ export class VirtualFolder extends VirtualResource
     {
         this.children.remove(resource, callback);
     }
-    getChildren(callback : ReturnCallback<Array<IResource>>)
+    getChildren(callback : ReturnCallback<IResource[]>)
     {
         callback(null, this.children.children);
     }
@@ -140,11 +140,11 @@ export class VirtualFile extends VirtualResource
     //****************************** Content ******************************//
     append(data : Int8Array, callback : SimpleCallback)
     {
-        var newContent = new Int8Array(this.content.length + data.length)
+        let newContent = new Int8Array(this.content.length + data.length)
 
-        for(var i = 0; i < this.content.length; ++i)
+        for(let i = 0; i < this.content.length; ++i)
             newContent[i] = this.content[i];
-        for(var i = 0; i < data.length; ++i)
+        for(let i = 0; i < data.length; ++i)
             newContent[i + this.content.length] = data[i];
 
         this.content = newContent;
@@ -161,7 +161,7 @@ export class VirtualFile extends VirtualResource
     }
     mimeType(callback : ReturnCallback<string>)
     {
-        var mt = mimeTypes.lookup(this.name);
+        let mt = mimeTypes.lookup(this.name);
         callback(mt ? null : new Error("Unkown mime type"), mt as string);
     }
     size(callback : ReturnCallback<number>)
@@ -178,7 +178,7 @@ export class VirtualFile extends VirtualResource
     {
         callback(new Error("Invalid operation"));
     }
-    getChildren(callback : ReturnCallback<Array<IResource>>)
+    getChildren(callback : ReturnCallback<IResource[]>)
     {
         callback(new Error("Invalid operation"), null);
     }

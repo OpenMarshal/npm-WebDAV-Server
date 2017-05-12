@@ -14,8 +14,8 @@ export class WebDAVServerOptions
 
 export class WebDAVServer
 {
-    protected beforeManagers : Array<WebDAVRequest>
-    protected afterManagers : Array<WebDAVRequest>
+    protected beforeManagers : WebDAVRequest[]
+    protected afterManagers : WebDAVRequest[]
     protected unknownMethod : WebDAVRequest
     protected options : WebDAVServerOptions
     protected methods : Object
@@ -31,18 +31,18 @@ export class WebDAVServer
         this.options = options;
 
         // Implement all methods in commands/Commands.ts
-        for(var k in Commands)
+        for(let k in Commands)
             if(k === 'NotImplemented')
                 this.onUnknownMethod(Commands[k]);
             else
                 this.method(k, Commands[k]);
     }
 
-    getResourceFromPath(path : FSPath | Array<string> | string, callback : ReturnCallback<IResource>)
-    getResourceFromPath(path : FSPath | Array<string> | string, rootResource : IResource, callback : ReturnCallback<IResource>)
-    getResourceFromPath(path : FSPath | Array<string> | string, callbackOrRootResource : ReturnCallback<IResource> | IResource, callback? : ReturnCallback<IResource>)
+    getResourceFromPath(path : FSPath | string[] | string, callback : ReturnCallback<IResource>)
+    getResourceFromPath(path : FSPath | string[] | string, rootResource : IResource, callback : ReturnCallback<IResource>)
+    getResourceFromPath(path : FSPath | string[] | string, callbackOrRootResource : ReturnCallback<IResource> | IResource, callback ?: ReturnCallback<IResource>)
     {
-        var rootResource : IResource;
+        let rootResource : IResource;
 
         if(callbackOrRootResource instanceof Function)
         {
@@ -52,7 +52,7 @@ export class WebDAVServer
         else
             rootResource = callbackOrRootResource;
 
-        var paths : FSPath
+        let paths : FSPath
         if(path.constructor === FSPath)
             paths = path as FSPath;
         else
@@ -85,7 +85,7 @@ export class WebDAVServer
                     callback(new Error('404 Not Found'), null);
             }
 
-            for(var k in children)
+            for(let k in children)
             {
                 if(found)
                     break;
@@ -112,16 +112,16 @@ export class WebDAVServer
     {
         this.server = http.createServer((req : http.IncomingMessage, res : http.ServerResponse) =>
         {
-            var method : WebDAVRequest = this.methods[this.normalizeMethodName(req.method)];
+            let method : WebDAVRequest = this.methods[this.normalizeMethodName(req.method)];
             if(!method)
                 method = this.unknownMethod;
 
-            var base : MethodCallArgs = this.createMethodCallArgs(req, res)
+            let base : MethodCallArgs = this.createMethodCallArgs(req, res)
 
             if(!method.chunked)
             {
-                var data = '';
-                var go = () =>
+                let data = '';
+                let go = () =>
                 {
                     base.data = data;
                     this.invokeBeforeRequest(base, () => {
@@ -139,7 +139,7 @@ export class WebDAVServer
                 }
                 else
                 {
-                    req.on('data', chunk => {
+                    req.on('data', (chunk) => {
                         data += chunk.toString();
                         if(data.length >= base.contentLength)
                         {
@@ -194,7 +194,7 @@ export class WebDAVServer
         this.afterManagers.push(manager);
     }
 
-    protected invokeBARequest(collection : Array<WebDAVRequest>, base : MethodCallArgs, callback)
+    protected invokeBARequest(collection : WebDAVRequest[], base : MethodCallArgs, callback)
     {
         function callCallback()
         {
@@ -209,7 +209,7 @@ export class WebDAVServer
         }
 
         base.callback = next;
-        var nb = collection.length + 1;
+        let nb = collection.length + 1;
         
         function next()
         {
