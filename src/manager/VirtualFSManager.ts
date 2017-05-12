@@ -44,7 +44,7 @@ export class VirtualFSManager implements FSManager
             return rs;
         }
 
-        throw new Error('Unrocognized resource');
+        throw new Error('Unrecognized resource');
     }
 
     newResource(fullPath : string, name : string, type : ResourceType, parent : IResource) : IResource
@@ -54,6 +54,6 @@ export class VirtualFSManager implements FSManager
         if(type.isFile)
             return new VirtualFile(name, parent, this);
 
-        throw new Error('Unrocognized type');
+        throw new Error('Unrecognized type');
     }
 }

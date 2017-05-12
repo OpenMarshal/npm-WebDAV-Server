@@ -15,7 +15,7 @@ export class PhysicalFSManager implements FSManager
     serialize(resource : any) : object
     {
         if(!resource.realPath)
-            throw new Error('Unrocognized resource');
+            throw new Error('Unrecognized resource');
 
         return { realPath: resource.realPath, isFile: resource.constructor === PhysicalFile };
     }
@@ -29,7 +29,7 @@ export class PhysicalFSManager implements FSManager
                 return new PhysicalFolder(serializedResource.realPath, null, this);
         }
 
-        throw new Error('Unrocognized resource');
+        throw new Error('Unrecognized resource');
     }
 
     newResource(fullPath : string, name : string, type : ResourceType, parent : IResource) : IResource
