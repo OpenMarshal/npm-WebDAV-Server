@@ -1,6 +1,7 @@
+import { IResource } from '../resource/Resource';
 export interface FSManager {
-    load(): any;
-    save(): any;
+    serialize(resource: IResource): object;
+    unserialize(serializedResource: object): IResource;
 }
 export declare class FSPath {
 }
