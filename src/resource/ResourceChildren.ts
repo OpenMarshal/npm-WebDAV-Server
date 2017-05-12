@@ -22,7 +22,7 @@ export class ResourceChildren
     }
     remove(resource : IResource, callback : SimpleCallback)
     {
-        let index = this.children.indexOf(resource);
+        const index = this.children.indexOf(resource);
         if(index === -1)
         {
             callback(new Error('Can\'t find the resource.'));

@@ -25,14 +25,14 @@ export abstract class PhysicalResource extends StandardResource
     }
     rename(newName : string, callback : Return2Callback<string, string>)
     {
-        let newPath = path.join(this.realPath, '..', newName);
+        const newPath = path.join(this.realPath, '..', newName);
         fs.rename(this.realPath, newPath, (e) => {
             if(e)
             {
                 callback(e, null, null);
                 return;
             }
-            let oldName = path.basename(this.realPath);
+            const oldName = path.basename(this.realPath);
             this.realPath = newPath;
             this.updateLastModified();
             callback(e, oldName, newName);

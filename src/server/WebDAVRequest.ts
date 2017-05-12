@@ -91,7 +91,7 @@ export class MethodCallArgs
     {
         name = name.replace(/(-| )/g, '').toLowerCase();
 
-        for(let k in this.request.headers)
+        for(const k in this.request.headers)
             if(k.replace(/(-| )/g, '').toLowerCase() === name)
                 return this.request.headers[k];
         
