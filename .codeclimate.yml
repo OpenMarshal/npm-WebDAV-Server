@@ -2,6 +2,15 @@ engines:
   tslint:
     enabled: true
     channel: beta
+    checks:
+      no-bitwise:
+        enabled: false
+      one-line:
+        enabled: false
+      semicolon:
+        enabled: false
+      typedef-whitespace:
+        enabled: false
 ratings:
   paths:
     - "**.ts"
