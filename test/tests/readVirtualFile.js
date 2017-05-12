@@ -21,10 +21,10 @@ module.exports = (test, options, index) => test('read a virtual file', _isValid 
     }
 
     var files = {
-        'testFile1.txt':  'this is the content!',
-        'testFile2.txt':  null,
-        'testFile3.txt':  new Buffer([ 10, 12, 16, 100, 125, 200, 250 ]),
-        'testFile4.txt':  true
+        'testFile1.txt': 'this is the content!',
+        'testFile2.txt': null,
+        'testFile3.txt': new Buffer([ 10, 12, 16, 100, 125, 200, 250 ]),
+        'testFile4.txt': true
     }
     nb = Object.keys(files).length + 1;
 
