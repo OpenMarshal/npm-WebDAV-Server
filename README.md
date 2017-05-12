@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/OpenMarshal/npm-WebDAV-Server.svg?branch=master)](https://travis-ci.org/OpenMarshal/npm-WebDAV-Server)
 [![Code Climate Rate](https://codeclimate.com/github/OpenMarshal/npm-WebDAV-Server/badges/gpa.svg)](https://codeclimate.com/github/OpenMarshal/npm-WebDAV-Server)
-[![bitHound Code](https://www.bithound.io/github/OpenMarshal/npm-WebDAV-Server/badges/code.svg)](https://www.bithound.io/github/OpenMarshal/npm-WebDAV-Server)
+[![bitHound Overall Score](https://www.bithound.io/github/OpenMarshal/npm-WebDAV-Server/badges/score.svg)](https://www.bithound.io/github/OpenMarshal/npm-WebDAV-Server)
 [![Dependencies Status](https://img.shields.io/david/OpenMarshal/npm-WebDAV-Server.svg)](https://david-dm.org/OpenMarshal/npm-WebDAV-Server.svg)
 [![License](https://img.shields.io/npm/l/webdav-server.svg)](http://unlicense.org/)
 [![License](https://img.shields.io/npm/v/webdav-server.svg)](https://www.npmjs.com/package/webdav-server)
