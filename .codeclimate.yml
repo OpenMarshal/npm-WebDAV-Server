@@ -17,6 +17,24 @@ engines:
         enabled: false
       forin:
         enabled: false
+  grep:
+    enabled: true
+    config:
+      patterns:
+        optional-type-ungrouped:
+          pattern: \?( )+:
+          annotation: "Group '?' and ':' to get '<name> ?: <type>'"
+          severity: minor
+          categories: Compatibility
+          path_patterns:
+            - "**.ts"
+        optional-type-not-separated:
+          pattern: ([^ ]?:)|(?:[^ ])
+          annotation: "Expected '<name> ?: <type>'"
+          severity: minor
+          categories: Compatibility
+          path_patterns:
+            - "**.ts"
 ratings:
   paths:
     - "**.ts"
