@@ -1,0 +1,10 @@
+engines:
+  tslint:
+    enabled: true
+    channel: beta
+ratings:
+  paths:
+    - "**.ts"
+exclude_paths:
+  - lib
+  - test
