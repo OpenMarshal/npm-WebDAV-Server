@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import { IResource, ReturnCallback } from '../resource/Resource';
 import { WebDAVServer } from '../server/WebDAVServer';
+import { FSPath } from '../manager/FSManager';
 import * as http from 'http';
 export declare var HTTPCodes: {
     Continue: number;
@@ -68,6 +69,7 @@ export declare class MethodCallArgs {
     contentLength: number;
     depth: number;
     host: string;
+    path: FSPath;
     uri: string;
     data: string;
     findHeader(name: string, defaultValue?: string): string;

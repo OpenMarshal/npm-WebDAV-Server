@@ -1,5 +1,6 @@
 import { IResource, ReturnCallback } from '../resource/Resource'
 import { WebDAVServer } from '../server/WebDAVServer'
+import { FSPath } from '../manager/FSManager'
 import * as http from 'http'
 import * as url from 'url'
 
@@ -67,6 +68,7 @@ export class MethodCallArgs
     contentLength : number
     depth : number
     host : string
+    path : FSPath
     uri : string
     
     data : string
@@ -93,6 +95,7 @@ export class MethodCallArgs
         this.host = this.findHeader('Host');
         
         this.uri = url.parse(request.url).pathname;
+        this.path = new FSPath(this.uri);
     }
 
     getResource(callback : ReturnCallback<IResource>)

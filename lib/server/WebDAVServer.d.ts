@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import { MethodCallArgs, WebDAVRequest } from './WebDAVRequest';
 import { IResource, ReturnCallback } from '../resource/Resource';
+import { FSPath } from '../manager/FSManager';
 import * as http from 'http';
 export declare class WebDAVServerOptions {
     port?: number;
@@ -14,8 +15,8 @@ export declare class WebDAVServer {
     protected server: http.Server;
     rootResource: IResource;
     constructor(options?: WebDAVServerOptions);
-    getResourceFromPath(path: Array<string> | string, callback: ReturnCallback<IResource>): any;
-    getResourceFromPath(path: Array<string> | string, rootResource: IResource, callback: ReturnCallback<IResource>): any;
+    getResourceFromPath(path: FSPath | Array<string> | string, callback: ReturnCallback<IResource>): any;
+    getResourceFromPath(path: FSPath | Array<string> | string, rootResource: IResource, callback: ReturnCallback<IResource>): any;
     onUnknownMethod(unknownMethod: WebDAVRequest): void;
     start(port?: number): void;
     stop(callback: () => void): void;

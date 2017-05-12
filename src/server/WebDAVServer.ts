@@ -1,7 +1,7 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from './WebDAVRequest'
 import { RootResource } from '../resource/RootResource'
 import { IResource, ReturnCallback } from '../resource/Resource'
-import { FSManager } from '../manager/FSManager'
+import { FSManager, FSPath } from '../manager/FSManager'
 import * as http from 'http'
 import * as url from 'url'
 
@@ -38,9 +38,9 @@ export class WebDAVServer
                 this.method(k, Commands[k]);
     }
 
-    getResourceFromPath(path : Array<string> | string, callback : ReturnCallback<IResource>)
-    getResourceFromPath(path : Array<string> | string, rootResource : IResource, callback : ReturnCallback<IResource>)
-    getResourceFromPath(path : Array<string> | string, callbackOrRootResource : ReturnCallback<IResource> | IResource, callback? : ReturnCallback<IResource>)
+    getResourceFromPath(path : FSPath | Array<string> | string, callback : ReturnCallback<IResource>)
+    getResourceFromPath(path : FSPath | Array<string> | string, rootResource : IResource, callback : ReturnCallback<IResource>)
+    getResourceFromPath(path : FSPath | Array<string> | string, callbackOrRootResource : ReturnCallback<IResource> | IResource, callback? : ReturnCallback<IResource>)
     {
         var rootResource : IResource;
 
@@ -52,13 +52,13 @@ export class WebDAVServer
         else
             rootResource = callbackOrRootResource;
 
-        var paths : Array<string>
-        if(path.constructor === String)
-            paths = (path as string).replace(/(^\/|\/$)/g, '').split('/');
+        var paths : FSPath
+        if(path.constructor === FSPath)
+            paths = path as FSPath;
         else
-            paths = path as Array<string>;
+            paths = new FSPath(path);
         
-        if(paths.length === 0 || paths.length === 1 && paths[0].length === 0)
+        if(paths.isRoot())
         {
             callback(null, rootResource);
             return;
@@ -91,10 +91,10 @@ export class WebDAVServer
                     break;
 
                 children[k].webName((e, name) => {
-                    if(name === paths[0])
+                    if(name === paths.rootName())
                     {
                         found = true;
-                        paths.splice(0, 1);
+                        paths.removeRoot();
                         this.getResourceFromPath(paths, children[k], callback);
                     }
                     done();
