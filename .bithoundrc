@@ -5,8 +5,8 @@
     "test/**"
   ],
   "critics": {
-		"lint": {
-			"engine": "tslint"
-		}
-	}
+    "lint": {
+      "engine": "tslint"
+    }
+  }
 }
