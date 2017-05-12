@@ -9,7 +9,7 @@ export abstract class PhysicalResource extends StandardResource
 {
     realPath : string
     
-    constructor(realPath : string, parent : IResource, fsManager : FSManager)
+    constructor(realPath : string, parent ?: IResource, fsManager ?: FSManager)
     {
         super(parent, fsManager);
 
@@ -63,7 +63,7 @@ export class PhysicalFolder extends PhysicalResource
 {
     children : ResourceChildren
 
-    constructor(realPath : string, parent : IResource, fsManager : FSManager)
+    constructor(realPath : string, parent ?: IResource, fsManager ?: FSManager)
     {
         super(realPath, parent, fsManager);
 
@@ -128,7 +128,11 @@ export class PhysicalFolder extends PhysicalResource
     // ****************************** Children ****************************** //
     addChild(resource : IResource, callback : SimpleCallback)
     {
-        this.children.add(resource, callback);
+        this.children.add(resource, (e) => {
+            if(!e)
+                resource.parent = this;
+            callback(e);
+        });
     }
     removeChild(resource : IResource, callback : SimpleCallback)
     {
@@ -142,7 +146,7 @@ export class PhysicalFolder extends PhysicalResource
 
 export class PhysicalFile extends PhysicalResource
 {
-    constructor(realPath : string, parent : IResource, fsManager : FSManager)
+    constructor(realPath : string, parent ?: IResource, fsManager ?: FSManager)
     {
         super(realPath, parent, fsManager);
     }

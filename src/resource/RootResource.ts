@@ -67,7 +67,11 @@ export class RootResource extends StandardResource
     // ****************************** Children ****************************** //
     addChild(resource : IResource, callback : SimpleCallback)
     {
-        this.children.add(resource, callback);
+        this.children.add(resource, (e) => {
+            if(!e)
+                resource.parent = this;
+            callback(e);
+        });
     }
     removeChild(resource : IResource, callback : SimpleCallback)
     {

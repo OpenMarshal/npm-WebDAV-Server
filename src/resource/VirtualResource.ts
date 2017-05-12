@@ -10,7 +10,7 @@ export abstract class VirtualResource extends StandardResource
 {
     name : string
 
-    constructor(name : string, parent : IResource, fsManager ?: FSManager)
+    constructor(name : string, parent ?: IResource, fsManager ?: FSManager)
     {
         super(parent, fsManager ? fsManager : new VirtualFSManager());
 
@@ -61,7 +61,7 @@ export class VirtualFolder extends VirtualResource
 {
     children : ResourceChildren
 
-    constructor(name : string, parent : IResource, fsManager ?: FSManager)
+    constructor(name : string, parent ?: IResource, fsManager ?: FSManager)
     {
         super(name, parent, fsManager);
 
@@ -99,7 +99,11 @@ export class VirtualFolder extends VirtualResource
     // ****************************** Children ****************************** //
     addChild(resource : IResource, callback : SimpleCallback)
     {
-        this.children.add(resource, callback);
+        this.children.add(resource, (e) => {
+            if(!e)
+                resource.parent = this;
+            callback(e);
+        });
     }
     removeChild(resource : IResource, callback : SimpleCallback)
     {
@@ -115,7 +119,7 @@ export class VirtualFile extends VirtualResource
 {
     content : Int8Array
 
-    constructor(name : string, parent : IResource, fsManager ?: FSManager)
+    constructor(name : string, parent ?: IResource, fsManager ?: FSManager)
     {
         super(name, parent, fsManager);
 

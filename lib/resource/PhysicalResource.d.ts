@@ -3,7 +3,7 @@ import { ResourceChildren } from './ResourceChildren';
 import { FSManager, FSPath } from '../manager/FSManager';
 export declare abstract class PhysicalResource extends StandardResource {
     realPath: string;
-    constructor(realPath: string, parent: IResource, fsManager: FSManager);
+    constructor(realPath: string, parent?: IResource, fsManager?: FSManager);
     abstract create(callback: SimpleCallback): any;
     abstract delete(callback: SimpleCallback): any;
     moveTo(to: FSPath, callback: Return2Callback<FSPath, FSPath>): void;
@@ -21,7 +21,7 @@ export declare abstract class PhysicalResource extends StandardResource {
 }
 export declare class PhysicalFolder extends PhysicalResource {
     children: ResourceChildren;
-    constructor(realPath: string, parent: IResource, fsManager: FSManager);
+    constructor(realPath: string, parent?: IResource, fsManager?: FSManager);
     type(callback: ReturnCallback<ResourceType>): void;
     create(callback: SimpleCallback): void;
     delete(callback: SimpleCallback): void;
@@ -35,7 +35,7 @@ export declare class PhysicalFolder extends PhysicalResource {
     getChildren(callback: ReturnCallback<IResource[]>): void;
 }
 export declare class PhysicalFile extends PhysicalResource {
-    constructor(realPath: string, parent: IResource, fsManager: FSManager);
+    constructor(realPath: string, parent?: IResource, fsManager?: FSManager);
     type(callback: ReturnCallback<ResourceType>): void;
     create(callback: SimpleCallback): void;
     delete(callback: SimpleCallback): void;
