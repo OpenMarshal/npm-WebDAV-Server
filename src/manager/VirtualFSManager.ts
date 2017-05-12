@@ -4,6 +4,14 @@ import { FSManager } from './FSManager'
 
 export class VirtualFSManager implements FSManager
 {
+    private static _instance : VirtualFSManager;
+    static instance()
+    {
+        if(!this._instance)
+            this._instance = new VirtualFSManager();
+        return this._instance;
+    }
+
     serialize(resource : any) : object
     {
         let obj : {
