@@ -8,7 +8,6 @@ export default function(arg : MethodCallArgs, callback)
     arg.server.getResourceFromPath(arg.path.getParent(), (e, r) => {
         if(e)
         {
-            console.log(arg.path.toString())
             arg.setCode(HTTPCodes.NotFound)
             callback();
             return;
