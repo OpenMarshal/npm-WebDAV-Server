@@ -13,6 +13,10 @@ engines:
         enabled: false
       no-shadowed-variable:
         enabled: false
+      max-line-length:
+        enabled: false
+      forin:
+        enabled: false
 ratings:
   paths:
     - "**.ts"
