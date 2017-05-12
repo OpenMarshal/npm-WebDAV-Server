@@ -17,7 +17,16 @@ export default function(arg : MethodCallArgs, callback)
             else
             {
                 arg.setCode(HTTPCodes.OK);
-                arg.response.write(c ? c : new Buffer(0));
+
+                let content : any = c;
+                if(c === undefined || c === null)
+                    content = new Buffer(0);
+                else if(c.constructor === Boolean || c.constructor === Number)
+                    content = c.toString()
+                else
+                    content = c;
+                
+                arg.response.write(content);
             }
             callback();
         })
