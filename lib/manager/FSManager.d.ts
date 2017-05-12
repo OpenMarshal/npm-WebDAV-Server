@@ -2,6 +2,7 @@ import { IResource } from '../resource/Resource';
 export interface FSManager {
     serialize(resource: IResource): object;
     unserialize(serializedResource: object): IResource;
+    newResource(fullPath: string, name: string, parent: IResource): IResource;
 }
 export declare class FSPath {
     paths: Array<string>;

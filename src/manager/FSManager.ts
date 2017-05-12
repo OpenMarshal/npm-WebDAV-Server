@@ -5,6 +5,8 @@ export interface FSManager
 {
     serialize(resource : IResource) : object;
     unserialize(serializedResource : object) : IResource;
+
+    newResource(fullPath : string, name : string, parent : IResource) : IResource;
 }
 
 export class FSPath
