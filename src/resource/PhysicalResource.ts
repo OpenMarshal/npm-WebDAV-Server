@@ -32,7 +32,7 @@ export abstract class PhysicalResource extends StandardResource
                 callback(e, null, null);
                 return;
             }
-            var oldName = path.dirname(this.realPath);
+            var oldName = path.basename(this.realPath);
             this.realPath = newPath;
             this.updateLastModified();
             callback(e, oldName, newName);
@@ -42,7 +42,7 @@ export abstract class PhysicalResource extends StandardResource
     //****************************** Std meta-data ******************************//
     webName(callback : ReturnCallback<string>)
     {
-        callback(null, path.dirname(this.realPath));
+        callback(null, path.basename(this.realPath));
     }
     abstract type(callback : ReturnCallback<ResourceType>)
 
