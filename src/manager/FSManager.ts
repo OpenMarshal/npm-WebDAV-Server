@@ -1,4 +1,4 @@
-import { IResource } from '../resource/Resource'
+import { IResource, ResourceType } from '../resource/Resource'
 
 
 export interface FSManager
@@ -6,7 +6,7 @@ export interface FSManager
     serialize(resource : IResource) : object;
     unserialize(serializedResource : object) : IResource;
 
-    newResource(fullPath : string, name : string, parent : IResource) : IResource;
+    newResource(fullPath : string, name : string, type : ResourceType, parent : IResource) : IResource;
 }
 
 export class FSPath
