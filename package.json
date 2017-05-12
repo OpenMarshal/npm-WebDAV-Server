@@ -24,7 +24,7 @@
     "build": "dev-watch package.json prod",
     "test": "node test/root.js"
   },
-  "name": "framework",
+  "name": "webdav-server",
   "version": "1.0.0",
   "author": "Adrien Castex <adrien.castex@gmail.com>",
   "license": "Unlicense",
