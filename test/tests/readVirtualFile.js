@@ -3,7 +3,7 @@ var webdav = require('../../lib/index.js'),
 
 module.exports = (test, options, index) => test('read a virtual file', _isValid =>
 {
-    var nb = 2;
+    var nb;
     var allGood = true;
     var allMsg;
     function isValid(good, msg)
@@ -19,34 +19,48 @@ module.exports = (test, options, index) => test('read a virtual file', _isValid 
             })
         }
     }
-    
-    var testValue = 'this is the content!';
+
+    var files = {
+        'testFile1.txt':  'this is the content!',
+        'testFile2.txt':  null,
+        'testFile3.txt':  new Buffer([ 10, 12, 16, 100, 125, 200, 250 ]),
+        'testFile4.txt':  true
+    }
+    nb = Object.keys(files).length + 1;
 
     var server = new webdav.WebDAVServer();
-    var file = new webdav.VirtualFile('testFile.txt');
-    file.content = testValue;
-    server.rootResource.addChild(file, e => {
-        if(e)
-        {
-            isValid(false, e)
-            return;
-        }
+    server.start(options.port + index);
 
-        server.start(options.port + index);
+    var wfs = Client(
+        "http://127.0.0.1:" + (options.port + index)
+    );
 
-        var wfs = Client(
-            "http://127.0.0.1:" + (options.port + index)
-        );
+    for(const fileName in files)
+    {
+        const file = new webdav.VirtualFile(fileName);
+        file.content = files[fileName];
 
-        wfs.readFile('/testFile.txt', (e, content) => {
+        if(!files[fileName])
+            files[fileName] = '';
+
+        server.rootResource.addChild(file, e => {
             if(e)
+            {
                 isValid(false, e)
-            else
-                isValid(content.toString() === testValue);
-        })
-        
-        wfs.readFile('/fileNotFound.txt', (e, content) => {
-            isValid(!!e)
-        })
-    });
+                return;
+            }
+
+            wfs.readFile('/' + fileName, (e, content) => {
+                if(e)
+                    isValid(false, e)
+                else
+                    isValid(content.toString() === files[fileName].toString(), 'Received : ' + content.toString() + ' but expected : ' + files[fileName].toString());
+            })
+            
+        });
+    }
+
+    wfs.readFile('/fileNotFound.txt', (e, content) => {
+        isValid(!!e)
+    })
 })
