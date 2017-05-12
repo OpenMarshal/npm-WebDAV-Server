@@ -23,7 +23,7 @@ module.exports = (test, options, index) => test('read a virtual file', _isValid 
     var testValue = 'this is the content!';
 
     var server = new webdav.WebDAVServer();
-    var file = new webdav.VirtualFile('testFile.txt', server.rootResource);
+    var file = new webdav.VirtualFile('testFile.txt');
     file.content = testValue;
     server.rootResource.addChild(file, e => {
         if(e)

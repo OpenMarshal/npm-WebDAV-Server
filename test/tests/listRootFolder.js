@@ -11,7 +11,7 @@ module.exports = (test, options, index) => test('list root folder', _isValid =>
     }
 
     var server = new webdav.WebDAVServer();
-    server.rootResource.addChild(new webdav.VirtualFile('file.txt', server.rootResource), e => {
+    server.rootResource.addChild(new webdav.VirtualFile('file.txt'), e => {
         if(e)
         {
             isValid(false, e)
