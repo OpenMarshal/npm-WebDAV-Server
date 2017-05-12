@@ -1,6 +1,7 @@
 import { StandardResource, IResource, SimpleCallback, ReturnCallback, Return2Callback, ResourceType } from './Resource'
 import { ResourceChildren, forAll } from './ResourceChildren'
 import { FSManager, FSPath } from '../manager/FSManager'
+import { VirtualFSManager } from '../manager/VirtualFSManager'
 
 export class RootResource extends StandardResource
 {
@@ -8,7 +9,7 @@ export class RootResource extends StandardResource
 
     constructor()
     {
-        super(null, null);
+        super(null, new VirtualFSManager());
 
         this.children = new ResourceChildren();
     }
