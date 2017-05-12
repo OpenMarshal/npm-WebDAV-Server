@@ -11,6 +11,12 @@ export abstract class PhysicalResource extends StandardResource
     
     constructor(realPath : string, parent ?: IResource, fsManager ?: FSManager)
     {
+        if(!fsManager)
+            if(parent && parent.fsManager && parent.fsManager.constructor === PhysicalFSManager)
+                fsManager = parent.fsManager;
+            else
+                fsManager = new PhysicalFSManager();
+
         super(parent, fsManager);
 
         this.realPath = path.resolve(realPath);
