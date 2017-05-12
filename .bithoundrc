@@ -7,8 +7,7 @@
   "critics": {
     "lint": {
       "engine": "tslint",
-      "wc": { "limit": 5000 },
-      "configLocation": ".tslint.json"
+      "wc": { "limit": 5000 }
     }
   }
 }
