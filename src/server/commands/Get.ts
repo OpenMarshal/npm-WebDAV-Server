@@ -17,7 +17,7 @@ export default function(arg : MethodCallArgs, callback)
             else
             {
                 arg.setCode(HTTPCodes.OK);
-                arg.response.write(c);
+                arg.response.write(c ? c : new Buffer(0));
             }
             callback();
         })
