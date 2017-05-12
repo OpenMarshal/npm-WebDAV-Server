@@ -3,7 +3,7 @@ import { ResourceChildren } from './ResourceChildren';
 import { FSManager, FSPath } from '../manager/FSManager';
 export declare abstract class VirtualResource extends StandardResource {
     name: string;
-    constructor(name: string, parent: IResource, fsManager: FSManager);
+    constructor(name: string, parent: IResource, fsManager?: FSManager);
     create(callback: SimpleCallback): void;
     delete(callback: SimpleCallback): void;
     moveTo(to: FSPath, callback: Return2Callback<FSPath, FSPath>): void;
@@ -21,7 +21,7 @@ export declare abstract class VirtualResource extends StandardResource {
 }
 export declare class VirtualFolder extends VirtualResource {
     children: ResourceChildren;
-    constructor(name: string, parent: IResource, fsManager: FSManager);
+    constructor(name: string, parent: IResource, fsManager?: FSManager);
     type(callback: ReturnCallback<ResourceType>): void;
     append(data: Int8Array, callback: SimpleCallback): void;
     write(data: Int8Array, callback: SimpleCallback): void;
@@ -34,7 +34,7 @@ export declare class VirtualFolder extends VirtualResource {
 }
 export declare class VirtualFile extends VirtualResource {
     content: Int8Array;
-    constructor(name: string, parent: IResource, fsManager: FSManager);
+    constructor(name: string, parent: IResource, fsManager?: FSManager);
     type(callback: ReturnCallback<ResourceType>): void;
     create(callback: SimpleCallback): void;
     delete(callback: SimpleCallback): void;

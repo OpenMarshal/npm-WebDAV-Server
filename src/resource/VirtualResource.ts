@@ -1,6 +1,7 @@
 import { StandardResource, IResource, SimpleCallback, ReturnCallback, Return2Callback, ResourceType } from './Resource'
 import { ResourceChildren, forAll } from './ResourceChildren'
 import { FSManager, FSPath } from '../manager/FSManager'
+import { VirtualFSManager } from '../manager/VirtualFSManager'
 import * as mimeTypes from 'mime-types'
 import * as path from 'path'
 import * as fs from 'fs'
@@ -9,9 +10,9 @@ export abstract class VirtualResource extends StandardResource
 {
     name : string
 
-    constructor(name : string, parent : IResource, fsManager : FSManager)
+    constructor(name : string, parent : IResource, fsManager ?: FSManager)
     {
-        super(parent, fsManager);
+        super(parent, fsManager ? fsManager : new VirtualFSManager());
 
         this.name = name;
     }
@@ -60,7 +61,7 @@ export class VirtualFolder extends VirtualResource
 {
     children : ResourceChildren
 
-    constructor(name : string, parent : IResource, fsManager : FSManager)
+    constructor(name : string, parent : IResource, fsManager ?: FSManager)
     {
         super(name, parent, fsManager);
 
@@ -114,7 +115,7 @@ export class VirtualFile extends VirtualResource
 {
     content : Int8Array
 
-    constructor(name : string, parent : IResource, fsManager : FSManager)
+    constructor(name : string, parent : IResource, fsManager ?: FSManager)
     {
         super(name, parent, fsManager);
 
