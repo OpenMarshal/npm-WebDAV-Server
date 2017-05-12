@@ -11,6 +11,8 @@ engines:
         enabled: false
       typedef-whitespace:
         enabled: false
+      no-shadowed-variable:
+        enabled: false
 ratings:
   paths:
     - "**.ts"
