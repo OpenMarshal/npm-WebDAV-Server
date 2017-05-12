@@ -16,7 +16,7 @@ export abstract class VirtualResource extends StandardResource
         this.name = name;
     }
     
-    //****************************** Actions ******************************//
+    // ****************************** Actions ****************************** //
     create(callback : SimpleCallback)
     {
         callback(null);
@@ -36,21 +36,21 @@ export abstract class VirtualResource extends StandardResource
         callback(null, oldName, newName);
     }
     
-    //****************************** Std meta-data ******************************//
+    // ****************************** Std meta-data ****************************** //
     webName(callback : ReturnCallback<string>)
     {
         callback(null, this.name);
     }
     abstract type(callback : ReturnCallback<ResourceType>)
 
-    //****************************** Content ******************************//
+    // ****************************** Content ****************************** //
     abstract append(data : Int8Array, callback : SimpleCallback)
     abstract write(data : Int8Array, callback : SimpleCallback)
     abstract read(callback : ReturnCallback<Int8Array>)
     abstract mimeType(callback : ReturnCallback<string>)
     abstract size(callback : ReturnCallback<number>)
     
-    //****************************** Children ******************************//
+    // ****************************** Children ****************************** //
     abstract addChild(resource : IResource, callback : SimpleCallback)
     abstract removeChild(resource : IResource, callback : SimpleCallback)
     abstract getChildren(callback : ReturnCallback<IResource[]>)
@@ -67,13 +67,13 @@ export class VirtualFolder extends VirtualResource
         this.children = new ResourceChildren();
     }
 
-    //****************************** Std meta-data ******************************//
+    // ****************************** Std meta-data ****************************** //
     type(callback : ReturnCallback<ResourceType>)
     {
         callback(null, ResourceType.Directory)
     }
 
-    //****************************** Content ******************************//
+    // ****************************** Content ****************************** //
     append(data : Int8Array, callback : SimpleCallback)
     {
         callback(new Error("Invalid operation"));
@@ -95,7 +95,7 @@ export class VirtualFolder extends VirtualResource
         StandardResource.sizeOfSubFiles(this, callback);
     }
     
-    //****************************** Children ******************************//
+    // ****************************** Children ****************************** //
     addChild(resource : IResource, callback : SimpleCallback)
     {
         this.children.add(resource, callback);
@@ -121,13 +121,13 @@ export class VirtualFile extends VirtualResource
         this.content = new Buffer(0);
     }
 
-    //****************************** Std meta-data ******************************//
+    // ****************************** Std meta-data ****************************** //
     type(callback : ReturnCallback<ResourceType>)
     {
         callback(null, ResourceType.File)
     }
     
-    //****************************** Actions ******************************//
+    // ****************************** Actions ****************************** //
     create(callback : SimpleCallback)
     {
         callback(null);
@@ -137,7 +137,7 @@ export class VirtualFile extends VirtualResource
         this.removeFromParent(callback);
     }
 
-    //****************************** Content ******************************//
+    // ****************************** Content ****************************** //
     append(data : Int8Array, callback : SimpleCallback)
     {
         let newContent = new Int8Array(this.content.length + data.length)
@@ -169,7 +169,7 @@ export class VirtualFile extends VirtualResource
         callback(null, this.content.length);
     }
     
-    //****************************** Children ******************************//
+    // ****************************** Children ****************************** //
     addChild(resource : IResource, callback : SimpleCallback)
     {
         callback(new Error("Invalid operation"));

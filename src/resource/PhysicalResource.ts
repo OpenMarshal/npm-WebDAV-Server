@@ -16,7 +16,7 @@ export abstract class PhysicalResource extends StandardResource
         this.realPath = path.resolve(realPath);
     }
     
-    //****************************** Actions ******************************//
+    // ****************************** Actions ****************************** //
     abstract create(callback : SimpleCallback)
     abstract delete(callback : SimpleCallback)
     moveTo(to : FSPath, callback : Return2Callback<FSPath, FSPath>)
@@ -39,21 +39,21 @@ export abstract class PhysicalResource extends StandardResource
         })
     }
     
-    //****************************** Std meta-data ******************************//
+    // ****************************** Std meta-data ****************************** //
     webName(callback : ReturnCallback<string>)
     {
         callback(null, path.basename(this.realPath));
     }
     abstract type(callback : ReturnCallback<ResourceType>)
 
-    //****************************** Content ******************************//
+    // ****************************** Content ****************************** //
     abstract append(data : Int8Array, callback : SimpleCallback)
     abstract write(data : Int8Array, callback : SimpleCallback)
     abstract read(callback : ReturnCallback<Int8Array>)
     abstract mimeType(callback : ReturnCallback<string>)
     abstract size(callback : ReturnCallback<number>)
     
-    //****************************** Children ******************************//
+    // ****************************** Children ****************************** //
     abstract addChild(resource : IResource, callback : SimpleCallback)
     abstract removeChild(resource : IResource, callback : SimpleCallback)
     abstract getChildren(callback : ReturnCallback<IResource[]>)
@@ -70,13 +70,13 @@ export class PhysicalFolder extends PhysicalResource
         this.children = new ResourceChildren();
     }
 
-    //****************************** Std meta-data ******************************//
+    // ****************************** Std meta-data ****************************** //
     type(callback : ReturnCallback<ResourceType>)
     {
         callback(null, ResourceType.Directory)
     }
     
-    //****************************** Actions ******************************//
+    // ****************************** Actions ****************************** //
     create(callback : SimpleCallback)
     {
         fs.mkdir(this.realPath, callback)
@@ -103,7 +103,7 @@ export class PhysicalFolder extends PhysicalResource
         })
     }
 
-    //****************************** Content ******************************//
+    // ****************************** Content ****************************** //
     append(data : Int8Array, callback : SimpleCallback)
     {
         callback(new Error("Invalid operation"));
@@ -125,7 +125,7 @@ export class PhysicalFolder extends PhysicalResource
         StandardResource.sizeOfSubFiles(this, callback);
     }
     
-    //****************************** Children ******************************//
+    // ****************************** Children ****************************** //
     addChild(resource : IResource, callback : SimpleCallback)
     {
         this.children.add(resource, callback);
@@ -147,13 +147,13 @@ export class PhysicalFile extends PhysicalResource
         super(realPath, parent, fsManager);
     }
 
-    //****************************** Std meta-data ******************************//
+    // ****************************** Std meta-data ****************************** //
     type(callback : ReturnCallback<ResourceType>)
     {
         callback(null, ResourceType.File)
     }
     
-    //****************************** Actions ******************************//
+    // ****************************** Actions ****************************** //
     create(callback : SimpleCallback)
     {
         fs.open(this.realPath, fs.constants.O_CREAT, (e, fd) => {
@@ -175,7 +175,7 @@ export class PhysicalFile extends PhysicalResource
         })
     }
 
-    //****************************** Content ******************************//
+    // ****************************** Content ****************************** //
     append(data : Int8Array, callback : SimpleCallback)
     {
         fs.appendFile(this.realPath, data, callback);
@@ -198,7 +198,7 @@ export class PhysicalFile extends PhysicalResource
         fs.stat(this.realPath, (e, s) => callback(e, s ? s.size : null))
     }
     
-    //****************************** Children ******************************//
+    // ****************************** Children ****************************** //
     addChild(resource : IResource, callback : SimpleCallback)
     {
         callback(new Error("Invalid operation"));

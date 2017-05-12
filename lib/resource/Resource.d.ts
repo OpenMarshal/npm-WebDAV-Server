@@ -1,14 +1,8 @@
 import { LockKind, Lock, LockBag } from './Lock';
 import { FSManager, FSPath } from '../manager/FSManager';
-export interface SimpleCallback {
-    (error: Error): void;
-}
-export interface ReturnCallback<T> {
-    (error: Error, data: T): void;
-}
-export interface Return2Callback<T, Q> {
-    (error: Error, x: T, y: Q): void;
-}
+export declare type SimpleCallback = (error: Error) => void;
+export declare type ReturnCallback<T> = (error: Error, data: T) => void;
+export declare type Return2Callback<T, Q> = (error: Error, x: T, y: Q) => void;
 export declare class ResourceType {
     isFile: boolean;
     isDirectory: boolean;
@@ -44,7 +38,7 @@ export interface IResource {
     setProperty(name: string, value: string, callback: SimpleCallback): any;
     getProperty(name: string, callback: ReturnCallback<string>): any;
     removeProperty(name: string, callback: SimpleCallback): any;
-    getProperties(callback: ReturnCallback<Object>): any;
+    getProperties(callback: ReturnCallback<object>): any;
     creationDate(callback: ReturnCallback<number>): any;
     lastModifiedDate(callback: ReturnCallback<number>): any;
     webName(callback: ReturnCallback<string>): any;
@@ -52,15 +46,13 @@ export interface IResource {
 }
 export declare abstract class StandardResource implements IResource {
     static sizeOfSubFiles(resource: IResource, callback: ReturnCallback<number>): void;
-    properties: Object;
+    properties: object;
     fsManager: FSManager;
     lockBag: LockBag;
     parent: IResource;
     dateCreation: number;
     dateLastModified: number;
     constructor(parent: IResource, fsManager: FSManager);
-    protected updateLastModified(): void;
-    protected removeFromParent(callback: SimpleCallback): void;
     isSame(resource: IResource, callback: ReturnCallback<boolean>): void;
     isOnTheSameFSWith(resource: IResource, callback: ReturnCallback<boolean>): void;
     getAvailableLocks(callback: ReturnCallback<LockKind[]>): void;
@@ -72,7 +64,7 @@ export declare abstract class StandardResource implements IResource {
     setProperty(name: string, value: string, callback: SimpleCallback): void;
     getProperty(name: string, callback: ReturnCallback<string>): void;
     removeProperty(name: string, callback: SimpleCallback): void;
-    getProperties(callback: ReturnCallback<Object>): void;
+    getProperties(callback: ReturnCallback<object>): void;
     abstract create(callback: SimpleCallback): any;
     abstract delete(callback: SimpleCallback): any;
     abstract moveTo(to: FSPath, callback: Return2Callback<FSPath, FSPath>): any;
@@ -89,4 +81,6 @@ export declare abstract class StandardResource implements IResource {
     abstract addChild(resource: IResource, callback: SimpleCallback): any;
     abstract removeChild(resource: IResource, callback: SimpleCallback): any;
     abstract getChildren(callback: ReturnCallback<IResource[]>): any;
+    protected updateLastModified(): void;
+    protected removeFromParent(callback: SimpleCallback): void;
 }

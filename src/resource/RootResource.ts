@@ -14,7 +14,7 @@ export class RootResource extends StandardResource
         this.children = new ResourceChildren();
     }
     
-    //****************************** Actions ******************************//
+    // ****************************** Actions ****************************** //
     create(callback : SimpleCallback)
     {
         callback(new Error('Illegal operation.'))
@@ -32,7 +32,7 @@ export class RootResource extends StandardResource
         callback(new Error('Illegal operation.'), null, null)
     }
     
-    //****************************** Std meta-data ******************************//
+    // ****************************** Std meta-data ****************************** //
     webName(callback : ReturnCallback<string>)
     {
         callback(null, '')
@@ -42,7 +42,7 @@ export class RootResource extends StandardResource
         callback(null, ResourceType.Directory)
     }
 
-    //****************************** Content ******************************//
+    // ****************************** Content ****************************** //
     append(data : Int8Array, callback : SimpleCallback)
     {
         callback(new Error('Illegal operation.'))
@@ -64,7 +64,7 @@ export class RootResource extends StandardResource
         StandardResource.sizeOfSubFiles(this, callback);
     }
     
-    //****************************** Children ******************************//
+    // ****************************** Children ****************************** //
     addChild(resource : IResource, callback : SimpleCallback)
     {
         this.children.add(resource, callback);

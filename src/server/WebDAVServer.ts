@@ -18,7 +18,7 @@ export class WebDAVServer
     protected afterManagers : WebDAVRequest[]
     protected unknownMethod : WebDAVRequest
     protected options : WebDAVServerOptions
-    protected methods : Object
+    protected methods : object
     protected server : http.Server
     public rootResource : IResource
 

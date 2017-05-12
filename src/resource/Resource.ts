@@ -4,18 +4,9 @@ import { forAll } from './ResourceChildren'
 import * as path from 'path'
 import * as fs from 'fs'
 
-export interface SimpleCallback
-{
-    (error : Error) : void;
-}
-export interface ReturnCallback<T>
-{
-    (error : Error, data : T) : void;
-}
-export interface Return2Callback<T, Q>
-{
-    (error : Error, x : T, y : Q) : void;
-}
+export type SimpleCallback = (error : Error) => void
+export type ReturnCallback<T> = (error : Error, data : T) => void
+export type Return2Callback<T, Q> = (error : Error, x : T, y : Q) => void
 
 export class ResourceType
 {
@@ -34,24 +25,24 @@ export interface IResource
     parent : IResource
     fsManager : FSManager
 
-    //****************************** Actions ******************************//
+    // ****************************** Actions ****************************** //
     create(callback : SimpleCallback)
     delete(callback : SimpleCallback)
     moveTo(to : FSPath, callback : Return2Callback<FSPath, FSPath>)
     rename(newName : string, callback : Return2Callback<string, string>)
 
-    //****************************** Tests ******************************//
+    // ****************************** Tests ****************************** //
     isSame(resource : IResource, callback : ReturnCallback<boolean>)
     isOnTheSameFSWith(resource : IResource, callback : ReturnCallback<boolean>)
     
-    //****************************** Content ******************************//
+    // ****************************** Content ****************************** //
     append(data : Int8Array, callback : SimpleCallback)
     write(data : Int8Array, callback : SimpleCallback)
     read(callback : ReturnCallback<Int8Array>)
     mimeType(callback : ReturnCallback<string>)
     size(callback : ReturnCallback<number>)
     
-    //****************************** Locks ******************************//
+    // ****************************** Locks ****************************** //
     getLocks(lockKind : LockKind, callback : ReturnCallback<Lock[]>)
     setLock(lock : Lock, callback : SimpleCallback)
     removeLock(uuid : string, owner : string, callback : ReturnCallback<boolean>)
@@ -59,18 +50,18 @@ export interface IResource
     getAvailableLocks(callback : ReturnCallback<LockKind[]>)
     canRemoveLock(uuid : string, owner : string, callback : ReturnCallback<boolean>)
 
-    //****************************** Children ******************************//
+    // ****************************** Children ****************************** //
     addChild(resource : IResource, callback : SimpleCallback)
     removeChild(resource : IResource, callback : SimpleCallback)
     getChildren(callback : ReturnCallback<IResource[]>)
 
-    //****************************** Properties ******************************//
+    // ****************************** Properties ****************************** //
     setProperty(name : string, value : string, callback : SimpleCallback)
     getProperty(name : string, callback : ReturnCallback<string>)
     removeProperty(name : string, callback : SimpleCallback)
-    getProperties(callback : ReturnCallback<Object>)
+    getProperties(callback : ReturnCallback<object>)
     
-    //****************************** Std meta-data ******************************//
+    // ****************************** Std meta-data ****************************** //
     creationDate(callback : ReturnCallback<number>)
     lastModifiedDate(callback : ReturnCallback<number>)
     webName(callback : ReturnCallback<string>)
@@ -99,7 +90,7 @@ export abstract class StandardResource implements IResource
         })
     }
 
-    properties : Object
+    properties : object
     fsManager : FSManager
     lockBag : LockBag
     parent : IResource
@@ -117,30 +108,17 @@ export abstract class StandardResource implements IResource
         this.dateLastModified = this.dateCreation;
     }
 
-    protected updateLastModified()
-    {
-        this.dateLastModified = Date.now();
-    }
-
-    protected removeFromParent(callback : SimpleCallback)
-    {
-        if(this.parent)
-            this.parent.removeChild(this, callback);
-        else
-            callback(null);
-    }
-
-    //****************************** Tests ******************************//
+    // ****************************** Tests ****************************** //
     isSame(resource : IResource, callback : ReturnCallback<boolean>)
     {
-        callback(null, resource === (this as Object));
+        callback(null, resource === (this as object));
     }
     isOnTheSameFSWith(resource : IResource, callback : ReturnCallback<boolean>)
     {
         callback(null, resource.fsManager === this.fsManager);
     }
 
-    //****************************** Locks ******************************//
+    // ****************************** Locks ****************************** //
     getAvailableLocks(callback : ReturnCallback<LockKind[]>)
     {
         callback(null, [
@@ -205,7 +183,7 @@ export abstract class StandardResource implements IResource
         callback(null, this.lockBag.canLock(lockKind));
     }
     
-    //****************************** Properties ******************************//
+    // ****************************** Properties ****************************** //
     setProperty(name : string, value : string, callback : SimpleCallback)
     {
         this.properties[name] = value;
@@ -214,7 +192,7 @@ export abstract class StandardResource implements IResource
     }
     getProperty(name : string, callback : ReturnCallback<string>)
     {
-        let value = this.properties[name];
+        const value = this.properties[name];
         if(value === undefined)
             callback(new Error('No property with such name.'), null);
         else
@@ -226,25 +204,25 @@ export abstract class StandardResource implements IResource
         this.updateLastModified();
         callback(null);
     }
-    getProperties(callback : ReturnCallback<Object>)
+    getProperties(callback : ReturnCallback<object>)
     {
         callback(null, this.properties);
     }
     
-    //****************************** Actions ******************************//
+    // ****************************** Actions ****************************** //
     abstract create(callback : SimpleCallback)
     abstract delete(callback : SimpleCallback)
     abstract moveTo(to : FSPath, callback : Return2Callback<FSPath, FSPath>)
     abstract rename(newName : string, callback : Return2Callback<string, string>)
 
-    //****************************** Content ******************************//
+    // ****************************** Content ****************************** //
     abstract append(data : Int8Array, callback : SimpleCallback)
     abstract write(data : Int8Array, callback : SimpleCallback)
     abstract read(callback : ReturnCallback<Int8Array>)
     abstract mimeType(callback : ReturnCallback<string>)
     abstract size(callback : ReturnCallback<number>)
     
-    //****************************** Std meta-data ******************************//
+    // ****************************** Std meta-data ****************************** //
     creationDate(callback : ReturnCallback<number>)
     {
         callback(null, this.dateCreation);
@@ -256,8 +234,21 @@ export abstract class StandardResource implements IResource
     abstract webName(callback : ReturnCallback<string>)
     abstract type(callback : ReturnCallback<ResourceType>)
     
-    //****************************** Children ******************************//
+    // ****************************** Children ****************************** //
     abstract addChild(resource : IResource, callback : SimpleCallback)
     abstract removeChild(resource : IResource, callback : SimpleCallback)
     abstract getChildren(callback : ReturnCallback<IResource[]>)
+
+    protected updateLastModified()
+    {
+        this.dateLastModified = Date.now();
+    }
+
+    protected removeFromParent(callback : SimpleCallback)
+    {
+        if(this.parent)
+            this.parent.removeChild(this, callback);
+        else
+            callback(null);
+    }
 }
