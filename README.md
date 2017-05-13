@@ -14,8 +14,11 @@ It implements the following methods :
 * GET (file get content)
 * MKCOL (directory creation)
 * PROPFIND (get file information)
+* PUT (set the content of a file and create it if it doesn't exist)
 
 Find more details on the process at [https://github.com/OpenMarshal/npm-WebDAV-Server/projects/1](https://github.com/OpenMarshal/npm-WebDAV-Server/projects/1).
+
+This project rely upon [RFC4918](http://www.webdav.org/specs/rfc4918.html).
 
 # Install
 
