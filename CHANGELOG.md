@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.1.3
+
+### Bug fix
+* Removed support for POST method *[98a75e5](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/98a75e5)*
+
+### New features
+* Added support for physical file/folder creation *[4edab34](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/4edab34)*
+
+### Documentation
+* Added disclaimer *[10a5c2f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/10a5c2f)*
+
+### Tests
+* Added tests for the physical folder *[681caba](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/681caba)*
+* Standarized the multiple tests in a single test file *[3cd3934](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3cd3934)*
+* Added GET method test for physical resources *[d40bba8](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d40bba8)*
+* Filtered test files by *.js *[bd3488b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/bd3488b)*
+* Added exception display *[592ee40](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/592ee40)*
+
+### Other
+* Splitted files into one-class files for most of them *[a341dac](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a341dac)*
+
 ## 0.1.2
 
 ### Bug fix
