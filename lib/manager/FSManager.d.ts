@@ -1,19 +1,9 @@
 import { IResource, ResourceType } from '../resource/Resource';
+export { PhysicalFSManager } from './PhysicalFSManager';
+export { VirtualFSManager } from './VirtualFSManager';
+export { FSPath } from './FSPath';
 export interface FSManager {
     serialize(resource: IResource): object;
     unserialize(serializedResource: object): IResource;
     newResource(fullPath: string, name: string, type: ResourceType, parent: IResource): IResource;
-}
-export declare class FSPath {
-    paths: string[];
-    constructor(path: FSPath | string[] | string);
-    isRoot(): boolean;
-    fileName(): string;
-    rootName(): string;
-    parentName(): string;
-    getParent(): FSPath;
-    hasParent(): boolean;
-    removeRoot(): void;
-    clone(): FSPath;
-    toString(): string;
 }

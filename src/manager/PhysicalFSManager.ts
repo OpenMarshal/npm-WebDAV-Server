@@ -1,5 +1,7 @@
-import { PhysicalFile, PhysicalFolder, PhysicalResource } from '../resource/PhysicalResource'
-import { IResource, ResourceType } from '../resource/Resource'
+import { IResource, ResourceType } from '../resource/IResource'
+import { PhysicalResource } from '../resource/physical/PhysicalResource'
+import { PhysicalFolder } from '../resource/physical/PhysicalFolder'
+import { PhysicalFile } from '../resource/physical/PhysicalFile'
 import { FSManager } from './FSManager'
 
 export class PhysicalFSManager implements FSManager

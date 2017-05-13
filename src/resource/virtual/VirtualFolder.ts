@@ -1,42 +1,21 @@
-import { StandardResource, IResource, SimpleCallback, ReturnCallback, Return2Callback, ResourceType } from './Resource'
-import { ResourceChildren, forAll } from './ResourceChildren'
-import { FSManager, FSPath } from '../manager/FSManager'
-import { VirtualFSManager } from '../manager/VirtualFSManager'
+import { IResource, SimpleCallback, ReturnCallback, ResourceType } from '../IResource'
+import { StandardResource } from '../std/StandardResource'
+import { ResourceChildren } from '../std/ResourceChildren'
+import { VirtualResource } from './VirtualResource'
+import { FSManager } from '../../manager/FSManager'
 
-export class RootResource extends StandardResource
+export class VirtualFolder extends VirtualResource
 {
     children : ResourceChildren
 
-    constructor()
+    constructor(name : string, parent ?: IResource, fsManager ?: FSManager)
     {
-        super(null, new VirtualFSManager());
+        super(name, parent, fsManager);
 
         this.children = new ResourceChildren();
     }
-    
-    // ****************************** Actions ****************************** //
-    create(callback : SimpleCallback)
-    {
-        callback(new Error('Illegal operation.'))
-    }
-    delete(callback : SimpleCallback)
-    {
-        callback(new Error('Illegal operation.'))
-    }
-    moveTo(to : FSPath, callback : Return2Callback<FSPath, FSPath>)
-    {
-        callback(new Error('Illegal operation.'), null, null)
-    }
-    rename(newName : string, callback : Return2Callback<string, string>)
-    {
-        callback(new Error('Illegal operation.'), null, null)
-    }
-    
+
     // ****************************** Std meta-data ****************************** //
-    webName(callback : ReturnCallback<string>)
-    {
-        callback(null, '')
-    }
     type(callback : ReturnCallback<ResourceType>)
     {
         callback(null, ResourceType.Directory)
@@ -45,19 +24,19 @@ export class RootResource extends StandardResource
     // ****************************** Content ****************************** //
     append(data : Int8Array, callback : SimpleCallback)
     {
-        callback(new Error('Illegal operation.'))
+        callback(new Error('Invalid operation'));
     }
     write(data : Int8Array, callback : SimpleCallback)
     {
-        callback(new Error('Illegal operation.'))
+        callback(new Error('Invalid operation'));
     }
     read(callback : ReturnCallback<Int8Array>)
     {
-        callback(new Error('Illegal operation.'), null)
+        callback(new Error('Invalid operation'), null);
     }
     mimeType(callback : ReturnCallback<string>)
     {
-        callback(null, 'directory')
+        callback(null, 'directory');
     }
     size(callback : ReturnCallback<number>)
     {

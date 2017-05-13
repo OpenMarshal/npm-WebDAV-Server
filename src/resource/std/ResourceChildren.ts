@@ -1,4 +1,4 @@
-import { IResource, SimpleCallback } from './Resource'
+import { IResource, SimpleCallback } from '../IResource'
 
 export class ResourceChildren
 {

@@ -1,11 +1,10 @@
 /// <reference types="node" />
 import { MethodCallArgs, WebDAVRequest } from './WebDAVRequest';
 import { IResource, ReturnCallback } from '../resource/Resource';
+import { WebDAVServerOptions } from './WebDAVServerOptions';
 import { FSPath } from '../manager/FSManager';
 import * as http from 'http';
-export declare class WebDAVServerOptions {
-    port?: number;
-}
+export { WebDAVServerOptions } from './WebDAVServerOptions';
 export declare class WebDAVServer {
     rootResource: IResource;
     protected beforeManagers: WebDAVRequest[];

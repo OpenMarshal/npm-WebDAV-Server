@@ -1,5 +1,7 @@
-import { VirtualFile, VirtualFolder, VirtualResource } from '../resource/VirtualResource'
-import { IResource, ResourceType } from '../resource/Resource'
+import { IResource, ResourceType } from '../resource/IResource'
+import { VirtualResource } from '../resource/virtual/VirtualResource'
+import { VirtualFolder } from '../resource/virtual/VirtualFolder'
+import { VirtualFile } from '../resource/virtual/VirtualFile'
 import { FSManager } from './FSManager'
 
 export class VirtualFSManager implements FSManager

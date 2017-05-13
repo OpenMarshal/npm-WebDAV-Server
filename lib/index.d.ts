@@ -1,3 +1,3 @@
-export { VirtualFile, VirtualFolder, VirtualResource } from './resource/VirtualResource';
-export { WebDAVServer, WebDAVServerOptions } from './server/WebDAVServer';
-export { VirtualFSManager } from './manager/VirtualFSManager';
+export * from './server/WebDAVServer';
+export * from './resource/Resource';
+export * from './manager/FSManager';

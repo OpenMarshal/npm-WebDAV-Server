@@ -1,15 +1,13 @@
-import { StandardResource, IResource, SimpleCallback, ReturnCallback, Return2Callback, ResourceType } from './Resource';
-import { ResourceChildren } from './ResourceChildren';
-import { FSPath } from '../manager/FSManager';
-export declare class RootResource extends StandardResource {
+import { IResource, SimpleCallback, ReturnCallback, ResourceType } from '../IResource';
+import { ResourceChildren } from '../std/ResourceChildren';
+import { PhysicalResource } from './PhysicalResource';
+import { FSManager } from '../../manager/FSManager';
+export declare class PhysicalFolder extends PhysicalResource {
     children: ResourceChildren;
-    constructor();
+    constructor(realPath: string, parent?: IResource, fsManager?: FSManager);
+    type(callback: ReturnCallback<ResourceType>): void;
     create(callback: SimpleCallback): void;
     delete(callback: SimpleCallback): void;
-    moveTo(to: FSPath, callback: Return2Callback<FSPath, FSPath>): void;
-    rename(newName: string, callback: Return2Callback<string, string>): void;
-    webName(callback: ReturnCallback<string>): void;
-    type(callback: ReturnCallback<ResourceType>): void;
     append(data: Int8Array, callback: SimpleCallback): void;
     write(data: Int8Array, callback: SimpleCallback): void;
     read(callback: ReturnCallback<Int8Array>): void;

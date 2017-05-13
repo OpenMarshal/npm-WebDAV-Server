@@ -1,5 +1,5 @@
-import { VirtualResource } from '../resource/VirtualResource';
-import { IResource, ResourceType } from '../resource/Resource';
+import { IResource, ResourceType } from '../resource/IResource';
+import { VirtualResource } from '../resource/virtual/VirtualResource';
 import { FSManager } from './FSManager';
 export declare class VirtualFSManager implements FSManager {
     private static _instance;

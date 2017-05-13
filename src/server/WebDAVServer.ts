@@ -1,16 +1,11 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from './WebDAVRequest'
-import { RootResource } from '../resource/RootResource'
-import { IResource, ReturnCallback } from '../resource/Resource'
+import { RootResource, IResource, ReturnCallback } from '../resource/Resource'
+import { WebDAVServerOptions } from './WebDAVServerOptions'
 import { FSManager, FSPath } from '../manager/FSManager'
-import * as http from 'http'
-import * as url from 'url'
-
 import Commands from './commands/Commands'
+import * as http from 'http'
 
-export class WebDAVServerOptions
-{
-    port ?: number = 1900
-}
+export { WebDAVServerOptions } from './WebDAVServerOptions'
 
 export class WebDAVServer
 {
