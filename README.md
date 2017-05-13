@@ -15,6 +15,7 @@ It implements the following methods :
 * MKCOL (directory creation)
 * PROPFIND (get file information)
 * PUT/POST (set the content of a file and create it if it doesn't exist)
+* OPTIONS (list available methods)
 
 Find more details on the process at [https://github.com/OpenMarshal/npm-WebDAV-Server/projects/1](https://github.com/OpenMarshal/npm-WebDAV-Server/projects/1).
 
