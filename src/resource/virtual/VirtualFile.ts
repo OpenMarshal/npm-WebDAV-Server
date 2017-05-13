@@ -19,16 +19,6 @@ export class VirtualFile extends VirtualResource
     {
         callback(null, ResourceType.File)
     }
-    
-    // ****************************** Actions ****************************** //
-    create(callback : SimpleCallback)
-    {
-        callback(null);
-    }
-    delete(callback : SimpleCallback)
-    {
-        this.removeFromParent(callback);
-    }
 
     // ****************************** Content ****************************** //
     append(data : Int8Array, callback : SimpleCallback)

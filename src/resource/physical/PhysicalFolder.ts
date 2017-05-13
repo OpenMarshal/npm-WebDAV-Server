@@ -36,10 +36,21 @@ export class PhysicalFolder extends PhysicalResource
                 return;
             }
 
+            if(children.length === 0)
+            {
+                fs.rmdir(this.realPath, (e) => {
+                    if(e)
+                        callback(e);
+                    else
+                        this.removeFromParent(callback);
+                });
+                return;
+            }
+
             forAll<IResource>(children, (child, cb) => {
                 child.delete(cb);
             }, () => {
-                fs.unlink(this.realPath, (e) => {
+                fs.rmdir(this.realPath, (e) => {
                     if(e)
                         callback(e);
                     else

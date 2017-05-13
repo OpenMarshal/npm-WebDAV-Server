@@ -188,8 +188,15 @@ export abstract class StandardResource implements IResource
         const parent = this.parent;
         if(parent)
             parent.removeChild(this, (e) => {
+                if(e)
+                {
+                    callback(e)
+                    return;
+                }
+                
                 if(this.parent === parent) // this.parent didn't change
                     this.parent = null;
+                callback(null);
             });
         else
             callback(null);
