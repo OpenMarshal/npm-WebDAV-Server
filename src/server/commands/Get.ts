@@ -13,7 +13,7 @@ export default function(arg : MethodCallArgs, callback)
 
         r.read((e, c) => {
             if(e)
-                arg.setCode(HTTPCodes.NotFound)
+                arg.setCode(HTTPCodes.MethodNotAllowed)
             else
             {
                 arg.setCode(HTTPCodes.OK);
