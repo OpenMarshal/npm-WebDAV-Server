@@ -7,6 +7,16 @@
 [![License](https://img.shields.io/npm/l/webdav-server.svg)](http://unlicense.org/)
 [![License](https://img.shields.io/npm/v/webdav-server.svg)](https://www.npmjs.com/package/webdav-server)
 
+# Disclaimer
+
+This module is not complete yet.
+It implements the following methods :
+* GET (file get content)
+* MKCOL (directory creation)
+* PROPFIND (get file information)
+
+Find more details on the process at [https://github.com/OpenMarshal/npm-WebDAV-Server/projects/1](https://github.com/OpenMarshal/npm-WebDAV-Server/projects/1).
+
 # Install
 
 ```bash
