@@ -26,7 +26,7 @@
     "test": "node test/root.js"
   },
   "name": "webdav-server",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "author": "Adrien Castex <adrien.castex@gmail.com>",
   "license": "Unlicense",
   "repository": {
