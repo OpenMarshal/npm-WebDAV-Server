@@ -10,12 +10,12 @@ export { WebDAVServerOptions } from './WebDAVServerOptions'
 export class WebDAVServer
 {
     public rootResource : IResource
+    public methods : object
 
     protected beforeManagers : WebDAVRequest[]
     protected afterManagers : WebDAVRequest[]
     protected unknownMethod : WebDAVRequest
     protected options : WebDAVServerOptions
-    protected methods : object
     protected server : http.Server
 
     constructor(options ?: WebDAVServerOptions)

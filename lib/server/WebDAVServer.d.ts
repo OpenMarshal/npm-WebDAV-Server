@@ -7,11 +7,11 @@ import * as http from 'http';
 export { WebDAVServerOptions } from './WebDAVServerOptions';
 export declare class WebDAVServer {
     rootResource: IResource;
+    methods: object;
     protected beforeManagers: WebDAVRequest[];
     protected afterManagers: WebDAVRequest[];
     protected unknownMethod: WebDAVRequest;
     protected options: WebDAVServerOptions;
-    protected methods: object;
     protected server: http.Server;
     constructor(options?: WebDAVServerOptions);
     getResourceFromPath(path: FSPath | string[] | string, callback: ReturnCallback<IResource>): any;
