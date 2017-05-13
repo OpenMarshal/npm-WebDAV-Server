@@ -1,5 +1,42 @@
 # Changelog
 
+## 0.2.0
+
+### New features
+* Added support for the following methods :
+    * OPTIONS *[2012d40](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2012d40)*
+    * DELETE *[bb5fc2b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/bb5fc2b)*
+    * HEAD *[105580f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/105580f)*
+    * POST (alias of PUT) *[3ab1441](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3ab1441)*
+    * PUT *[3f11227](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3f11227)*
+
+### Changes
+* Changed HTTP status when the resource cannot be read *[d7c5192](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d7c5192)*
+
+### Documentation
+* Added the new methods as supported :
+    * OPTIONS *[290a606](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/290a606)*
+    * DELETE *[4381d12](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/4381d12)*
+    * HEAD *[105580f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/105580f)*
+    * POST (alias of PUT) *[3ab1441](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3ab1441)*
+    * PUT *[0313db9](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0313db9)*
+* Added a link to the RFC *[0313db9](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0313db9)*
+
+### Tests
+* Added tests for the new methods :
+    * OPTIONS *[2012d40](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2012d40)*
+    * DELETE *[feb22d6](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/feb22d6)*
+    * OPTIONS *[0533082](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0533082)*
+    * HEAD *[105580f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/105580f)*
+    * PUT *[a6bfb5a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a6bfb5a)*
+
+### Other
+* Added request as dev dep. *[08fe206](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/08fe206)*
+
+### Bug fix
+* Fixed delete bugs *[bb5fc2b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/bb5fc2b)*
+* Fixed the test *[fa90936](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/fa90936)*
+
 ## 0.1.3
 
 ### Bug fix
