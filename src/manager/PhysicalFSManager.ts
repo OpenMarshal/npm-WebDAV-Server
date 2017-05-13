@@ -3,6 +3,7 @@ import { PhysicalResource } from '../resource/physical/PhysicalResource'
 import { PhysicalFolder } from '../resource/physical/PhysicalFolder'
 import { PhysicalFile } from '../resource/physical/PhysicalFile'
 import { FSManager } from './FSManager'
+import * as path from 'path'
 
 export class PhysicalFSManager implements FSManager
 {
@@ -36,6 +37,16 @@ export class PhysicalFSManager implements FSManager
 
     newResource(fullPath : string, name : string, type : ResourceType, parent : IResource) : IResource
     {
-        throw new Error('Not implemented yet');
+        const parentRealPath = (parent as any).realPath;
+
+        if(!parentRealPath)
+            throw new Error('Can\'t create a physical resource with a non-physical parent')
+        
+        const newRealPath = path.join(parentRealPath, name);
+        
+        if(type.isDirectory)
+            return new PhysicalFolder(newRealPath, parent, this);
+        else
+            return new PhysicalFile(newRealPath, parent, this);
     }
 }
