@@ -63,6 +63,9 @@ module.exports = (callback, options) => {
             }
             catch(ex)
             {
+                if(options.showExceptions)
+                    console.error(ex);
+                    
                 isValid(f, isValid => isValid(false, ex));
             }
         })
