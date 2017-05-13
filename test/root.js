@@ -54,6 +54,8 @@ module.exports = (callback, options) => {
         if(e)
             throw e;
         
+        files = files.filter(f => f.endsWith('.js'));
+        
         nb = files.length;
         files.forEach((f, index) => {
             f = path.join(root, f);
