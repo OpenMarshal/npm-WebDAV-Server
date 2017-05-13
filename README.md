@@ -17,6 +17,7 @@ It implements the following methods :
 * PROPFIND (get file information)
 * PUT/POST (set the content of a file and create it if it doesn't exist)
 * OPTIONS (list available methods)
+* DELETE (delete a resource)
 
 Find more details on the process at [https://github.com/OpenMarshal/npm-WebDAV-Server/projects/1](https://github.com/OpenMarshal/npm-WebDAV-Server/projects/1).
 
