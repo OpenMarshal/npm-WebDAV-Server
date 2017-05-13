@@ -36,6 +36,26 @@ module.exports = (callback, options) => {
                     error(name + details)
                 callCallback();
             }
+            callback.multiple = (nb, server) => {
+                var allGood = true;
+                var allMsg;
+                return function(good, msg)
+                {
+                    --nb;
+                    if(msg && allGood && !good)
+                        allMsg = msg;
+                    allGood = allGood && good;
+                    if(nb === 0)
+                    {
+                        if(server)
+                            server.stop(() => {
+                                callback(allGood, allMsg);
+                            })
+                        else
+                            callback(allGood, allMsg);
+                    }
+                }
+            }
             setTimeout(() => callback(false, 'Timeout'), options.timeout);
             fn(callback)
         }

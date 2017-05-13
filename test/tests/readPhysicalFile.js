@@ -3,26 +3,10 @@ var webdav = require('../../lib/index.js'),
     path = require('path'),
     fs = require('fs')
 
-module.exports = (test, options, index) => test('read a physical file', _isValid =>
+module.exports = (test, options, index) => test('read a physical file', isValid =>
 {
-    var nb = 2;
-    var allGood = true;
-    var allMsg;
-    function isValid(good, msg)
-    {
-        --nb;
-        if(msg && allGood && !good)
-            allMsg = msg;
-        allGood = allGood && good;
-        if(nb === 0)
-        {
-            server.stop(() => {
-                _isValid(allGood, allMsg);
-            })
-        }
-    }
-
     var server = new webdav.WebDAVServer();
+    isValid = isValid.multiple(2, server);
     server.start(options.port + index);
 
     var wfs = Client(

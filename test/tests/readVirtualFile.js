@@ -1,35 +1,18 @@
 var webdav = require('../../lib/index.js'),
     Client = require("webdav-fs")
 
-module.exports = (test, options, index) => test('read a virtual file', _isValid =>
+module.exports = (test, options, index) => test('read a virtual file', isValid =>
 {
-    var nb;
-    var allGood = true;
-    var allMsg;
-    function isValid(good, msg)
-    {
-        --nb;
-        if(msg && allGood && !good)
-            allMsg = msg;
-        allGood = allGood && good;
-        if(nb === 0)
-        {
-            server.stop(() => {
-                _isValid(allGood, allMsg);
-            })
-        }
-    }
-
     var files = {
         'testFile1.txt': 'this is the content!',
         'testFile2.txt': null,
         'testFile3.txt': new Buffer([ 10, 12, 16, 100, 125, 200, 250 ]),
         'testFile4.txt': true
     }
-    nb = Object.keys(files).length + 1;
 
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
+    isValid = isValid.multiple(Object.keys(files).length + 1, server);
 
     var wfs = Client(
         "http://127.0.0.1:" + (options.port + index)

@@ -1,26 +1,10 @@
 var webdav = require('../../lib/index.js'),
     Client = require("webdav-fs")
 
-module.exports = (test, options, index) => test('stat of virtual file', _isValid =>
+module.exports = (test, options, index) => test('stat of virtual file', isValid =>
 {
-    var nb = 2;
-    var allGood = true;
-    var allMsg;
-    function isValid(good, msg)
-    {
-        --nb;
-        if(msg && allGood && !good)
-            allMsg = msg;
-        allGood = allGood && good;
-        if(nb === 0)
-        {
-            server.stop(() => {
-                _isValid(allGood, allMsg);
-            })
-        }
-    }
-
     var server = new webdav.WebDAVServer();
+    isValid = isValid.multiple(2, server);
     server.rootResource.addChild(new webdav.VirtualFile('testFile.txt'), e => {
         if(e)
         {

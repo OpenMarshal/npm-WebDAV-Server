@@ -1,16 +1,10 @@
 var webdav = require('../../lib/index.js'),
     Client = require("webdav-fs")
 
-module.exports = (test, options, index) => test('list root folder', _isValid =>
+module.exports = (test, options, index) => test('list root folder', isValid =>
 {
-    function isValid(good, msg)
-    {
-        server.stop(() => {
-            _isValid(good, msg);
-        })
-    }
-
     var server = new webdav.WebDAVServer();
+    isValid = isValid.multiple(1, server);
     server.rootResource.addChild(new webdav.VirtualFile('file.txt'), e => {
         if(e)
         {
