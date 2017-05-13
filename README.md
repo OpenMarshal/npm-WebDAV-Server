@@ -11,6 +11,7 @@
 
 This module is not complete yet.
 It implements the following methods :
+* HEAD (resource ping)
 * GET (file get content)
 * MKCOL (directory creation)
 * PROPFIND (get file information)
