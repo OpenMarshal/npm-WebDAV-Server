@@ -1,4 +1,5 @@
 import { FSManager, FSPath } from '../manager/FSManager'
+import { XMLElement } from '../helper/XML'
 import { LockKind } from './lock/LockKind'
 import { Lock } from './lock/Lock'
 import * as crypto from 'crypto'
@@ -6,6 +7,8 @@ import * as crypto from 'crypto'
 export type SimpleCallback = (error : Error) => void
 export type ReturnCallback<T> = (error : Error, data : T) => void
 export type Return2Callback<T, Q> = (error : Error, x : T, y : Q) => void
+
+export type ResourcePropertyValue = string | XMLElement | XMLElement[]
 
 export class ResourceType
 {
@@ -63,8 +66,8 @@ export interface IResource
     getChildren(callback : ReturnCallback<IResource[]>)
 
     // ****************************** Properties ****************************** //
-    setProperty(name : string, value : string, callback : SimpleCallback)
-    getProperty(name : string, callback : ReturnCallback<string>)
+    setProperty(name : string, value : ResourcePropertyValue, callback : SimpleCallback)
+    getProperty(name : string, callback : ReturnCallback<ResourcePropertyValue>)
     removeProperty(name : string, callback : SimpleCallback)
     getProperties(callback : ReturnCallback<object>)
     

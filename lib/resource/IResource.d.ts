@@ -1,9 +1,11 @@
 import { FSManager, FSPath } from '../manager/FSManager';
+import { XMLElement } from '../helper/XML';
 import { LockKind } from './lock/LockKind';
 import { Lock } from './lock/Lock';
 export declare type SimpleCallback = (error: Error) => void;
 export declare type ReturnCallback<T> = (error: Error, data: T) => void;
 export declare type Return2Callback<T, Q> = (error: Error, x: T, y: Q) => void;
+export declare type ResourcePropertyValue = string | XMLElement | XMLElement[];
 export declare class ResourceType {
     isFile: boolean;
     isDirectory: boolean;
@@ -39,8 +41,8 @@ export interface IResource {
     addChild(resource: IResource, callback: SimpleCallback): any;
     removeChild(resource: IResource, callback: SimpleCallback): any;
     getChildren(callback: ReturnCallback<IResource[]>): any;
-    setProperty(name: string, value: string, callback: SimpleCallback): any;
-    getProperty(name: string, callback: ReturnCallback<string>): any;
+    setProperty(name: string, value: ResourcePropertyValue, callback: SimpleCallback): any;
+    getProperty(name: string, callback: ReturnCallback<ResourcePropertyValue>): any;
     removeProperty(name: string, callback: SimpleCallback): any;
     getProperties(callback: ReturnCallback<object>): any;
     creationDate(callback: ReturnCallback<number>): any;

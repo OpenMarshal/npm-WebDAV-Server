@@ -1,4 +1,4 @@
-import { IResource, ReturnCallback, SimpleCallback, Return2Callback, ResourceType } from '../IResource'
+import { IResource, ReturnCallback, SimpleCallback, Return2Callback, ResourceType, ResourcePropertyValue } from '../IResource'
 import { FSManager, FSPath } from '../../manager/FSManager'
 import { LockScope } from '../lock/LockScope'
 import { LockType } from '../lock/LockType'
@@ -123,13 +123,13 @@ export abstract class StandardResource implements IResource
     }
     
     // ****************************** Properties ****************************** //
-    setProperty(name : string, value : string, callback : SimpleCallback)
+    setProperty(name : string, value : ResourcePropertyValue, callback : SimpleCallback)
     {
         this.properties[name] = value;
         this.updateLastModified();
         callback(null);
     }
-    getProperty(name : string, callback : ReturnCallback<string>)
+    getProperty(name : string, callback : ReturnCallback<ResourcePropertyValue>)
     {
         const value = this.properties[name];
         if(value === undefined)

@@ -1,4 +1,4 @@
-import { IResource, ReturnCallback, SimpleCallback, Return2Callback, ResourceType } from '../IResource';
+import { IResource, ReturnCallback, SimpleCallback, Return2Callback, ResourceType, ResourcePropertyValue } from '../IResource';
 import { FSManager, FSPath } from '../../manager/FSManager';
 import { LockKind } from '../lock/LockKind';
 import { LockBag } from '../lock/LockBag';
@@ -20,8 +20,8 @@ export declare abstract class StandardResource implements IResource {
     removeLock(uuid: string, owner: string, callback: ReturnCallback<boolean>): void;
     canRemoveLock(uuid: string, owner: string, callback: ReturnCallback<boolean>): void;
     canLock(lockKind: LockKind, callback: ReturnCallback<boolean>): void;
-    setProperty(name: string, value: string, callback: SimpleCallback): void;
-    getProperty(name: string, callback: ReturnCallback<string>): void;
+    setProperty(name: string, value: ResourcePropertyValue, callback: SimpleCallback): void;
+    getProperty(name: string, callback: ReturnCallback<ResourcePropertyValue>): void;
     removeProperty(name: string, callback: SimpleCallback): void;
     getProperties(callback: ReturnCallback<object>): void;
     abstract create(callback: SimpleCallback): any;
