@@ -1,4 +1,5 @@
 import NotImplemented from './NotImplemented'
+import Proppatch from './Proppatch'
 import Propfind from './Propfind'
 import Options from './Options'
 import Delete from './Delete'
@@ -10,6 +11,7 @@ import Get from './Get'
 
 export default {
     NotImplemented,
+    Proppatch,
     Propfind,
     Options,
     Delete,
