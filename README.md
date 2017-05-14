@@ -15,6 +15,7 @@ It implements the following methods :
 * GET (file get content)
 * MKCOL (directory creation)
 * PROPFIND (get file information)
+* PROPPATCH (set/remove resource properties)
 * PUT/POST (set the content of a file and create it if it doesn't exist)
 * OPTIONS (list available methods)
 * DELETE (delete a resource)
