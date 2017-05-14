@@ -118,7 +118,7 @@ export default function(arg : MethodCallArgs, callback)
             })
 
             resource.lastModifiedDate((e, lastModifiedDate) => {
-                prop.ele('D:getetag', null, '\"' + ETag.createETag(lastModifiedDate) + '\"')
+                prop.ele('D:getetag', null, ETag.createETag(lastModifiedDate))
                 prop.ele('D:getlastmodified', new Date(lastModifiedDate).toUTCString())
                 nbOut();
             })
