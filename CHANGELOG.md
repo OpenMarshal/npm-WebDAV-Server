@@ -1,5 +1,38 @@
 # Changelog
 
+## 0.2.1
+
+### New features
+* Added support for the PROPPATCH method *[df2be26](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/df2be26*
+* Added XML support for resource properties *[c4f206e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c4f206e*
+
+### Changes
+* Implemented PROPFIND with 'xml-js' *[87878cd](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/87878cd*
+* Moved XML management to 'xml-js' npm package *[0aea380](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0aea380*
+* Added better ETag generator *[1506637](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/1506637*
+
+### Documentation
+* Added the PROPPATCH to the supported methods *[719082f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/719082f*
+
+### Tests
+* Implemented tests with 'xml-js' *[15b0b97](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/15b0b97*
+* Added PROPPATCH tests *[bd60886](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/bd60886*
+* Added tests for ETag :
+    * *[6071bc9](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6071bc9*
+    * For physical files *[6ef6350](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6ef6350*
+
+### Other
+* Added XML helper *[12d90e7](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/12d90e7*
+* Added the child.delete() to the node execution queue *[9614be9](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/9614be9*
+* Ignored *.log files *[a261eae](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a261eae*
+* Changed node version for Travis *[0e47c3e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0e47c3e*
+
+### Bug fix
+* Updated lastModifiedDate when 'write' or 'append' methods called *[d5a5f9e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d5a5f9e*
+* Fixed double quotes for ETag *[36442c0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/36442c0*
+* Fixed deletion *[1a6bf99](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/1a6bf99*
+* Added .gitkeep to test folders *[b9c9ab2](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b9c9ab2*
+
 ## 0.2.0
 
 ### New features
