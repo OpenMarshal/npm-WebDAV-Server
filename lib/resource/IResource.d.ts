@@ -13,6 +13,9 @@ export declare class ResourceType {
     static NoResource: ResourceType;
     constructor(isFile: boolean, isDirectory: boolean);
 }
+export declare abstract class ETag {
+    static createETag(date: number | string): string;
+}
 export interface IResource {
     parent: IResource;
     fsManager: FSManager;

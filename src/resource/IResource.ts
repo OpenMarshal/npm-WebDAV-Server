@@ -1,6 +1,7 @@
 import { FSManager, FSPath } from '../manager/FSManager'
 import { LockKind } from './lock/LockKind'
 import { Lock } from './lock/Lock'
+import * as crypto from 'crypto'
 
 export type SimpleCallback = (error : Error) => void
 export type ReturnCallback<T> = (error : Error, data : T) => void
@@ -16,6 +17,14 @@ export class ResourceType
 
     constructor(public isFile : boolean, public isDirectory : boolean)
     { }
+}
+
+export abstract class ETag
+{
+    static createETag(date : number | string) : string
+    {
+        return '"' + crypto.createHash('md5').update(date.toString()).digest('hex') + '"';
+    }
 }
 
 export interface IResource

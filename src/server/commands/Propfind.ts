@@ -1,5 +1,5 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
-import { IResource } from '../../resource/Resource'
+import { IResource, ETag } from '../../resource/Resource'
 import * as xml from 'xmlbuilder'
 
 export default function(arg : MethodCallArgs, callback)
@@ -114,11 +114,11 @@ export default function(arg : MethodCallArgs, callback)
                     })
                 }
 
-                prop.ele('D:getetag', null, 'zzyzx')
                 nbOut();
             })
 
             resource.lastModifiedDate((e, lastModifiedDate) => {
+                prop.ele('D:getetag', null, '\"' + ETag.createETag(lastModifiedDate) + '\"')
                 prop.ele('D:getlastmodified', new Date(lastModifiedDate).toUTCString())
                 nbOut();
             })
