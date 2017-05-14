@@ -48,7 +48,7 @@ export class PhysicalFolder extends PhysicalResource
             }
 
             forAll<IResource>(children, (child, cb) => {
-                child.delete(cb);
+                process.nextTick(() => child.delete(cb));
             }, () => {
                 fs.rmdir(this.realPath, (e) => {
                     if(e)
