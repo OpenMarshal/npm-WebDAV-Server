@@ -42,11 +42,27 @@ export class PhysicalFile extends PhysicalResource
     // ****************************** Content ****************************** //
     append(data : Int8Array, callback : SimpleCallback)
     {
-        fs.appendFile(this.realPath, data, callback);
+        fs.appendFile(this.realPath, data, (e) => {
+            if(e)
+                callback(e);
+            else
+            {
+                this.updateLastModified();
+                callback(null);
+            }
+        });
     }
     write(data : Int8Array, callback : SimpleCallback)
     {
-        fs.writeFile(this.realPath, data, callback);
+        fs.writeFile(this.realPath, data, (e) => {
+            if(e)
+                callback(e);
+            else
+            {
+                this.updateLastModified();
+                callback(null);
+            }
+        });
     }
     read(callback : ReturnCallback<Int8Array>)
     {

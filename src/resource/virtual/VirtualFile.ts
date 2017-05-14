@@ -31,11 +31,13 @@ export class VirtualFile extends VirtualResource
             newContent[i + this.content.length] = data[i];
 
         this.content = newContent;
+        this.updateLastModified();
         callback(null);
     }
     write(data : Int8Array, callback : SimpleCallback)
     {
         this.content = data;
+        this.updateLastModified();
         callback(null);
     }
     read(callback : ReturnCallback<Int8Array>)
