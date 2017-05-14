@@ -1,6 +1,6 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
 import { IResource, ETag } from '../../resource/Resource'
-import * as xml from 'xmlbuilder'
+import { XML } from '../../helper/XML'
 
 export default function(arg : MethodCallArgs, callback)
 {
@@ -12,7 +12,9 @@ export default function(arg : MethodCallArgs, callback)
             return;
         }
 
-        const multistatus = xml.create('D:multistatus', ['xmlns:D="DAV:"'])
+        const multistatus = XML.createElement('D:multistatus', {
+            'xmlns:D': 'DAV:'
+        })
 
         resource.type((e, type) => {
             if(!type.isDirectory || arg.depth === 0)
@@ -24,8 +26,16 @@ export default function(arg : MethodCallArgs, callback)
             resource.getChildren((e, children) => {
                 let nb = children.length + 1;
 
-                function nbOut()
+                function nbOut(error)
                 {
+                    if(nb > 0 && error)
+                    {
+                        nb = -1;
+                        arg.setCode(HTTPCodes.InternalServerError);
+                        callback();
+                        return;
+                    }
+
                     --nb;
                     if(nb === 0)
                         done(multistatus);
@@ -38,42 +48,57 @@ export default function(arg : MethodCallArgs, callback)
                 })
             })
         })
-
+        
         function addXMLInfo(resource, multistatus, callback)
         {
             const response = multistatus.ele('D:response')
 
             const propstat = response.ele('D:propstat')
 
-            propstat.ele('D:status', null, 'HTTP/1.1 200 OK')
+            propstat.ele('D:status').add('HTTP/1.1 200 OK')
 
             const prop = propstat.ele('D:prop')
             
             let nb = 7;
-            function nbOut()
+            function nbOut(error?)
             {
+                if(nb > 0 && error)
+                {
+                    nb = -1;
+                    callback(error);
+                    return;
+                }
                 --nb;
                 if(nb === 0)
                     callback();
             }
 
             resource.creationDate((e, ticks) => {
-                prop.ele('D:creationdate', null, arg.dateISO8601(ticks));
-                nbOut();
+                if(!e)
+                    prop.ele('D:creationdate').add(arg.dateISO8601(ticks));
+                nbOut(e);
             })
 
             arg.getResourcePath(resource, (e, path) => {
-                response.ele('D:href', null, arg.fullUri(path).replace(' ', '%20'));
-                nbOut();
+                if(!e)
+                    response.ele('D:href').add(arg.fullUri(path).replace(' ', '%20'));
+                nbOut(e);
             })
 
             resource.webName((e, name) => {
-                prop.ele('D:displayname', name);
-                nbOut();
+                if(!e)
+                    prop.ele('D:displayname').add(name);
+                nbOut(e);
             })
 
             const supportedlock = prop.ele('D:supportedlock')
             resource.getAvailableLocks((e, lockKinds) => {
+                if(e)
+                {
+                    nbOut(e);
+                    return;
+                }
+
                 lockKinds.forEach((lockKind) => {
                     const lockentry = supportedlock.ele('D:lockentry')
 
@@ -87,15 +112,26 @@ export default function(arg : MethodCallArgs, callback)
             })
 
             resource.getProperties((e, properties) => {
+                if(e)
+                {
+                    nbOut(e);
+                    return;
+                }
+
                 for(const name in properties)
                 {
                     const value = properties[name];
-                    prop.ele(name, null, value)
+                    prop.ele(name).add(value)
                 }
                 nbOut();
             })
 
             resource.type((e, type) => {
+                if(e)
+                {
+                    nbOut(e);
+                    return;
+                }
 
                 const resourcetype = prop.ele('D:resourcetype')
                 if(type.isDirectory)
@@ -105,12 +141,16 @@ export default function(arg : MethodCallArgs, callback)
                 {
                     nb += 2;
                     resource.mimeType((e, mimeType) => {
-                        prop.ele('D:getcontenttype', null, mimeType)
-                        nbOut();
+                        if(!e)
+                            prop.ele('D:getcontenttype').add(mimeType)
+                        nbOut(e);
                     })
                     resource.size((e, size) => {
-                        prop.ele('D:getcontentlength', null, size)
-                        nbOut();
+                        if(!e)
+                            prop.ele('D:getcontentlength').add(size)
+                        else
+                            console.log(e);
+                        nbOut(e);
                     })
                 }
 
@@ -118,15 +158,18 @@ export default function(arg : MethodCallArgs, callback)
             })
 
             resource.lastModifiedDate((e, lastModifiedDate) => {
-                prop.ele('D:getetag', null, ETag.createETag(lastModifiedDate))
-                prop.ele('D:getlastmodified', new Date(lastModifiedDate).toUTCString())
-                nbOut();
+                if(!e)
+                {
+                    prop.ele('D:getetag').add(ETag.createETag(lastModifiedDate))
+                    prop.ele('D:getlastmodified').add(new Date(lastModifiedDate).toUTCString())
+                }
+                nbOut(e);
             })
         }
 
         function done(multistatus)
         {
-            const content = '<?xml version="1.0" encoding="utf-8" ?>\r\n' + multistatus.toString({pretty: false})
+            const content = XML.toXML(multistatus);
             arg.setCode(HTTPCodes.MultiStatus);
             arg.response.setHeader('Content-Type', 'text/xml; charset="utf-8"')
             arg.response.setHeader('Content-Length', content.length.toString())
