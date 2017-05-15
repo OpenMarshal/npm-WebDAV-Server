@@ -24,9 +24,9 @@ export class RootResource extends StandardResource
     {
         callback(new Error('Illegal operation.'))
     }
-    moveTo(to : FSPath, callback : Return2Callback<FSPath, FSPath>)
+    moveTo(parent : IResource, newName : string, override : boolean, callback : SimpleCallback)
     {
-        callback(new Error('Illegal operation.'), null, null)
+        callback(new Error('Illegal operation.'))
     }
     rename(newName : string, callback : Return2Callback<string, string>)
     {

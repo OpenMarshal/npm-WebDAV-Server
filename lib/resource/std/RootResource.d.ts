@@ -1,13 +1,12 @@
 import { IResource, SimpleCallback, ReturnCallback, Return2Callback, ResourceType } from '../IResource';
 import { StandardResource } from './StandardResource';
 import { ResourceChildren } from './ResourceChildren';
-import { FSPath } from '../../manager/FSManager';
 export declare class RootResource extends StandardResource {
     children: ResourceChildren;
     constructor();
     create(callback: SimpleCallback): void;
     delete(callback: SimpleCallback): void;
-    moveTo(to: FSPath, callback: Return2Callback<FSPath, FSPath>): void;
+    moveTo(parent: IResource, newName: string, override: boolean, callback: SimpleCallback): void;
     rename(newName: string, callback: Return2Callback<string, string>): void;
     webName(callback: ReturnCallback<string>): void;
     type(callback: ReturnCallback<ResourceType>): void;
