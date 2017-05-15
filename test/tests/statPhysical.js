@@ -39,7 +39,7 @@ module.exports = (test, options, index) => test('stat of physical resources', is
             server.start(options.port + index);
 
             var wfs = Client(
-                "http://127.0.0.1:" + (options.port + index)
+                'http://127.0.0.1:' + (options.port + index)
             );
 
             wfs.stat('/' + folderName + '/' + fileName, (e, stat) => {

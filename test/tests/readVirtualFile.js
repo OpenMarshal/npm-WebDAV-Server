@@ -1,5 +1,5 @@
 var webdav = require('../../lib/index.js'),
-    Client = require("webdav-fs")
+    Client = require('webdav-fs')
 
 module.exports = (test, options, index) => test('read a virtual file', isValid =>
 {
@@ -15,7 +15,7 @@ module.exports = (test, options, index) => test('read a virtual file', isValid =
     isValid = isValid.multiple(Object.keys(files).length + 1, server);
 
     var wfs = Client(
-        "http://127.0.0.1:" + (options.port + index)
+        'http://127.0.0.1:' + (options.port + index)
     );
 
     for(const fileName in files)

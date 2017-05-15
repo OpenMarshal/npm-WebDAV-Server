@@ -1,6 +1,5 @@
 var webdav = require('../../lib/index.js'),
-    Client = require('webdav-fs'),
-    request = require('request')
+    Client = require('webdav-fs')
 
 module.exports = (test, options, index) => test('stat of virtual resources', isValid =>
 {
@@ -29,7 +28,7 @@ module.exports = (test, options, index) => test('stat of virtual resources', isV
             server.start(options.port + index);
 
             var wfs = Client(
-                "http://127.0.0.1:" + (options.port + index)
+                'http://127.0.0.1:' + (options.port + index)
             );
 
             wfs.stat('/testFolder/testFile.txt', (e, stat) => {

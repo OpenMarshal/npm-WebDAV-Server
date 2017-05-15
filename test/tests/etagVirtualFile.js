@@ -17,13 +17,13 @@ module.exports = (test, options, index) => test('etag of virtual file', isValid 
         server.start(options.port + index);
 
         var wfs = Client(
-            "http://127.0.0.1:" + (options.port + index)
+            'http://127.0.0.1:' + (options.port + index)
         );
 
         function propfind(callback)
         {
             request({
-                url: "http://127.0.0.1:" + (options.port + index) + '/testFile.txt',
+                url: 'http://127.0.0.1:' + (options.port + index) + '/testFile.txt',
                 method: 'PROPFIND'
             }, (e, res, body) => {
                 if(e)

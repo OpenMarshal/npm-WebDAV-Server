@@ -1,5 +1,5 @@
 var webdav = require('../../lib/index.js'),
-    Client = require("webdav-fs")
+    Client = require('webdav-fs')
 
 module.exports = (test, options, index) => test('list root folder', isValid =>
 {
@@ -15,7 +15,7 @@ module.exports = (test, options, index) => test('list root folder', isValid =>
         server.start(options.port + index);
 
         var wfs = Client(
-            "http://127.0.0.1:" + (options.port + index)
+            'http://127.0.0.1:' + (options.port + index)
         );
 
         wfs.readdir('/', (e, files) => {

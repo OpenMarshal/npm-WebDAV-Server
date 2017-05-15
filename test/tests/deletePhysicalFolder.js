@@ -1,5 +1,5 @@
 var webdav = require('../../lib/index.js'),
-    Client = require("webdav-fs"),
+    Client = require('webdav-fs'),
     path = require('path'),
     fs = require('fs')
 
@@ -10,7 +10,7 @@ module.exports = (test, options, index) => test('delete a physical folder', isVa
     isValid = isValid.multiple(2, server);
 
     var wfs = Client(
-        "http://127.0.0.1:" + (options.port + index)
+        'http://127.0.0.1:' + (options.port + index)
     );
 
     const folderName = 'emptyFolder';
