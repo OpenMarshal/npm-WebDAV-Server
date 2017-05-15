@@ -41,7 +41,6 @@
   "devDependencies": {
     "@types/mime-types": "^2.1.0",
     "@types/node": "^7.0.18",
-    "@types/xml-js": "^1.0.0",
     "request": "^2.81.0",
     "webdav-fs": "^1.0.0"
   }
