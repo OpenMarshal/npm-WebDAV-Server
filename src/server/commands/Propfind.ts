@@ -148,8 +148,6 @@ export default function(arg : MethodCallArgs, callback)
                     resource.size((e, size) => {
                         if(!e)
                             prop.ele('D:getcontentlength').add(size)
-                        else
-                            console.log(e);
                         nbOut(e);
                     })
                 }
