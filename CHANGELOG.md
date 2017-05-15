@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.3.0
+
+### New features
+* Implemented the MOVE method *[2cb0430](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2cb0430)*
+
+### Documentation
+* Added the MOVE method as supported methods *[b591429](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b591429)*
+
+### Tests
+* Added tests for PROPPATCH for physical resources and virtual folder *[e4982dd](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e4982dd)*
+* Added more PROPFIND tests *[a4c9e63](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a4c9e63)*
+* Added tests for the MOVE method *[715fbbd](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/715fbbd)*
+* Cleaned the code of some tests *[49ba519](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/49ba519)*
+
+### Other
+* Removed deprecated dev dep. @types/xml-js *[d30d602](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d30d602)*
+* Forbid the use of console.* *[c18bcfb](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c18bcfb)*
+* Upgraded the rules for TS checking *[0ffc065](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0ffc065)*
+
+### Bug fix
+* Fixed divers bugs about PROPFIND *[031794c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/031794c)*
+* Fixed changes of the move() method on the RootResource class *[27a4bc1](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/27a4bc1)*
+
 ## 0.2.1
 
 ### New features
