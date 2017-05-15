@@ -1,4 +1,4 @@
-import { FSManager, FSPath } from '../manager/FSManager';
+import { FSManager } from '../manager/FSManager';
 import { XMLElement } from '../helper/XML';
 import { LockKind } from './lock/LockKind';
 import { Lock } from './lock/Lock';
@@ -23,7 +23,7 @@ export interface IResource {
     fsManager: FSManager;
     create(callback: SimpleCallback): any;
     delete(callback: SimpleCallback): any;
-    moveTo(to: FSPath, callback: Return2Callback<FSPath, FSPath>): any;
+    moveTo(parent: IResource, newName: string, override: boolean, callback: SimpleCallback): any;
     rename(newName: string, callback: Return2Callback<string, string>): any;
     isSame(resource: IResource, callback: ReturnCallback<boolean>): any;
     isOnTheSameFSWith(resource: IResource, callback: ReturnCallback<boolean>): any;

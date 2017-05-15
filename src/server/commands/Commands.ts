@@ -4,6 +4,7 @@ import Propfind from './Propfind'
 import Options from './Options'
 import Delete from './Delete'
 import Mkcol from './Mkcol'
+import Move from './Move'
 import Head from './Head'
 import Post from './Post'
 import Put from './Put'
@@ -16,6 +17,7 @@ export default {
     Options,
     Delete,
     Mkcol,
+    Move,
     Head,
     Post,
     Put,

@@ -1,12 +1,13 @@
 import { IResource, SimpleCallback, ReturnCallback, Return2Callback, ResourceType } from '../IResource';
-import { FSManager, FSPath } from '../../manager/FSManager';
+import { FSManager } from '../../manager/FSManager';
 import { StandardResource } from '../std/StandardResource';
 export declare abstract class PhysicalResource extends StandardResource {
     realPath: string;
+    name: string;
     constructor(realPath: string, parent?: IResource, fsManager?: FSManager);
     abstract create(callback: SimpleCallback): any;
     abstract delete(callback: SimpleCallback): any;
-    moveTo(to: FSPath, callback: Return2Callback<FSPath, FSPath>): void;
+    moveTo(parent: IResource, newName: string, override: boolean, callback: SimpleCallback): void;
     rename(newName: string, callback: Return2Callback<string, string>): void;
     webName(callback: ReturnCallback<string>): void;
     abstract type(callback: ReturnCallback<ResourceType>): any;

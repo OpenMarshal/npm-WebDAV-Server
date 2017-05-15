@@ -8,6 +8,7 @@ import * as fs from 'fs'
 export abstract class PhysicalResource extends StandardResource
 {
     realPath : string
+    name : string
     
     constructor(realPath : string, parent ?: IResource, fsManager ?: FSManager)
     {
@@ -20,14 +21,35 @@ export abstract class PhysicalResource extends StandardResource
         super(parent, fsManager);
 
         this.realPath = path.resolve(realPath);
+        this.name = path.basename(this.realPath);
     }
     
     // ****************************** Actions ****************************** //
     abstract create(callback : SimpleCallback)
     abstract delete(callback : SimpleCallback)
-    moveTo(to : FSPath, callback : Return2Callback<FSPath, FSPath>)
+    moveTo(parent : IResource, newName : string, override : boolean, callback : SimpleCallback)
     {
-        callback(new Error('Not implemented yet.'), null, null);
+        if(parent === this.parent)
+        {
+            this.rename(newName, (e, oldName, newName) => {
+                callback(e);
+            })
+            return;
+        }
+
+        const oldName = this.name;
+        this.name = newName;
+        this.removeFromParent((e) => {
+            if(e)
+            {
+                this.name = oldName;
+                callback(e);
+            }
+            else
+                parent.addChild(this, (e) => {
+                    callback(e);
+                })
+        })
     }
     rename(newName : string, callback : Return2Callback<string, string>)
     {
@@ -40,15 +62,16 @@ export abstract class PhysicalResource extends StandardResource
             }
             const oldName = path.basename(this.realPath);
             this.realPath = newPath;
+            this.name = newName;
             this.updateLastModified();
-            callback(e, oldName, newName);
+            callback(null, oldName, newName);
         })
     }
     
     // ****************************** Std meta-data ****************************** //
     webName(callback : ReturnCallback<string>)
     {
-        callback(null, path.basename(this.realPath));
+        callback(null, path.basename(this.name));
     }
     abstract type(callback : ReturnCallback<ResourceType>)
 

@@ -29,9 +29,29 @@ export abstract class VirtualResource extends StandardResource
     {
         this.removeFromParent(callback);
     }
-    moveTo(to : FSPath, callback : Return2Callback<FSPath, FSPath>)
+    moveTo(parent : IResource, newName : string, override : boolean, callback : SimpleCallback)
     {
-        callback(new Error('Not implemented yet.'), null, null);
+        if(parent === this.parent)
+        {
+            this.rename(newName, (e, oldName, newName) => {
+                callback(e);
+            })
+            return;
+        }
+
+        const oldName = this.name;
+        this.name = newName;
+        this.removeFromParent((e) => {
+            if(e)
+            {
+                this.name = oldName;
+                callback(e);
+            }
+            else
+                parent.addChild(this, (e) => {
+                    callback(e);
+                })
+        })
     }
     rename(newName : string, callback : Return2Callback<string, string>)
     {
