@@ -6,6 +6,7 @@
         "typedef-whitespace:": false,
         "no-shadowed-variable:": false,
         "max-line-length:": false,
-        "forin:": false
+        "forin:": false,
+        "no-console": true
     }
 }
