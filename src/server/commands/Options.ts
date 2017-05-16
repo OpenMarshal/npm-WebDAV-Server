@@ -1,4 +1,4 @@
-import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
+import { HTTPCodes, MethodCallArgs } from '../WebDAVRequest'
 
 export default function(arg : MethodCallArgs, callback)
 {
