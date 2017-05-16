@@ -27,7 +27,7 @@ export default function(arg : MethodCallArgs, callback)
             finalize = function()
             {
                 arg.setCode(HTTPCodes.MultiStatus);
-                arg.response.write(XML.toXML(multistatus));
+                arg.writeXML(multistatus);
                 callback();
             }
         }

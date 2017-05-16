@@ -167,11 +167,8 @@ export default function(arg : MethodCallArgs, callback)
 
         function done(multistatus)
         {
-            const content = XML.toXML(multistatus);
             arg.setCode(HTTPCodes.MultiStatus);
-            arg.response.setHeader('Content-Type', 'text/xml; charset="utf-8"')
-            arg.response.setHeader('Content-Length', content.length.toString())
-            arg.response.write(content);
+            arg.writeXML(multistatus);
             callback();
         }
     })
