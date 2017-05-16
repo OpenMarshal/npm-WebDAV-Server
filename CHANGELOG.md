@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.4.0
+
+### New features
+* Can now get a JSON response instead of a XML response depending on the `Accept` header :
+    * *[952f217](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/952f217)*
+    * *[24836fc](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/24836fc)*
+    * *[34dac98](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/34dac98)*
+    * *[3ab05de](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3ab05de)*
+
+### Changes
+* Added a standard method for writing operation results (other than raw data) depending to the Accept header (XML or JSON) *[952f217](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/952f217)*
+* Delegate response writing to the standard writing method in arg (MethodCallArgs) *[24836fc](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/24836fc)*
+
+### Tests
+* Added tests for JSON and XML responses for PROPPATCH and PROPFIND *[3ab05de](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3ab05de)*
+
+### Other
+* Added JSON string production from XML string *[34dac98](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/34dac98)*
+* Removed useless import from Options.ts *[4c50a08](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/4c50a08)*
+* Modified muteNodeNS function name to mutateNodeNS *[54b3bf6](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/54b3bf6)*
+
 ## 0.3.0
 
 ### New features
