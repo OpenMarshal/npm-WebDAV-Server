@@ -1,5 +1,6 @@
 /// <reference types="node" />
 import { IResource, ReturnCallback } from '../resource/Resource';
+import { XMLElement } from '../helper/XML';
 import { WebDAVServer } from '../server/WebDAVServer';
 import { FSPath } from '../manager/FSManager';
 import * as http from 'http';
@@ -15,12 +16,14 @@ export declare class MethodCallArgs {
     uri: string;
     data: string;
     constructor(server: WebDAVServer, request: http.IncomingMessage, response: http.ServerResponse, callback: () => void);
+    accept(regex: RegExp[]): number;
     findHeader(name: string, defaultValue?: string): string;
     getResource(callback: ReturnCallback<IResource>): void;
     dateISO8601(ticks: number): string;
     fullUri(uri?: string): string;
     prefixUri(): string;
     getResourcePath(resource: IResource, callback: ReturnCallback<string>): void;
+    writeXML(xmlObject: XMLElement | object): void;
     setCode(code: number, message?: string): void;
 }
 export default MethodCallArgs;

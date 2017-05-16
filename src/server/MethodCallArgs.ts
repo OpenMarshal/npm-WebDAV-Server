@@ -1,4 +1,5 @@
 import { IResource, ReturnCallback } from '../resource/Resource'
+import { XML, XMLElement } from '../helper/XML'
 import { WebDAVServer } from '../server/WebDAVServer'
 import { FSPath } from '../manager/FSManager'
 import * as http from 'http'
@@ -26,6 +27,20 @@ export class MethodCallArgs
         
         this.uri = url.parse(request.url).pathname;
         this.path = new FSPath(this.uri);
+    }
+
+    accept(regex : RegExp[]) : number
+    {
+        const accepts = this.findHeader('Accept', 'text/xml').split(',');
+
+        for(const value of accepts)
+        {
+            for(let i = 0; i < regex.length; ++i)
+                if(regex[i].test(value))
+                    return i;
+        }
+
+        return -1;
     }
 
     findHeader(name : string, defaultValue : string = null) : string
@@ -91,6 +106,28 @@ export class MethodCallArgs
                     callback(e, parentName.replace(/\/$/, '') + '/' + name);
                 })
             })
+    }
+
+    writeXML(xmlObject : XMLElement | object)
+    {
+        let content = XML.toXML(xmlObject);
+        
+        switch(this.accept([ /[^a-z0-9A-Z]xml$/, /[^a-z0-9A-Z]json$/ ]))
+        {
+            default:
+            case 0: // xml
+                this.response.setHeader('Content-Type', 'application/xml; charset="utf-8"');
+                this.response.setHeader('Content-Length', content.length.toString());
+                this.response.write(content);
+                break;
+                
+            case 1: // json
+                content = XML.toJSON(content);
+                this.response.setHeader('Content-Type', 'application/json; charset="utf-8"');
+                this.response.setHeader('Content-Length', content.length.toString());
+                this.response.write(content);
+                break;
+        }
     }
     
     setCode(code : number, message ?: string)
