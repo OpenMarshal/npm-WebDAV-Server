@@ -85,6 +85,16 @@ export abstract class XML
         return x as XMLElement;
     }
 
+    static toJSON(xml : string) : string
+    {
+        if(xml === undefined || xml === null)
+            return xml;
+        if(xml.constructor === Number || xml.constructor === Boolean)
+            return xml.toString();
+
+        return xmljs.xml2json(xml, { compact: true, alwaysArray: true });
+    }
+
     static toXML(xml : XMLElement | any, includeDeclaration : boolean = true) : string
     {
         let finalXml : any = xml;
@@ -133,7 +143,7 @@ export abstract class XML
             },
             add: function(element : any)
             {
-                if(element.constructor === String || element.constructor === Number)
+                if(element.constructor === String || element.constructor === Number || element.constructor === Boolean)
                     element = {
                         type: 'text',
                         text: element.toString()
