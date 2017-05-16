@@ -23,7 +23,7 @@ function seekForNS(node : any, parentNS : any) : any
     return ns;
 }
 
-function muteNodeNS(node : any, parentNS = { _default: 'DAV' })
+function mutateNodeNS(node : any, parentNS = { _default: 'DAV' })
 {
     var nss = seekForNS(node, parentNS);
 
@@ -57,7 +57,7 @@ function muteNodeNS(node : any, parentNS = { _default: 'DAV' })
     }
     
     if(node.elements)
-        node.elements.forEach(n => muteNodeNS(n, nss))
+        node.elements.forEach(n => mutateNodeNS(n, nss))
     else
         node.elements = [];
 }
@@ -81,7 +81,7 @@ export abstract class XML
             compact: false
         });
 
-        muteNodeNS(x);
+        mutateNodeNS(x);
         return x as XMLElement;
     }
 
