@@ -20,6 +20,7 @@ It implements the following methods :
 * OPTIONS (list available methods)
 * DELETE (delete a resource)
 * MOVE (move a resource)
+* COPY (copy a resource)
 
 Find more details on the process at [https://github.com/OpenMarshal/npm-WebDAV-Server/projects/1](https://github.com/OpenMarshal/npm-WebDAV-Server/projects/1).
 
