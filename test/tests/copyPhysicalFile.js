@@ -9,6 +9,12 @@ module.exports = (test, options, index) => test('copy a physical file', isValid 
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(2, server);
+    const _ = (e, cb) => {
+        if(e)
+            isValid(false, e);
+        else
+            cb();
+    }
 
     const url = 'http://127.0.0.1:' + (options.port + index);
     const wfs = Client(url);
@@ -19,53 +25,23 @@ module.exports = (test, options, index) => test('copy a physical file', isValid 
         fs.writeFileSync(filePath, 'Content!');
 
     const fileNameDest = 'test2.txt';
-    server.rootResource.addChild(new webdav.PhysicalFile(filePath), e => {
-        if(e)
-        {
-            isValid(false, e)
-            return;
-        }
-
+    server.rootResource.addChild(new webdav.PhysicalFile(filePath), e => _(e, () => {
         request({
             url: url + '/' + fileName,
             method: 'COPY',
             headers: {
                 destination: url + '/' + fileNameDest
             }
-        }, (e, res, body) => {
-            if(e)
-            {
-                isValid(false, e)
-                return;
-            }
-
-            wfs.stat('/' + fileName, (e, stat) => {
-                if(e)
-                {
-                    isValid(false, e)
-                    return;
-                }
-
-                wfs.stat('/' + fileNameDest, (e, stat) => {
-                    if(e)
-                    {
-                        isValid(false, e)
-                        return;
-                    }
-                    
+        }, (e, res, body) => _(e, () => {
+            wfs.stat('/' + fileName, (e, stat) => _(e, () => {
+                wfs.stat('/' + fileNameDest, (e, stat) => _(e, () => {
                     request({
                         url: url + '/' + fileName,
                         method: 'COPY',
                         headers: {
                             destination: url + '/' + fileNameDest
                         }
-                    }, (e, res, body) => {
-                        if(e)
-                        {
-                            isValid(false, e)
-                            return;
-                        }
-                        
+                    }, (e, res, body) => _(e, () => {
                         if(res.statusCode >= 300)
                         {
                             isValid(false, 'Override must be a default behavior (RFC spec)');
@@ -79,20 +55,14 @@ module.exports = (test, options, index) => test('copy a physical file', isValid 
                                 destination: url + '/' + fileNameDest,
                                 Overwrite: 'F'
                             }
-                        }, (e, res, body) => {
-                            if(e)
-                            {
-                                isValid(false, e)
-                                return;
-                            }
-                            
+                        }, (e, res, body) => _(e, () => {
                             isValid(res.statusCode >= 300, 'Overrided but must not');
-                        });
-                    });
-                })
-            })
-        });
-    });
+                        }));
+                    }));
+                }))
+            }))
+        }));
+    }));
 
     const folderName = 'folder';
     const folderPath = path.join(__dirname, 'copyPhysicalFile', folderName);
@@ -103,40 +73,16 @@ module.exports = (test, options, index) => test('copy a physical file', isValid 
     if(fs.existsSync(fileDestPath))
         fs.unlinkSync(fileDestPath);
     
-    server.rootResource.addChild(new webdav.PhysicalFolder(folderPath), e => {
-        if(e)
-        {
-            isValid(false, e)
-            return;
-        }
-
+    server.rootResource.addChild(new webdav.PhysicalFolder(folderPath), e => _(e, () => {
         request({
             url: url + '/' + fileName,
             method: 'COPY',
             headers: {
                 destination: url + '/' + folderName + '/' + fileName
             }
-        }, (e, res, body) => {
-            if(e)
-            {
-                isValid(false, e)
-                return;
-            }
-
-            wfs.stat('/' + fileName, (e, stat) => {
-                if(e)
-                {
-                    isValid(false, e)
-                    return;
-                }
-
-                wfs.stat('/' + folderName + '/' + fileName, (e, stat) => {
-                    if(e)
-                    {
-                        isValid(false, e)
-                        return;
-                    }
-
+        }, (e, res, body) => _(e, () => {
+            wfs.stat('/' + fileName, (e, stat) => _(e, () => {
+                wfs.stat('/' + folderName + '/' + fileName, (e, stat) => _(e, () => {
                     fs.exists(fileDestPath, (exists) => {
                         if(!exists)
                         {
@@ -150,13 +96,7 @@ module.exports = (test, options, index) => test('copy a physical file', isValid 
                             headers: {
                                 destination: url + '/' + folderName + '/' + fileName
                             }
-                        }, (e, res, body) => {
-                            if(e)
-                            {
-                                isValid(false, e)
-                                return;
-                            }
-                            
+                        }, (e, res, body) => _(e, () => {
                             if(res.statusCode >= 300)
                             {
                                 isValid(false, 'Override must be a default behavior (RFC spec)');
@@ -170,19 +110,13 @@ module.exports = (test, options, index) => test('copy a physical file', isValid 
                                     destination: url + '/' + folderName + '/' + fileName,
                                     Overwrite: 'F'
                                 }
-                            }, (e, res, body) => {
-                                if(e)
-                                {
-                                    isValid(false, e)
-                                    return;
-                                }
-                                
+                            }, (e, res, body) => _(e, () => {
                                 isValid(res.statusCode >= 300, 'Overrided but must not');
-                            });
-                        });
+                            }));
+                        }));
                     })
-                })
-            })
-        });
-    });
+                }))
+            }))
+        }));
+    }));
 })

@@ -6,6 +6,12 @@ module.exports = (test, options, index) => test('move a virtual resource', isVal
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(2, server);
+    const _ = (e, cb) => {
+        if(e)
+            isValid(false, e);
+        else
+            cb();
+    }
 
     function move(source, dest, callback)
     {
@@ -15,15 +21,9 @@ module.exports = (test, options, index) => test('move a virtual resource', isVal
             headers: {
                 Destination: 'http://localhost:' + (options.port + index) + dest
             }
-        }, (e, res, body) => {
-            if(e)
-            {
-                isValid(false, e)
-                return;
-            }
-            
+        }, (e, res, body) => _(e, () => {
             callback(res.statusCode < 300);
-        })
+        }))
     }
 
     function exist(path, callback)
@@ -31,25 +31,13 @@ module.exports = (test, options, index) => test('move a virtual resource', isVal
         request({
             url: 'http://localhost:' + (options.port + index) + path,
             method: 'PROPFIND'
-        }, (e, res, body) => {
-            if(e)
-            {
-                isValid(false, e)
-                return;
-            }
-
+        }, (e, res, body) => _(e, () => {
             callback(res.statusCode < 300);
-        })
+        }))
     }
 
     const fileName = 'file.txt';
-    server.rootResource.addChild(new webdav.VirtualFile(fileName), e => {
-        if(e)
-        {
-            isValid(false, e)
-            return;
-        }
-        
+    server.rootResource.addChild(new webdav.VirtualFile(fileName), e => _(e, () => {
         move('/file.txt', '/file2.txt', (moved) => {
             if(!moved)
             {
@@ -69,16 +57,10 @@ module.exports = (test, options, index) => test('move a virtual resource', isVal
                 })
             })
         })
-    });
+    }));
 
     const folderName = 'folder';
-    server.rootResource.addChild(new webdav.VirtualFolder(folderName), e => {
-        if(e)
-        {
-            isValid(false, e)
-            return;
-        }
-        
+    server.rootResource.addChild(new webdav.VirtualFolder(folderName), e => _(e, () => {
         move('/folder', '/folder2', (moved) => {
             if(!moved)
             {
@@ -98,7 +80,7 @@ module.exports = (test, options, index) => test('move a virtual resource', isVal
                 })
             })
         })
-    });
+    }));
     
     move('/fileXXX.txt', '/file2XXX.txt', (moved) => {
         isValid(!moved);

@@ -8,6 +8,12 @@ module.exports = (test, options, index) => test('delete a physical folder', isVa
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(2, server);
+    const _ = (e, cb) => {
+        if(e)
+            isValid(false, e);
+        else
+            cb();
+    }
 
     var wfs = Client(
         'http://127.0.0.1:' + (options.port + index)
@@ -18,33 +24,15 @@ module.exports = (test, options, index) => test('delete a physical folder', isVa
     if(!fs.existsSync(folderPath))
         fs.mkdirSync(folderPath);
 
-    server.rootResource.addChild(new webdav.PhysicalFolder(folderPath), e => {
-        if(e)
-        {
-            isValid(false, e)
-            return;
-        }
-
-        wfs.stat('/' + folderName, (e, stat) => {
-            if(e)
-            {
-                isValid(false, e)
-                return;
-            }
-            
-            wfs.unlink('/' + folderName, (e) => {
-                if(e)
-                {
-                    isValid(false, e)
-                    return;
-                }
-
+    server.rootResource.addChild(new webdav.PhysicalFolder(folderPath), e => _(e, () => {
+        wfs.stat('/' + folderName, (e, stat) => _(e, () => {
+            wfs.unlink('/' + folderName, (e) => _(e, () => {
                 fs.exists(folderPath, (exists) => {
                     isValid(!exists)
                 })
-            })
-        })
-    });
+            }))
+        }))
+    }));
 
     const folderName2 = 'notEmptyFolder';
     const folderPath2 = path.join(__dirname, 'deletePhysicalFolder', folderName2);
@@ -56,51 +44,21 @@ module.exports = (test, options, index) => test('delete a physical folder', isVa
     const folderPath3 = path.join(folderPath2, folderName3);
     if(!fs.existsSync(folderPath3))
         fs.mkdirSync(folderPath3);
-    fd.addChild(new webdav.PhysicalFolder(folderPath3), e => {
-        if(e)
-        {
-            isValid(false, e)
-            return;
-        }
-        
+    fd.addChild(new webdav.PhysicalFolder(folderPath3), e => _(e, () => {
         const fileName4 = 'file.txt';
         const filePath4 = path.join(folderPath2, fileName4);
         if(!fs.existsSync(filePath4))
             fs.writeFileSync(filePath4, 'Test!');
-        fd.addChild(new webdav.PhysicalFile(filePath4), e => {
-            if(e)
-            {
-                isValid(false, e)
-                return;
-            }
-
-            server.rootResource.addChild(fd, e => {
-                if(e)
-                {
-                    isValid(false, e)
-                    return;
-                }
-
-                wfs.stat('/' + folderName2, (e, stat) => {
-                    if(e)
-                    {
-                        isValid(false, e)
-                        return;
-                    }
-                    
-                    wfs.unlink('/' + folderName2, (e) => {
-                        if(e)
-                        {
-                            isValid(false, e)
-                            return;
-                        }
-
+        fd.addChild(new webdav.PhysicalFile(filePath4), e => _(e, () => {
+            server.rootResource.addChild(fd, e => _(e, () => {
+                wfs.stat('/' + folderName2, (e, stat) => _(e, () => {
+                    wfs.unlink('/' + folderName2, (e) => _(e, () => {
                         fs.exists(folderPath2, (exists) => {
                             isValid(!exists)
                         })
-                    })
-                })
-            });
-        });
-    });
+                    }))
+                }))
+            }));
+        }));
+    }));
 })

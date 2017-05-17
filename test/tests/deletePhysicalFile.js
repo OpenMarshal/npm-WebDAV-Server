@@ -8,6 +8,12 @@ module.exports = (test, options, index) => test('delete a physical file', isVali
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(1, server);
+    const _ = (e, cb) => {
+        if(e)
+            isValid(false, e);
+        else
+            cb();
+    }
 
     var wfs = Client(
         'http://127.0.0.1:' + (options.port + index)
@@ -18,31 +24,13 @@ module.exports = (test, options, index) => test('delete a physical file', isVali
     if(!fs.existsSync(filePath))
         fs.writeFileSync(filePath, 'Test!');
 
-    server.rootResource.addChild(new webdav.PhysicalFile(filePath), e => {
-        if(e)
-        {
-            isValid(false, e)
-            return;
-        }
-
-        wfs.stat('/' + fileName, (e, stat) => {
-            if(e)
-            {
-                isValid(false, e)
-                return;
-            }
-            
-            wfs.unlink('/' + fileName, (e) => {
-                if(e)
-                {
-                    isValid(false, e)
-                    return;
-                }
-
+    server.rootResource.addChild(new webdav.PhysicalFile(filePath), e => _(e, () => {
+        wfs.stat('/' + fileName, (e, stat) => _(e, () => {
+            wfs.unlink('/' + fileName, (e) => _(e, () => {
                 fs.exists(filePath, (exists) => {
                     isValid(!exists)
                 })
-            })
-        })
-    });
+            }))
+        }))
+    }));
 })

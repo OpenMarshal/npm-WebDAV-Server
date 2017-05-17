@@ -7,13 +7,14 @@ module.exports = (test, options, index) => test('etag of virtual file', isValid 
 {
     var server = new webdav.WebDAVServer();
     isValid = isValid.multiple(1, server);
-    server.rootResource.addChild(new webdav.VirtualFile('testFile.txt'), e => {
+    const _ = (e, cb) => {
         if(e)
-        {
-            isValid(false, e)
-            return;
-        }
-
+            isValid(false, e);
+        else
+            cb();
+    }
+    
+    server.rootResource.addChild(new webdav.VirtualFile('testFile.txt'), e => _(e, () => {
         server.start(options.port + index);
 
         var wfs = Client(
@@ -60,13 +61,7 @@ module.exports = (test, options, index) => test('etag of virtual file', isValid 
                     return;
                 }
                 
-                wfs.writeFile('/testFile.txt', 'New content', (e) => {
-                    if(e)
-                    {
-                        isValid(false, e);
-                        return;
-                    }
-
+                wfs.writeFile('/testFile.txt', 'New content', (e) => _(e, () => {
                     propfind((doc) => {
                         const etag3 = doc['D:multistatus'][0]['D:response'][0]['D:propstat'][0]['D:prop'][0]['D:getetag'][0]._text[0];
                         if(etag1 === etag3)
@@ -74,8 +69,8 @@ module.exports = (test, options, index) => test('etag of virtual file', isValid 
                         else
                             isValid(true);
                     })
-                })
+                }))
             })
         })
-    });
+    }));
 })

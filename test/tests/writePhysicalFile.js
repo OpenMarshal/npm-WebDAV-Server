@@ -13,6 +13,12 @@ module.exports = (test, options, index) => test('write in a physical file', isVa
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(Object.keys(files).length, server);
+    const _ = (e, cb) => {
+        if(e)
+            isValid(false, e);
+        else
+            cb();
+    }
 
     var wfs = Client(
         'http://127.0.0.1:' + (options.port + index)
@@ -23,27 +29,15 @@ module.exports = (test, options, index) => test('write in a physical file', isVa
         const filePath = path.join(__dirname, 'writePhysicalFile', fileName);
         fs.writeFileSync(filePath, ''); // Clean the file before the test
 
-        server.rootResource.addChild(new webdav.PhysicalFile(filePath), e => {
-            if(e)
-            {
-                isValid(false, e)
-                return;
-            }
-
-            wfs.writeFile('/' + fileName, files[fileName], (e) => {
-                if(e)
-                {
-                    isValid(false, e)
-                    return;
-                }
-
+        server.rootResource.addChild(new webdav.PhysicalFile(filePath), e => _(e, () => {
+            wfs.writeFile('/' + fileName, files[fileName], (e) => _(e, () => {
                 wfs.readFile('/' + fileName, (e, content) => {
                     if(e)
                         isValid(false, e)
                     else
                         isValid(content.toString() === files[fileName].toString(), 'Received : ' + content.toString() + ' but expected : ' + files[fileName].toString());
                 })
-            })
-        })
+            }))
+        }))
     }
 })

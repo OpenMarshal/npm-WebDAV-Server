@@ -8,6 +8,12 @@ module.exports = (test, options, index) => test('write/create a physical file', 
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(1, server);
+    const _ = (e, cb) => {
+        if(e)
+            isValid(false, e);
+        else
+            cb();
+    }
 
     var wfs = Client(
         'http://127.0.0.1:' + (options.port + index)
@@ -23,18 +29,12 @@ module.exports = (test, options, index) => test('write/create a physical file', 
     
     const fileContent = 'Hello!';
     
-    server.rootResource.addChild(new webdav.PhysicalFolder(folderPath), e => {
-        if(e)
-        {
-            isValid(false, e)
-            return;
-        }
-
+    server.rootResource.addChild(new webdav.PhysicalFolder(folderPath), e => _(e, () => {
         wfs.writeFile('/' + folderName + '/' + fileName, fileContent, (e) => {
             if(e)
                 isValid(false, e)
             else
                 isValid(fs.existsSync(filePath) && fs.readFileSync(filePath).toString() === fileContent.toString());
         })
-    });
+    }));
 })

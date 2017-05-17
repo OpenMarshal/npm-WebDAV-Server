@@ -8,6 +8,12 @@ module.exports = (test, options, index) => test('move a physical resource', isVa
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(4, server);
+    const _ = (e, cb) => {
+        if(e)
+            isValid(false, e);
+        else
+            cb();
+    }
 
     const rootTestPath = path.join(__dirname, 'movePhysical');
 
@@ -24,15 +30,9 @@ module.exports = (test, options, index) => test('move a physical resource', isVa
             headers: {
                 Destination: 'http://localhost:' + (options.port + index) + dest
             }
-        }, (e, res, body) => {
-            if(e)
-            {
-                isValid(false, e)
-                return;
-            }
-            
+        }, (e, res, body) => _(e, () => {
             callback(res.statusCode < 300);
-        })
+        }))
     }
 
     function exist(path, callback)
@@ -40,15 +40,9 @@ module.exports = (test, options, index) => test('move a physical resource', isVa
         request({
             url: 'http://localhost:' + (options.port + index) + path,
             method: 'PROPFIND'
-        }, (e, res, body) => {
-            if(e)
-            {
-                isValid(false, e)
-                return;
-            }
-
+        }, (e, res, body) => _(e, () => {
             callback(res.statusCode < 300);
-        })
+        }))
     }
 
     function test(prefixName, isFile, constructor)
@@ -74,13 +68,7 @@ module.exports = (test, options, index) => test('move a physical resource', isVa
                 fs.mkdirSync(filePath);
         }
 
-        server.rootResource.addChild(constructor(filePath), e => {
-            if(e)
-            {
-                isValid(false, e)
-                return;
-            }
-            
+        server.rootResource.addChild(constructor(filePath), e => _(e, () => {
             move('/' + fileName, '/' + fileNameDest, (moved) => {
                 if(!moved)
                 {
@@ -116,7 +104,7 @@ module.exports = (test, options, index) => test('move a physical resource', isVa
                     })
                 })
             })
-        });
+        }));
     }
 
     function testVirtual(prefixName, isFile, constructor)
@@ -137,20 +125,8 @@ module.exports = (test, options, index) => test('move a physical resource', isVa
 
         const dest = new webdav.VirtualFolder(fileNameDest);
 
-        server.rootResource.addChild(dest, e => {
-            if(e)
-            {
-                isValid(false, e)
-                return;
-            }
-
-            server.rootResource.addChild(constructor(filePath), e => {
-                if(e)
-                {
-                    isValid(false, e)
-                    return;
-                }
-                
+        server.rootResource.addChild(dest, e => _(e, () => {
+            server.rootResource.addChild(constructor(filePath), e => _(e, () => {
                 move('/' + fileName, '/' + fileNameDest + '/' + fileName, (moved) => {
                     if(!moved)
                     {
@@ -178,7 +154,7 @@ module.exports = (test, options, index) => test('move a physical resource', isVa
                         })
                     })
                 })
-            });
-        });
+            }));
+        }));
     }
 })

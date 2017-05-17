@@ -7,13 +7,14 @@ module.exports = (test, options, index) => test('make a folder', isValid =>
 {
     var server = new webdav.WebDAVServer();
     isValid = isValid.multiple(4, server);
-    server.rootResource.addChild(new webdav.VirtualFile('testFile.txt'), e => {
+    const _ = (e, cb) => {
         if(e)
-        {
-            isValid(false, e)
-            return;
-        }
-
+            isValid(false, e);
+        else
+            cb();
+    }
+    
+    server.rootResource.addChild(new webdav.VirtualFile('testFile.txt'), e => _(e, () => {
         server.start(options.port + index);
 
         var wfs = Client(
@@ -28,20 +29,14 @@ module.exports = (test, options, index) => test('make a folder', isValid =>
             isValid(!!e)
         })
 
-        wfs.mkdir('/testSuccess', (e) => {
-            if(e)
-            {
-                isValid(false, e)
-                return;
-            }
-
+        wfs.mkdir('/testSuccess', (e) => _(e, () => {
             wfs.mkdir('/testSuccess/testSuccess2', (e) => {
                 if(e)
                     isValid(false, e)
                 else
                     isValid(true);
             })
-        })
+        }))
         
         const folderName = 'makeFolder';
         const folderPath = path.join(__dirname, folderName);
@@ -51,19 +46,13 @@ module.exports = (test, options, index) => test('make a folder', isValid =>
         if(fs.existsSync(subFolderPath))
             fs.rmdirSync(subFolderPath);
         
-        server.rootResource.addChild(new webdav.PhysicalFolder(folderPath), e => {
-            if(e)
-            {
-                isValid(false, e)
-                return;
-            }
-
+        server.rootResource.addChild(new webdav.PhysicalFolder(folderPath), e => _(e, () => {
             wfs.mkdir('/' + folderName + '/' + subFolderName, (e) => {
                 if(e)
                     isValid(false, e)
                 else
                     isValid(fs.existsSync(subFolderPath));
             })
-        });
-    });
+        }));
+    }));
 })

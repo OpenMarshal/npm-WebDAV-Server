@@ -5,13 +5,14 @@ module.exports = (test, options, index) => test('list root folder', isValid =>
 {
     var server = new webdav.WebDAVServer();
     isValid = isValid.multiple(1, server);
-    server.rootResource.addChild(new webdav.VirtualFile('file.txt'), e => {
+    const _ = (e, cb) => {
         if(e)
-        {
-            isValid(false, e)
-            return;
-        }
-
+            isValid(false, e);
+        else
+            cb();
+    }
+    
+    server.rootResource.addChild(new webdav.VirtualFile('file.txt'), e => _(e, () => {
         server.start(options.port + index);
 
         var wfs = Client(
@@ -24,5 +25,5 @@ module.exports = (test, options, index) => test('list root folder', isValid =>
             else
                 isValid(files.length === 1 && files[0] === 'file.txt');
         })
-    });
+    }));
 })

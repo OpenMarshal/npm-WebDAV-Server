@@ -9,6 +9,12 @@ module.exports = (test, options, index) => test('PROPPATCH method', isValid =>
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(4 * 2, server);
+    const _ = (e, cb) => {
+        if(e)
+            isValid(false, e);
+        else
+            cb();
+    }
 
     testGroup('xml', false);
     testGroup('json', true);
@@ -33,13 +39,7 @@ module.exports = (test, options, index) => test('PROPPATCH method', isValid =>
 
     function test(name, isJSON)
     {
-        return (e) => {
-            if(e)
-            {
-                isValid(false, e)
-                return;
-            }
-
+        return (e) => _(e, () => {
             const url = 'http://localhost:' + (options.port + index) + '/' + name;
             
             function tryCatch(callback)
@@ -62,13 +62,7 @@ module.exports = (test, options, index) => test('PROPPATCH method', isValid =>
                 headers: {
                     Accept: isJSON ? 'application/json' : undefined
                 }
-            }, (e, res, body) => {
-                if(e)
-                {
-                    isValid(false, e);
-                    return;
-                }
-
+            }, (e, res, body) => _(e, () => {
                 tryCatch(() => {
                     const xml = isJSON ? JSON.parse(body) : xmljs.xml2js(body, { compact: true, alwaysArray: true });
                     const response = xml['D:multistatus'][0]['D:response'][0];
@@ -87,13 +81,7 @@ module.exports = (test, options, index) => test('PROPPATCH method', isValid =>
                         headers: {
                             Accept: isJSON ? 'application/json' : undefined
                         }
-                    }, (e, res, body) => {
-                        if(e)
-                        {
-                            isValid(false, e);
-                            return;
-                        }
-                        
+                    }, (e, res, body) => _(e, () => {
                         tryCatch(() => {
                             const xml = isJSON ? JSON.parse(body) : xmljs.xml2js(body, { compact: true, alwaysArray: true });
                             const prop = xml['D:multistatus'][0]['D:response'][0]['D:propstat'][0]['D:prop'][0];
@@ -112,38 +100,26 @@ module.exports = (test, options, index) => test('PROPPATCH method', isValid =>
                                 headers: {
                                     Accept: isJSON ? 'application/json' : undefined
                                 }
-                            }, (e, res, body) => {
-                                if(e)
-                                {
-                                    isValid(false, e);
-                                    return;
-                                }
-
+                            }, (e, res, body) => _(e, () => {
                                 request({
                                     url: url,
                                     method: 'PROPFIND',
                                     headers: {
                                         Accept: isJSON ? 'application/json' : undefined
                                     }
-                                }, (e, res, body) => {
-                                    if(e)
-                                    {
-                                        isValid(false, e);
-                                        return;
-                                    }
-
+                                }, (e, res, body) => _(e, () => {
                                     tryCatch(() => {
                                         const xml = isJSON ? JSON.parse(body) : xmljs.xml2js(body, { compact: true, alwaysArray: true });
                                         const prop = xml['D:multistatus'][0]['D:response'][0]['D:propstat'][0]['D:prop'][0];
 
                                         isValid(prop['x:Authors'] === undefined);
                                     });
-                                });
-                            });
+                                }));
+                            }));
                         });
-                    });
+                    }));
                 });
-            })
-        };
+            }))
+        });
     }
 })

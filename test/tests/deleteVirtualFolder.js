@@ -6,83 +6,41 @@ module.exports = (test, options, index) => test('delete a virtual folder', isVal
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(2, server);
+    const _ = (e, cb) => {
+        if(e)
+            isValid(false, e);
+        else
+            cb();
+    }
 
     var wfs = Client(
         'http://127.0.0.1:' + (options.port + index)
     );
 
     const folderName = 'folder';
-    server.rootResource.addChild(new webdav.VirtualFolder(folderName), e => {
-        if(e)
-        {
-            isValid(false, e)
-            return;
-        }
-
-        wfs.stat('/' + folderName, (e, stat) => {
-            if(e)
-            {
-                isValid(false, e)
-                return;
-            }
-            
-            wfs.unlink('/' + folderName, (e) => {
-                if(e)
-                {
-                    isValid(false, e)
-                    return;
-                }
-
+    server.rootResource.addChild(new webdav.VirtualFolder(folderName), e => _(e, () => {
+        wfs.stat('/' + folderName, (e, stat) => _(e, () => {
+            wfs.unlink('/' + folderName, (e) => _(e, () => {
                 wfs.stat('/' + folderName, (e, stat) => {
                     isValid(!!e)
                 })
-            })
-        })
-    });
+            }))
+        }))
+    }));
 
     const folderName2 = 'notEmptyFolder';
     const vd = new webdav.VirtualFolder(folderName2);
-    vd.addChild(new webdav.VirtualFolder('folder'), e => {
-        if(e)
-        {
-            isValid(false, e)
-            return;
-        }
-
-        vd.addChild(new webdav.VirtualFile('file.txt'), e => {
-            if(e)
-            {
-                isValid(false, e)
-                return;
-            }
-
-            server.rootResource.addChild(vd, e => {
-                if(e)
-                {
-                    isValid(false, e)
-                    return;
-                }
-
-                wfs.stat('/' + folderName2, (e, stat) => {
-                    if(e)
-                    {
-                        isValid(false, e)
-                        return;
-                    }
-                    
-                    wfs.unlink('/' + folderName2, (e) => {
-                        if(e)
-                        {
-                            isValid(false, e)
-                            return;
-                        }
-
+    vd.addChild(new webdav.VirtualFolder('folder'), e => _(e, () => {
+        vd.addChild(new webdav.VirtualFile('file.txt'), e => _(e, () => {
+            server.rootResource.addChild(vd, e => _(e, () => {
+                wfs.stat('/' + folderName2, (e, stat) => _(e, () => {
+                    wfs.unlink('/' + folderName2, (e) => _(e, () => {
                         wfs.stat('/' + folderName2, (e, stat) => {
                             isValid(!!e)
                         })
-                    })
-                })
-            });
-        });
-    });
+                    }))
+                }))
+            }));
+        }));
+    }));
 })

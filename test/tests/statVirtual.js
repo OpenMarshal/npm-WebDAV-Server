@@ -5,26 +5,20 @@ module.exports = (test, options, index) => test('stat of virtual resources', isV
 {
     var server = new webdav.WebDAVServer();
     isValid = isValid.multiple(2, server);
+    const _ = (e, cb) => {
+        if(e)
+            isValid(false, e);
+        else
+            cb();
+    }
 
     const content = 'Content!!!';
 
     const folder = new webdav.VirtualFolder('testFolder');
-    server.rootResource.addChild(folder, e => {
-        if(e)
-        {
-            isValid(false, e)
-            return;
-        }
-
+    server.rootResource.addChild(folder, e => _(e, () => {
         const file = new webdav.VirtualFile('testFile.txt');
         file.content = content;
-        folder.addChild(file, e => {
-            if(e)
-            {
-                isValid(false, e)
-                return;
-            }
-
+        folder.addChild(file, e => _(e, () => {
             server.start(options.port + index);
 
             var wfs = Client(
@@ -42,6 +36,6 @@ module.exports = (test, options, index) => test('stat of virtual resources', isV
             wfs.stat('/notFoundFile.txt', (e, stat) => {
                 isValid(!!e);
             })
-        });
-    });
+        }));
+    }));
 })

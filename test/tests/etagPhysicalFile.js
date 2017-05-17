@@ -9,19 +9,19 @@ module.exports = (test, options, index) => test('etag of physical file', isValid
 {
     var server = new webdav.WebDAVServer();
     isValid = isValid.multiple(1, server);
+    const _ = (e, cb) => {
+        if(e)
+            isValid(false, e);
+        else
+            cb();
+    }
 
     const filePath = path.join(__dirname, 'etagPhysicalFile', 'testFile.txt')
     if(fs.existsSync(filePath))
         fs.unlinkSync(filePath);
     fs.writeFileSync(filePath, 'Old content');
 
-    server.rootResource.addChild(new webdav.PhysicalFile(filePath), e => {
-        if(e)
-        {
-            isValid(false, e)
-            return;
-        }
-
+    server.rootResource.addChild(new webdav.PhysicalFile(filePath), e => _(e, () => {
         server.start(options.port + index);
 
         var wfs = Client(
@@ -68,13 +68,7 @@ module.exports = (test, options, index) => test('etag of physical file', isValid
                     return;
                 }
                 
-                wfs.writeFile('/testFile.txt', 'New content', (e) => {
-                    if(e)
-                    {
-                        isValid(false, e);
-                        return;
-                    }
-
+                wfs.writeFile('/testFile.txt', 'New content', (e) => _(e, () => {
                     propfind((doc) => {
                         const etag3 = doc['D:multistatus'][0]['D:response'][0]['D:propstat'][0]['D:prop'][0]['D:getetag'][0]._text[0];
                         if(etag1 === etag3)
@@ -82,8 +76,8 @@ module.exports = (test, options, index) => test('etag of physical file', isValid
                         else
                             isValid(true);
                     })
-                })
+                }))
             })
         })
-    });
+    }));
 })

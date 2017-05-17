@@ -7,6 +7,12 @@ module.exports = (test, options, index) => test('stat of physical resources', is
 {
     var server = new webdav.WebDAVServer();
     isValid = isValid.multiple(2, server);
+    const _ = (e, cb) => {
+        if(e)
+            isValid(false, e);
+        else
+            cb();
+    }
 
     const content = 'Content!!!';
 
@@ -16,26 +22,14 @@ module.exports = (test, options, index) => test('stat of physical resources', is
         fs.mkdirSync(folderPath);
 
     const folder = new webdav.PhysicalFolder(folderPath);
-    server.rootResource.addChild(folder, e => {
-        if(e)
-        {
-            isValid(false, e)
-            return;
-        }
-
+    server.rootResource.addChild(folder, e => _(e, () => {
         const fileName = 'testFile.txt';
         const filePath = path.join(folderPath, fileName);
 
         if(!fs.existsSync(filePath))
             fs.writeFileSync(filePath, content);
 
-        folder.addChild(new webdav.PhysicalFile(filePath), e => {
-            if(e)
-            {
-                isValid(false, e)
-                return;
-            }
-
+        folder.addChild(new webdav.PhysicalFile(filePath), e => _(e, () => {
             server.start(options.port + index);
 
             var wfs = Client(
@@ -49,6 +43,6 @@ module.exports = (test, options, index) => test('stat of physical resources', is
             wfs.stat('/' + folderName, (e, stat) => {
                 isValid(!e && stat.isDirectory(), 'Folder error');
             })
-        });
-    });
+        }));
+    }));
 })

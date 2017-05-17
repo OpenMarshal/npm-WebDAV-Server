@@ -13,6 +13,12 @@ module.exports = (test, options, index) => test('read a virtual file', isValid =
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(Object.keys(files).length + 1, server);
+    const _ = (e, cb) => {
+        if(e)
+            isValid(false, e);
+        else
+            cb();
+    }
 
     var wfs = Client(
         'http://127.0.0.1:' + (options.port + index)
@@ -26,13 +32,7 @@ module.exports = (test, options, index) => test('read a virtual file', isValid =
         if(!files[fileName])
             files[fileName] = '';
 
-        server.rootResource.addChild(file, e => {
-            if(e)
-            {
-                isValid(false, e)
-                return;
-            }
-
+        server.rootResource.addChild(file, e => _(e, () => {
             wfs.readFile('/' + fileName, (e, content) => {
                 if(e)
                     isValid(false, e)
@@ -40,7 +40,7 @@ module.exports = (test, options, index) => test('read a virtual file', isValid =
                     isValid(content.toString() === files[fileName].toString(), 'Received : ' + content.toString() + ' but expected : ' + files[fileName].toString());
             })
             
-        });
+        }));
     }
 
     wfs.readFile('/fileNotFound.txt', (e, content) => {
