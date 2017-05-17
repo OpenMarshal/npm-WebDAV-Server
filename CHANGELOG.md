@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.1
+
+### Documentation
+* Added what will be included in the future release *[6495a73](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6495a73)*
+
 ## 0.5.0
 
 ### New features
