@@ -8,6 +8,7 @@ export declare class FSPath {
     getParent(): FSPath;
     hasParent(): boolean;
     removeRoot(): void;
+    getChildPath(childName: string): FSPath;
     clone(): FSPath;
     toString(): string;
 }

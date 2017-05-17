@@ -48,6 +48,13 @@ export class FSPath
         this.paths.splice(0, 1);
     }
 
+    getChildPath(childName : string) : FSPath
+    {
+        const path = this.clone();
+        path.paths.push(childName);
+        return path;
+    }
+
     clone() : FSPath
     {
         return new FSPath(this);
