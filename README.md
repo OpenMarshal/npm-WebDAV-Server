@@ -24,6 +24,14 @@ It implements the following methods :
 
 Find more details on the process at [https://github.com/OpenMarshal/npm-WebDAV-Server/projects/1](https://github.com/OpenMarshal/npm-WebDAV-Server/projects/1).
 
+The next minor/major upgrade will include :
+* User management/authentication
+* Lock/Unlock methods (allow to lock a resource)
+
+The next minor/major upgrade will **maybe** include :
+* The ability to save/restore the state of the server (tree of resources, etc)
+* Privileges management
+
 This project rely upon [RFC4918](http://www.webdav.org/specs/rfc4918.html).
 
 # Install
