@@ -1,7 +1,7 @@
 import { IResource, SimpleCallback, ReturnCallback, Return2Callback, ResourceType } from '../IResource'
 import { PhysicalFSManager } from '../../manager/PhysicalFSManager'
-import { FSManager, FSPath } from '../../manager/FSManager'
 import { StandardResource } from '../std/StandardResource'
+import { FSManager } from '../../manager/FSManager'
 import * as path from 'path'
 import * as fs from 'fs'
 

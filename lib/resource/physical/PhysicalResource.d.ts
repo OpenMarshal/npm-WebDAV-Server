@@ -1,6 +1,6 @@
 import { IResource, SimpleCallback, ReturnCallback, Return2Callback, ResourceType } from '../IResource';
-import { FSManager } from '../../manager/FSManager';
 import { StandardResource } from '../std/StandardResource';
+import { FSManager } from '../../manager/FSManager';
 export declare abstract class PhysicalResource extends StandardResource {
     realPath: string;
     name: string;
