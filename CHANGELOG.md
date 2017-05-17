@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.5.0
+
+### New features
+* Implemented the COPY method *[2f45f4b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2f45f4b)*
+
+### Documentation
+* Added the method COPY to the supported methods *[ccc310f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/ccc310f)*
+
+### Tests
+* Cleaned tests with error-macro *[c167e14](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c167e14)*
+* Added tests for the COPY method *[1629103](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/1629103)*
+
+### Other
+* Cleaned imports on the PhysicalResource class *[5115994](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5115994)*
+* Added getChildPath() method to FSPath class *[d1053ec](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d1053ec)*
+
 ## 0.4.0
 
 ### New features
