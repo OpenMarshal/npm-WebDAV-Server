@@ -53,7 +53,6 @@
         "arrow-return-shorthand": true,
         "callable-types": true,
         "class-name": true,
-        "newline-before-return": true,
         "new-parens": true,
         "no-angle-bracket-type-assertion": true,
         "no-consecutive-blank-lines": [ true, 3 ],
