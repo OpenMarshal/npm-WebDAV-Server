@@ -23,8 +23,8 @@
         "typedef-whitespace": [
             true,
             {
-                "call-signature": "nospace",
-                "index-signature": "nospace",
+                "call-signature": "onespace",
+                "index-signature": "onespace",
                 "parameter": "nospace",
                 "property-declaration": "nospace",
                 "variable-declaration": "nospace"
