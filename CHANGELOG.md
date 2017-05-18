@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.5.2
+
+### Documentation
+* Added TypeScript types to package.json *[766088b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/766088b)*
+
+### Bug fix
+* Trying to fix CodeClimate and upgrading tslint rules :
+    * *[3c8aff1](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3c8aff1)*
+    * *[e4293af](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e4293af)*
+    * *[5c3ee3e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5c3ee3e)*
+    * *[fd00e04](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/fd00e04)*
+    * *[bfca9b9](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/bfca9b9)*
+    * *[4ad3676](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/4ad3676)*
+    * *[ac6fea6](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/ac6fea6)*
+
 ## 0.5.1
 
 ### Documentation
