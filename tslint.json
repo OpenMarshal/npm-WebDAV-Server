@@ -20,23 +20,7 @@
         "no-var-requires": true,
         "prefer-for-of": true,
         "typedef": false,
-        "typedef-whitespace": [
-            true,
-            {
-                "call-signature": "onespace",
-                "index-signature": "onespace",
-                "parameter": "onespace",
-                "property-declaration": "onespace",
-                "variable-declaration": "onespace"
-            },
-            {
-                "call-signature": "onespace",
-                "index-signature": "onespace",
-                "parameter": "onespace",
-                "property-declaration": "onespace",
-                "variable-declaration": "onespace"
-            }
-        ],
+        "typedef-whitespace": false,
         "no-arg": true,
         "no-conditional-assignment": true,
         "no-debugger": true,
