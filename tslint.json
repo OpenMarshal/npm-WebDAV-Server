@@ -19,18 +19,7 @@
         "no-reference": true,
         "no-var-requires": true,
         "prefer-for-of": true,
-        "typedef": [
-            true,
-            "call-signature",
-            "arrow-call-signature",
-            "parameter",
-            "arrow-parameter",
-            "property-declaration",
-            "variable-declaration",
-            "member-variable-declaration",
-            "object-destructuring",
-            "array-destructuring"
-        ],
+        "typedef": false,
         "typedef-whitespace": [
             true,
             {
