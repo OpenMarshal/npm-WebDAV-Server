@@ -127,8 +127,18 @@ export abstract class XML
         const lindex = Math.max(li1 === li2 ? -1 : li1, name.lastIndexOf('/')) + 1;
         if(lindex !== 0)
         {
-            attributes['xmlns:x'] = name.substring(0, lindex);
-            name = 'x:' + name.substring(lindex);
+            let kname = 'a';
+            const value = name.substring(0, lindex);
+            while(attributes['xmlns:' + kname] !== undefined || value.indexOf(kname + ':') === -1)
+            {
+                const newChar = kname.charCodeAt(0) + 1;
+                if(newChar > 'z'.charCodeAt(0))
+                    kname = 'x' + String.fromCharCode(newChar);
+                else
+                    kname = kname.substr(0, kname.length - 1) + String.fromCharCode(newChar);
+            }
+            attributes['xmlns:' + kname] = value;
+            name = kname + ':' + name.substring(lindex);
         }
 
         const result = {
