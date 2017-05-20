@@ -25,8 +25,8 @@
 * Implemented tests for the LOCK and UNLOCK methods *[43f934f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/43f934f)*
 
 ### Bug fix
-* Fixed the '<ns1>:<ns2>:<name>' error leading to 'x:<ns2>:<name> xmlns:x='<ns1>' *[f3e15a4](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/f3e15a4)*
-* Fixed namespace creation on '<namespace>:<name>' tag names *[76d8bb0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/76d8bb0)*
+* Fixed the '\<ns1>:\<ns2>:\<name>' error leading to 'x:\<ns2>:\<name> xmlns:x='\<ns1>' *[f3e15a4](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/f3e15a4)*
+* Fixed namespace creation on '\<namespace>:\<name>' tag names *[76d8bb0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/76d8bb0)*
 
 ## 0.5.2
 
