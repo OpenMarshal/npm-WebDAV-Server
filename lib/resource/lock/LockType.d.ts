@@ -3,4 +3,5 @@ export declare class LockType {
     static Write: LockType;
     constructor(value: string);
     toString(): string;
+    isSame(scope: LockType): boolean;
 }

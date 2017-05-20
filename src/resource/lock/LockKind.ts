@@ -11,6 +11,6 @@ export class LockKind
 
     isSimilar(lockKind : LockKind)
     {
-        return this.scope === lockKind.scope && this.type === lockKind.type;
+        return this.scope.isSame(lockKind.scope) && this.type.isSame(lockKind.type);
     }
 }

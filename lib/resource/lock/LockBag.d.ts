@@ -1,12 +1,14 @@
 import { LockKind } from './LockKind';
+import { LockType } from './LockType';
 import { Lock } from './Lock';
 export declare class LockBag {
     locks: Lock[];
     constructor();
-    getLocks(lockKind: LockKind): Lock[];
+    getLocks(lockType?: LockType): Lock[];
+    getLock(uuid: string): Lock;
     setLock(lock: Lock): boolean;
-    removeLock(uuid: string, owner: string): void;
-    canRemoveLock(uuid: string, owner: string): boolean;
+    removeLock(uuid: string): void;
+    canRemoveLock(uuid: string): boolean;
     canLock(lockKind: LockKind): boolean;
     private notExpired(l);
     private cleanLocks();

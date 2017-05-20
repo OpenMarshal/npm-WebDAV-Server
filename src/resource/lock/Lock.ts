@@ -1,4 +1,8 @@
+import { XMLElement } from '../../helper/XML'
 import { LockKind } from './LockKind'
+import { IUser } from '../../user/IUser'
+
+export type LockOwner = string | XMLElement | XMLElement[];
 
 export class Lock
 {
@@ -34,15 +38,17 @@ export class Lock
 
     lockKind : LockKind
     expirationDate : number
-    owner : string
+    owner : LockOwner
     uuid : string
+    user : IUser
 
-    constructor(lockKind : LockKind, owner : string)
+    constructor(lockKind : LockKind, user : IUser, owner : LockOwner)
     {
         this.expirationDate = Date.now() + lockKind.timeout;
         this.lockKind = lockKind;
         this.owner = owner;
         this.uuid = Lock.generateUUID(this.expirationDate);
+        this.user = user;
     }
 
     expired() : boolean

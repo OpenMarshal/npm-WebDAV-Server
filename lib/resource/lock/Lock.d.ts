@@ -1,10 +1,14 @@
+import { XMLElement } from '../../helper/XML';
 import { LockKind } from './LockKind';
+import { IUser } from '../../user/IUser';
+export declare type LockOwner = string | XMLElement | XMLElement[];
 export declare class Lock {
     static generateUUID(expirationDate: number): string;
     lockKind: LockKind;
     expirationDate: number;
-    owner: string;
+    owner: LockOwner;
     uuid: string;
-    constructor(lockKind: LockKind, owner: string);
+    user: IUser;
+    constructor(lockKind: LockKind, user: IUser, owner: LockOwner);
     expired(): boolean;
 }

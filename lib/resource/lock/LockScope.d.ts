@@ -4,4 +4,5 @@ export declare class LockScope {
     static Exclusive: LockScope;
     constructor(value: string);
     toString(): string;
+    isSame(scope: LockScope): boolean;
 }

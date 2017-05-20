@@ -10,4 +10,9 @@ export class LockType
     {
         return this.value;
     }
+
+    isSame(scope : LockType) : boolean
+    {
+        return scope.value.toLowerCase() === this.value.toLowerCase();
+    }
 }

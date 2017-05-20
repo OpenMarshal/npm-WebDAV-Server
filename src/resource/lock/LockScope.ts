@@ -11,4 +11,9 @@ export class LockScope
     {
         return this.value;
     }
+
+    isSame(scope : LockScope) : boolean
+    {
+        return scope.value.toLowerCase() === this.value.toLowerCase();
+    }
 }
