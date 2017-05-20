@@ -7,10 +7,13 @@
 [![License](https://img.shields.io/npm/l/webdav-server.svg)](http://unlicense.org/)
 [![npm Version](https://img.shields.io/npm/v/webdav-server.svg)](https://www.npmjs.com/package/webdav-server)
 
-# Disclaimer
+# Disclaimer / Project information
 
-This module is not complete yet.
-It implements the following methods :
+Find more details on the development process at [https://github.com/OpenMarshal/npm-WebDAV-Server/projects/1](https://github.com/OpenMarshal/npm-WebDAV-Server/projects/1).
+
+This project rely upon the [RFC4918](http://www.webdav.org/specs/rfc4918.html).
+
+The full set of the standard WebDAV methods are implemented :
 * HEAD (resource ping)
 * GET (file get content)
 * MKCOL (directory creation)
@@ -21,18 +24,11 @@ It implements the following methods :
 * DELETE (delete a resource)
 * MOVE (move a resource)
 * COPY (copy a resource)
+* LOCK/UNLOCK (reserve a resource for use)
 
-Find more details on the process at [https://github.com/OpenMarshal/npm-WebDAV-Server/projects/1](https://github.com/OpenMarshal/npm-WebDAV-Server/projects/1).
+This is an active project. Do not hesitate to post an issue if you have an idea or if you encounter a problem.
 
-The next minor/major upgrade will include :
-* User management/authentication
-* Lock/Unlock methods (allow to lock a resource)
-
-The next minor/major upgrade will **maybe** include :
-* The ability to save/restore the state of the server (tree of resources, etc)
-* Privileges management
-
-This project rely upon [RFC4918](http://www.webdav.org/specs/rfc4918.html).
+Currently working on providing a real documentation of the module.
 
 # Install
 
