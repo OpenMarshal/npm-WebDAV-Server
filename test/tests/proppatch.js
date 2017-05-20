@@ -50,7 +50,7 @@ module.exports = (test, options, index) => test('PROPPATCH method', isValid =>
                 }
                 catch(e)
                 {
-                    isValid(false, 'Bad response body for ' + (isJSON ? 'JSON' : 'XML') + ' reponse.');
+                    isValid(false, 'Bad response body for ' + (isJSON ? 'JSON' : 'XML') + ' response. (' + e + ')');
                 }
             }
 
@@ -66,8 +66,10 @@ module.exports = (test, options, index) => test('PROPPATCH method', isValid =>
                 tryCatch(() => {
                     const xml = isJSON ? JSON.parse(body) : xmljs.xml2js(body, { compact: true, alwaysArray: true });
                     const response = xml['D:multistatus'][0]['D:response'][0];
+                    const prop = response['D:propstat'][0]['D:prop'][0];
+                    const authorsKey = Object.keys(prop).find((k) => k.endsWith(':Authors'));
                 
-                    if(!(response['D:propstat'][0]['D:prop'][0]['x:Authors'].length === 1 &&
+                    if(!(prop[authorsKey].length === 1 &&
                         response['D:propstat'][0]['D:status'][0]._text[0].indexOf('HTTP/1.1 20') === 0 &&
                         response['D:href'][0]._text[0] === url))
                     {
@@ -85,8 +87,9 @@ module.exports = (test, options, index) => test('PROPPATCH method', isValid =>
                         tryCatch(() => {
                             const xml = isJSON ? JSON.parse(body) : xmljs.xml2js(body, { compact: true, alwaysArray: true });
                             const prop = xml['D:multistatus'][0]['D:response'][0]['D:propstat'][0]['D:prop'][0];
+                            const authorsKey = Object.keys(prop).find((k) => k.endsWith(':Authors'));
 
-                            if(prop['x:Authors'].length !== 1)
+                            if(prop[authorsKey].length !== 1)
                             {
                                 isValid(false);
                                 return;
@@ -111,8 +114,9 @@ module.exports = (test, options, index) => test('PROPPATCH method', isValid =>
                                     tryCatch(() => {
                                         const xml = isJSON ? JSON.parse(body) : xmljs.xml2js(body, { compact: true, alwaysArray: true });
                                         const prop = xml['D:multistatus'][0]['D:response'][0]['D:propstat'][0]['D:prop'][0];
+                                        const authorsKey = Object.keys(prop).find((k) => k.endsWith(':Authors'));
 
-                                        isValid(prop['x:Authors'] === undefined);
+                                        isValid(authorsKey === undefined);
                                     });
                                 }));
                             }));
