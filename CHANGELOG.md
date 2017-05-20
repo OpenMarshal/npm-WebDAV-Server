@@ -1,5 +1,33 @@
 # Changelog
 
+## 1.0.0
+
+### New features
+* Implemented LOCK and UNLOCK methods *[a76f555](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a76f555)*
+* Implemented the User management *[5e7325a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5e7325a)*
+* Implemented Basic and Digest HTTP authentication *[5e7325a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5e7325a)*
+* Implemented the structure of the privilege management *[5e7325a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5e7325a)*
+* Implemented some privilege/lock checkers *[5e7325a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5e7325a)*
+* Can now convert multi ':' tag names into namespace when producing XML response *[3fbfb17](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3fbfb17)*
+* Now check attributes to avoid namespace shortname collision when producing XML response *[87f7a68](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/87f7a68)*
+
+### Changes
+* Upgraded the lock management *[299e307](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/299e307)*
+* Added some errors as standard errors for better error management *[8a051b2](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/8a051b2)*
+
+### Documentation
+* Updated the 'disclaimer' section *[364152e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/364152e)*
+* Fixed bad alt value for npm badge *[3c54594](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3c54594)*
+
+### Tests
+* Updated the tests about XML responses *[af18fcd](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/af18fcd)*
+* Implemented tests for the Authentication *[2f02c2b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2f02c2b)*
+* Implemented tests for the LOCK and UNLOCK methods *[43f934f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/43f934f)*
+
+### Bug fix
+* Fixed the '<ns1>:<ns2>:<name>' error leading to 'x:<ns2>:<name> xmlns:x='<ns1>' *[f3e15a4](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/f3e15a4)*
+* Fixed namespace creation on '<namespace>:<name>' tag names *[76d8bb0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/76d8bb0)*
+
 ## 0.5.2
 
 ### Documentation
