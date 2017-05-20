@@ -122,10 +122,9 @@ export abstract class XML
         if(!attributes)
             attributes = {};
         
-        let lindex = name.lastIndexOf('/');
-        if(lindex !== -1)
+        const lindex = Math.max(name.lastIndexOf(':'), name.lastIndexOf('/')) + 1;
+        if(lindex !== 0)
         {
-            ++lindex;
             attributes['xmlns:x'] = name.substring(0, lindex);
             name = 'x:' + name.substring(lindex);
         }
