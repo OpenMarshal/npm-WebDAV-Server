@@ -15,11 +15,12 @@ export declare abstract class StandardResource implements IResource {
     isSame(resource: IResource, callback: ReturnCallback<boolean>): void;
     isOnTheSameFSWith(resource: IResource, callback: ReturnCallback<boolean>): void;
     getAvailableLocks(callback: ReturnCallback<LockKind[]>): void;
-    getLocks(lockKind: LockKind, callback: ReturnCallback<Lock[]>): void;
+    getLocks(callback: ReturnCallback<Lock[]>): void;
     setLock(lock: Lock, callback: SimpleCallback): void;
-    removeLock(uuid: string, owner: string, callback: ReturnCallback<boolean>): void;
-    canRemoveLock(uuid: string, owner: string, callback: ReturnCallback<boolean>): void;
+    removeLock(uuid: string, callback: ReturnCallback<boolean>): void;
+    canRemoveLock(uuid: string, callback: ReturnCallback<boolean>): void;
     canLock(lockKind: LockKind, callback: ReturnCallback<boolean>): void;
+    getLock(uuid: string, callback: ReturnCallback<Lock>): void;
     setProperty(name: string, value: ResourcePropertyValue, callback: SimpleCallback): void;
     getProperty(name: string, callback: ReturnCallback<ResourcePropertyValue>): void;
     removeProperty(name: string, callback: SimpleCallback): void;

@@ -1,17 +1,23 @@
 /// <reference types="node" />
+import { WebDAVServerOptions } from './WebDAVServerOptions';
 import { MethodCallArgs, WebDAVRequest } from './WebDAVRequest';
 import { IResource, ReturnCallback } from '../resource/Resource';
-import { WebDAVServerOptions } from './WebDAVServerOptions';
+import { HTTPAuthentication } from '../user/authentication/HTTPAuthentication';
+import { IPrivilegeManager } from '../user/privilege/IPrivilegeManager';
 import { FSPath } from '../manager/FSManager';
+import { IUserManager } from '../user/IUserManager';
 import * as http from 'http';
 export { WebDAVServerOptions } from './WebDAVServerOptions';
 export declare class WebDAVServer {
+    httpAuthentication: HTTPAuthentication;
+    privilegeManager: IPrivilegeManager;
     rootResource: IResource;
+    userManager: IUserManager;
+    options: WebDAVServerOptions;
     methods: object;
     protected beforeManagers: WebDAVRequest[];
     protected afterManagers: WebDAVRequest[];
     protected unknownMethod: WebDAVRequest;
-    protected options: WebDAVServerOptions;
     protected server: http.Server;
     constructor(options?: WebDAVServerOptions);
     getResourceFromPath(path: FSPath | string[] | string, callback: ReturnCallback<IResource>): any;
@@ -22,7 +28,6 @@ export declare class WebDAVServer {
     method(name: string, manager: WebDAVRequest): void;
     beforeRequest(manager: WebDAVRequest): void;
     afterRequest(manager: WebDAVRequest): void;
-    protected createMethodCallArgs(req: http.IncomingMessage, res: http.ServerResponse): MethodCallArgs;
     protected normalizeMethodName(method: string): string;
     protected invokeBARequest(collection: WebDAVRequest[], base: MethodCallArgs, callback: any): void;
     protected invokeBeforeRequest(base: MethodCallArgs, callback: any): void;

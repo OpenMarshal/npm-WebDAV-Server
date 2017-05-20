@@ -65,17 +65,22 @@ export abstract class StandardResource implements IResource
             new LockKind(LockScope.Shared, LockType.Write)
         ])
     }
-    getLocks(lockKind : LockKind, callback : ReturnCallback<Lock[]>)
+    getLocks(callback : ReturnCallback<Lock[]>)
     {
-        callback(null, this.lockBag.getLocks(lockKind));
+        callback(null, this.lockBag.getLocks());
     }
     setLock(lock : Lock, callback : SimpleCallback)
     {
         const locked = this.lockBag.setLock(lock);
+        this.updateLastModified();
         callback(locked ? null : new Error('Can\'t lock the resource.'));
     }
-    removeLock(uuid : string, owner : string, callback : ReturnCallback<boolean>)
+    removeLock(uuid : string, callback : ReturnCallback<boolean>)
     {
+        this.lockBag.removeLock(uuid);
+        this.updateLastModified();
+        callback(null, true);
+        /*
         this.getChildren((e, children) => {
             if(e)
             {
@@ -85,7 +90,7 @@ export abstract class StandardResource implements IResource
 
             let nb = children.length + 1;
             children.forEach((child) => {
-                child.canRemoveLock(uuid, owner, go);
+                child.canRemoveLock(uuid, go);
             });
             go(null, true);
 
@@ -106,20 +111,24 @@ export abstract class StandardResource implements IResource
                 --nb;
                 if(nb === 0)
                 {
-                    this.lockBag.removeLock(uuid, owner);
+                    this.lockBag.removeLock(uuid);
                     this.updateLastModified();
                     callback(null, true);
                 }
             }
-        })
+        })*/
     }
-    canRemoveLock(uuid : string, owner : string, callback : ReturnCallback<boolean>)
+    canRemoveLock(uuid : string, callback : ReturnCallback<boolean>)
     {
-        callback(null, this.lockBag.canRemoveLock(uuid, owner));
+        callback(null, this.lockBag.canRemoveLock(uuid));
     }
     canLock(lockKind : LockKind, callback : ReturnCallback<boolean>)
     {
         callback(null, this.lockBag.canLock(lockKind));
+    }
+    getLock(uuid : string, callback : ReturnCallback<Lock>)
+    {
+        callback(null, this.lockBag.getLock(uuid));
     }
     
     // ****************************** Properties ****************************** //

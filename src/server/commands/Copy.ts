@@ -1,8 +1,8 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
-import { IResource, ResourceType, Simpl_ } from '../../resource/Resource'
+import { IResource, ResourceType, SimpleCallback } from '../../resource/Resource'
 import { FSPath } from '../../manager/FSManager'
 
-function copyAllProperties(source : IResource, destination : IResource, callback : Simpl_)
+function copyAllProperties(source : IResource, destination : IResource, callback : SimpleCallback)
 {
     source.getProperties((e, props) => {
         if(e)
@@ -44,7 +44,7 @@ function copyAllProperties(source : IResource, destination : IResource, callback
     })
 }
 
-function copy(source : IResource, rDest : IResource, destination : FSPath, callback : Simpl_)
+function copy(arg : MethodCallArgs, source : IResource, rDest : IResource, destination : FSPath, callback : SimpleCallback)
 {
     // Error wrapper
     function _(error : Error, cb)
@@ -55,68 +55,74 @@ function copy(source : IResource, rDest : IResource, destination : FSPath, callb
             cb();
     }
 
-    source.type((e, type) => _(e, () => {
-        const dest = rDest.fsManager.newResource(destination.toString(), destination.fileName(), type, rDest);
+    arg.requirePrivilege([ 'canGetType', 'canRead', 'canGetChildren', 'canGetProperties' ], source, () => {
+        arg.requirePrivilege([ 'canAddChild' ], rDest, () => {
+            source.type((e, type) => _(e, () => {
+                const dest = rDest.fsManager.newResource(destination.toString(), destination.fileName(), type, rDest);
 
-        dest.create((e) => _(e, () => {
-            rDest.addChild(dest, (e) => _(e, () => {
-                copyAllProperties(source, dest, (e) => _(e, () => {
-                    if(!type.isFile)
-                    {
-                        next();
-                        return;
-                    }
-
-                    source.read((e, data) => _(e, () => {
-                        dest.write(data, (e) => _(e, next))
-                    }))
-
-                    function next()
-                    {
-                        if(!type.isDirectory)
-                        {
-                            callback(null);
-                            return;
-                        }
-
-                        source.getChildren((e, children) => _(e, () => {
-                            let nb = children.length;
-                            function done(error)
-                            {
-                                if(nb <= 0)
-                                    return;
-                                if(error)
+                arg.requirePrivilege([ 'canCreate', 'canSetProperty', 'canWrite' ], dest, () => {
+                    dest.create((e) => _(e, () => {
+                        rDest.addChild(dest, (e) => _(e, () => {
+                            copyAllProperties(source, dest, (e) => _(e, () => {
+                                if(!type.isFile)
                                 {
-                                    nb = -1;
-                                    callback(e);
+                                    next();
                                     return;
                                 }
 
-                                --nb;
-                                if(nb === 0)
-                                    callback(null);
-                            }
+                                source.read((e, data) => _(e, () => {
+                                    dest.write(data, (e) => _(e, next))
+                                }))
 
-                            if(nb === 0)
-                            {
-                                callback(null);
-                                return;
-                            }
+                                function next()
+                                {
+                                    if(!type.isDirectory)
+                                    {
+                                        callback(null);
+                                        return;
+                                    }
 
-                            children.forEach((child) => {
-                                child.webName((e, name) => {
-                                    if(e)
-                                        done(e);
-                                    else
-                                        copy(child, dest, destination.getChildPath(name), done);
-                                })
-                            })
+                                    source.getChildren((e, children) => _(e, () => {
+                                        let nb = children.length;
+                                        function done(error)
+                                        {
+                                            if(nb <= 0)
+                                                return;
+                                            if(error)
+                                            {
+                                                nb = -1;
+                                                callback(e);
+                                                return;
+                                            }
+
+                                            --nb;
+                                            if(nb === 0)
+                                                callback(null);
+                                        }
+
+                                        if(nb === 0)
+                                        {
+                                            callback(null);
+                                            return;
+                                        }
+
+                                        children.forEach((child) => {
+                                            child.webName((e, name) => {
+                                                if(e)
+                                                    done(e);
+                                                else
+                                                    copy(arg, child, dest, destination.getChildPath(name), done);
+                                            })
+                                        })
+                                    }))
+                                }
+                            }))
                         }))
-                    }
-                }))
+                    }))
+                })
             }))
-        }))
-    }))
+        })
+    })
 }
 
 export default function(arg : MethodCallArgs, callback)
@@ -151,101 +157,105 @@ export default function(arg : MethodCallArgs, callback)
                 return;
             }
 
-            source.type((e, type) => {
-                if(e)
-                {
-                    arg.setCode(HTTPCodes.InternalServerError);
-                    callback();
-                    return;
-                }
-                
-                function done(overridded : boolean)
-                {
-                    copy(source, rDest, destination, (e) => {
+            arg.requirePrivilege([ 'canGetType' ], source, () => {
+                arg.requirePrivilege([ 'canGetChildren' ], rDest, () => {
+                    source.type((e, type) => {
                         if(e)
-                            arg.setCode(HTTPCodes.InternalServerError);
-                        else if(overridded)
-                            arg.setCode(HTTPCodes.NoContent);
-                        else
-                            arg.setCode(HTTPCodes.Created);
-                        callback();
-                    })
-                }
-
-                let nb = 0;
-                function go(error, destCollision : IResource)
-                {
-                    if(nb <= 0)
-                        return;
-                    if(error)
-                    {
-                        nb = -1;
-                        arg.setCode(HTTPCodes.InternalServerError);
-                        callback();
-                        return;
-                    }
-                    if(destCollision)
-                    {
-                        nb = -1;
-
-                        if(!overwrite)
-                        { // No overwrite allowed
+                        {
                             arg.setCode(HTTPCodes.InternalServerError);
                             callback();
                             return;
                         }
+                        
+                        function done(overridded : boolean)
+                        {
+                            copy(arg, source, rDest, destination, (e) => {
+                                if(e)
+                                    arg.setCode(HTTPCodes.InternalServerError);
+                                else if(overridded)
+                                    arg.setCode(HTTPCodes.NoContent);
+                                else
+                                    arg.setCode(HTTPCodes.Created);
+                                callback();
+                            })
+                        }
 
-                        destCollision.type((e, destType) => {
-                            if(e)
-                            {
-                                callback(e);
+                        let nb = 0;
+                        function go(error, destCollision : IResource)
+                        {
+                            if(nb <= 0)
                                 return;
-                            }
-
-                            if(destType !== type)
-                            { // Type collision
+                            if(error)
+                            {
+                                nb = -1;
                                 arg.setCode(HTTPCodes.InternalServerError);
                                 callback();
                                 return;
                             }
-                            
-                            destCollision.delete((e) => {
-                                if(e)
-                                {
-                                    callback(e);
+                            if(destCollision)
+                            {
+                                nb = -1;
+
+                                if(!overwrite)
+                                { // No overwrite allowed
+                                    arg.setCode(HTTPCodes.InternalServerError);
+                                    callback();
                                     return;
                                 }
 
-                                done(true);
+                                destCollision.type((e, destType) => {
+                                    if(e)
+                                    {
+                                        callback(e);
+                                        return;
+                                    }
+
+                                    if(destType !== type)
+                                    { // Type collision
+                                        arg.setCode(HTTPCodes.InternalServerError);
+                                        callback();
+                                        return;
+                                    }
+                                    
+                                    destCollision.delete((e) => {
+                                        if(e)
+                                        {
+                                            callback(e);
+                                            return;
+                                        }
+
+                                        done(true);
+                                    })
+                                })
+                                return;
+                            }
+
+                            --nb;
+                            if(nb === 0)
+                            {
+                                done(false);
+                            }
+                        }
+
+                        // Find child name collision
+                        rDest.getChildren((e, children) => {
+                            if(e)
+                            {
+                                go(e, null);
+                                return;
+                            }
+
+                            nb += children.length;
+                            if(nb === 0)
+                            {
+                                done(false);
+                                return;
+                            }
+                            children.forEach((child) => {
+                                child.webName((e, name) => {
+                                    go(e, name === destination.fileName() ? child : null);
+                                })
                             })
-                        })
-                        return;
-                    }
-
-                    --nb;
-                    if(nb === 0)
-                    {
-                        done(false);
-                    }
-                }
-
-                // Find child name collision
-                rDest.getChildren((e, children) => {
-                    if(e)
-                    {
-                        go(e, null);
-                        return;
-                    }
-
-                    nb += children.length;
-                    if(nb === 0)
-                    {
-                        done(false);
-                        return;
-                    }
-                    children.forEach((child) => {
-                        child.webName((e, name) => {
-                            go(e, name === destination.fileName() ? child : null);
                         })
                     })
                 })

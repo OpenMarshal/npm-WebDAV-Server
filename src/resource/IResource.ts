@@ -1,6 +1,7 @@
 import { FSManager, FSPath } from '../manager/FSManager'
 import { XMLElement } from '../helper/XML'
 import { LockKind } from './lock/LockKind'
+import { LockType } from './lock/LockType'
 import { Lock } from './lock/Lock'
 import * as crypto from 'crypto'
 
@@ -53,12 +54,13 @@ export interface IResource
     size(callback : ReturnCallback<number>)
     
     // ****************************** Locks ****************************** //
-    getLocks(lockKind : LockKind, callback : ReturnCallback<Lock[]>)
+    getLocks(callback : ReturnCallback<Lock[]>)
     setLock(lock : Lock, callback : SimpleCallback)
-    removeLock(uuid : string, owner : string, callback : ReturnCallback<boolean>)
+    removeLock(uuid : string, callback : ReturnCallback<boolean>)
     canLock(lockKind : LockKind, callback : ReturnCallback<boolean>)
     getAvailableLocks(callback : ReturnCallback<LockKind[]>)
-    canRemoveLock(uuid : string, owner : string, callback : ReturnCallback<boolean>)
+    canRemoveLock(uuid : string, callback : ReturnCallback<boolean>)
+    getLock(uuid : string, callback : ReturnCallback<Lock>)
 
     // ****************************** Children ****************************** //
     addChild(resource : IResource, callback : SimpleCallback)

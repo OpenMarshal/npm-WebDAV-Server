@@ -1,7 +1,13 @@
+import { WebDAVServerOptions, setDefaultServerOptions } from './WebDAVServerOptions'
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from './WebDAVRequest'
 import { RootResource, IResource, ReturnCallback } from '../resource/Resource'
-import { WebDAVServerOptions } from './WebDAVServerOptions'
+import { FakePrivilegeManager } from '../user/privilege/FakePrivilegeManager'
+import { HTTPAuthentication } from '../user/authentication/HTTPAuthentication'
+import { IPrivilegeManager } from '../user/privilege/IPrivilegeManager'
+import { SimpleUserManager } from '../user/simple/SimpleUserManager'
 import { FSManager, FSPath } from '../manager/FSManager'
+import { IUserManager } from '../user/IUserManager'
+import { Errors } from '../Errors'
 import Commands from './commands/Commands'
 import * as http from 'http'
 
@@ -9,22 +15,29 @@ export { WebDAVServerOptions } from './WebDAVServerOptions'
 
 export class WebDAVServer
 {
+    public httpAuthentication : HTTPAuthentication
+    public privilegeManager : IPrivilegeManager
     public rootResource : IResource
+    public userManager : IUserManager
+    public options : WebDAVServerOptions
     public methods : object
 
     protected beforeManagers : WebDAVRequest[]
     protected afterManagers : WebDAVRequest[]
     protected unknownMethod : WebDAVRequest
-    protected options : WebDAVServerOptions
     protected server : http.Server
 
     constructor(options ?: WebDAVServerOptions)
     {
         this.beforeManagers = [];
-        this.rootResource = new RootResource();
         this.afterManagers = [];
         this.methods = {};
-        this.options = options;
+        this.options = setDefaultServerOptions(options);
+
+        this.httpAuthentication = this.options.httpAuthentication;
+        this.privilegeManager = this.options.privilegeManager;
+        this.rootResource = this.options.rootResource;
+        this.userManager = this.options.userManager;
 
         // Implement all methods in commands/Commands.ts
         for(const k in Commands)
@@ -112,40 +125,51 @@ export class WebDAVServer
             if(!method)
                 method = this.unknownMethod;
 
-            const base : MethodCallArgs = this.createMethodCallArgs(req, res)
+            MethodCallArgs.create(this, req, res, (e, base) => {
+                if(e)
+                {
+                    if(e === Errors.AuenticationPropertyMissing)
+                        base.setCode(HTTPCodes.Unauthorized);
+                    else
+                        base.setCode(HTTPCodes.InternalServerError);
+                    res.end();
+                    return;
+                }
 
-            if(!method.chunked)
-            {
-                let data = '';
-                const go = () =>
+                if(!method.chunked)
                 {
-                    base.data = data;
-                    this.invokeBeforeRequest(base, () => {
-                        method(base, () =>
-                        {
-                            res.end();
-                            this.invokeAfterRequest(base, null);
+                    let data = '';
+                    const go = () =>
+                    {
+                        base.data = data;
+                        this.invokeBeforeRequest(base, () => {
+                            base.exit = () =>
+                            {
+                                res.end();
+                                this.invokeAfterRequest(base, null);
+                            };
+                            method(base, base.exit);
+                        })
+                    }
+                    
+                    if(base.contentLength === 0)
+                    {
+                        go();
+                    }
+                    else
+                    {
+                        req.on('data', (chunk) => {
+                            data += chunk.toString();
+                            if(data.length >= base.contentLength)
+                            {
+                                if(data.length > base.contentLength)
+                                    data = data.substring(0, base.contentLength);
+                                go();
+                            }
                         });
-                    })
+                    }
                 }
-                
-                if(base.contentLength === 0)
-                {
-                    go();
-                }
-                else
-                {
-                    req.on('data', (chunk) => {
-                        data += chunk.toString();
-                        if(data.length >= base.contentLength)
-                        {
-                            if(data.length > base.contentLength)
-                                data = data.substring(0, base.contentLength);
-                            go();
-                        }
-                    });
-                }
-            }
+            })
         })
         this.server.listen(port);
     }
@@ -173,16 +197,6 @@ export class WebDAVServer
     afterRequest(manager : WebDAVRequest)
     {
         this.afterManagers.push(manager);
-    }
-
-    protected createMethodCallArgs(req : http.IncomingMessage, res : http.ServerResponse) : MethodCallArgs
-    {
-        return new MethodCallArgs(
-            this,
-            req,
-            res,
-            null
-        )
     }
 
     protected normalizeMethodName(method : string) : string

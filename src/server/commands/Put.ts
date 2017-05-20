@@ -18,24 +18,28 @@ function createResource(arg : MethodCallArgs, callback, validCallback : (resourc
             callback();
             return;
         }
-        
-        const resource = r.fsManager.newResource(arg.uri, path.basename(arg.uri), ResourceType.File, r);
-        resource.create((e) => {
-            if(e)
-            {
-                arg.setCode(HTTPCodes.InternalServerError)
-                callback();
-                return;
-            }
-        
-            r.addChild(resource, (e) => {
-                if(e)
-                {
-                    arg.setCode(HTTPCodes.InternalServerError)
-                    callback();
-                }
-                else
-                    validCallback(resource);
+
+        arg.requirePrivilege([ 'canAddChild' ], r, () => {
+            const resource = r.fsManager.newResource(arg.uri, path.basename(arg.uri), ResourceType.File, r);
+            arg.requirePrivilege([ 'canCreate', 'canWrite' ], resource, () => {
+                resource.create((e) => {
+                    if(e)
+                    {
+                        arg.setCode(HTTPCodes.InternalServerError)
+                        callback();
+                        return;
+                    }
+                
+                    r.addChild(resource, (e) => {
+                        if(e)
+                        {
+                            arg.setCode(HTTPCodes.InternalServerError)
+                            callback();
+                        }
+                        else
+                            validCallback(resource);
+                    })
+                })
             })
         })
     })
@@ -43,18 +47,19 @@ function createResource(arg : MethodCallArgs, callback, validCallback : (resourc
 
 export default function(arg : MethodCallArgs, callback)
 {
-
     arg.getResource((e, r) => {
         if(arg.contentLength === 0)
         { // Create file
             if(r)
             { // Resource exists => empty it
-                r.write(new Buffer(0), (e) => {
-                    if(e)
-                        arg.setCode(HTTPCodes.InternalServerError)
-                    else
-                        arg.setCode(HTTPCodes.OK)
-                    callback()
+                arg.requirePrivilege([ 'canWrite' ], r, () => {
+                    r.write(new Buffer(0), (e) => {
+                        if(e)
+                            arg.setCode(HTTPCodes.InternalServerError)
+                        else
+                            arg.setCode(HTTPCodes.OK)
+                        callback()
+                    })
                 })
                 return;
             }
@@ -82,12 +87,14 @@ export default function(arg : MethodCallArgs, callback)
                 return;
             }
 
-            r.write(data, (e) => {
-                if(e)
-                    arg.setCode(HTTPCodes.InternalServerError)
-                else
-                    arg.setCode(HTTPCodes.OK)
-                callback();
+            arg.requirePrivilege([ 'canWrite' ], r, () => {
+                r.write(data, (e) => {
+                    if(e)
+                        arg.setCode(HTTPCodes.InternalServerError)
+                    else
+                        arg.setCode(HTTPCodes.OK)
+                    callback();
+                })
             })
         }
     })

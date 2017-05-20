@@ -1,7 +1,11 @@
+import { requirePrivilege, BasicPrivilege } from '../user/privilege/IPrivilegeManager'
 import { IResource, ReturnCallback } from '../resource/Resource'
 import { XML, XMLElement } from '../helper/XML'
 import { WebDAVServer } from '../server/WebDAVServer'
+import { HTTPCodes } from './HTTPCodes'
 import { FSPath } from '../manager/FSManager'
+import { Errors } from '../Errors'
+import { IUser } from '../user/IUser'
 import * as http from 'http'
 import * as url from 'url'
 
@@ -14,11 +18,13 @@ export class MethodCallArgs
     uri : string
     
     data : string
+    user : IUser
 
-    constructor(
+    protected constructor(
         public server : WebDAVServer,
         public request : http.IncomingMessage,
         public response : http.ServerResponse,
+        public exit : () => void,
         public callback : () => void
     ) {
         this.contentLength = parseInt(this.findHeader('Content-length', '0'), 10);
@@ -27,6 +33,73 @@ export class MethodCallArgs
         
         this.uri = url.parse(request.url).pathname;
         this.path = new FSPath(this.uri);
+    }
+
+    static create(
+        server : WebDAVServer,
+        request : http.IncomingMessage,
+        response : http.ServerResponse,
+        callback : (error : Error, mca : MethodCallArgs) => void)
+    {
+        const mca = new MethodCallArgs(server, request, response, null, null);
+
+        mca.askForAuthentication(false, (e) => {
+            if(e)
+            {
+                callback(e, mca);
+                return;
+            }
+
+            server.httpAuthentication.getUser(mca, server.userManager, (e, user) => {
+                mca.user = user;
+                if(e)
+                {
+                    if(e === Errors.MissingAuthorisationHeader)
+                        e = null;
+                }
+
+                callback(e, mca);
+            })
+        })
+    }
+
+    requireCustomPrivilege(privileges : string | string[], resource : IResource, callback : () => void)
+    {
+        requirePrivilege(privileges, this, resource, (e, can) => {
+            if(e)
+            {
+                this.setCode(HTTPCodes.InternalServerError);
+                this.exit();
+                return;
+            }
+
+            if(!can)
+            {
+                this.setCode(HTTPCodes.Unauthorized);
+                this.exit();
+                return;
+            }
+            
+            callback();
+        });
+    }
+    requirePrivilege(privileges : BasicPrivilege | BasicPrivilege[], resource : IResource, callback : () => void)
+    {
+        this.requireCustomPrivilege(privileges, resource, callback);
+    }
+
+    askForAuthentication(checkForUser : boolean, callback : (error : Error) => void)
+    {
+        if(checkForUser && this.user !== null && !this.user.isDefaultUser)
+        {
+            callback(new Error('Already authenticated'))
+            return;
+        }
+
+        const auth = this.server.httpAuthentication.askForAuthentication();
+        for(const name in auth)
+            this.response.setHeader(name, auth[name]);
+        callback(null);
     }
 
     accept(regex : RegExp[]) : number
