@@ -1,14 +1,9 @@
 import { IResource, ResourceType } from '../resource/IResource';
-import { VirtualResource } from '../resource/virtual/VirtualResource';
+import { SerializedObject } from './ISerializer';
 import { FSManager } from './FSManager';
 export declare class VirtualFSManager implements FSManager {
-    private static _instance;
-    static instance(): VirtualFSManager;
-    serialize(resource: any): object;
-    unserialize(serializedResource: {
-        name;
-        children;
-        content;
-    }): VirtualResource;
+    uid: string;
+    serialize(resource: any, obj: SerializedObject): object;
+    unserialize(data: any, obj: SerializedObject): IResource;
     newResource(fullPath: string, name: string, type: ResourceType, parent: IResource): IResource;
 }

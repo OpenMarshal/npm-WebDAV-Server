@@ -1,4 +1,5 @@
 import { IResource, ResourceType } from '../resource/IResource'
+import { SerializedObject } from './ISerializer'
 import { VirtualResource } from '../resource/virtual/VirtualResource'
 import { VirtualFolder } from '../resource/virtual/VirtualFolder'
 import { VirtualFile } from '../resource/virtual/VirtualFile'
@@ -6,43 +7,47 @@ import { FSManager } from './FSManager'
 
 export class VirtualFSManager implements FSManager
 {
-    private static _instance : VirtualFSManager;
-    static instance()
-    {
-        if(!this._instance)
-            this._instance = new VirtualFSManager();
-        return this._instance;
-    }
+    uid : string = 'VirtualFSManager_1.0.2';
 
-    serialize(resource : any) : object
+    serialize(resource : any, obj : SerializedObject) : object
     {
-        const obj : {
+        const result : {
             name,
-            children,
             content
-        } = { } as any;
+        } = {
+            dateCreation: resource.dateCreation,
+            dateLastModified: resource.dateLastModified,
+            locks: resource.lockBag.locks,
+            properties: resource.properties
+        } as any;
 
-        obj.name = resource.name;
-        if(resource.children)
-            obj.children = resource.children;
+        result.name = resource.name;
         if(resource.content)
-            obj.content = resource.content;
+            result.content = resource.content;
 
-        return obj;
+        return result;
     }
-    unserialize(serializedResource : { name, children, content }) : VirtualResource
+    unserialize(data : any, obj : SerializedObject) : IResource
     {
-        if(serializedResource.children)
+        if(obj.type.isDirectory)
         {
-            const rs = new VirtualFolder(serializedResource.name, null, this);
-            rs.children = serializedResource.children;
+            const rs = new VirtualFolder(data.name, null, this);
+            rs.dateCreation = data.dateCreation;
+            rs.dateLastModified = data.dateLastModified;
+            rs.lockBag.locks = data.locks;
+            rs.properties = data.properties;
             return rs;
         }
 
-        if(serializedResource.content)
+        if(obj.type.isFile)
         {
-            const rs = new VirtualFile(serializedResource.name, null, this);
-            rs.content = serializedResource.content;
+            const rs = new VirtualFile(data.name, null, this);
+            if(data.content)
+                rs.content = new Buffer(data.content);
+            rs.dateCreation = data.dateCreation;
+            rs.dateLastModified = data.dateLastModified;
+            rs.lockBag.locks = data.locks;
+            rs.properties = data.properties;
             return rs;
         }
 

@@ -13,7 +13,7 @@ export abstract class VirtualResource extends StandardResource
             if(parent && parent.fsManager && parent.fsManager.constructor === VirtualFSManager)
                 fsManager = parent.fsManager;
             else
-                fsManager = VirtualFSManager.instance();
+                fsManager = new VirtualFSManager();
 
         super(parent, fsManager);
 

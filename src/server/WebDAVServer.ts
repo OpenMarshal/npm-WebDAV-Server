@@ -1,4 +1,5 @@
 import { WebDAVServerOptions, setDefaultServerOptions } from './WebDAVServerOptions'
+import { SerializedObject, unserialize, serialize } from '../manager/ISerializer'
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from './WebDAVRequest'
 import { IResource, ReturnCallback } from '../resource/IResource'
 import { FakePrivilegeManager } from '../user/privilege/FakePrivilegeManager'
@@ -184,6 +185,24 @@ export class WebDAVServer
         }
         else
             process.nextTick(callback);
+    }
+
+    load(obj : SerializedObject, managers : FSManager[], callback: (error : Error) => void)
+    {
+        unserialize(obj, managers, (e, r) => {
+            if(!e)
+            {
+                this.rootResource = r;
+                callback(null);
+            }
+            else
+                callback(e);
+        })
+    }
+
+    save(callback : (error : Error, obj : any) => void)
+    {
+        serialize(this.rootResource, callback);
     }
 
     method(name : string, manager : WebDAVRequest)

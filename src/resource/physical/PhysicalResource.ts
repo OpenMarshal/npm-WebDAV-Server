@@ -16,7 +16,7 @@ export abstract class PhysicalResource extends StandardResource
             if(parent && parent.fsManager && parent.fsManager.constructor === PhysicalFSManager)
                 fsManager = parent.fsManager;
             else
-                fsManager = PhysicalFSManager.instance();
+                fsManager = new PhysicalFSManager();
 
         super(parent, fsManager);
 

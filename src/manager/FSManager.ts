@@ -1,13 +1,13 @@
-import { IResource, ResourceType } from '../resource/Resource'
+import { ISerializer, SerializedObject } from './ISerializer'
+import { IResource, ResourceType } from '../resource/IResource'
 
 export { PhysicalFSManager } from './PhysicalFSManager'
 export { VirtualFSManager } from './VirtualFSManager'
 export { FSPath } from './FSPath'
 
-export interface FSManager
+export interface FSManager extends ISerializer
 {
-    serialize(resource : IResource) : object;
-    unserialize(serializedResource : object) : IResource;
+    uid : string
 
     newResource(fullPath : string, name : string, type : ResourceType, parent : IResource) : IResource;
 }
