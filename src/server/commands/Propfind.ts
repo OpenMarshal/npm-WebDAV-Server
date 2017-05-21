@@ -87,7 +87,7 @@ export default function(arg : MethodCallArgs, callback)
 
             resource.webName((e, name) => {
                 if(!e)
-                    prop.ele('D:displayname').add(name);
+                    prop.ele('D:displayname').add(name ? name : '');
                 nbOut(e);
             })
 
