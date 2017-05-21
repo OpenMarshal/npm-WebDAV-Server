@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.0.1
+
+### Changes
+* Exported more classes *[116cc15](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/116cc15)*
+
+### Documentation
+* Added some documentation *[f431ca7](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/f431ca7)*
+* Fixed '<' by '\<' in changelog *[b766363](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b766363)*
+
+### Other
+* Cleaned the project *[7245ee5](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7245ee5)*
+* Used more restrictive imports in WebDAVServer.ts *[327bd78](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/327bd78)*
+* Added export files in main folders of the project for better scallability *[66a61c4](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/66a61c4)*
+* Added the RFC privileges but not integrated *[61b7865](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/61b7865)*
+
 ## 1.0.0
 
 ### New features
