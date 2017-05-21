@@ -22,7 +22,7 @@ export interface ISerializer
     unserialize(data : any, obj : SerializedObject) : IResource;
 }
 
-export function unserialize(obj : SerializedObject, managers : FSManager[], callback : (error : Error, rootResource : IResource))
+export function unserialize(obj : SerializedObject, managers : FSManager[], callback : (error : Error, rootResource : IResource) => void)
 {
     for(const m of managers)
         if(m.uid === obj.managerUID)
@@ -102,7 +102,7 @@ export function serialize(resource : IResource, callback : (error : Error, obj :
                 if(nb === 0)
                     callback(null, obj);
             }
-            children.forEach((c) => this.serialize(c, go));
+            children.forEach((c) => serialize(c, go));
         })
     })
 }
