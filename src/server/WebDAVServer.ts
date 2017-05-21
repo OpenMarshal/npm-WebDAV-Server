@@ -179,7 +179,7 @@ export class WebDAVServer
     {
         if(this.server)
         {
-            this.server.close(() => callback());
+            this.server.close(callback);
             this.server = null;
         }
         else

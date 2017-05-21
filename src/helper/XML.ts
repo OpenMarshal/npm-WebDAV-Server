@@ -25,11 +25,11 @@ function seekForNS(node : any, parentNS : any) : any
 
 function mutateNodeNS(node : any, parentNS = { _default: 'DAV' })
 {
-    var nss = seekForNS(node, parentNS);
+    const nss = seekForNS(node, parentNS);
 
     if(node.name)
     {
-        for(var ns in nss)
+        for(const ns in nss)
         {
             if(ns === '_default')
                 continue;
@@ -143,16 +143,16 @@ export abstract class XML
 
         const result = {
             type: 'element',
-            name: name,
-            attributes: attributes,
+            name,
+            attributes,
             elements: [],
-            ele: function(name : string, attributes ?: any)
+            ele(name : string, attributes ?: any)
             {
                 const el = result.eleFn(name, attributes);
                 result.elements.push(el);
                 return el;
             },
-            add: function(element : any)
+            add(element : any)
             {
                 if(element.constructor === String || element.constructor === Number || element.constructor === Boolean)
                     element = {

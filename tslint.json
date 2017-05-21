@@ -63,7 +63,6 @@
         "quotemark": [ true, "single" ],
         "return-undefined": true,
         "space-before-function-paren": [true, "never"],
-        "variable-name": [ true, "ban-keywords", "check-format", "allow-leading-underscore", "allow-trailing-underscore", "allow-snake-case" ],
         "whitespace": [ true, "check-decl", "check-operator", "check-module", "check-separator", "check-typecast", "check-preblock" ]
     }
 }

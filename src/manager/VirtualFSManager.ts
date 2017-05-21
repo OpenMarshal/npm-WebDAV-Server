@@ -16,11 +16,11 @@ export class VirtualFSManager implements FSManager
 
     serialize(resource : any) : object
     {
-        let obj : {
+        const obj : {
             name,
             children,
             content
-        };
+        } = { } as any;
 
         obj.name = resource.name;
         if(resource.children)

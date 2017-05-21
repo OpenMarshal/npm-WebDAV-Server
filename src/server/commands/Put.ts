@@ -71,7 +71,7 @@ export default function(arg : MethodCallArgs, callback)
         }
         else
         { // Write to a file
-            var data = new Buffer(arg.data);
+            const data = new Buffer(arg.data);
 
             if(e)
             { // Resource not found
