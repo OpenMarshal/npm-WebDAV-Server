@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import { WebDAVServerOptions } from './WebDAVServerOptions';
 import { MethodCallArgs, WebDAVRequest } from './WebDAVRequest';
-import { IResource, ReturnCallback } from '../resource/Resource';
+import { IResource, ReturnCallback } from '../resource/IResource';
 import { HTTPAuthentication } from '../user/authentication/HTTPAuthentication';
 import { IPrivilegeManager } from '../user/privilege/IPrivilegeManager';
 import { FSPath } from '../manager/FSManager';
