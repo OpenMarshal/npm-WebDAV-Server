@@ -24,6 +24,12 @@
     * Authentication
     * Privileges
 * Control the response body type
+* Persistence
+* Persistence
+    * Overview
+    * Example
+        * Save
+        * Load
 
 # Disclaimer / Project information
 
@@ -291,3 +297,51 @@ The request relative information (the user, the request, etc) are in the `arg` p
 # Control the response body type
 
 By default, when there is a body in the WebDAV response, it will be in XML. If there is a `Accept` header in the request with the `json` type as a priority, the result will be in JSON.
+
+# Persistence
+
+## Overview
+
+It is possible to save your architecture using `server.save(...)` and you can reload it with `server.load(...)`.
+The serialization/unserialization is made by the file system manager of the resource.
+The children of a resource are managed by the server itself, not by the file system manager.
+You can save and load while the server is running, but if a request is processing, it may lead to an inconsistent state.
+A trick would be to save when a request is completed (`server.afterRequest(...)`).
+
+## Example
+
+### Save
+
+```javascript
+server.save((e, data) => {
+    if(e)
+        throw e;
+    
+    fs.writeFile('persistence.data', JSON.stringify(data), (e) => {
+        if(e)
+            throw e;
+        
+        // [...]
+    })
+})
+```
+
+### Load
+
+```javascript
+fs.readFile('persistence.data', (e, data) => {
+    if(e)
+        throw e;
+    
+    server.load(JSON.parse(data), [
+        new webdav.PhysicalFSManager(),
+        new webdav.VirtualFSManager(),
+        new webdav.RootFSManager()
+    ], (e) => {
+        if(e)
+            throw e;
+        
+        // [...]
+    });
+})
+```
