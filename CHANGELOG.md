@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2
+
+### Bug fix
+* Fixed broken imports *[458400c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/458400c)*
+
 ## 1.0.1
 
 ### Changes
