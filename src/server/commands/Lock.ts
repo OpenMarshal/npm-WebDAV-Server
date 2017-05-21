@@ -1,6 +1,6 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
 import { STATUS_CODES } from 'http'
-import { IResource } from '../../resource/Resource'
+import { IResource } from '../../resource/IResource'
 import { Lock } from '../../resource/lock/Lock'
 import { LockKind } from '../../resource/lock/LockKind'
 import { LockScope } from '../../resource/lock/LockScope'

@@ -1,5 +1,5 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
-import { IResource, ETag } from '../../resource/Resource'
+import { IResource, ETag } from '../../resource/IResource'
 import { XML } from '../../helper/XML'
 
 export default function(arg : MethodCallArgs, callback)

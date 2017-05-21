@@ -1,6 +1,6 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
 import { STATUS_CODES } from 'http'
-import { IResource } from '../../resource/Resource'
+import { IResource } from '../../resource/IResource'
 import { XML } from '../../helper/XML'
 
 export default function(arg : MethodCallArgs, callback)

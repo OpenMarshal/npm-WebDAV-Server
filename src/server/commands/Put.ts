@@ -1,5 +1,5 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
-import { IResource, ResourceType } from '../../resource/Resource'
+import { IResource, ResourceType } from '../../resource/IResource'
 import * as path from 'path'
 
 function createResource(arg : MethodCallArgs, callback, validCallback : (resource : IResource) => void)

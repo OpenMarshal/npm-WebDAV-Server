@@ -1,5 +1,5 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
-import { IResource, ResourceType, SimpleCallback } from '../../resource/Resource'
+import { IResource, ResourceType, SimpleCallback } from '../../resource/IResource'
 import { FSPath } from '../../manager/FSManager'
 
 function copyAllProperties(source : IResource, destination : IResource, callback : SimpleCallback)
