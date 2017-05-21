@@ -1,5 +1,5 @@
 import { IResource, SimpleCallback, ReturnCallback, ResourceType } from '../IResource'
-import { ResourceChildren, forAll } from '../std/ResourceChildren'
+import { ResourceChildren } from '../std/ResourceChildren'
 import { StandardResource } from '../std/StandardResource'
 import { PhysicalResource } from './PhysicalResource'
 import { FSManager } from '../../manager/FSManager'

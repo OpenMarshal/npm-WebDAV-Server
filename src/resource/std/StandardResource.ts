@@ -4,7 +4,6 @@ import { LockScope } from '../lock/LockScope'
 import { LockType } from '../lock/LockType'
 import { LockKind } from '../lock/LockKind'
 import { LockBag } from '../lock/LockBag'
-import { forAll } from './ResourceChildren'
 import { Lock } from '../lock/Lock'
 
 export abstract class StandardResource implements IResource
@@ -18,14 +17,31 @@ export abstract class StandardResource implements IResource
                 return;
             }
 
+            if(children.length === 0)
+            {
+                callback(null, 0);
+                return;
+            }
+
             let size = 0;
-            forAll<IResource>(children, (child, cb) => {
-                child.size((e, s) => {
-                    if(e)
-                        size += s;
-                    cb(null);
-                })
-            }, () => callback(null, size), (e) => callback(e, null));
+            let nb = children.length;
+            function go(e, s)
+            {
+                if(nb <= 0)
+                    return;
+                if(e)
+                {
+                    nb = -1;
+                    callback(e, size);
+                    return;
+                }
+                size += s;
+                --nb;
+                if(nb === 0)
+                    callback(null, size);
+            }
+
+            children.forEach((c) => c.size(go))
         })
     }
 

@@ -33,33 +33,3 @@ export class ResourceChildren
         callback(null);
     }
 }
-
-export function forAll<T>(array : T[], itemFn : (item : T, callback : (e) => void) => void, onAllAndSuccess : () => void, onError : (e) => void) : void
-{
-    let nb = array.length + 1;
-    let error = null;
-
-    array.forEach((child) => {
-        if(error)
-            return;
-        itemFn(child, (e) => {
-            if(e)
-            {
-                error = e;
-                onError(error);
-            }
-            else
-                go();
-        });
-    })
-    go();
-    
-    function go()
-    {
-        --nb;
-        if(nb === 0 || error)
-            return;
-        
-        onAllAndSuccess();
-    }
-}
