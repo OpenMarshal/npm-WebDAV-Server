@@ -25,7 +25,7 @@ export class HTTPBasicAuthentication implements HTTPAuthentication
             })
         }
 
-        let authHeader = arg.findHeader('Authorization')
+        const authHeader = arg.findHeader('Authorization')
         if(!authHeader)
         {
             onError(Errors.MissingAuthorisationHeader)

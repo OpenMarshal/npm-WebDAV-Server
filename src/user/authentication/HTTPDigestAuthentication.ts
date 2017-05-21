@@ -7,7 +7,7 @@ import * as crypto from 'crypto'
 
 function md5(value : string | Buffer) : string
 {
-    return crypto.createHash('md5').update(value).digest("hex");
+    return crypto.createHash('md5').update(value).digest('hex');
 }
 
 export class HTTPDigestAuthentication implements HTTPAuthentication
@@ -77,9 +77,9 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
                 return;
             }
         
-            const ha1 = md5(authProps.username + ":" + this.realm + ":" + user.password ? user.password : '');
-            const ha2 = md5(arg.request.method.toString().toUpperCase() + ":" + arg.uri);
-            const result = md5(ha1 + ":" + authProps.nonce + ":" + authProps.nc + ":" + authProps.cnonce + ":" + authProps.qop + ":" + ha2);
+            const ha1 = md5(authProps.username + ':' + this.realm + ':' + user.password ? user.password : '');
+            const ha2 = md5(arg.request.method.toString().toUpperCase() + ':' + arg.uri);
+            const result = md5(ha1 + ':' + authProps.nonce + ':' + authProps.nc + ':' + authProps.cnonce + ':' + authProps.qop + ':' + ha2);
 
             if(result.toLowerCase() === authProps.response.toLowerCase())
                 callback(Errors.None, user);
