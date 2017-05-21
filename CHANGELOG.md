@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.1.0
+
+### New features
+* Added persistence management (save and load the state of the server) *[b79a7ac](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b79a7ac)*
+
+### Changes
+* Implemented a RootFSManager for the RootResource *[6ce240c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6ce240c)*
+* Added optional the resource name (null or undefined => empty string) *[e11644d](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e11644d)*
+
+### Documentation
+* Added the persistence section in the documentation *[db11649](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/db11649)*
+
+### Tests
+* Added some tests for the persistence *[b3474da](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b3474da)*
+
+### Other
+* Removed forAll<T>(...) method *[5472621](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5472621)*
+* Fixed code format *[60f521b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/60f521b)*
+
 ## 1.0.2
 
 ### Bug fix
