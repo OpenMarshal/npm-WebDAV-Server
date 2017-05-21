@@ -1,4 +1,7 @@
 
-export * from './server/WebDAVServer';
-export * from './resource/Resource';
-export * from './manager/FSManager';
+// the order matters because of import dependencies
+
+export * from './server/export';
+export * from './resource/export';
+export * from './manager/export';
+export * from './user/export';
