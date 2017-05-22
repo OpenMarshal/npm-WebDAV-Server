@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.2.1
+
+### Documentation
+* Specified that the module is compatible from node v4.0.0 to latest *[bf4fd93](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/bf4fd93)*
+
+### Tests
+* Test node v4.0 *[058106f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/058106f)*
+* Do not support node v0.* *[d4be29c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d4be29c)*
+* Upgraded tests syntax for node version 0.* *[f5f6b5c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/f5f6b5c)*
+* Reverted the node v0.* changes => not supporting v0.* anymore *[099d40b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/099d40b)*
+* Test Travis on all versions of NodeJS *[39d1211](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/39d1211)*
+
+### Bug fix
+* Check if 'fs.constants.O_CREAT' exists for node v5.* and lower *[e23b5d7](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e23b5d7)*
+
 ## 1.2.0
 
 ### New features
