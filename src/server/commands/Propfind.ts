@@ -1,6 +1,7 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
 import { IResource, ETag } from '../../resource/IResource'
 import { XML } from '../../helper/XML'
+import * as http from 'http'
 
 export default function(arg : MethodCallArgs, callback)
 {
@@ -55,113 +56,129 @@ export default function(arg : MethodCallArgs, callback)
 
             const propstat = response.ele('D:propstat')
 
-            propstat.ele('D:status').add('HTTP/1.1 200 OK')
-
-            const prop = propstat.ele('D:prop')
-            
-            let nb = 7;
-            function nbOut(error?)
-            {
-                if(nb > 0 && error)
+            arg.requireErPrivilege([ 'canMove' ], resource, (e, can) => {
+                if(e)
                 {
-                    nb = -1;
-                    callback(error);
-                    return;
-                }
-                --nb;
-                if(nb === 0)
+                    propstat.ele('D:status').add('HTTP/1.1 ' + HTTPCodes.InternalServerError + ' ' + http.STATUS_CODES[HTTPCodes.InternalServerError]);
                     callback();
-            }
-
-            resource.creationDate((e, ticks) => {
-                if(!e)
-                    prop.ele('D:creationdate').add(arg.dateISO8601(ticks));
-                nbOut(e);
-            })
-
-            arg.getResourcePath(resource, (e, path) => {
-                if(!e)
-                    response.ele('D:href').add(arg.fullUri(path).replace(' ', '%20'));
-                nbOut(e);
-            })
-
-            resource.webName((e, name) => {
-                if(!e)
-                    prop.ele('D:displayname').add(name ? name : '');
-                nbOut(e);
-            })
-
-            const supportedlock = prop.ele('D:supportedlock')
-            resource.getAvailableLocks((e, lockKinds) => {
-                if(e)
-                {
-                    nbOut(e);
                     return;
                 }
-
-                lockKinds.forEach((lockKind) => {
-                    const lockentry = supportedlock.ele('D:lockentry')
-
-                    const lockscope = lockentry.ele('D:lockscope')
-                    lockscope.ele('D:' + lockKind.scope.value.toLowerCase())
-
-                    const locktype = lockentry.ele('D:locktype')
-                    locktype.ele('D:' + lockKind.type.value.toLowerCase())
-                })
-                nbOut();
-            })
-
-            resource.getProperties((e, properties) => {
-                if(e)
-                {
-                    nbOut(e);
-                    return;
-                }
-
-                for(const name in properties)
-                {
-                    const value = properties[name];
-                    prop.ele(name).add(value)
-                }
-                nbOut();
-            })
-
-            resource.type((e, type) => {
-                if(e)
-                {
-                    nbOut(e);
-                    return;
-                }
-
-                const resourcetype = prop.ele('D:resourcetype')
-                if(type.isDirectory)
-                    resourcetype.ele('D:collection')
                 
-                if(type.isFile)
+                if(!can)
                 {
-                    nb += 2;
-                    resource.mimeType((e, mimeType) => {
-                        if(!e)
-                            prop.ele('D:getcontenttype').add(mimeType)
-                        nbOut(e);
-                    })
-                    resource.size((e, size) => {
-                        if(!e)
-                            prop.ele('D:getcontentlength').add(size)
-                        nbOut(e);
-                    })
+                    propstat.ele('D:status').add('HTTP/1.1 ' + HTTPCodes.Unauthorized + ' ' + http.STATUS_CODES[HTTPCodes.Unauthorized]);
+                    callback();
+                    return;
                 }
 
-                nbOut();
-            })
+                propstat.ele('D:status').add('HTTP/1.1 200 OK')
 
-            resource.lastModifiedDate((e, lastModifiedDate) => {
-                if(!e)
+                const prop = propstat.ele('D:prop')
+                
+                let nb = 7;
+                function nbOut(error?)
                 {
-                    prop.ele('D:getetag').add(ETag.createETag(lastModifiedDate))
-                    prop.ele('D:getlastmodified').add(new Date(lastModifiedDate).toUTCString())
+                    if(nb > 0 && error)
+                    {
+                        nb = -1;
+                        callback(error);
+                        return;
+                    }
+                    --nb;
+                    if(nb === 0)
+                        callback();
                 }
-                nbOut(e);
+
+                resource.creationDate((e, ticks) => {
+                    if(!e)
+                        prop.ele('D:creationdate').add(arg.dateISO8601(ticks));
+                    nbOut(e);
+                })
+
+                arg.getResourcePath(resource, (e, path) => {
+                    if(!e)
+                        response.ele('D:href').add(arg.fullUri(path).replace(' ', '%20'));
+                    nbOut(e);
+                })
+
+                resource.webName((e, name) => {
+                    if(!e)
+                        prop.ele('D:displayname').add(name ? name : '');
+                    nbOut(e);
+                })
+
+                const supportedlock = prop.ele('D:supportedlock')
+                resource.getAvailableLocks((e, lockKinds) => {
+                    if(e)
+                    {
+                        nbOut(e);
+                        return;
+                    }
+
+                    lockKinds.forEach((lockKind) => {
+                        const lockentry = supportedlock.ele('D:lockentry')
+
+                        const lockscope = lockentry.ele('D:lockscope')
+                        lockscope.ele('D:' + lockKind.scope.value.toLowerCase())
+
+                        const locktype = lockentry.ele('D:locktype')
+                        locktype.ele('D:' + lockKind.type.value.toLowerCase())
+                    })
+                    nbOut();
+                })
+
+                resource.getProperties((e, properties) => {
+                    if(e)
+                    {
+                        nbOut(e);
+                        return;
+                    }
+
+                    for(const name in properties)
+                    {
+                        const value = properties[name];
+                        prop.ele(name).add(value)
+                    }
+                    nbOut();
+                })
+
+                resource.type((e, type) => {
+                    if(e)
+                    {
+                        nbOut(e);
+                        return;
+                    }
+
+                    const resourcetype = prop.ele('D:resourcetype')
+                    if(type.isDirectory)
+                        resourcetype.ele('D:collection')
+                    
+                    if(type.isFile)
+                    {
+                        nb += 2;
+                        resource.mimeType((e, mimeType) => {
+                            if(!e)
+                                prop.ele('D:getcontenttype').add(mimeType)
+                            nbOut(e);
+                        })
+                        resource.size((e, size) => {
+                            if(!e)
+                                prop.ele('D:getcontentlength').add(size)
+                            nbOut(e);
+                        })
+                    }
+
+                    nbOut();
+                })
+
+                resource.lastModifiedDate((e, lastModifiedDate) => {
+                    if(!e)
+                    {
+                        prop.ele('D:getetag').add(ETag.createETag(lastModifiedDate))
+                        prop.ele('D:getlastmodified').add(new Date(lastModifiedDate).toUTCString())
+                    }
+                    nbOut(e);
+                })
             })
         }
 

@@ -36,31 +36,33 @@ export default function(arg : MethodCallArgs, callback)
                 return;
             }
 
-            r.setLock(lock, (e) => {
-                if(e)
-                {
-                    arg.setCode(HTTPCodes.Locked);
+            arg.requirePrivilege([ 'canSetLock' ], r, () => {
+                r.setLock(lock, (e) => {
+                    if(e)
+                    {
+                        arg.setCode(HTTPCodes.Locked);
+                        callback();
+                        return;
+                    }
+                    
+                    const prop = XML.createElement('D:prop', {
+                        'xmlns:D': 'DAV:'
+                    });
+                    const activelock = prop.ele('D:lockdiscovery').ele('D:activelock');
+
+                    activelock.ele('D:locktype').ele(type.value);
+                    activelock.ele('D:lockscope').ele(type.value);
+                    activelock.ele('D:locktoken').ele('D:href').add(lock.uuid);
+                    activelock.ele('D:lockroot').add(arg.fullUri());
+                    activelock.ele('D:depth').add('infinity');
+                    activelock.ele('D:owner').add(owner);
+                    activelock.ele('D:timeout').add('Second-' + lock.lockKind.timeout);
+
+                    arg.response.setHeader('Lock-Token', lock.uuid);
+                    arg.setCode(HTTPCodes.OK);
+                    arg.writeXML(prop);
                     callback();
-                    return;
-                }
-                
-                const prop = XML.createElement('D:prop', {
-                    'xmlns:D': 'DAV:'
-                });
-                const activelock = prop.ele('D:lockdiscovery').ele('D:activelock');
-
-                activelock.ele('D:locktype').ele(type.value);
-                activelock.ele('D:lockscope').ele(type.value);
-                activelock.ele('D:locktoken').ele('D:href').add(lock.uuid);
-                activelock.ele('D:lockroot').add(arg.fullUri());
-                activelock.ele('D:depth').add('infinity');
-                activelock.ele('D:owner').add(owner);
-                activelock.ele('D:timeout').add('Second-' + lock.lockKind.timeout);
-
-                arg.response.setHeader('Lock-Token', lock.uuid);
-                arg.setCode(HTTPCodes.OK);
-                arg.writeXML(prop);
-                callback();
+                })
             })
         })
     }

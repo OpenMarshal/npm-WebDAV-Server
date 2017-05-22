@@ -12,29 +12,33 @@ export default function(arg : MethodCallArgs, callback)
             callback();
             return;
         }
-
-        if(!r.fsManager)
-        {
-            arg.setCode(HTTPCodes.InternalServerError)
-            callback();
-            return;
-        }
         
-        const resource = r.fsManager.newResource(arg.uri, path.basename(arg.uri), ResourceType.Directory, r);
-        resource.create((e) => {
-            if(e)
+        arg.requirePrivilege([ 'canAddChild' ], r, () => {
+            if(!r.fsManager)
             {
                 arg.setCode(HTTPCodes.InternalServerError)
                 callback();
                 return;
             }
-        
-            r.addChild(resource, (e) => {
-                if(e)
-                    arg.setCode(HTTPCodes.InternalServerError)
-                else
-                    arg.setCode(HTTPCodes.Created)
-                callback();
+            
+            const resource = r.fsManager.newResource(arg.uri, path.basename(arg.uri), ResourceType.Directory, r);
+            arg.requirePrivilege([ 'canCreate' ], resource, () => {
+                resource.create((e) => {
+                    if(e)
+                    {
+                        arg.setCode(HTTPCodes.InternalServerError)
+                        callback();
+                        return;
+                    }
+                
+                    r.addChild(resource, (e) => {
+                        if(e)
+                            arg.setCode(HTTPCodes.InternalServerError)
+                        else
+                            arg.setCode(HTTPCodes.Created)
+                        callback();
+                    })
+                })
             })
         })
     })

@@ -11,12 +11,14 @@ export default function(arg : MethodCallArgs, callback)
             return;
         }
 
-        r.read((e, c) => {
-            if(e)
-                arg.setCode(HTTPCodes.MethodNotAllowed)
-            else
-                arg.setCode(HTTPCodes.OK);
-            callback();
+        arg.requirePrivilege([ 'canRead' ], r, () => {
+            r.read((e, c) => {
+                if(e)
+                    arg.setCode(HTTPCodes.MethodNotAllowed)
+                else
+                    arg.setCode(HTTPCodes.OK);
+                callback();
+            })
         })
     })
 }

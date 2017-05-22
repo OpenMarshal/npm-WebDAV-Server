@@ -88,6 +88,15 @@ export class MethodCallArgs
         this.requireCustomPrivilege(privileges, resource, callback);
     }
 
+    requireErCustomPrivilege(privileges : string | string[], resource : IResource, callback : (error : Error, can : boolean) => void)
+    {
+        requirePrivilege(privileges, this, resource, callback);
+    }
+    requireErPrivilege(privileges : BasicPrivilege | BasicPrivilege[], resource : IResource, callback : (error : Error, can : boolean) => void)
+    {
+        this.requireErCustomPrivilege(privileges, resource, callback);
+    }
+
     askForAuthentication(checkForUser : boolean, callback : (error : Error) => void)
     {
         if(checkForUser && this.user !== null && !this.user.isDefaultUser)

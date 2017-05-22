@@ -23,6 +23,8 @@ export declare class MethodCallArgs {
     static create(server: WebDAVServer, request: http.IncomingMessage, response: http.ServerResponse, callback: (error: Error, mca: MethodCallArgs) => void): void;
     requireCustomPrivilege(privileges: string | string[], resource: IResource, callback: () => void): void;
     requirePrivilege(privileges: BasicPrivilege | BasicPrivilege[], resource: IResource, callback: () => void): void;
+    requireErCustomPrivilege(privileges: string | string[], resource: IResource, callback: (error: Error, can: boolean) => void): void;
+    requireErPrivilege(privileges: BasicPrivilege | BasicPrivilege[], resource: IResource, callback: (error: Error, can: boolean) => void): void;
     askForAuthentication(checkForUser: boolean, callback: (error: Error) => void): void;
     accept(regex: RegExp[]): number;
     findHeader(name: string, defaultValue?: string): string;

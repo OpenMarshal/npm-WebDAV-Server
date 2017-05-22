@@ -12,68 +12,70 @@ export default function(arg : MethodCallArgs, callback)
             callback();
             return;
         }
+        
+        arg.requirePrivilege([ 'canSetProperty', 'canRemoveProperty' ], r, () => {
+            const multistatus = XML.createElement('D:multistatus', {
+                'xmlns:D': 'DAV:'
+            });
+            const response = multistatus.ele('D:response');
+            response.ele('D:href').add(arg.fullUri());
 
-        const multistatus = XML.createElement('D:multistatus', {
-            'xmlns:D': 'DAV:'
-        });
-        const response = multistatus.ele('D:response');
-        response.ele('D:href').add(arg.fullUri());
+            const xml = XML.parse(arg.data);
+            const root = xml.find('DAV:propertyupdate');
 
-        const xml = XML.parse(arg.data);
-        const root = xml.find('DAV:propertyupdate');
-
-        let finalize = function()
-        {
-            finalize = function()
+            let finalize = function()
             {
-                arg.setCode(HTTPCodes.MultiStatus);
-                arg.writeXML(multistatus);
-                callback();
-            }
-        }
-
-        function notify(el : any, error : any)
-        {
-            const code = error ? HTTPCodes.Conflict : HTTPCodes.OK;
-            const propstat = response.ele('D:propstat');
-            propstat.ele('D:prop').ele(el.name);
-            propstat.ele('D:status').add('HTTP/1.1 ' + code + ' ' + STATUS_CODES[code]);
-        }
-
-        execute('DAV:set', (el, callback) => {
-            r.setProperty(el.name, el.elements, callback)
-        })
-        execute('DAV:remove', (el, callback) => {
-            r.removeProperty(el.name, callback)
-        })
-
-        function execute(name, fnProp)
-        {
-            const list = root.findMany(name);
-            if(list.length === 0)
-            {
-                finalize();
-                return;
+                finalize = function()
+                {
+                    arg.setCode(HTTPCodes.MultiStatus);
+                    arg.writeXML(multistatus);
+                    callback();
+                }
             }
 
-            list.forEach(function(el) {
-                const els = el.find('DAV:prop').elements;
-                if(els.length === 0)
+            function notify(el : any, error : any)
+            {
+                const code = error ? HTTPCodes.Conflict : HTTPCodes.OK;
+                const propstat = response.ele('D:propstat');
+                propstat.ele('D:prop').ele(el.name);
+                propstat.ele('D:status').add('HTTP/1.1 ' + code + ' ' + STATUS_CODES[code]);
+            }
+
+            execute('DAV:set', (el, callback) => {
+                r.setProperty(el.name, el.elements, callback)
+            })
+            execute('DAV:remove', (el, callback) => {
+                r.removeProperty(el.name, callback)
+            })
+
+            function execute(name, fnProp)
+            {
+                const list = root.findMany(name);
+                if(list.length === 0)
                 {
                     finalize();
                     return;
                 }
 
-                let nb = els.length;
-                els.forEach(function(el) {
-                    fnProp(el, (e) => {
-                        notify(el, e);
-                        --nb;
-                        if(nb === 0)
-                            finalize();
+                list.forEach(function(el) {
+                    const els = el.find('DAV:prop').elements;
+                    if(els.length === 0)
+                    {
+                        finalize();
+                        return;
+                    }
+
+                    let nb = els.length;
+                    els.forEach(function(el) {
+                        fnProp(el, (e) => {
+                            notify(el, e);
+                            --nb;
+                            if(nb === 0)
+                                finalize();
+                        })
                     })
                 })
-            })
-        }
+            }
+        })
     })
 }
