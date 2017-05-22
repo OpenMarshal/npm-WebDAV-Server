@@ -25,10 +25,5 @@ export const Errors = {
 
     None: null
 };
-/*
-import { Errors } from '../Errors'
-import { Errors, ManagerNotFound } from '../../Errors'
-import { Errors } from '../../../Errors'
-import { Errors } from '../../../../Errors'
-*/
+
 export default Errors;
