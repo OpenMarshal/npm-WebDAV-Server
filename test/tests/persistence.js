@@ -1,11 +1,12 @@
+"use strict";
 var webdav = require('../../lib/index.js'),
     Client = require('webdav-fs');
 
-module.exports = (test, options, index) => test('persistence', isValid =>
+module.exports = function(test, options, index) { test('persistence', function(isValid)
 {
     var server = new webdav.WebDAVServer();
     isValid = isValid.multiple(1, server);
-    const _ = (e, cb) => {
+    const _ = function(e, cb) {
         if(e)
             isValid(false, e);
         else
@@ -15,13 +16,13 @@ module.exports = (test, options, index) => test('persistence', isValid =>
     const f1 = new webdav.VirtualFile('file1.txt');
     const f1Content = 'ok, This content is the test';
     f1.content = f1Content;
-    server.rootResource.addChild(f1, e => _(e, () => {
-        server.rootResource.addChild(new webdav.VirtualFile('file2.txt'), e => _(e, () => {
+    server.rootResource.addChild(f1, function(e) { _(e, function() {
+        server.rootResource.addChild(new webdav.VirtualFile('file2.txt'), function(e) { _(e, function() {
             const folder1 = new webdav.VirtualFolder('folder1');
-            server.rootResource.addChild(folder1, e => _(e, () => {
-                folder1.addChild(new webdav.VirtualFile('sfile1.txt'), e => _(e, () => {
-                    folder1.addChild(new webdav.VirtualFile('sfile2.txt'), e => _(e, () => {
-                        server.save((e, o) => _(e, () => {
+            server.rootResource.addChild(folder1, function(e) { _(e, function() {
+                folder1.addChild(new webdav.VirtualFile('sfile1.txt'), function(e) { _(e, function() {
+                    folder1.addChild(new webdav.VirtualFile('sfile2.txt'), function(e) { _(e, function() {
+                        server.save(function(e, o) { _(e, function() {
                             const json = JSON.stringify(o, null, 4);
                             const els = JSON.parse(json);
 
@@ -31,30 +32,30 @@ module.exports = (test, options, index) => test('persistence', isValid =>
                                 new webdav.PhysicalFSManager(),
                                 new webdav.VirtualFSManager(),
                                 new webdav.RootFSManager()
-                            ], (e) => _(e, () => {
+                            ], function(e) { _(e, function() {
                                 
                                 var wfs = Client(
                                     'http://127.0.0.1:' + (options.port + index)
                                 );
 
-                                wfs.stat('/file1.txt', (e) => _(e, () => {
-                                wfs.stat('/file2.txt', (e) => _(e, () => {
-                                wfs.stat('/folder1', (e) => _(e, () => {
-                                wfs.stat('/folder1/sfile1.txt', (e) => _(e, () => {
-                                wfs.stat('/folder1/sfile2.txt', (e) => _(e, () => {
-                                    wfs.readFile('/file1.txt', (e, content) => _(e, () => {
+                                wfs.stat('/file1.txt', function(e) { _(e, function() {
+                                wfs.stat('/file2.txt', function(e) { _(e, function() {
+                                wfs.stat('/folder1', function(e) { _(e, function() {
+                                wfs.stat('/folder1/sfile1.txt', function(e) { _(e, function() {
+                                wfs.stat('/folder1/sfile2.txt', function(e) { _(e, function() {
+                                    wfs.readFile('/file1.txt', function(e, content) { _(e, function() {
                                         isValid(content === f1Content);
-                                    }))
-                                }))
-                                }))
-                                }))
-                                }))
-                                }))
-                            }));
-                        }));
-                    }));
-                }));
-            }));
-        }));
-    }));
-})
+                                    })})
+                                })})
+                                })})
+                                })})
+                                })})
+                                })})
+                            })});
+                        })});
+                    })});
+                })});
+            })});
+        })});
+    })});
+})}

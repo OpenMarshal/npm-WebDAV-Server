@@ -1,3 +1,4 @@
+"use strict";
 var webdav = require('../../lib/index.js'),
     Client = require('webdav-fs'),
     request = require('request'),
@@ -5,11 +6,11 @@ var webdav = require('../../lib/index.js'),
     path = require('path'),
     fs = require('fs')
 
-module.exports = (test, options, index) => test('etag of physical file', isValid =>
+module.exports = function(test, options, index) { test('etag of physical file', function(isValid)
 {
     var server = new webdav.WebDAVServer();
     isValid = isValid.multiple(1, server);
-    const _ = (e, cb) => {
+    const _ = function(e, cb) {
         if(e)
             isValid(false, e);
         else
@@ -21,7 +22,7 @@ module.exports = (test, options, index) => test('etag of physical file', isValid
         fs.unlinkSync(filePath);
     fs.writeFileSync(filePath, 'Old content');
 
-    server.rootResource.addChild(new webdav.PhysicalFile(filePath), e => _(e, () => {
+    server.rootResource.addChild(new webdav.PhysicalFile(filePath), function(e) { _(e, function() {
         server.start(options.port + index);
 
         var wfs = Client(
@@ -33,7 +34,7 @@ module.exports = (test, options, index) => test('etag of physical file', isValid
             request({
                 url: 'http://127.0.0.1:' + (options.port + index) + '/testFile.txt',
                 method: 'PROPFIND'
-            }, (e, res, body) => {
+            }, function(e, res, body) {
                 if(e)
                 {
                     isValid(false, e);
@@ -56,10 +57,10 @@ module.exports = (test, options, index) => test('etag of physical file', isValid
             })
         }
 
-        propfind((doc) => {
+        propfind(function(doc) {
             const etag1 = doc['D:multistatus'][0]['D:response'][0]['D:propstat'][0]['D:prop'][0]['D:getetag'][0]._text[0];
 
-            propfind((doc) => {
+            propfind(function(doc) {
                 const etag2 = doc['D:multistatus'][0]['D:response'][0]['D:propstat'][0]['D:prop'][0]['D:getetag'][0]._text[0];
 
                 if(etag1 !== etag2)
@@ -68,16 +69,16 @@ module.exports = (test, options, index) => test('etag of physical file', isValid
                     return;
                 }
                 
-                wfs.writeFile('/testFile.txt', 'New content', (e) => _(e, () => {
-                    propfind((doc) => {
+                wfs.writeFile('/testFile.txt', 'New content', function(e) { _(e, function() {
+                    propfind(function(doc) {
                         const etag3 = doc['D:multistatus'][0]['D:response'][0]['D:propstat'][0]['D:prop'][0]['D:getetag'][0]._text[0];
                         if(etag1 === etag3)
                             isValid(false, 'ETag didn\'t change with file change');
                         else
                             isValid(true);
                     })
-                }))
+                })})
             })
         })
-    }));
-})
+    })});
+})}

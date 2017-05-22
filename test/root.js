@@ -1,7 +1,8 @@
+"use strict";
 var path = require('path'),
     fs = require('fs')
 
-module.exports = (callback, options) => {
+module.exports = function(callback, options) {
     var successes = [];
     var errors = [];
 
@@ -26,8 +27,8 @@ module.exports = (callback, options) => {
     {
         try
         {
-            let callback = (valid, details) => {
-                callback = (valid, details) => { }
+            let callback = function(valid, details) {
+                callback = function(valid, details) { }
 
                 details = details ? ' :: ' + details : '';
                 if(valid)
@@ -36,7 +37,7 @@ module.exports = (callback, options) => {
                     error(name + details)
                 callCallback();
             }
-            callback.multiple = (nb, server) => {
+            callback.multiple = function(nb, server) {
                 var allGood = true;
                 var allMsg;
                 return function(good, msg)
@@ -48,7 +49,7 @@ module.exports = (callback, options) => {
                     if(nb === 0)
                     {
                         if(server)
-                            server.stop(() => {
+                            server.stop(function() {
                                 callback(allGood, allMsg);
                             })
                         else
@@ -56,7 +57,9 @@ module.exports = (callback, options) => {
                     }
                 }
             }
-            setTimeout(() => callback(false, 'Timeout'), options.timeout);
+            setTimeout(function() {
+                callback(false, 'Timeout');
+            }, options.timeout);
             fn(callback)
         }
         catch(ex)
@@ -70,14 +73,16 @@ module.exports = (callback, options) => {
     }
 
     var root = path.join(__dirname, 'tests');
-    fs.readdir(root, (e, files) => {
+    fs.readdir(root, function(e, files) {
         if(e)
             throw e;
         
-        files = files.filter(f => f.endsWith('.js'));
+        files = files.filter(function(f) {
+            return f.endsWith('.js')
+        });
         
         nb = files.length;
-        files.forEach((f, index) => {
+        files.forEach(function(f, index) {
             f = path.join(root, f);
             try
             {
@@ -88,14 +93,16 @@ module.exports = (callback, options) => {
                 if(options.showExceptions)
                     console.error(ex);
                     
-                isValid(f, isValid => isValid(false, ex));
+                isValid(f, function(isValid) {
+                    isValid(false, ex)
+                });
             }
         })
     })
 };
 
 if(!module.parent)
-    module.exports((successes, errors) => {
+    module.exports(function(successes, errors) {
         console.log(' ' + successes.length + ' successe(s).');
         console.log(' ' + errors.length + ' error(s).');
         
@@ -103,13 +110,17 @@ if(!module.parent)
         {
             console.log();
             console.log(' Successe(s) :');
-            successes.forEach(v => console.log(v));
+            successes.forEach(function(v) {
+                console.log(v);
+            });
         }
         if(errors.length)
         {
             console.log();
             console.log(' Error(s) :');
-            errors.forEach(v => console.log(v));
+            errors.forEach(function(v) {
+                console.log(v);
+            });
         }
         
         console.log();

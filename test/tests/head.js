@@ -1,12 +1,13 @@
+"use strict";
 var webdav = require('../../lib/index.js'),
     request = require('request')
 
-module.exports = (test, options, index) => test('HEAD method', isValid =>
+module.exports = function(test, options, index) { test('HEAD method', function(isValid)
 {
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(2, server);
-    const _ = (e, cb) => {
+    const _ = function(e, cb) {
         if(e)
             isValid(false, e);
         else
@@ -16,16 +17,16 @@ module.exports = (test, options, index) => test('HEAD method', isValid =>
     request({
         url: 'http://localhost:' + (options.port + index),
         method: 'HEAD'
-    }, (e, res, body) => {
+    }, function(e, res, body) {
         isValid(!e && res.statusCode !== 200);
     })
 
-    server.rootResource.addChild(new webdav.VirtualFile('file'), e => _(e, () => {
+    server.rootResource.addChild(new webdav.VirtualFile('file'), function(e) { _(e, function() {
         request({
             url: 'http://localhost:' + (options.port + index) + '/file',
             method: 'HEAD'
-        }, (e, res, body) => {
+        }, function(e, res, body) {
             isValid(!e && res.statusCode === 200);
         })
-    }))
-})
+    })})
+})}

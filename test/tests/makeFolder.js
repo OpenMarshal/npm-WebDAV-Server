@@ -1,42 +1,43 @@
+"use strict";
 var webdav = require('../../lib/index.js'),
     Client = require('webdav-fs'),
     path = require('path'),
     fs = require('fs')
 
-module.exports = (test, options, index) => test('make a folder', isValid =>
+module.exports = function(test, options, index) { test('make a folder', function(isValid)
 {
     var server = new webdav.WebDAVServer();
     isValid = isValid.multiple(4, server);
-    const _ = (e, cb) => {
+    const _ = function(e, cb) {
         if(e)
             isValid(false, e);
         else
             cb();
     }
     
-    server.rootResource.addChild(new webdav.VirtualFile('testFile.txt'), e => _(e, () => {
+    server.rootResource.addChild(new webdav.VirtualFile('testFile.txt'), function(e) { _(e, function() {
         server.start(options.port + index);
 
         var wfs = Client(
             'http://127.0.0.1:' + (options.port + index)
         );
         
-        wfs.mkdir('/testFile.txt/testFail', (e) => {
+        wfs.mkdir('/testFile.txt/testFail', function(e) {
             isValid(!!e)
         })
 
-        wfs.mkdir('/undefined/testFail', (e) => {
+        wfs.mkdir('/undefined/testFail', function(e) {
             isValid(!!e)
         })
 
-        wfs.mkdir('/testSuccess', (e) => _(e, () => {
-            wfs.mkdir('/testSuccess/testSuccess2', (e) => {
+        wfs.mkdir('/testSuccess', function(e) { _(e, function() {
+            wfs.mkdir('/testSuccess/testSuccess2', function(e) {
                 if(e)
                     isValid(false, e)
                 else
                     isValid(true);
             })
-        }))
+        })})
         
         const folderName = 'makeFolder';
         const folderPath = path.join(__dirname, folderName);
@@ -46,13 +47,13 @@ module.exports = (test, options, index) => test('make a folder', isValid =>
         if(fs.existsSync(subFolderPath))
             fs.rmdirSync(subFolderPath);
         
-        server.rootResource.addChild(new webdav.PhysicalFolder(folderPath), e => _(e, () => {
-            wfs.mkdir('/' + folderName + '/' + subFolderName, (e) => {
+        server.rootResource.addChild(new webdav.PhysicalFolder(folderPath), function(e) { _(e, function() {
+            wfs.mkdir('/' + folderName + '/' + subFolderName, function(e) {
                 if(e)
                     isValid(false, e)
                 else
                     isValid(fs.existsSync(subFolderPath));
             })
-        }));
-    }));
-})
+        })});
+    })});
+})}

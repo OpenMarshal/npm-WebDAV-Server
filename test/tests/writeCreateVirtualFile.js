@@ -1,12 +1,13 @@
+"use strict";
 var webdav = require('../../lib/index.js'),
     Client = require('webdav-fs')
 
-module.exports = (test, options, index) => test('write/create a virtual file', isValid =>
+module.exports = function(test, options, index) { test('write/create a virtual file', function(isValid)
 {
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(1, server);
-    const _ = (e, cb) => {
+    const _ = function(e, cb) {
         if(e)
             isValid(false, e);
         else
@@ -18,9 +19,9 @@ module.exports = (test, options, index) => test('write/create a virtual file', i
     );
 
     const fileName = 'file.txt';
-    wfs.writeFile('/' + fileName, new Buffer(0), (e) => _(e, () => {
-        wfs.stat('/' + fileName, (e) => {
+    wfs.writeFile('/' + fileName, new Buffer(0), function(e) { _(e, function() {
+        wfs.stat('/' + fileName, function(e) {
             isValid(!e)
         })
-    }))
-})
+    })})
+})}

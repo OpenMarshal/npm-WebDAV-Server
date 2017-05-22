@@ -1,7 +1,8 @@
+"use strict";
 var webdav = require('../../lib/index.js'),
     Client = require('webdav-fs')
 
-module.exports = (test, options, index) => test('write in a virtual file', isValid =>
+module.exports = function(test, options, index) { test('write in a virtual file', function(isValid)
 {
     var files = {
         'testFile1.txt': 'this is the content!',
@@ -11,7 +12,7 @@ module.exports = (test, options, index) => test('write in a virtual file', isVal
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(Object.keys(files).length, server);
-    const _ = (e, cb) => {
+    const _ = function(e, cb) {
         if(e)
             isValid(false, e);
         else
@@ -26,15 +27,15 @@ module.exports = (test, options, index) => test('write in a virtual file', isVal
     {
         const file = new webdav.VirtualFile(fileName);
 
-        server.rootResource.addChild(file, e => _(e, () => {
-            wfs.writeFile('/' + fileName, files[fileName], (e) => _(e, () => {
-                wfs.readFile('/' + fileName, (e, content) => {
+        server.rootResource.addChild(file, function(e) { _(e, function() {
+            wfs.writeFile('/' + fileName, files[fileName], function(e) { _(e, function() {
+                wfs.readFile('/' + fileName, function(e, content) {
                     if(e)
                         isValid(false, e)
                     else
                         isValid(content.toString() === files[fileName].toString(), 'Received : ' + content.toString() + ' but expected : ' + files[fileName].toString());
                 })
-            }))
-        }));
+            })})
+        })});
     }
-})
+})}

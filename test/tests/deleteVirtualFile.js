@@ -1,12 +1,13 @@
+"use strict";
 var webdav = require('../../lib/index.js'),
     Client = require('webdav-fs')
 
-module.exports = (test, options, index) => test('delete a virtual file', isValid =>
+module.exports = function(test, options, index) { test('delete a virtual file', function(isValid)
 {
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(2, server);
-    const _ = (e, cb) => {
+    const _ = function(e, cb) {
         if(e)
             isValid(false, e);
         else
@@ -18,17 +19,17 @@ module.exports = (test, options, index) => test('delete a virtual file', isValid
     );
 
     const fileName = 'file.txt';
-    server.rootResource.addChild(new webdav.VirtualFile(fileName), e => _(e, () => {
-        wfs.stat('/' + fileName, (e, stat) => _(e, () => {
-            wfs.unlink('/' + fileName, (e) => _(e, () => {
-                wfs.stat('/' + fileName, (e, stat) => {
+    server.rootResource.addChild(new webdav.VirtualFile(fileName), function(e) { _(e, function() {
+        wfs.stat('/' + fileName, function(e, stat) { _(e, function() {
+            wfs.unlink('/' + fileName, function(e) { _(e, function() {
+                wfs.stat('/' + fileName, function(e, stat) {
                     isValid(!!e)
                 })
-            }))
-        }))
-    }));
+            })})
+        })})
+    })});
 
-    wfs.unlink('/fileNotFound.txt', (e) => {
+    wfs.unlink('/fileNotFound.txt', function(e) {
         isValid(!!e)
     })
-})
+})}

@@ -1,7 +1,8 @@
+"use strict";
 var webdav = require('../../lib/index.js'),
     Client = require('webdav-fs')
 
-module.exports = (test, options, index) => test('read a virtual file', isValid =>
+module.exports = function(test, options, index) { test('read a virtual file', function(isValid)
 {
     var files = {
         'testFile1.txt': 'this is the content!',
@@ -13,7 +14,7 @@ module.exports = (test, options, index) => test('read a virtual file', isValid =
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(Object.keys(files).length + 1, server);
-    const _ = (e, cb) => {
+    const _ = function(e, cb) {
         if(e)
             isValid(false, e);
         else
@@ -32,18 +33,18 @@ module.exports = (test, options, index) => test('read a virtual file', isValid =
         if(!files[fileName])
             files[fileName] = '';
 
-        server.rootResource.addChild(file, e => _(e, () => {
-            wfs.readFile('/' + fileName, (e, content) => {
+        server.rootResource.addChild(file, function(e) { _(e, function() {
+            wfs.readFile('/' + fileName, function(e, content) {
                 if(e)
                     isValid(false, e)
                 else
                     isValid(content.toString() === files[fileName].toString(), 'Received : ' + content.toString() + ' but expected : ' + files[fileName].toString());
             })
             
-        }));
+        })});
     }
 
-    wfs.readFile('/fileNotFound.txt', (e, content) => {
+    wfs.readFile('/fileNotFound.txt', function(e, content) {
         isValid(!!e)
     })
-})
+})}
