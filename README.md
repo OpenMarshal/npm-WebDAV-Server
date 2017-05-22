@@ -213,17 +213,23 @@ The user management is get through an instance of the class `IUserManager` which
 
 A `IUserManager` class must contains the following public fields :
 ```typescript
-getUserByName(name : string, callback : (error : Error, user : IUser) => void)
-getDefaultUser(callback : (user : IUser) => void)
-getUsers(callback : (error : Error, users : IUser[]) => void)
+interface IUserManager
+{
+    getUserByName(name : string, callback : (error : Error, user : IUser) => void)
+    getDefaultUser(callback : (user : IUser) => void)
+    getUsers(callback : (error : Error, users : IUser[]) => void)
+}
 ```
 
 A `IUser` class must contains the following public fields :
 ```typescript
-isAdministrator : boolean
-isDefaultUser : boolean
-password : string
-username : string
+interface IUser
+{
+    isAdministrator : boolean
+    isDefaultUser : boolean
+    password : string
+    username : string
+}
 ```
 
 The `IUserManager` class can get a user by name ; it can get the list of all users ; and it can get the default user.
@@ -240,10 +246,13 @@ Thanks to the server's option `httpAuthentication`, it is possible to define the
 
 It musts inherit from the interface `HTTPAuthentication` :
 ```typescript
-realm : string
+interface HTTPAuthentication
+{
+    realm : string
 
-askForAuthentication() : any
-getUser(arg : MethodCallArgs, userManager : IUserManager, callback : (error : Error, user : IUser) => void)
+    askForAuthentication() : any
+    getUser(arg : MethodCallArgs, userManager : IUserManager, callback : (error : Error, user : IUser) => void)
+}
 ```
 
 The `askForAuthentication()` method is used by the server to know what headers the method needs to add to its response.
@@ -258,34 +267,37 @@ The class `HTTPBasicAuthentication` implements the `Basic` authentication system
 
 The privileges of a user upon a resource is defined by the instance of the interface `IPrivilegeManager` provided in the server's option `privilegeManager`. This object provides a list of methods to tell the server that a resource is accessible by a user or if it is not.
 
-Here is the list of the methods in the interface `IPrivilegeManager` :
+Here is the interface `IPrivilegeManager` :
 ```typescript
-canCreate : PrivilegeManagerMethod
-canDelete : PrivilegeManagerMethod
-canMove : PrivilegeManagerMethod
-canRename : PrivilegeManagerMethod
-canAppend : PrivilegeManagerMethod
-canWrite : PrivilegeManagerMethod
-canSource : PrivilegeManagerMethod
-canRead : PrivilegeManagerMethod
-canGetMimeType : PrivilegeManagerMethod
-canGetSize : PrivilegeManagerMethod
-canListLocks : PrivilegeManagerMethod
-canSetLock : PrivilegeManagerMethod
-canRemoveLock : PrivilegeManagerMethod
-canGetAvailableLocks : PrivilegeManagerMethod
-canGetLock : PrivilegeManagerMethod
-canAddChild : PrivilegeManagerMethod
-canRemoveChild : PrivilegeManagerMethod
-canGetChildren : PrivilegeManagerMethod
-canSetProperty : PrivilegeManagerMethod
-canGetProperty : PrivilegeManagerMethod
-canGetProperties : PrivilegeManagerMethod
-canRemoveProperty : PrivilegeManagerMethod
-canGetCreationDate : PrivilegeManagerMethod
-canGetLastModifiedDate : PrivilegeManagerMethod
-canGetWebName : PrivilegeManagerMethod
-canGetType : PrivilegeManagerMethod
+interface IPrivilegeManager
+{
+    canCreate : PrivilegeManagerMethod
+    canDelete : PrivilegeManagerMethod
+    canMove : PrivilegeManagerMethod
+    canRename : PrivilegeManagerMethod
+    canAppend : PrivilegeManagerMethod
+    canWrite : PrivilegeManagerMethod
+    canRead : PrivilegeManagerMethod
+    canSource : PrivilegeManagerMethod
+    canGetMimeType : PrivilegeManagerMethod
+    canGetSize : PrivilegeManagerMethod
+    canListLocks : PrivilegeManagerMethod
+    canSetLock : PrivilegeManagerMethod
+    canRemoveLock : PrivilegeManagerMethod
+    canGetAvailableLocks : PrivilegeManagerMethod
+    canGetLock : PrivilegeManagerMethod
+    canAddChild : PrivilegeManagerMethod
+    canRemoveChild : PrivilegeManagerMethod
+    canGetChildren : PrivilegeManagerMethod
+    canSetProperty : PrivilegeManagerMethod
+    canGetProperty : PrivilegeManagerMethod
+    canGetProperties : PrivilegeManagerMethod
+    canRemoveProperty : PrivilegeManagerMethod
+    canGetCreationDate : PrivilegeManagerMethod
+    canGetLastModifiedDate : PrivilegeManagerMethod
+    canGetWebName : PrivilegeManagerMethod
+    canGetType : PrivilegeManagerMethod
+}
 ```
 With :
 ```typescript
