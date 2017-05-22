@@ -1,6 +1,7 @@
 import { IResource, SimpleCallback, ReturnCallback, ResourceType } from '../IResource'
 import { PhysicalResource } from './PhysicalResource'
 import { FSManager } from '../../manager/FSManager'
+import { Errors } from '../../Errors'
 import * as mimeTypes from 'mime-types'
 import * as fs from 'fs'
 
@@ -71,7 +72,7 @@ export class PhysicalFile extends PhysicalResource
     mimeType(callback : ReturnCallback<string>)
     {
         const mt = mimeTypes.lookup(this.realPath);
-        callback(mt ? null : new Error('application/octet-stream'), mt as string);
+        callback(null, mt ? mt as string : 'application/octet-stream');
     }
     size(callback : ReturnCallback<number>)
     {
@@ -81,14 +82,14 @@ export class PhysicalFile extends PhysicalResource
     // ****************************** Children ****************************** //
     addChild(resource : IResource, callback : SimpleCallback)
     {
-        callback(new Error('Invalid operation'));
+        callback(Errors.InvalidOperation);
     }
     removeChild(resource : IResource, callback : SimpleCallback)
     {
-        callback(new Error('Invalid operation'));
+        callback(Errors.InvalidOperation);
     }
     getChildren(callback : ReturnCallback<IResource[]>)
     {
-        callback(new Error('Invalid operation'), null);
+        callback(Errors.InvalidOperation, null);
     }
 }

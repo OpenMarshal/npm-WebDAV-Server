@@ -3,6 +3,7 @@ import { StandardResource } from '../std/StandardResource'
 import { ResourceChildren } from '../std/ResourceChildren'
 import { VirtualResource } from './VirtualResource'
 import { FSManager } from '../../manager/FSManager'
+import { Errors } from '../../Errors'
 
 export class VirtualFolder extends VirtualResource
 {
@@ -24,15 +25,15 @@ export class VirtualFolder extends VirtualResource
     // ****************************** Content ****************************** //
     append(data : Int8Array, callback : SimpleCallback)
     {
-        callback(new Error('Invalid operation'));
+        callback(Errors.InvalidOperation);
     }
     write(data : Int8Array, callback : SimpleCallback)
     {
-        callback(new Error('Invalid operation'));
+        callback(Errors.InvalidOperation);
     }
     read(callback : ReturnCallback<Int8Array>)
     {
-        callback(new Error('Invalid operation'), null);
+        callback(Errors.InvalidOperation, null);
     }
     mimeType(callback : ReturnCallback<string>)
     {

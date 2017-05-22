@@ -1,5 +1,6 @@
 import { IUserManager } from '../IUserManager'
 import { SimpleUser } from './SimpleUser'
+import { Errors } from '../../Errors'
 import { IUser } from '../IUser'
 
 export class SimpleUserManager implements IUserManager
@@ -16,7 +17,7 @@ export class SimpleUserManager implements IUserManager
     getUserByName(name : string, callback : (error : Error, user : IUser) => void)
     {
         if(!this.users[name])
-            callback(new Error('User not found'), null);
+            callback(Errors.UserNotFound, null);
         else
             callback(null, this.users[name]);
     }

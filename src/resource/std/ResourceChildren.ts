@@ -1,4 +1,5 @@
 import { IResource, SimpleCallback } from '../IResource'
+import { Errors } from '../../Errors'
 
 export class ResourceChildren
 {
@@ -13,7 +14,7 @@ export class ResourceChildren
     {
         if(this.children.some((c) => c === resource))
         {
-            callback(new Error('The resource already exists.'));
+            callback(Errors.ResourceAlreadyExists);
             return;
         }
 
@@ -25,7 +26,7 @@ export class ResourceChildren
         const index = this.children.indexOf(resource);
         if(index === -1)
         {
-            callback(new Error('Can\'t find the resource.'));
+            callback(Errors.ResourceNotFound);
             return;
         }
 

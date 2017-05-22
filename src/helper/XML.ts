@@ -1,3 +1,4 @@
+import { Errors } from '../Errors'
 import * as xmljs from 'xml-js'
 
 function seekForNS(node : any, parentNS : any) : any
@@ -43,7 +44,7 @@ function mutateNodeNS(node : any, parentNS = { _default: 'DAV' })
         for(const index in node.elements)
             if(node.elements[index].name && node.elements[index].name === name)
                 return node.elements[index];
-        throw new Error('Can\'t find the element.');
+        throw Errors.XMLNotFound;
     }
     node.findMany = function(name : string) : XMLElement[]
     {

@@ -1,4 +1,5 @@
 import { IResource, ResourceType } from '../resource/IResource'
+import { Errors, ManagerNotFound } from '../Errors'
 import { FSManager } from './FSManager'
 
 export class SerializedObject
@@ -60,7 +61,7 @@ export function unserialize(obj : SerializedObject, managers : FSManager[], call
             return;
         }
     
-    callback(new Error('Cannot find the manager : ' + obj.managerUID), null);
+    callback(new ManagerNotFound(obj.managerUID), null);
 }
 
 export function serialize(resource : IResource, callback : (error : Error, obj : SerializedObject) => void)

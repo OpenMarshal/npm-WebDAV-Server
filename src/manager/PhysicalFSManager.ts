@@ -4,6 +4,7 @@ import { PhysicalResource } from '../resource/physical/PhysicalResource'
 import { PhysicalFolder } from '../resource/physical/PhysicalFolder'
 import { PhysicalFile } from '../resource/physical/PhysicalFile'
 import { FSManager } from './FSManager'
+import { Errors } from '../Errors'
 import * as path from 'path'
 
 export class PhysicalFSManager implements FSManager
@@ -13,7 +14,7 @@ export class PhysicalFSManager implements FSManager
     serialize(resource : any, obj : SerializedObject) : object
     {
         if(!resource.realPath)
-            throw new Error('Unrecognized resource');
+            throw Errors.UnrecognizedResource;
 
         return {
             realPath: resource.realPath,
@@ -44,7 +45,7 @@ export class PhysicalFSManager implements FSManager
         const parentRealPath = (parent as any).realPath;
 
         if(!parentRealPath)
-            throw new Error('Can\'t create a physical resource with a non-physical parent')
+            throw Errors.ParentPropertiesMissing;
         
         const newRealPath = path.join(parentRealPath, name);
         

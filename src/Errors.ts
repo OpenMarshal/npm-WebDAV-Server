@@ -1,11 +1,34 @@
 
+export class ManagerNotFound extends Error
+{
+    constructor(managerUID : string)
+    {
+        super('Cannot find the manager : ' + managerUID);
+    }
+}
+
 export const Errors = {
     BadAuthentication: new Error('Bad authentication'),
     AuenticationPropertyMissing: new Error('Properties are missing'),
     WrongHeaderFormat: new Error('Wrong header format'),
     MissingAuthorisationHeader: new Error('Missing Authorization header'),
-    
+    UnrecognizedResource: new Error('Unrecognized resource'),
+    ParentPropertiesMissing: new Error('The parent resource must have some special properties'),
+    InvalidOperation: new Error('Invalid operation'),
+    ResourceAlreadyExists: new Error('The resource already exists.'),
+    ResourceNotFound: new Error('Can\'t find the resource.'),
+    CannotLockResource: new Error('Can\'t lock the resource.'),
+    PropertyNotFound: new Error('No property with such name.'),
+    AlreadyAuthenticated: new Error('Already authenticated'),
+    UserNotFound: new Error('User not found'),
+    XMLNotFound: new Error('Can\'t find the XML element.'),
+
     None: null
 };
-
+/*
+import { Errors } from '../Errors'
+import { Errors, ManagerNotFound } from '../../Errors'
+import { Errors } from '../../../Errors'
+import { Errors } from '../../../../Errors'
+*/
 export default Errors;

@@ -1,6 +1,7 @@
 import { IResource, SimpleCallback, ReturnCallback, ResourceType } from '../IResource'
 import { VirtualResource } from './VirtualResource'
 import { FSManager } from '../../manager/FSManager'
+import { Errors } from '../../Errors'
 import * as mimeTypes from 'mime-types'
 
 export class VirtualFile extends VirtualResource
@@ -47,7 +48,7 @@ export class VirtualFile extends VirtualResource
     mimeType(callback : ReturnCallback<string>)
     {
         const mt = mimeTypes.lookup(this.name);
-        callback(mt ? null : new Error('Unkown mime type'), mt as string);
+        callback(null, mt ? mt as string : 'application/octet-stream');
     }
     size(callback : ReturnCallback<number>)
     {
@@ -57,14 +58,14 @@ export class VirtualFile extends VirtualResource
     // ****************************** Children ****************************** //
     addChild(resource : IResource, callback : SimpleCallback)
     {
-        callback(new Error('Invalid operation'));
+        callback(Errors.InvalidOperation);
     }
     removeChild(resource : IResource, callback : SimpleCallback)
     {
-        callback(new Error('Invalid operation'));
+        callback(Errors.InvalidOperation);
     }
     getChildren(callback : ReturnCallback<IResource[]>)
     {
-        callback(new Error('Invalid operation'), null);
+        callback(Errors.InvalidOperation, null);
     }
 }

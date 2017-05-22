@@ -1,5 +1,5 @@
 import { requirePrivilege, BasicPrivilege } from '../user/privilege/IPrivilegeManager'
-import { IResource, ReturnCallback } from '../resource/Resource'
+import { IResource, ReturnCallback } from '../resource/IResource'
 import { XML, XMLElement } from '../helper/XML'
 import { WebDAVServer } from '../server/WebDAVServer'
 import { HTTPCodes } from './HTTPCodes'
@@ -101,7 +101,7 @@ export class MethodCallArgs
     {
         if(checkForUser && this.user !== null && !this.user.isDefaultUser)
         {
-            callback(new Error('Already authenticated'))
+            callback(Errors.AlreadyAuthenticated)
             return;
         }
 

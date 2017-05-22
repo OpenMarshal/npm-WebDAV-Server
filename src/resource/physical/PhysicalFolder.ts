@@ -3,6 +3,7 @@ import { ResourceChildren } from '../std/ResourceChildren'
 import { StandardResource } from '../std/StandardResource'
 import { PhysicalResource } from './PhysicalResource'
 import { FSManager } from '../../manager/FSManager'
+import { Errors } from '../../Errors'
 import * as fs from 'fs'
 
 export class PhysicalFolder extends PhysicalResource
@@ -82,15 +83,15 @@ export class PhysicalFolder extends PhysicalResource
     // ****************************** Content ****************************** //
     append(data : Int8Array, callback : SimpleCallback)
     {
-        callback(new Error('Invalid operation'));
+        callback(Errors.InvalidOperation);
     }
     write(data : Int8Array, callback : SimpleCallback)
     {
-        callback(new Error('Invalid operation'));
+        callback(Errors.InvalidOperation);
     }
     read(callback : ReturnCallback<Int8Array>)
     {
-        callback(new Error('Invalid operation'), null);
+        callback(Errors.InvalidOperation, null);
     }
     mimeType(callback : ReturnCallback<string>)
     {

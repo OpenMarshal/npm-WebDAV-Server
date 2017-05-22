@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { BasicPrivilege } from '../user/privilege/IPrivilegeManager';
-import { IResource, ReturnCallback } from '../resource/Resource';
+import { IResource, ReturnCallback } from '../resource/IResource';
 import { XMLElement } from '../helper/XML';
 import { WebDAVServer } from '../server/WebDAVServer';
 import { FSPath } from '../manager/FSManager';

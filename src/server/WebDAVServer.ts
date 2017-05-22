@@ -83,7 +83,7 @@ export class WebDAVServer
             }
             if(children.length === 0)
             {
-                callback(new Error('404 Not Found'), null);
+                callback(Errors.ResourceNotFound, null);
                 return;
             }
 
@@ -93,7 +93,7 @@ export class WebDAVServer
             {
                 --nb;
                 if(nb === 0 && !found)
-                    callback(new Error('404 Not Found'), null);
+                    callback(Errors.ResourceNotFound, null);
             }
 
             for(const k in children)

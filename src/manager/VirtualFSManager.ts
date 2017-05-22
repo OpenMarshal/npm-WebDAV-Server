@@ -4,6 +4,7 @@ import { VirtualResource } from '../resource/virtual/VirtualResource'
 import { VirtualFolder } from '../resource/virtual/VirtualFolder'
 import { VirtualFile } from '../resource/virtual/VirtualFile'
 import { FSManager } from './FSManager'
+import { Errors } from '../Errors'
 
 export class VirtualFSManager implements FSManager
 {
@@ -51,7 +52,7 @@ export class VirtualFSManager implements FSManager
             return rs;
         }
 
-        throw new Error('Unrecognized resource');
+        throw Errors.UnrecognizedResource;
     }
 
     newResource(fullPath : string, name : string, type : ResourceType, parent : IResource) : IResource
@@ -61,6 +62,6 @@ export class VirtualFSManager implements FSManager
         if(type.isFile)
             return new VirtualFile(name, parent, this);
 
-        throw new Error('Unrecognized type');
+        throw Errors.UnrecognizedResource;
     }
 }

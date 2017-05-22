@@ -4,6 +4,7 @@ import { LockScope } from '../lock/LockScope'
 import { LockType } from '../lock/LockType'
 import { LockKind } from '../lock/LockKind'
 import { LockBag } from '../lock/LockBag'
+import { Errors } from '../../Errors'
 import { Lock } from '../lock/Lock'
 
 export abstract class StandardResource implements IResource
@@ -89,7 +90,7 @@ export abstract class StandardResource implements IResource
     {
         const locked = this.lockBag.setLock(lock);
         this.updateLastModified();
-        callback(locked ? null : new Error('Can\'t lock the resource.'));
+        callback(locked ? null : Errors.CannotLockResource);
     }
     removeLock(uuid : string, callback : ReturnCallback<boolean>)
     {
@@ -158,7 +159,7 @@ export abstract class StandardResource implements IResource
     {
         const value = this.properties[name];
         if(value === undefined)
-            callback(new Error('No property with such name.'), null);
+            callback(Errors.PropertyNotFound, null);
         else
             callback(null, value);
     }

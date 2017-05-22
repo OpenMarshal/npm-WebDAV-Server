@@ -3,6 +3,7 @@ import { StandardResource } from './StandardResource'
 import { ResourceChildren } from './ResourceChildren'
 import { RootFSManager } from '../../manager/RootFSManager'
 import { FSPath } from '../../manager/FSManager'
+import { Errors } from '../../Errors'
 
 export class RootResource extends StandardResource
 {
@@ -18,19 +19,19 @@ export class RootResource extends StandardResource
     // ****************************** Actions ****************************** //
     create(callback : SimpleCallback)
     {
-        callback(new Error('Illegal operation.'))
+        callback(Errors.InvalidOperation)
     }
     delete(callback : SimpleCallback)
     {
-        callback(new Error('Illegal operation.'))
+        callback(Errors.InvalidOperation)
     }
     moveTo(parent : IResource, newName : string, override : boolean, callback : SimpleCallback)
     {
-        callback(new Error('Illegal operation.'))
+        callback(Errors.InvalidOperation)
     }
     rename(newName : string, callback : Return2Callback<string, string>)
     {
-        callback(new Error('Illegal operation.'), null, null)
+        callback(Errors.InvalidOperation, null, null)
     }
     
     // ****************************** Std meta-data ****************************** //
@@ -46,15 +47,15 @@ export class RootResource extends StandardResource
     // ****************************** Content ****************************** //
     append(data : Int8Array, callback : SimpleCallback)
     {
-        callback(new Error('Illegal operation.'))
+        callback(Errors.InvalidOperation)
     }
     write(data : Int8Array, callback : SimpleCallback)
     {
-        callback(new Error('Illegal operation.'))
+        callback(Errors.InvalidOperation)
     }
     read(callback : ReturnCallback<Int8Array>)
     {
-        callback(new Error('Illegal operation.'), null)
+        callback(Errors.InvalidOperation, null)
     }
     mimeType(callback : ReturnCallback<string>)
     {
