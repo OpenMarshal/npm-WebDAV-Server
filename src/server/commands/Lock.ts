@@ -13,7 +13,7 @@ export default function(arg : MethodCallArgs, callback)
     {
         if(!arg.user)
         {
-            arg.setCode(HTTPCodes.Unauthorized);
+            arg.setCode(HTTPCodes.Forbidden);
             callback();
             return;
         }

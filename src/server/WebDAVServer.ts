@@ -131,7 +131,7 @@ export class WebDAVServer
                 if(e)
                 {
                     if(e === Errors.AuenticationPropertyMissing)
-                        base.setCode(HTTPCodes.Unauthorized);
+                        base.setCode(HTTPCodes.Forbidden);
                     else
                         base.setCode(HTTPCodes.InternalServerError);
                     res.end();

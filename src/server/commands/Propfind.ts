@@ -76,7 +76,7 @@ export default function(arg : MethodCallArgs, callback)
                 
                 if(!can)
                 {
-                    propstat.ele('D:status').add('HTTP/1.1 ' + HTTPCodes.Unauthorized + ' ' + http.STATUS_CODES[HTTPCodes.Unauthorized]);
+                    propstat.ele('D:status').add('HTTP/1.1 ' + HTTPCodes.Forbidden + ' ' + http.STATUS_CODES[HTTPCodes.Forbidden]);
                     callback();
                     return;
                 }

@@ -11,7 +11,7 @@ export default function(arg : MethodCallArgs, callback)
 {
     if(!arg.user)
     {
-        arg.setCode(HTTPCodes.Unauthorized);
+        arg.setCode(HTTPCodes.Forbidden);
         callback();
         return;
     }
@@ -38,7 +38,7 @@ export default function(arg : MethodCallArgs, callback)
             r.getLock(token, (e, lock) => {
                 if(e || !lock)
                 {
-                    arg.setCode(HTTPCodes.BadRequest);
+                    arg.setCode(HTTPCodes.Conflict);
                     callback();
                     return;
                 }
