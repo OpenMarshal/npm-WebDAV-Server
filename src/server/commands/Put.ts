@@ -1,5 +1,6 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
 import { IResource, ResourceType } from '../../resource/IResource'
+import { Errors } from '../../Errors'
 import * as path from 'path'
 
 function createResource(arg : MethodCallArgs, callback, validCallback : (resource : IResource) => void)
@@ -7,7 +8,7 @@ function createResource(arg : MethodCallArgs, callback, validCallback : (resourc
     arg.server.getResourceFromPath(arg.path.getParent(), (e, r) => {
         if(e)
         {
-            arg.setCode(HTTPCodes.MethodNotAllowed)
+            arg.setCode(e === Errors.ResourceNotFound ? HTTPCodes.Conflict : HTTPCodes.InternalServerError)
             callback()
             return;
         }
@@ -50,6 +51,13 @@ export default function(arg : MethodCallArgs, callback)
     const targetSource = arg.findHeader('source', 'F').toUpperCase() === 'T';
 
     arg.getResource((e, r) => {
+        if(e && e !== Errors.ResourceNotFound)
+        {
+            arg.setCode(HTTPCodes.InternalServerError);
+            callback();
+            return;
+        }
+
         if(arg.contentLength === 0)
         { // Create file
             if(r)
@@ -90,12 +98,27 @@ export default function(arg : MethodCallArgs, callback)
             }
 
             arg.requirePrivilege(targetSource ? [ 'canSource', 'canWrite' ] : [ 'canWrite' ], r, () => {
-                r.write(data, targetSource, (e) => {
+                r.type((e, type) => {
                     if(e)
-                        arg.setCode(HTTPCodes.InternalServerError)
-                    else
-                        arg.setCode(HTTPCodes.OK)
-                    callback();
+                    {
+                        arg.setCode(HTTPCodes.InternalServerError);
+                        callback();
+                        return;
+                    }
+                    if(!type.isFile)
+                    {
+                        arg.setCode(HTTPCodes.MethodNotAllowed);
+                        callback();
+                        return;
+                    }
+
+                    r.write(data, targetSource, (e) => {
+                        if(e)
+                            arg.setCode(HTTPCodes.InternalServerError)
+                        else
+                            arg.setCode(HTTPCodes.OK)
+                        callback();
+                    })
                 })
             })
         }
