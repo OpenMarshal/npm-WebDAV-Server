@@ -6,7 +6,7 @@ module.exports = (test, options, index) => test('unlock', isValid =>
 {
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
-    isValid = isValid.multiple(4, server);
+    isValid = isValid.multiple(5, server);
     const _ = (e, cb) => {
         if(e)
             isValid(false, e);
@@ -18,6 +18,7 @@ module.exports = (test, options, index) => test('unlock', isValid =>
     server.userManager.addUser('usernameX2', 'password2');
 
     const url = 'http://127.0.0.1:' + (options.port + index);
+    const wfsOwner = Client(url, 'usernameX', 'password');
     const wfsNotOwner = Client(url, 'usernameX2', 'password2');
     
     server.rootResource.addChild(new webdav.VirtualFile('test.txt'), e => _(e, () => {
@@ -121,6 +122,47 @@ module.exports = (test, options, index) => test('unlock', isValid =>
                 }
             }, (e, res, body) => _(e, () => {
                 isValid(res.statusCode === 400, 'An UNLOCK request without Lock-Token header must lead to a 400 Bad Request');
+            }))
+        }))
+    }))
+
+    const fol = new webdav.VirtualFolder('testFolder');
+    server.rootResource.addChild(fol, e => _(e, () => {
+        fol.addChild(new webdav.VirtualFile('test5.txt'), e => _(e, () => {
+            request({
+                url: url + '/testFolder',
+                method: 'LOCK',
+                headers: {
+                    Authorization: 'Basic dXNlcm5hbWVYOnBhc3N3b3Jk'
+                },
+                body: '<?xml version="1.0" encoding="utf-8" ?><D:lockinfo xmlns:D="DAV:"><D:lockscope><D:exclusive/></D:lockscope><D:locktype><D:write/></D:locktype><D:owner><D:href>'+url+'/user</D:href></D:owner></D:lockinfo>'
+            }, (e, res, body) => _(e, () => {
+                const lock = body.substr(body.indexOf('<D:locktoken><D:href>') + '<D:locktoken><D:href>'.length, 'urn:uuid:24fa520c-520c-14fa-00d6-0000d546f655'.length);
+                
+                wfsOwner.writeFile('/testFolder/test5.txt', 'Content!', (e) => _(e, () => {
+                    wfsNotOwner.writeFile('/testFolder/test5.txt', 'Content!', (e) => {
+                        if(!e)
+                        {
+                            isValid(false, 'Must not allow to write in a child resource when the parent is locked');
+                            return;
+                        }
+                        
+                        request({
+                            url: url + '/testFolder',
+                            method: 'UNLOCK',
+                            headers: {
+                                'Lock-Token': lock,
+                                Authorization: 'Basic dXNlcm5hbWVYOnBhc3N3b3Jk'
+                            }
+                        }, (e, res, body) => _(e, () => {
+                            wfsOwner.writeFile('/testFolder/test5.txt', 'Content!', (e) => _(e, () => {
+                                wfsNotOwner.writeFile('/testFolder/test5.txt', 'Content!', (e) => {
+                                    isValid(!e, 'Unlock the parent must unlock the children');
+                                })
+                            }))
+                        }))
+                    })
+                }))
             }))
         }))
     }))
