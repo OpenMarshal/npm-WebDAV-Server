@@ -21,14 +21,21 @@ export class PhysicalFile extends PhysicalResource
     // ****************************** Actions ****************************** //
     create(callback : SimpleCallback)
     {
-        fs.open(this.realPath, fs.constants.O_CREAT, (e, fd) => {
-            if(e)
-                callback(e);
-            else
-                fs.close(fd, (e) => {
+        if(!fs.constants || !fs.constants.O_CREAT)
+        { // node v5.* and lower
+            fs.writeFile(this.realPath, '', callback);
+        }
+        else
+        { // node v6.* and higher
+            fs.open(this.realPath, fs.constants.O_CREAT, (e, fd) => {
+                if(e)
                     callback(e);
-                });
-        })
+                else
+                    fs.close(fd, (e) => {
+                        callback(e);
+                    });
+            })
+        }
     }
     delete(callback : SimpleCallback)
     {
