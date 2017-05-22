@@ -47,11 +47,11 @@ export interface IResource
     isOnTheSameFSWith(resource : IResource, callback : ReturnCallback<boolean>)
     
     // ****************************** Content ****************************** //
-    append(data : Int8Array, callback : SimpleCallback)
-    write(data : Int8Array, callback : SimpleCallback)
-    read(callback : ReturnCallback<Int8Array>)
-    mimeType(callback : ReturnCallback<string>)
-    size(callback : ReturnCallback<number>)
+    append(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
+    write(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
+    read(targetSource : boolean, callback : ReturnCallback<Int8Array>)
+    mimeType(targetSource : boolean, callback : ReturnCallback<string>)
+    size(targetSource : boolean, callback : ReturnCallback<number>)
     
     // ****************************** Locks ****************************** //
     getLocks(callback : ReturnCallback<Lock[]>)

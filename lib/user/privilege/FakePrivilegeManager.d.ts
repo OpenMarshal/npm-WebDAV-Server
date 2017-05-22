@@ -5,6 +5,7 @@ export declare class FakePrivilegeManager extends SimplePrivilegeManager {
     canCreate: (arg: any, resource: any, callback: any) => any;
     canDelete: typeof hasNoWriteLock;
     canWrite: typeof hasNoWriteLock;
+    canSource: (arg: any, resource: any, callback: any) => any;
     canRead: (arg: any, resource: any, callback: any) => any;
     canListLocks: (arg: any, resource: any, callback: any) => any;
     canSetLock: typeof hasNoWriteLock;

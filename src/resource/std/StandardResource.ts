@@ -9,7 +9,7 @@ import { Lock } from '../lock/Lock'
 
 export abstract class StandardResource implements IResource
 {
-    static sizeOfSubFiles(resource : IResource, callback : ReturnCallback<number>)
+    static sizeOfSubFiles(resource : IResource, targetSource : boolean, callback : ReturnCallback<number>)
     {
         resource.getChildren((e, children) => {
             if(e)
@@ -42,7 +42,7 @@ export abstract class StandardResource implements IResource
                     callback(null, size);
             }
 
-            children.forEach((c) => c.size(go))
+            children.forEach((c) => c.size(targetSource, go))
         })
     }
 
@@ -181,11 +181,11 @@ export abstract class StandardResource implements IResource
     abstract rename(newName : string, callback : Return2Callback<string, string>)
 
     // ****************************** Content ****************************** //
-    abstract append(data : Int8Array, callback : SimpleCallback)
-    abstract write(data : Int8Array, callback : SimpleCallback)
-    abstract read(callback : ReturnCallback<Int8Array>)
-    abstract mimeType(callback : ReturnCallback<string>)
-    abstract size(callback : ReturnCallback<number>)
+    abstract append(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
+    abstract write(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
+    abstract read(targetSource : boolean, callback : ReturnCallback<Int8Array>)
+    abstract mimeType(targetSource : boolean, callback : ReturnCallback<string>)
+    abstract size(targetSource : boolean, callback : ReturnCallback<number>)
     
     // ****************************** Std meta-data ****************************** //
     creationDate(callback : ReturnCallback<number>)

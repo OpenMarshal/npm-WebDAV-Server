@@ -22,7 +22,7 @@ export class VirtualFile extends VirtualResource
     }
 
     // ****************************** Content ****************************** //
-    append(data : Int8Array, callback : SimpleCallback)
+    append(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
     {
         const newContent = new Int8Array(this.content.length + data.length)
 
@@ -35,22 +35,22 @@ export class VirtualFile extends VirtualResource
         this.updateLastModified();
         callback(null);
     }
-    write(data : Int8Array, callback : SimpleCallback)
+    write(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
     {
         this.content = data;
         this.updateLastModified();
         callback(null);
     }
-    read(callback : ReturnCallback<Int8Array>)
+    read(targetSource : boolean, callback : ReturnCallback<Int8Array>)
     {
         callback(null, this.content);
     }
-    mimeType(callback : ReturnCallback<string>)
+    mimeType(targetSource : boolean, callback : ReturnCallback<string>)
     {
         const mt = mimeTypes.lookup(this.name);
         callback(null, mt ? mt as string : 'application/octet-stream');
     }
-    size(callback : ReturnCallback<number>)
+    size(targetSource : boolean, callback : ReturnCallback<number>)
     {
         callback(null, this.content.length);
     }

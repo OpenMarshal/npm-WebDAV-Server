@@ -68,11 +68,11 @@ export abstract class VirtualResource extends StandardResource
     abstract type(callback : ReturnCallback<ResourceType>)
 
     // ****************************** Content ****************************** //
-    abstract append(data : Int8Array, callback : SimpleCallback)
-    abstract write(data : Int8Array, callback : SimpleCallback)
-    abstract read(callback : ReturnCallback<Int8Array>)
-    abstract mimeType(callback : ReturnCallback<string>)
-    abstract size(callback : ReturnCallback<number>)
+    abstract append(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
+    abstract write(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
+    abstract read(targetSource : boolean, callback : ReturnCallback<Int8Array>)
+    abstract mimeType(targetSource : boolean, callback : ReturnCallback<string>)
+    abstract size(targetSource : boolean, callback : ReturnCallback<number>)
     
     // ****************************** Children ****************************** //
     abstract addChild(resource : IResource, callback : SimpleCallback)

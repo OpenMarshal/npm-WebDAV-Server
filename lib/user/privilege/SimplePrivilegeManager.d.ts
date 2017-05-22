@@ -8,6 +8,7 @@ export declare abstract class SimplePrivilegeManager implements IPrivilegeManage
     canAppend: (arg: any, resource: any, callback: any) => void;
     abstract canWrite: PrivilegeManagerMethod;
     abstract canRead: PrivilegeManagerMethod;
+    abstract canSource: PrivilegeManagerMethod;
     canGetMimeType: (arg: any, resource: any, callback: any) => void;
     canGetSize: (arg: any, resource: any, callback: any) => void;
     abstract canListLocks: PrivilegeManagerMethod;

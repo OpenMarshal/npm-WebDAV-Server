@@ -41,7 +41,7 @@ export class PhysicalFile extends PhysicalResource
     }
 
     // ****************************** Content ****************************** //
-    append(data : Int8Array, callback : SimpleCallback)
+    append(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
     {
         fs.appendFile(this.realPath, data, (e) => {
             if(e)
@@ -53,7 +53,7 @@ export class PhysicalFile extends PhysicalResource
             }
         });
     }
-    write(data : Int8Array, callback : SimpleCallback)
+    write(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
     {
         fs.writeFile(this.realPath, data, (e) => {
             if(e)
@@ -65,16 +65,16 @@ export class PhysicalFile extends PhysicalResource
             }
         });
     }
-    read(callback : ReturnCallback<Int8Array>)
+    read(targetSource : boolean, callback : ReturnCallback<Int8Array>)
     {
         fs.readFile(this.realPath, callback);
     }
-    mimeType(callback : ReturnCallback<string>)
+    mimeType(targetSource : boolean, callback : ReturnCallback<string>)
     {
         const mt = mimeTypes.lookup(this.realPath);
         callback(null, mt ? mt as string : 'application/octet-stream');
     }
-    size(callback : ReturnCallback<number>)
+    size(targetSource : boolean, callback : ReturnCallback<number>)
     {
         fs.stat(this.realPath, (e, s) => callback(e, s ? s.size : null))
     }

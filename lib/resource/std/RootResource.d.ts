@@ -10,11 +10,11 @@ export declare class RootResource extends StandardResource {
     rename(newName: string, callback: Return2Callback<string, string>): void;
     webName(callback: ReturnCallback<string>): void;
     type(callback: ReturnCallback<ResourceType>): void;
-    append(data: Int8Array, callback: SimpleCallback): void;
-    write(data: Int8Array, callback: SimpleCallback): void;
-    read(callback: ReturnCallback<Int8Array>): void;
-    mimeType(callback: ReturnCallback<string>): void;
-    size(callback: ReturnCallback<number>): void;
+    append(data: Int8Array, targetSource: boolean, callback: SimpleCallback): void;
+    write(data: Int8Array, targetSource: boolean, callback: SimpleCallback): void;
+    read(targetSource: boolean, callback: ReturnCallback<Int8Array>): void;
+    mimeType(targetSource: boolean, callback: ReturnCallback<string>): void;
+    size(targetSource: boolean, callback: ReturnCallback<number>): void;
     addChild(resource: IResource, callback: SimpleCallback): void;
     removeChild(resource: IResource, callback: SimpleCallback): void;
     getChildren(callback: ReturnCallback<IResource[]>): void;

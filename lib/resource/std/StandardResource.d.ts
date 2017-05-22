@@ -4,7 +4,7 @@ import { LockKind } from '../lock/LockKind';
 import { LockBag } from '../lock/LockBag';
 import { Lock } from '../lock/Lock';
 export declare abstract class StandardResource implements IResource {
-    static sizeOfSubFiles(resource: IResource, callback: ReturnCallback<number>): void;
+    static sizeOfSubFiles(resource: IResource, targetSource: boolean, callback: ReturnCallback<number>): void;
     properties: object;
     fsManager: FSManager;
     lockBag: LockBag;
@@ -29,11 +29,11 @@ export declare abstract class StandardResource implements IResource {
     abstract delete(callback: SimpleCallback): any;
     abstract moveTo(parent: IResource, newName: string, override: boolean, callback: SimpleCallback): any;
     abstract rename(newName: string, callback: Return2Callback<string, string>): any;
-    abstract append(data: Int8Array, callback: SimpleCallback): any;
-    abstract write(data: Int8Array, callback: SimpleCallback): any;
-    abstract read(callback: ReturnCallback<Int8Array>): any;
-    abstract mimeType(callback: ReturnCallback<string>): any;
-    abstract size(callback: ReturnCallback<number>): any;
+    abstract append(data: Int8Array, targetSource: boolean, callback: SimpleCallback): any;
+    abstract write(data: Int8Array, targetSource: boolean, callback: SimpleCallback): any;
+    abstract read(targetSource: boolean, callback: ReturnCallback<Int8Array>): any;
+    abstract mimeType(targetSource: boolean, callback: ReturnCallback<string>): any;
+    abstract size(targetSource: boolean, callback: ReturnCallback<number>): any;
     creationDate(callback: ReturnCallback<number>): void;
     lastModifiedDate(callback: ReturnCallback<number>): void;
     abstract webName(callback: ReturnCallback<string>): any;

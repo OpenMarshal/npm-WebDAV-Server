@@ -70,8 +70,8 @@ function copy(arg : MethodCallArgs, source : IResource, rDest : IResource, desti
                                     return;
                                 }
 
-                                source.read((e, data) => _(e, () => {
-                                    dest.write(data, (e) => _(e, next))
+                                source.read(true, (e, data) => _(e, () => {
+                                    dest.write(data, true, (e) => _(e, next))
                                 }))
 
                                 function next()

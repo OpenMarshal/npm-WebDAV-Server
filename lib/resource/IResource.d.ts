@@ -27,11 +27,11 @@ export interface IResource {
     rename(newName: string, callback: Return2Callback<string, string>): any;
     isSame(resource: IResource, callback: ReturnCallback<boolean>): any;
     isOnTheSameFSWith(resource: IResource, callback: ReturnCallback<boolean>): any;
-    append(data: Int8Array, callback: SimpleCallback): any;
-    write(data: Int8Array, callback: SimpleCallback): any;
-    read(callback: ReturnCallback<Int8Array>): any;
-    mimeType(callback: ReturnCallback<string>): any;
-    size(callback: ReturnCallback<number>): any;
+    append(data: Int8Array, targetSource: boolean, callback: SimpleCallback): any;
+    write(data: Int8Array, targetSource: boolean, callback: SimpleCallback): any;
+    read(targetSource: boolean, callback: ReturnCallback<Int8Array>): any;
+    mimeType(targetSource: boolean, callback: ReturnCallback<string>): any;
+    size(targetSource: boolean, callback: ReturnCallback<number>): any;
     getLocks(callback: ReturnCallback<Lock[]>): any;
     setLock(lock: Lock, callback: SimpleCallback): any;
     removeLock(uuid: string, callback: ReturnCallback<boolean>): any;

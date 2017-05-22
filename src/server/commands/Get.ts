@@ -11,8 +11,10 @@ export default function(arg : MethodCallArgs, callback)
             return;
         }
 
-        arg.requirePrivilege([ 'canRead' ], r, () => {
-            r.read((e, c) => {
+        const targetSource = arg.findHeader('source', 'F').toUpperCase() === 'T';
+
+        arg.requirePrivilege(targetSource ? [ 'canRead', 'canSource' ] : [ 'canRead' ], r, () => {
+            r.read(targetSource, (e, c) => {
                 if(e)
                     arg.setCode(HTTPCodes.MethodNotAllowed);
                 else

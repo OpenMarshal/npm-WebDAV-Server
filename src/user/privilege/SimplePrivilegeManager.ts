@@ -20,6 +20,7 @@ export abstract class SimplePrivilegeManager implements IPrivilegeManager
     canAppend = (arg, resource, callback) => this.canWrite(arg, resource, callback)
     abstract canWrite : PrivilegeManagerMethod
     abstract canRead : PrivilegeManagerMethod
+    abstract canSource : PrivilegeManagerMethod
     canGetMimeType = (arg, resource, callback) => this.canRead(arg, resource, callback)
     canGetSize = (arg, resource, callback) => this.canRead(arg, resource, callback)
     abstract canListLocks : PrivilegeManagerMethod

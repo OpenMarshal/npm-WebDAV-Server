@@ -14,6 +14,7 @@ export class FakePrivilegeManager extends SimplePrivilegeManager
     canCreate = (arg, resource, callback) => callback(null, true)
     canDelete = hasNoWriteLock
     canWrite = hasNoWriteLock
+    canSource = (arg, resource, callback) => callback(null, true)
     canRead = (arg, resource, callback) => callback(null, true)
     canListLocks = (arg, resource, callback) => callback(null, true)
     canSetLock = hasNoWriteLock

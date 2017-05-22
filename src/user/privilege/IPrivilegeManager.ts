@@ -13,6 +13,7 @@ export type BasicPrivilege =
     | 'canAppend'
     | 'canWrite'
     | 'canRead'
+    | 'canSource'
     | 'canGetMimeType'
     | 'canGetSize'
     | 'canListLocks'
@@ -59,6 +60,7 @@ export interface IPrivilegeManager
     canAppend : PrivilegeManagerMethod
     canWrite : PrivilegeManagerMethod
     canRead : PrivilegeManagerMethod
+    canSource : PrivilegeManagerMethod
     canGetMimeType : PrivilegeManagerMethod
     canGetSize : PrivilegeManagerMethod
     canListLocks : PrivilegeManagerMethod

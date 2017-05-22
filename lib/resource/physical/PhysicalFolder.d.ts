@@ -8,11 +8,11 @@ export declare class PhysicalFolder extends PhysicalResource {
     type(callback: ReturnCallback<ResourceType>): void;
     create(callback: SimpleCallback): void;
     delete(callback: SimpleCallback): void;
-    append(data: Int8Array, callback: SimpleCallback): void;
-    write(data: Int8Array, callback: SimpleCallback): void;
-    read(callback: ReturnCallback<Int8Array>): void;
-    mimeType(callback: ReturnCallback<string>): void;
-    size(callback: ReturnCallback<number>): void;
+    append(data: Int8Array, targetSource: boolean, callback: SimpleCallback): void;
+    write(data: Int8Array, targetSource: boolean, callback: SimpleCallback): void;
+    read(targetSource: boolean, callback: ReturnCallback<Int8Array>): void;
+    mimeType(targetSource: boolean, callback: ReturnCallback<string>): void;
+    size(targetSource: boolean, callback: ReturnCallback<number>): void;
     addChild(resource: IResource, callback: SimpleCallback): void;
     removeChild(resource: IResource, callback: SimpleCallback): void;
     getChildren(callback: ReturnCallback<IResource[]>): void;

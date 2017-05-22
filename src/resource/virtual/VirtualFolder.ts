@@ -23,25 +23,25 @@ export class VirtualFolder extends VirtualResource
     }
 
     // ****************************** Content ****************************** //
-    append(data : Int8Array, callback : SimpleCallback)
+    append(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
     {
         callback(Errors.InvalidOperation);
     }
-    write(data : Int8Array, callback : SimpleCallback)
+    write(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
     {
         callback(Errors.InvalidOperation);
     }
-    read(callback : ReturnCallback<Int8Array>)
+    read(targetSource : boolean, callback : ReturnCallback<Int8Array>)
     {
         callback(Errors.InvalidOperation, null);
     }
-    mimeType(callback : ReturnCallback<string>)
+    mimeType(targetSource : boolean, callback : ReturnCallback<string>)
     {
         callback(null, 'directory');
     }
-    size(callback : ReturnCallback<number>)
+    size(targetSource : boolean, callback : ReturnCallback<number>)
     {
-        StandardResource.sizeOfSubFiles(this, callback);
+        StandardResource.sizeOfSubFiles(this, targetSource, callback);
     }
     
     // ****************************** Children ****************************** //
