@@ -83,5 +83,11 @@ export interface IPrivilegeManager
 
 export function hasNoWriteLock(arg : MethodCallArgs, resource : IResource, callback : PrivilegeManagerCallback)
 {
-    resource.getLocks((e, locks) => callback(e, locks ? locks.filter((l) => l.user !== arg.user && l.lockKind.type.isSame(LockType.Write)).length === 0 : false));
+    resource.getLocks((e, locks) => {
+        const hasNoLock = locks ? locks.filter((l) => l.user !== arg.user && l.lockKind.type.isSame(LockType.Write)).length === 0 : false;
+        if(!hasNoLock || !resource.parent)
+            callback(e, hasNoLock);
+        else
+            hasNoWriteLock(arg, resource.parent, callback);
+    });
 }
