@@ -1,11 +1,12 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
-import { STATUS_CODES } from 'http'
-import { IResource } from '../../resource/IResource'
-import { Lock } from '../../resource/lock/Lock'
-import { LockKind } from '../../resource/lock/LockKind'
+import { IResource, ResourceType } from '../../resource/IResource'
 import { LockScope } from '../../resource/lock/LockScope'
+import { LockKind } from '../../resource/lock/LockKind'
 import { LockType } from '../../resource/lock/LockType'
+import { Errors } from '../../Errors'
+import { Lock } from '../../resource/lock/Lock'
 import { XML } from '../../helper/XML'
+import * as path from 'path'
 
 export default function(arg : MethodCallArgs, callback)
 {
@@ -29,9 +30,53 @@ export default function(arg : MethodCallArgs, callback)
         const lock = new Lock(new LockKind(scope, type, arg.server.options.lockTimeout), arg.user, owner);
 
         arg.getResource((e, r) => {
+            if(e === Errors.ResourceNotFound)
+            { // create the resource
+                
+                arg.server.getResourceFromPath(arg.path.getParent(), (e, r) => {
+                    if(e)
+                    {
+                        arg.setCode(e === Errors.ResourceNotFound ? HTTPCodes.Conflict : HTTPCodes.InternalServerError)
+                        callback()
+                        return;
+                    }
+                    
+                    if(!r.fsManager)
+                    {
+                        arg.setCode(HTTPCodes.InternalServerError)
+                        callback();
+                        return;
+                    }
+
+                    arg.requirePrivilege([ 'canAddChild' ], r, () => {
+                        const resource = r.fsManager.newResource(arg.uri, path.basename(arg.uri), ResourceType.File, r);
+                        arg.requirePrivilege([ 'canCreate', 'canWrite' ], resource, () => {
+                            resource.create((e) => {
+                                if(e)
+                                {
+                                    arg.setCode(HTTPCodes.InternalServerError)
+                                    callback();
+                                    return;
+                                }
+                            
+                                r.addChild(resource, (e) => {
+                                    if(e)
+                                        arg.setCode(HTTPCodes.InternalServerError);
+                                    else
+                                        arg.setCode(HTTPCodes.Created);
+                                    callback();
+                                })
+                            })
+                        })
+                    })
+                })
+
+                return;
+            }
+
             if(e)
             {
-                arg.setCode(HTTPCodes.NotFound); // TODO : must become, in  the future, a creation of the resource
+                arg.setCode(HTTPCodes.InternalServerError);
                 callback();
                 return;
             }
