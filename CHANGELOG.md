@@ -1,5 +1,46 @@
 # Changelog
 
+## 1.2.0
+
+### New features
+* Added parents lock check *[76f3340](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/76f3340)*
+* Added 'source' header to read/write source of the files *[842b37a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/842b37a)*
+* Added the 'canSource' privilege *[842b37a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/842b37a)*
+* Implemented privilege check for most of the WebDAV methods *[e25fcbc](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e25fcbc)*
+
+### Changes
+* Upgraded the PUT method *[c1259de](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c1259de)*
+* Upgraded the LOCK method *[838c51b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/838c51b)*
+* Changed the '401 Unauthorized' responses status for not allowed opertions to the '403 Forbidden' status *[e55460e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e55460e)*
+
+### Documentation
+* Changed interface body into full interface declaration in the documentation *[bd3c6d7](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/bd3c6d7)*
+* Added a comment to describe 'canSource' in the documentation *[7ff9fd9](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7ff9fd9)*
+* Added the 'canSource' privilege to the documentation *[a72147f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a72147f)*
+
+### Tests
+* Added a full range of tests for the UNLOCK method *[d2d5075](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d2d5075)*
+* Upgraded the LOCK tests *[838c51b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/838c51b)*
+* Upgraded the UNLOCK tests *[f4f1363](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/f4f1363)*
+* Added the 'date' header test *[5668628](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5668628)*
+
+### Other
+* Changed the 'override' word into 'overwrite' which makes more sense *[f3caaab](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/f3caaab)*
+* Removed useless comment *[8b5e8c8](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/8b5e8c8)*
+* Converted 'new Error(...)' into the Error 'enum' *[b2c7bc2](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b2c7bc2)*
+* Removed useless TODO *[c65658e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c65658e)*
+
+### Bug fix
+* Added missing privilege check *[3cfdbea](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3cfdbea)*
+
+## 1.1.1
+
+### Other
+* Fixed code format *[4526ad7](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/4526ad7)*
+
+### Bug fix
+* Fixed a some bugs about the persistence *[0d1c7c1](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0d1c7c1)*
+
 ## 1.1.0
 
 ### New features
