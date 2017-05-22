@@ -4,18 +4,18 @@ var webdav = require('../../lib/index.js'),
     request = require('request'),
     xmljs = require('xml-js')
 
-module.exports = function(test, options, index) { test('etag of virtual file', function(isValid)
+module.exports = (test, options, index) => test('etag of virtual file', isValid =>
 {
     var server = new webdav.WebDAVServer();
     isValid = isValid.multiple(1, server);
-    const _ = function(e, cb) {
+    const _ = (e, cb) => {
         if(e)
             isValid(false, e);
         else
             cb();
     }
     
-    server.rootResource.addChild(new webdav.VirtualFile('testFile.txt'), function(e) { _(e, function() {
+    server.rootResource.addChild(new webdav.VirtualFile('testFile.txt'), e => _(e, () => {
         server.start(options.port + index);
 
         var wfs = Client(
@@ -27,7 +27,7 @@ module.exports = function(test, options, index) { test('etag of virtual file', f
             request({
                 url: 'http://127.0.0.1:' + (options.port + index) + '/testFile.txt',
                 method: 'PROPFIND'
-            }, function(e, res, body) {
+            }, (e, res, body) => {
                 if(e)
                 {
                     isValid(false, e);
@@ -50,10 +50,10 @@ module.exports = function(test, options, index) { test('etag of virtual file', f
             })
         }
 
-        propfind(function(doc) {
+        propfind((doc) => {
             const etag1 = doc['D:multistatus'][0]['D:response'][0]['D:propstat'][0]['D:prop'][0]['D:getetag'][0]._text[0];
 
-            propfind(function(doc) {
+            propfind((doc) => {
                 const etag2 = doc['D:multistatus'][0]['D:response'][0]['D:propstat'][0]['D:prop'][0]['D:getetag'][0]._text[0];
 
                 if(etag1 !== etag2)
@@ -62,16 +62,16 @@ module.exports = function(test, options, index) { test('etag of virtual file', f
                     return;
                 }
                 
-                wfs.writeFile('/testFile.txt', 'New content', function(e) { _(e, function() {
-                    propfind(function(doc) {
+                wfs.writeFile('/testFile.txt', 'New content', (e) => _(e, () => {
+                    propfind((doc) => {
                         const etag3 = doc['D:multistatus'][0]['D:response'][0]['D:propstat'][0]['D:prop'][0]['D:getetag'][0]._text[0];
                         if(etag1 === etag3)
                             isValid(false, 'ETag didn\'t change with file change');
                         else
                             isValid(true);
                     })
-                })})
+                }))
             })
         })
-    })});
-})}
+    }));
+})

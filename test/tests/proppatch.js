@@ -5,12 +5,12 @@ var webdav = require('../../lib/index.js'),
     path = require('path'),
     fs = require('fs')
 
-module.exports = function(test, options, index) { test('PROPPATCH method', function(isValid)
+module.exports = (test, options, index) => test('PROPPATCH method', isValid =>
 {
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(4 * 2, server);
-    const _ = function(e, cb) {
+    const _ = (e, cb) => {
         if(e)
             isValid(false, e);
         else
@@ -40,7 +40,7 @@ module.exports = function(test, options, index) { test('PROPPATCH method', funct
 
     function test(name, isJSON)
     {
-        return function(e) { _(e, function() {
+        return (e) => _(e, () => {
             const url = 'http://localhost:' + (options.port + index) + '/' + name;
             
             function tryCatch(callback)
@@ -63,12 +63,12 @@ module.exports = function(test, options, index) { test('PROPPATCH method', funct
                 headers: {
                     Accept: isJSON ? 'application/json' : undefined
                 }
-            }, function(e, res, body) { _(e, function() {
-                tryCatch(function() {
+            }, (e, res, body) => _(e, () => {
+                tryCatch(() => {
                     const xml = isJSON ? JSON.parse(body) : xmljs.xml2js(body, { compact: true, alwaysArray: true });
                     const response = xml['D:multistatus'][0]['D:response'][0];
                     const prop = response['D:propstat'][0]['D:prop'][0];
-                    const authorsKey = Object.keys(prop).find(function(k) { return k.endsWith(':Authors') });
+                    const authorsKey = Object.keys(prop).find((k) => k.endsWith(':Authors'));
                 
                     if(!(prop[authorsKey].length === 1 &&
                         response['D:propstat'][0]['D:status'][0]._text[0].indexOf('HTTP/1.1 20') === 0 &&
@@ -84,11 +84,11 @@ module.exports = function(test, options, index) { test('PROPPATCH method', funct
                         headers: {
                             Accept: isJSON ? 'application/json' : undefined
                         }
-                    }, function(e, res, body) { _(e, function() {
-                        tryCatch(function() {
+                    }, (e, res, body) => _(e, () => {
+                        tryCatch(() => {
                             const xml = isJSON ? JSON.parse(body) : xmljs.xml2js(body, { compact: true, alwaysArray: true });
                             const prop = xml['D:multistatus'][0]['D:response'][0]['D:propstat'][0]['D:prop'][0];
-                            const authorsKey = Object.keys(prop).find(function(k) { return k.endsWith(':Authors') });
+                            const authorsKey = Object.keys(prop).find((k) => k.endsWith(':Authors'));
 
                             if(prop[authorsKey].length !== 1)
                             {
@@ -104,27 +104,27 @@ module.exports = function(test, options, index) { test('PROPPATCH method', funct
                                 headers: {
                                     Accept: isJSON ? 'application/json' : undefined
                                 }
-                            }, function(e, res, body) { _(e, function() {
+                            }, (e, res, body) => _(e, () => {
                                 request({
                                     url: url,
                                     method: 'PROPFIND',
                                     headers: {
                                         Accept: isJSON ? 'application/json' : undefined
                                     }
-                                }, function(e, res, body) { _(e, function() {
-                                    tryCatch(function() {
+                                }, (e, res, body) => _(e, () => {
+                                    tryCatch(() => {
                                         const xml = isJSON ? JSON.parse(body) : xmljs.xml2js(body, { compact: true, alwaysArray: true });
                                         const prop = xml['D:multistatus'][0]['D:response'][0]['D:propstat'][0]['D:prop'][0];
-                                        const authorsKey = Object.keys(prop).find(function(k) { return k.endsWith(':Authors') });
+                                        const authorsKey = Object.keys(prop).find((k) => k.endsWith(':Authors'));
 
                                         isValid(authorsKey === undefined);
                                     });
-                                })});
-                            })});
+                                }));
+                            }));
                         });
-                    })});
+                    }));
                 });
-            })})
-        })}
+            }))
+        });
     }
-})}
+})

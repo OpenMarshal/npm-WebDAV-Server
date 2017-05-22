@@ -4,7 +4,7 @@ var webdav = require('../../lib/index.js'),
     path = require('path'),
     fs = require('fs')
 
-module.exports = function(test, options, index) { test('write in a physical file', function(isValid)
+module.exports = (test, options, index) => test('write in a physical file', isValid =>
 {
     var files = {
         'file1.txt': 'this is the content!',
@@ -14,7 +14,7 @@ module.exports = function(test, options, index) { test('write in a physical file
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(Object.keys(files).length, server);
-    const _ = function(e, cb) {
+    const _ = (e, cb) => {
         if(e)
             isValid(false, e);
         else
@@ -30,15 +30,15 @@ module.exports = function(test, options, index) { test('write in a physical file
         const filePath = path.join(__dirname, 'writePhysicalFile', fileName);
         fs.writeFileSync(filePath, ''); // Clean the file before the test
 
-        server.rootResource.addChild(new webdav.PhysicalFile(filePath), function(e) { _(e, function() {
-            wfs.writeFile('/' + fileName, files[fileName], function(e) { _(e, function() {
-                wfs.readFile('/' + fileName, function(e, content) {
+        server.rootResource.addChild(new webdav.PhysicalFile(filePath), e => _(e, () => {
+            wfs.writeFile('/' + fileName, files[fileName], (e) => _(e, () => {
+                wfs.readFile('/' + fileName, (e, content) => {
                     if(e)
                         isValid(false, e)
                     else
                         isValid(content.toString() === files[fileName].toString(), 'Received : ' + content.toString() + ' but expected : ' + files[fileName].toString());
                 })
-            })})
-        })})
+            }))
+        }))
     }
-})}
+})

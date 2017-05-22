@@ -4,12 +4,12 @@ var webdav = require('../../lib/index.js'),
     path = require('path'),
     fs = require('fs')
 
-module.exports = function(test, options, index) { test('write/create a physical file', function(isValid)
+module.exports = (test, options, index) => test('write/create a physical file', isValid =>
 {
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(1, server);
-    const _ = function(e, cb) {
+    const _ = (e, cb) => {
         if(e)
             isValid(false, e);
         else
@@ -30,12 +30,12 @@ module.exports = function(test, options, index) { test('write/create a physical 
     
     const fileContent = 'Hello!';
     
-    server.rootResource.addChild(new webdav.PhysicalFolder(folderPath), function(e) { _(e, function() {
-        wfs.writeFile('/' + folderName + '/' + fileName, fileContent, function(e) {
+    server.rootResource.addChild(new webdav.PhysicalFolder(folderPath), e => _(e, () => {
+        wfs.writeFile('/' + folderName + '/' + fileName, fileContent, (e) => {
             if(e)
                 isValid(false, e)
             else
                 isValid(fs.existsSync(filePath) && fs.readFileSync(filePath).toString() === fileContent.toString());
         })
-    })});
-})}
+    }));
+})

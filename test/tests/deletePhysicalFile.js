@@ -4,12 +4,12 @@ var webdav = require('../../lib/index.js'),
     path = require('path'),
     fs = require('fs')
 
-module.exports = function(test, options, index) { test('delete a physical file', function(isValid)
+module.exports = (test, options, index) => test('delete a physical file', isValid =>
 {
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(1, server);
-    const _ = function(e, cb) {
+    const _ = (e, cb) => {
         if(e)
             isValid(false, e);
         else
@@ -25,13 +25,13 @@ module.exports = function(test, options, index) { test('delete a physical file',
     if(!fs.existsSync(filePath))
         fs.writeFileSync(filePath, 'Test!');
 
-    server.rootResource.addChild(new webdav.PhysicalFile(filePath), function(e) { _(e, function() {
-        wfs.stat('/' + fileName, function(e, stat) { _(e, function() {
-            wfs.unlink('/' + fileName, function(e) { _(e, function() {
-                fs.exists(filePath, function(exists) {
+    server.rootResource.addChild(new webdav.PhysicalFile(filePath), e => _(e, () => {
+        wfs.stat('/' + fileName, (e, stat) => _(e, () => {
+            wfs.unlink('/' + fileName, (e) => _(e, () => {
+                fs.exists(filePath, (exists) => {
                     isValid(!exists)
                 })
-            })})
-        })})
-    })});
-})}
+            }))
+        }))
+    }));
+})

@@ -2,11 +2,11 @@
 var webdav = require('../../lib/index.js'),
     Client = require('webdav-fs')
 
-module.exports = function(test, options, index) { test('stat of virtual resources', function(isValid)
+module.exports = (test, options, index) => test('stat of virtual resources', isValid =>
 {
     var server = new webdav.WebDAVServer();
     isValid = isValid.multiple(2, server);
-    const _ = function(e, cb) {
+    const _ = (e, cb) => {
         if(e)
             isValid(false, e);
         else
@@ -16,27 +16,27 @@ module.exports = function(test, options, index) { test('stat of virtual resource
     const content = 'Content!!!';
 
     const folder = new webdav.VirtualFolder('testFolder');
-    server.rootResource.addChild(folder, function(e) { _(e, function() {
+    server.rootResource.addChild(folder, e => _(e, () => {
         const file = new webdav.VirtualFile('testFile.txt');
         file.content = content;
-        folder.addChild(file, function(e) { _(e, function() {
+        folder.addChild(file, e => _(e, () => {
             server.start(options.port + index);
 
             var wfs = Client(
                 'http://127.0.0.1:' + (options.port + index)
             );
 
-            wfs.stat('/testFolder/testFile.txt', function(e, stat) {
+            wfs.stat('/testFolder/testFile.txt', (e, stat) => {
                 isValid(!e && stat.name === 'testFile.txt' && stat.size === content.length && stat.isFile(), 'File error');
             })
 
-            wfs.stat('/testFolder', function(e, stat) {
+            wfs.stat('/testFolder', (e, stat) => {
                 isValid(!e && stat.isDirectory(), 'Folder error');
             })
 
-            wfs.stat('/notFoundFile.txt', function(e, stat) {
+            wfs.stat('/notFoundFile.txt', (e, stat) => {
                 isValid(!!e);
             })
-        })});
-    })});
-})}
+        }));
+    }));
+})

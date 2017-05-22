@@ -5,12 +5,12 @@ var webdav = require('../../lib/index.js'),
     path = require('path'),
     fs = require('fs');
 
-module.exports = function(test, options, index) { test('copy a physical folder', function(isValid)
+module.exports = (test, options, index) => test('copy a physical folder', isValid =>
 {
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(2, server);
-    const _ = function(e, cb) {
+    const _ = (e, cb) => {
         if(e)
             isValid(false, e);
         else
@@ -38,26 +38,26 @@ module.exports = function(test, options, index) { test('copy a physical folder',
         fs.writeFileSync(subFilePath, 'Content!');
 
     const folder = new webdav.PhysicalFolder(folderPath);
-    server.rootResource.addChild(folder,function(e) { _(e, function() {
-        folder.addChild(new webdav.PhysicalFile(subFilePath),function(e) { _(e, function() {
-            folder.addChild(new webdav.PhysicalFolder(subFolderPath),function(e) { _(e, function() {
+    server.rootResource.addChild(folder, e => _(e, () => {
+        folder.addChild(new webdav.PhysicalFile(subFilePath), e => _(e, () => {
+            folder.addChild(new webdav.PhysicalFolder(subFolderPath), e => _(e, () => {
                 request({
                     url: url + '/' + folderName,
                     method: 'COPY',
                     headers: {
                         destination: url + '/' + fileNameDest
                     }
-                }, function(e, res, body) { _(e, function() {
-                    wfs.stat('/' + folderName, function(e, stat) { _(e, function() {
-                        wfs.stat('/' + folderName + '/' + subFileName, function(e, stat) { _(e, function() {
-                            wfs.stat('/' + folderName + '/' + subFolderName, function(e, stat) { _(e, function() {
+                }, (e, res, body) => _(e, () => {
+                    wfs.stat('/' + folderName, (e, stat) => _(e, () => {
+                        wfs.stat('/' + folderName + '/' + subFileName, (e, stat) => _(e, () => {
+                            wfs.stat('/' + folderName + '/' + subFolderName, (e, stat) => _(e, () => {
                                 request({
                                     url: url + '/' + folderName,
                                     method: 'COPY',
                                     headers: {
                                         destination: url + '/' + fileNameDest
                                     }
-                                }, function(e, res, body) { _(e, function() {
+                                }, (e, res, body) => _(e, () => {
                                     if(res.statusCode >= 300)
                                     {
                                         isValid(false, 'Override must be a default behavior (RFC spec)');
@@ -71,21 +71,21 @@ module.exports = function(test, options, index) { test('copy a physical folder',
                                             destination: url + '/' + fileNameDest,
                                             Overwrite: 'F'
                                         }
-                                    }, function(e, res, body) { _(e, function() {
+                                    }, (e, res, body) => _(e, () => {
                                         isValid(res.statusCode >= 300, 'Overrided but must not');
-                                    })});
-                                })});
-                            })})
-                        })})
-                    })})
-                })});
-            })});
-        })});
-    })});
+                                    }));
+                                }));
+                            }))
+                        }))
+                    }))
+                }));
+            }));
+        }));
+    }));
 
     function rmDir(dirPath)
     {
-        fs.readdirSync(dirPath).forEach(function(name) {
+        fs.readdirSync(dirPath).forEach(name => {
             const childPath = path.join(dirPath, name);
             if(fs.statSync(childPath).isFile())
                 fs.unlinkSync(childPath);
@@ -102,32 +102,32 @@ module.exports = function(test, options, index) { test('copy a physical folder',
         rmDir(destFolderPath);
     fs.mkdirSync(destFolderPath);
     
-    server.rootResource.addChild(new webdav.PhysicalFolder(destFolderPath),function(e) { _(e, function() {
+    server.rootResource.addChild(new webdav.PhysicalFolder(destFolderPath), e => _(e, () => {
         request({
             url: url + '/' + folderName,
             method: 'COPY',
             headers: {
                 destination: url + '/' + destFolderName + '/' + fileNameDest
             }
-        }, function(e, res, body) { _(e, function() {
-            wfs.stat('/' + destFolderName + '/' + fileNameDest, function(e, stat) { _(e, function() {
-                wfs.stat('/' + destFolderName + '/' + fileNameDest + '/' + subFileName, function(e, stat) { _(e, function() {
-                    wfs.stat('/' + destFolderName + '/' + fileNameDest + '/' + subFolderName, function(e, stat) { _(e, function() {
-                        fs.exists(path.join(destFolderPath, fileNameDest), function(exists) {
+        }, (e, res, body) => _(e, () => {
+            wfs.stat('/' + destFolderName + '/' + fileNameDest, (e, stat) => _(e, () => {
+                wfs.stat('/' + destFolderName + '/' + fileNameDest + '/' + subFileName, (e, stat) => _(e, () => {
+                    wfs.stat('/' + destFolderName + '/' + fileNameDest + '/' + subFolderName, (e, stat) => _(e, () => {
+                        fs.exists(path.join(destFolderPath, fileNameDest), (exists) => {
                             if(!exists)
                             {
                                 isValid(false, 'The folder must be physicaly copied when possible')
                                 return;
                             }
 
-                            fs.exists(path.join(destFolderPath, fileNameDest, subFileName), function(exists) {
+                            fs.exists(path.join(destFolderPath, fileNameDest, subFileName), (exists) => {
                                 if(!exists)
                                 {
                                     isValid(false, 'The file must be physicaly copied when possible')
                                     return;
                                 }
 
-                                fs.exists(path.join(destFolderPath, fileNameDest, subFolderName), function(exists) {
+                                fs.exists(path.join(destFolderPath, fileNameDest, subFolderName), (exists) => {
                                     if(!exists)
                                     {
                                         isValid(false, 'The folder must be physicaly copied when possible')
@@ -140,7 +140,7 @@ module.exports = function(test, options, index) { test('copy a physical folder',
                                         headers: {
                                             destination: url + '/' + destFolderName + '/' + fileNameDest
                                         }
-                                    }, function(e, res, body) { _(e, function() {
+                                    }, (e, res, body) => _(e, () => {
                                         if(res.statusCode >= 300)
                                         {
                                             isValid(false, 'Override must be a default behavior (RFC spec)');
@@ -154,16 +154,16 @@ module.exports = function(test, options, index) { test('copy a physical folder',
                                                 destination: url + '/' + destFolderName + '/' + fileNameDest,
                                                 Overwrite: 'F'
                                             }
-                                        }, function(e, res, body) { _(e, function() {
+                                        }, (e, res, body) => _(e, () => {
                                             isValid(res.statusCode >= 300, 'Overrided but must not');
-                                        })});
-                                    })});
+                                        }));
+                                    }));
                                 })
                             })
                         })
-                    })})
-                })})
-            })})
-        })});
-    })});
-})}
+                    }))
+                }))
+            }))
+        }));
+    }));
+})

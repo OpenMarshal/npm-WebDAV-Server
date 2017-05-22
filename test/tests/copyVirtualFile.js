@@ -3,12 +3,12 @@ var webdav = require('../../lib/index.js'),
     request = require('request'),
     Client = require('webdav-fs');
 
-module.exports = function(test, options, index) { test('copy a virtual file', function(isValid)
+module.exports = (test, options, index) => test('copy a virtual file', isValid =>
 {
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(1, server);
-    const _ = function(e, cb) {
+    const _ = (e, cb) => {
         if(e)
             isValid(false, e);
         else
@@ -20,23 +20,23 @@ module.exports = function(test, options, index) { test('copy a virtual file', fu
 
     const fileName = 'test.txt';
     const fileNameDest = 'test2.txt';
-    server.rootResource.addChild(new webdav.VirtualFile(fileName),function(e) { _(e, function() {
+    server.rootResource.addChild(new webdav.VirtualFile(fileName), e => _(e, () => {
         request({
             url: url + '/' + fileName,
             method: 'COPY',
             headers: {
                 destination: url + '/' + fileNameDest
             }
-        }, function(e, res, body) { _(e, function() {
-            wfs.stat('/' + fileName, function(e, stat) { _(e, function() {
-                wfs.stat('/' + fileNameDest, function(e, stat) { _(e, function() {
+        }, (e, res, body) => _(e, () => {
+            wfs.stat('/' + fileName, (e, stat) => _(e, () => {
+                wfs.stat('/' + fileNameDest, (e, stat) => _(e, () => {
                     request({
                         url: url + '/' + fileName,
                         method: 'COPY',
                         headers: {
                             destination: url + '/' + fileNameDest
                         }
-                    }, function(e, res, body) { _(e, function() {
+                    }, (e, res, body) => _(e, () => {
                         if(res.statusCode >= 300)
                         {
                             isValid(false, 'Override must be a default behavior (RFC spec)');
@@ -50,12 +50,12 @@ module.exports = function(test, options, index) { test('copy a virtual file', fu
                                 destination: url + '/' + fileNameDest,
                                 Overwrite: 'F'
                             }
-                        }, function(e, res, body) { _(e, function() {
+                        }, (e, res, body) => _(e, () => {
                             isValid(res.statusCode >= 300, 'Overrided but must not');
-                        })});
-                    })});
-                })})
-            })})
-        })});
-    })});
-})}
+                        }));
+                    }));
+                }))
+            }))
+        }));
+    }));
+})

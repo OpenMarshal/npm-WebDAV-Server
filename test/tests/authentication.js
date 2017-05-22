@@ -2,12 +2,12 @@
 var webdav = require('../../lib/index.js'),
     Client = require('webdav-fs');
 
-module.exports = function(test, options, index) { test('authentication', function(isValid)
+module.exports = (test, options, index) => test('authentication', isValid =>
 {
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(2, server);
-    const _ = function(e, cb) {
+    const _ = (e, cb) => {
         if(e)
             isValid(false, e);
         else
@@ -20,15 +20,15 @@ module.exports = function(test, options, index) { test('authentication', functio
 
     const wfs = Client(url, 'usernameX', 'password');
 
-    server.rootResource.addChild(new webdav.VirtualFolder('test'), function(e) { _(e, function() {
-        wfs.stat('/test', function(e, stat) {
+    server.rootResource.addChild(new webdav.VirtualFolder('test'), e => _(e, () => {
+        wfs.stat('/test', (e, stat) => {
             isValid(!e);
         })
         
         const wfs2 = Client(url, 'invalidUsername', 'password');
         
-        wfs2.stat('/test', function(e, stat) {
+        wfs2.stat('/test', (e, stat) => {
             isValid(!!e);
         })
-    })})
-})}
+    }))
+})

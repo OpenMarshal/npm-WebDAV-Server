@@ -4,12 +4,12 @@ var webdav = require('../../lib/index.js'),
     path = require('path'),
     fs = require('fs')
 
-module.exports = function(test, options, index) { test('read a physical file', function(isValid)
+module.exports = (test, options, index) => test('read a physical file', isValid =>
 {
     var server = new webdav.WebDAVServer();
     isValid = isValid.multiple(2, server);
     server.start(options.port + index);
-    const _ = function(e, cb) {
+    const _ = (e, cb) => {
         if(e)
             isValid(false, e);
         else
@@ -22,20 +22,20 @@ module.exports = function(test, options, index) { test('read a physical file', f
 
     const fileName = 'file.txt';
     const filePath = path.join(__dirname, 'readPhysicalFile', fileName);
-    server.rootResource.addChild(new webdav.PhysicalFile(filePath), function(e) { _(e, function() {
-        wfs.readFile('/' + fileName, function(e, content) {
+    server.rootResource.addChild(new webdav.PhysicalFile(filePath), e => _(e, () => {
+        wfs.readFile('/' + fileName, (e, content) => {
             if(e)
                 isValid(false, e)
             else
                 isValid(content.toString() === fs.readFileSync(filePath).toString());
         })
-    })});
+    }));
     
     const folderName = 'readPhysicalFile';
     const folderPath = path.join(__dirname, folderName);
-    server.rootResource.addChild(new webdav.PhysicalFolder(folderPath), function(e) { _(e, function() {
-        wfs.readFile('/' + folderName, function(e, content) {
+    server.rootResource.addChild(new webdav.PhysicalFolder(folderPath), e => _(e, () => {
+        wfs.readFile('/' + folderName, (e, content) => {
             isValid(!!e)
         })
-    })});
-})}
+    }));
+})

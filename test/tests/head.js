@@ -2,12 +2,12 @@
 var webdav = require('../../lib/index.js'),
     request = require('request')
 
-module.exports = function(test, options, index) { test('HEAD method', function(isValid)
+module.exports = (test, options, index) => test('HEAD method', isValid =>
 {
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(2, server);
-    const _ = function(e, cb) {
+    const _ = (e, cb) => {
         if(e)
             isValid(false, e);
         else
@@ -17,16 +17,16 @@ module.exports = function(test, options, index) { test('HEAD method', function(i
     request({
         url: 'http://localhost:' + (options.port + index),
         method: 'HEAD'
-    }, function(e, res, body) {
+    }, (e, res, body) => {
         isValid(!e && res.statusCode !== 200);
     })
 
-    server.rootResource.addChild(new webdav.VirtualFile('file'), function(e) { _(e, function() {
+    server.rootResource.addChild(new webdav.VirtualFile('file'), e => _(e, () => {
         request({
             url: 'http://localhost:' + (options.port + index) + '/file',
             method: 'HEAD'
-        }, function(e, res, body) {
+        }, (e, res, body) => {
             isValid(!e && res.statusCode === 200);
         })
-    })})
-})}
+    }))
+})

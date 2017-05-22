@@ -4,12 +4,12 @@ var webdav = require('../../lib/index.js'),
     path = require('path'),
     fs = require('fs')
 
-module.exports = function(test, options, index) { test('move a physical resource', function(isValid)
+module.exports = (test, options, index) => test('move a physical resource', isValid =>
 {
     var server = new webdav.WebDAVServer();
     server.start(options.port + index);
     isValid = isValid.multiple(4, server);
-    const _ = function(e, cb) {
+    const _ = (e, cb) => {
         if(e)
             isValid(false, e);
         else
@@ -18,10 +18,10 @@ module.exports = function(test, options, index) { test('move a physical resource
 
     const rootTestPath = path.join(__dirname, 'movePhysical');
 
-    test('file', true, function(s) { return new webdav.PhysicalFile(s) });
-    test('folder', false, function(s) { return new webdav.PhysicalFolder(s) });
-    testVirtual('file', true, function(s) { return new webdav.PhysicalFile(s) });
-    testVirtual('folder', false, function(s) { return new webdav.PhysicalFolder(s) });
+    test('file', true, s => new webdav.PhysicalFile(s));
+    test('folder', false, s => new webdav.PhysicalFolder(s));
+    testVirtual('file', true, s => new webdav.PhysicalFile(s));
+    testVirtual('folder', false, s => new webdav.PhysicalFolder(s));
 
     function move(source, dest, callback)
     {
@@ -31,9 +31,9 @@ module.exports = function(test, options, index) { test('move a physical resource
             headers: {
                 Destination: 'http://localhost:' + (options.port + index) + dest
             }
-        }, function(e, res, body) { _(e, function() {
+        }, (e, res, body) => _(e, () => {
             callback(res.statusCode < 300);
-        })})
+        }))
     }
 
     function exist(path, callback)
@@ -41,9 +41,9 @@ module.exports = function(test, options, index) { test('move a physical resource
         request({
             url: 'http://localhost:' + (options.port + index) + path,
             method: 'PROPFIND'
-        }, function(e, res, body) { _(e, function() {
+        }, (e, res, body) => _(e, () => {
             callback(res.statusCode < 300);
-        })})
+        }))
     }
 
     function test(prefixName, isFile, constructor)
@@ -69,43 +69,43 @@ module.exports = function(test, options, index) { test('move a physical resource
                 fs.mkdirSync(filePath);
         }
 
-        server.rootResource.addChild(constructor(filePath), function(e) { _(e, function() {
-            move('/' + fileName, '/' + fileNameDest, function(moved) {
+        server.rootResource.addChild(constructor(filePath), e => _(e, () => {
+            move('/' + fileName, '/' + fileNameDest, (moved) => {
                 if(!moved)
                 {
                     isValid(false);
                     return;
                 }
 
-                exist('/' + fileName, function(exists) {
+                exist('/' + fileName, (exists) => {
                     if(exists)
                     {
                         isValid(false, 'The ' + type + ' must not exist [p -> p]');
                         return;
                     }
 
-                    exist('/' + fileNameDest, function(exists) {
+                    exist('/' + fileNameDest, (exists) => {
                         if(!exists)
                         {
                             isValid(false, 'The ' + type + ' must exist [p -> p]');
                             return;
                         }
 
-                        fs.exists(filePath, function(exists) {
+                        fs.exists(filePath, (exists) => {
                             if(exists)
                             {
                                 isValid(false, 'The ' + type + ' has been moved virtualy only [p -> p]');
                                 return;
                             }
 
-                            fs.exists(filePathDest, function(exists) {
+                            fs.exists(filePathDest, (exists) => {
                                 isValid(exists, 'The ' + type + ' must be present in the real destination, but it is not the case [p -> p]');
                             })
                         })
                     })
                 })
             })
-        })});
+        }));
     }
 
     function testVirtual(prefixName, isFile, constructor)
@@ -126,36 +126,36 @@ module.exports = function(test, options, index) { test('move a physical resource
 
         const dest = new webdav.VirtualFolder(fileNameDest);
 
-        server.rootResource.addChild(dest, function(e) { _(e, function() {
-            server.rootResource.addChild(constructor(filePath), function(e) { _(e, function() {
-                move('/' + fileName, '/' + fileNameDest + '/' + fileName, function(moved) {
+        server.rootResource.addChild(dest, e => _(e, () => {
+            server.rootResource.addChild(constructor(filePath), e => _(e, () => {
+                move('/' + fileName, '/' + fileNameDest + '/' + fileName, (moved) => {
                     if(!moved)
                     {
                         isValid(false, 'Move didn\'t work [p -> v]');
                         return;
                     }
 
-                    exist('/' + fileName, function(exists) {
+                    exist('/' + fileName, (exists) => {
                         if(exists)
                         {
                             isValid(false, 'The ' + type + ' must not exist [p -> v]');
                             return;
                         }
 
-                        exist('/' + fileNameDest + '/' + fileName, function(exists) {
+                        exist('/' + fileNameDest + '/' + fileName, (exists) => {
                             if(!exists)
                             {
                                 isValid(false, 'The ' + type + ' must exist [p -> v]');
                                 return;
                             }
 
-                            fs.exists(filePath, function(exists) {
+                            fs.exists(filePath, (exists) => {
                                 isValid(exists, 'The ' + type + ' must not be really moved when moved to a virtual folder [p -> v]');
                             })
                         })
                     })
                 })
-            })});
-        })});
+            }));
+        }));
     }
-})}
+})
