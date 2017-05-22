@@ -6,7 +6,7 @@ export declare class RootResource extends StandardResource {
     constructor();
     create(callback: SimpleCallback): void;
     delete(callback: SimpleCallback): void;
-    moveTo(parent: IResource, newName: string, override: boolean, callback: SimpleCallback): void;
+    moveTo(parent: IResource, newName: string, overwrite: boolean, callback: SimpleCallback): void;
     rename(newName: string, callback: Return2Callback<string, string>): void;
     webName(callback: ReturnCallback<string>): void;
     type(callback: ReturnCallback<ResourceType>): void;

@@ -25,7 +25,7 @@ export class RootResource extends StandardResource
     {
         callback(Errors.InvalidOperation)
     }
-    moveTo(parent : IResource, newName : string, override : boolean, callback : SimpleCallback)
+    moveTo(parent : IResource, newName : string, overwrite : boolean, callback : SimpleCallback)
     {
         callback(Errors.InvalidOperation)
     }

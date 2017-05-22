@@ -29,7 +29,7 @@ export abstract class VirtualResource extends StandardResource
     {
         this.removeFromParent(callback);
     }
-    moveTo(parent : IResource, newName : string, override : boolean, callback : SimpleCallback)
+    moveTo(parent : IResource, newName : string, overwrite : boolean, callback : SimpleCallback)
     {
         if(parent === this.parent)
         {

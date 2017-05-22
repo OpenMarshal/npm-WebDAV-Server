@@ -39,7 +39,7 @@ export interface IResource
     // ****************************** Actions ****************************** //
     create(callback : SimpleCallback)
     delete(callback : SimpleCallback)
-    moveTo(parent : IResource, newName : string, override : boolean, callback : SimpleCallback)
+    moveTo(parent : IResource, newName : string, overwrite : boolean, callback : SimpleCallback)
     rename(newName : string, callback : Return2Callback<string, string>)
 
     // ****************************** Tests ****************************** //

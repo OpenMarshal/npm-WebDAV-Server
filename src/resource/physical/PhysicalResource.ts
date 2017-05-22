@@ -27,7 +27,7 @@ export abstract class PhysicalResource extends StandardResource
     // ****************************** Actions ****************************** //
     abstract create(callback : SimpleCallback)
     abstract delete(callback : SimpleCallback)
-    moveTo(parent : IResource, newName : string, override : boolean, callback : SimpleCallback)
+    moveTo(parent : IResource, newName : string, overwrite : boolean, callback : SimpleCallback)
     {
         if(parent === this.parent)
         {

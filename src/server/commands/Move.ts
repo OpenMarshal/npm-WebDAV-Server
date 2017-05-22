@@ -13,7 +13,7 @@ export default function(arg : MethodCallArgs, callback)
         }
 
         arg.requirePrivilege([ 'canMove' ], r, () => {
-            const override = arg.findHeader('overwrite') === 'T';
+            const overwrite = arg.findHeader('overwrite') === 'T';
 
             let destination : any = arg.findHeader('destination');
             if(!destination)
@@ -29,7 +29,7 @@ export default function(arg : MethodCallArgs, callback)
 
             arg.server.getResourceFromPath(destination.getParent(), (e, rDest) => {
                 arg.requirePrivilege([ 'canAddChild' ], rDest, () => {
-                    r.moveTo(rDest, destination.fileName(), override, (e) => {
+                    r.moveTo(rDest, destination.fileName(), overwrite, (e) => {
                         if(e)
                             arg.setCode(HTTPCodes.InternalServerError)
                         else

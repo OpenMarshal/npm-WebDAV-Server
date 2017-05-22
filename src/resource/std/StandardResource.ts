@@ -177,7 +177,7 @@ export abstract class StandardResource implements IResource
     // ****************************** Actions ****************************** //
     abstract create(callback : SimpleCallback)
     abstract delete(callback : SimpleCallback)
-    abstract moveTo(parent : IResource, newName : string, override : boolean, callback : SimpleCallback)
+    abstract moveTo(parent : IResource, newName : string, overwrite : boolean, callback : SimpleCallback)
     abstract rename(newName : string, callback : Return2Callback<string, string>)
 
     // ****************************** Content ****************************** //

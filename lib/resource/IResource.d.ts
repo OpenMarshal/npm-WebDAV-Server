@@ -23,7 +23,7 @@ export interface IResource {
     fsManager: FSManager;
     create(callback: SimpleCallback): any;
     delete(callback: SimpleCallback): any;
-    moveTo(parent: IResource, newName: string, override: boolean, callback: SimpleCallback): any;
+    moveTo(parent: IResource, newName: string, overwrite: boolean, callback: SimpleCallback): any;
     rename(newName: string, callback: Return2Callback<string, string>): any;
     isSame(resource: IResource, callback: ReturnCallback<boolean>): any;
     isOnTheSameFSWith(resource: IResource, callback: ReturnCallback<boolean>): any;

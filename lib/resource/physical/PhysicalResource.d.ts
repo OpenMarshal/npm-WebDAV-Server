@@ -7,7 +7,7 @@ export declare abstract class PhysicalResource extends StandardResource {
     constructor(realPath: string, parent?: IResource, fsManager?: FSManager);
     abstract create(callback: SimpleCallback): any;
     abstract delete(callback: SimpleCallback): any;
-    moveTo(parent: IResource, newName: string, override: boolean, callback: SimpleCallback): void;
+    moveTo(parent: IResource, newName: string, overwrite: boolean, callback: SimpleCallback): void;
     rename(newName: string, callback: Return2Callback<string, string>): void;
     webName(callback: ReturnCallback<string>): void;
     abstract type(callback: ReturnCallback<ResourceType>): any;

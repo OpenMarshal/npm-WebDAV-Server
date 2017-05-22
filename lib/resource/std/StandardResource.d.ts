@@ -27,7 +27,7 @@ export declare abstract class StandardResource implements IResource {
     getProperties(callback: ReturnCallback<object>): void;
     abstract create(callback: SimpleCallback): any;
     abstract delete(callback: SimpleCallback): any;
-    abstract moveTo(parent: IResource, newName: string, override: boolean, callback: SimpleCallback): any;
+    abstract moveTo(parent: IResource, newName: string, overwrite: boolean, callback: SimpleCallback): any;
     abstract rename(newName: string, callback: Return2Callback<string, string>): any;
     abstract append(data: Int8Array, targetSource: boolean, callback: SimpleCallback): any;
     abstract write(data: Int8Array, targetSource: boolean, callback: SimpleCallback): any;
