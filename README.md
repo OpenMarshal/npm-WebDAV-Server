@@ -266,6 +266,7 @@ canMove : PrivilegeManagerMethod
 canRename : PrivilegeManagerMethod
 canAppend : PrivilegeManagerMethod
 canWrite : PrivilegeManagerMethod
+canSource : PrivilegeManagerMethod
 canRead : PrivilegeManagerMethod
 canGetMimeType : PrivilegeManagerMethod
 canGetSize : PrivilegeManagerMethod
