@@ -278,7 +278,9 @@ interface IPrivilegeManager
     canAppend : PrivilegeManagerMethod
     canWrite : PrivilegeManagerMethod
     canRead : PrivilegeManagerMethod
-    canSource : PrivilegeManagerMethod
+    canSource : PrivilegeManagerMethod  // Allow to access to the source
+                                        // of a resource when it is
+                                        // requested by the 'source' header
     canGetMimeType : PrivilegeManagerMethod
     canGetSize : PrivilegeManagerMethod
     canListLocks : PrivilegeManagerMethod
