@@ -29,7 +29,7 @@ export default function(arg : MethodCallArgs, callback)
     arg.getResource((e, r) => {
         if(e)
         {
-            arg.setCode(HTTPCodes.NotFound); // TODO : must become, in  the future, a creation of the resource
+            arg.setCode(HTTPCodes.NotFound);
             callback();
             return;
         }
