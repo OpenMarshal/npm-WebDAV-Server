@@ -1,8 +1,41 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
-import { IResource, ETag } from '../../resource/IResource'
+import { IResource, ETag, ReturnCallback } from '../../resource/IResource'
 import { BasicPrivilege } from '../../user/privilege/IPrivilegeManager'
+import { FSPath } from '../../manager/FSPath'
+import { Lock } from '../../resource/lock/Lock'
 import { XML } from '../../helper/XML'
 import * as http from 'http'
+
+function lockDiscovery(arg : MethodCallArgs, path : FSPath, resource : IResource, callback : ReturnCallback<any>)
+{
+    arg.requireErPrivilege('canListLocks', resource, (e, can) => {
+        if(e || !can)
+        {
+            callback(e, {});
+            return;
+        }
+
+        resource.getLocks((e, locks) => {
+            if(resource.parent)
+            {
+                const parentPath = path.getParent();
+                lockDiscovery(arg, parentPath, resource.parent, (e, l) => {
+                    if(e)
+                        callback(e, null);
+                    else
+                    {
+                        l[path.toString()] = locks;
+                        callback(null, l);
+                    }
+                });
+            }
+            else
+                callback(null, {
+                    [path.toString()]: locks
+                });
+        });
+    })
+}
 
 export default function(arg : MethodCallArgs, callback)
 {
@@ -108,8 +141,38 @@ export default function(arg : MethodCallArgs, callback)
 
                     arg.getResourcePath(resource, (e, path) => {
                         if(!e)
+                        {
                             response.ele('D:href').add(arg.fullUri(path).replace(' ', '%20'));
-                        nbOut(e);
+                            const lockdiscovery = prop.ele('D:lockdiscovery');
+                            lockDiscovery(arg, new FSPath(path), resource, (e, l) => {
+                                if(e)
+                                {
+                                    nbOut(e);
+                                    return;
+                                }
+
+                                for(const path in l)
+                                {
+                                    for(const _lock of l[path])
+                                    {
+                                        const lock : Lock = _lock;
+                                        const activelock = lockdiscovery.ele('D:activelock');
+                                        
+                                        activelock.ele('D:lockscope').ele('D:' + lock.lockKind.scope.value.toLowerCase())
+                                        activelock.ele('D:locktype').ele('D:' + lock.lockKind.type.value.toLowerCase())
+                                        activelock.ele('D:depth').add('Infinity')
+                                        activelock.ele('D:owner').add(lock.owner)
+                                        activelock.ele('D:timeout').add('Second-' + (lock.expirationDate - Date.now()))
+                                        activelock.ele('D:locktoken').ele('D:href').add(lock.uuid)
+                                        activelock.ele('D:lockroot').ele('D:href').add(arg.fullUri(path).replace(' ', '%20'))
+                                    }
+                                }
+                                
+                                nbOut(null);
+                            })
+                        }
+                        else
+                            nbOut(e);
                     })
 
                     resource.webName((e, name) => process.nextTick(() => {
