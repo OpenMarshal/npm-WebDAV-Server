@@ -9,6 +9,13 @@ import { FSManager, FSPath } from '../manager/FSManager';
 import { IUserManager } from '../user/IUserManager';
 import * as http from 'http';
 export { WebDAVServerOptions } from './WebDAVServerOptions';
+export interface IResourceTreeNode {
+    r?: IResource;
+    resource?: IResource;
+    c?: ResourceTreeNode[];
+    children?: ResourceTreeNode[];
+}
+export declare type ResourceTreeNode = IResourceTreeNode | IResource | IResourceTreeNode[] | IResource[];
 export declare class WebDAVServer {
     httpAuthentication: HTTPAuthentication;
     privilegeManager: IPrivilegeManager;
@@ -23,6 +30,8 @@ export declare class WebDAVServer {
     constructor(options?: WebDAVServerOptions);
     getResourceFromPath(path: FSPath | string[] | string, callback: ReturnCallback<IResource>): any;
     getResourceFromPath(path: FSPath | string[] | string, rootResource: IResource, callback: ReturnCallback<IResource>): any;
+    addResourceTree(resoureceTree: ResourceTreeNode, callback: (e: Error) => void): any;
+    addResourceTree(rootResource: IResource, resoureceTree: ResourceTreeNode, callback: (e: Error) => void): any;
     onUnknownMethod(unknownMethod: WebDAVRequest): void;
     start(port?: number): void;
     stop(callback: () => void): void;
