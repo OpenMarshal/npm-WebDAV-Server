@@ -12,30 +12,32 @@ export default function(arg : MethodCallArgs, callback)
             return;
         }
 
-        arg.requirePrivilege([ 'canMove' ], r, () => {
-            const overwrite = arg.findHeader('overwrite') === 'T';
+        arg.checkIfHeader(r, () => {
+            arg.requirePrivilege([ 'canMove' ], r, () => {
+                const overwrite = arg.findHeader('overwrite') === 'T';
 
-            let destination : any = arg.findHeader('destination');
-            if(!destination)
-            {
-                arg.setCode(HTTPCodes.BadRequest);
-                callback();
-                return;
-            }
-            
-            destination = destination.substring(destination.indexOf('://') + '://'.length)
-            destination = destination.substring(destination.indexOf('/'))
-            destination = new FSPath(destination)
+                let destination : any = arg.findHeader('destination');
+                if(!destination)
+                {
+                    arg.setCode(HTTPCodes.BadRequest);
+                    callback();
+                    return;
+                }
+                
+                destination = destination.substring(destination.indexOf('://') + '://'.length)
+                destination = destination.substring(destination.indexOf('/'))
+                destination = new FSPath(destination)
 
-            arg.server.getResourceFromPath(destination.getParent(), (e, rDest) => {
-                arg.requirePrivilege([ 'canAddChild' ], rDest, () => {
-                    r.moveTo(rDest, destination.fileName(), overwrite, (e) => process.nextTick(() => {
-                        if(e)
-                            arg.setCode(HTTPCodes.InternalServerError)
-                        else
-                            arg.setCode(HTTPCodes.Created)
-                        callback()
-                    }))
+                arg.server.getResourceFromPath(destination.getParent(), (e, rDest) => {
+                    arg.requirePrivilege([ 'canAddChild' ], rDest, () => {
+                        r.moveTo(rDest, destination.fileName(), overwrite, (e) => process.nextTick(() => {
+                            if(e)
+                                arg.setCode(HTTPCodes.InternalServerError)
+                            else
+                                arg.setCode(HTTPCodes.Created)
+                            callback()
+                        }))
+                    })
                 })
             })
         })

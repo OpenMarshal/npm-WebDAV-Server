@@ -34,28 +34,30 @@ export default function(arg : MethodCallArgs, callback)
             return;
         }
 
-        arg.requirePrivilege([ 'canGetLock', 'canRemoveLock' ], r, () => {
-            r.getLock(token, (e, lock) => {
-                if(e || !lock)
-                {
-                    arg.setCode(HTTPCodes.Conflict);
-                    callback();
-                    return;
-                }
+        arg.checkIfHeader(r, () => {
+            arg.requirePrivilege([ 'canGetLock', 'canRemoveLock' ], r, () => {
+                r.getLock(token, (e, lock) => {
+                    if(e || !lock)
+                    {
+                        arg.setCode(HTTPCodes.Conflict);
+                        callback();
+                        return;
+                    }
 
-                if(lock.user !== arg.user)
-                {
-                    arg.setCode(HTTPCodes.Forbidden);
-                    callback();
-                    return;
-                }
-
-                r.removeLock(lock.uuid, (e, done) => {
-                    if(e || !done)
+                    if(lock.user !== arg.user)
+                    {
                         arg.setCode(HTTPCodes.Forbidden);
-                    else
-                        arg.setCode(HTTPCodes.NoContent);
-                    callback();
+                        callback();
+                        return;
+                    }
+
+                    r.removeLock(lock.uuid, (e, done) => {
+                        if(e || !done)
+                            arg.setCode(HTTPCodes.Forbidden);
+                        else
+                            arg.setCode(HTTPCodes.NoContent);
+                        callback();
+                    })
                 })
             })
         })

@@ -5,40 +5,42 @@ import * as path from 'path'
 
 export default function(arg : MethodCallArgs, callback)
 {
-    arg.server.getResourceFromPath(arg.path.getParent(), (e, r) => {
-        if(e)
-        {
-            arg.setCode(HTTPCodes.NotFound)
-            callback();
-            return;
-        }
-        
-        arg.requirePrivilege([ 'canAddChild' ], r, () => {
-            if(!r.fsManager)
+    arg.checkIfHeader(undefined, () => {
+        arg.server.getResourceFromPath(arg.path.getParent(), (e, r) => {
+            if(e)
             {
-                arg.setCode(HTTPCodes.InternalServerError)
+                arg.setCode(HTTPCodes.NotFound)
                 callback();
                 return;
             }
             
-            const resource = r.fsManager.newResource(arg.uri, path.basename(arg.uri), ResourceType.Directory, r);
-            arg.requirePrivilege([ 'canCreate' ], resource, () => {
-                resource.create((e) => process.nextTick(() => {
-                    if(e)
-                    {
-                        arg.setCode(HTTPCodes.InternalServerError)
-                        callback();
-                        return;
-                    }
+            arg.requirePrivilege([ 'canAddChild' ], r, () => {
+                if(!r.fsManager)
+                {
+                    arg.setCode(HTTPCodes.InternalServerError)
+                    callback();
+                    return;
+                }
                 
-                    r.addChild(resource, (e) => process.nextTick(() => {
+                const resource = r.fsManager.newResource(arg.uri, path.basename(arg.uri), ResourceType.Directory, r);
+                arg.requirePrivilege([ 'canCreate' ], resource, () => {
+                    resource.create((e) => process.nextTick(() => {
                         if(e)
+                        {
                             arg.setCode(HTTPCodes.InternalServerError)
-                        else
-                            arg.setCode(HTTPCodes.Created)
-                        callback();
+                            callback();
+                            return;
+                        }
+                    
+                        r.addChild(resource, (e) => process.nextTick(() => {
+                            if(e)
+                                arg.setCode(HTTPCodes.InternalServerError)
+                            else
+                                arg.setCode(HTTPCodes.Created)
+                            callback();
+                        }))
                     }))
-                }))
+                })
             })
         })
     })

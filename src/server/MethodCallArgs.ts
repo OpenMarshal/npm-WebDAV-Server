@@ -1,6 +1,7 @@
 import { requirePrivilege, BasicPrivilege } from '../user/privilege/IPrivilegeManager'
 import { IResource, ReturnCallback } from '../resource/IResource'
 import { XML, XMLElement } from '../helper/XML'
+import { parseIfHeader } from '../helper/IfParser'
 import { WebDAVServer } from '../server/WebDAVServer'
 import { HTTPCodes } from './HTTPCodes'
 import { FSPath } from '../manager/FSManager'
@@ -61,6 +62,32 @@ export class MethodCallArgs
                 callback(e, mca);
             })
         })
+    }
+
+    checkIfHeader(defaultResource : IResource, callback : () => void)
+    {
+        const ifHeader = this.findHeader('If');
+
+        if(!ifHeader)
+        {
+            callback();
+            return;
+        }
+
+        parseIfHeader(ifHeader)(this, defaultResource, (e, passed) => {
+            if(e)
+            {
+                this.setCode(HTTPCodes.InternalServerError);
+                this.exit();
+            }
+            else if(!passed)
+            {
+                this.setCode(HTTPCodes.PreconditionFailed);
+                this.exit();
+            }
+            else
+                callback();
+        });
     }
 
     requireCustomPrivilege(privileges : string | string[], resource : IResource, callback : () => void)

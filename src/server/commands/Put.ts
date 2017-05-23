@@ -58,69 +58,71 @@ export default function(arg : MethodCallArgs, callback)
             return;
         }
 
-        if(arg.contentLength === 0)
-        { // Create file
-            if(r)
-            { // Resource exists => empty it
-                arg.requirePrivilege(targetSource ? [ 'canSource', 'canWrite' ] : [ 'canWrite' ], r, () => {
-                    r.write(new Buffer(0), targetSource, (e) => process.nextTick(() => {
-                        if(e)
-                            arg.setCode(HTTPCodes.InternalServerError)
-                        else
-                            arg.setCode(HTTPCodes.OK)
-                        callback()
-                    }))
-                })
-                return;
-            }
-            
-            createResource(arg, callback, (r) => {
-                arg.setCode(HTTPCodes.OK)
-                callback();
-            })
-        }
-        else
-        { // Write to a file
-            const data = new Buffer(arg.data);
-
-            if(e)
-            { // Resource not found
+        arg.checkIfHeader(r, () => {
+            if(arg.contentLength === 0)
+            { // Create file
+                if(r)
+                { // Resource exists => empty it
+                    arg.requirePrivilege(targetSource ? [ 'canSource', 'canWrite' ] : [ 'canWrite' ], r, () => {
+                        r.write(new Buffer(0), targetSource, (e) => process.nextTick(() => {
+                            if(e)
+                                arg.setCode(HTTPCodes.InternalServerError)
+                            else
+                                arg.setCode(HTTPCodes.OK)
+                            callback()
+                        }))
+                    })
+                    return;
+                }
+                
                 createResource(arg, callback, (r) => {
-                    r.write(data, targetSource, (e) => process.nextTick(() => {
+                    arg.setCode(HTTPCodes.OK)
+                    callback();
+                })
+            }
+            else
+            { // Write to a file
+                const data = new Buffer(arg.data);
+
+                if(e)
+                { // Resource not found
+                    createResource(arg, callback, (r) => {
+                        r.write(data, targetSource, (e) => process.nextTick(() => {
+                            if(e)
+                                arg.setCode(HTTPCodes.InternalServerError)
+                            else
+                                arg.setCode(HTTPCodes.OK)
+                            callback();
+                        }))
+                    })
+                    return;
+                }
+
+                arg.requirePrivilege(targetSource ? [ 'canSource', 'canWrite' ] : [ 'canWrite' ], r, () => {
+                    r.type((e, type) => process.nextTick(() => {
                         if(e)
-                            arg.setCode(HTTPCodes.InternalServerError)
-                        else
-                            arg.setCode(HTTPCodes.OK)
-                        callback();
+                        {
+                            arg.setCode(HTTPCodes.InternalServerError);
+                            callback();
+                            return;
+                        }
+                        if(!type.isFile)
+                        {
+                            arg.setCode(HTTPCodes.MethodNotAllowed);
+                            callback();
+                            return;
+                        }
+
+                        r.write(data, targetSource, (e) => process.nextTick(() => {
+                            if(e)
+                                arg.setCode(HTTPCodes.InternalServerError)
+                            else
+                                arg.setCode(HTTPCodes.OK)
+                            callback();
+                        }))
                     }))
                 })
-                return;
             }
-
-            arg.requirePrivilege(targetSource ? [ 'canSource', 'canWrite' ] : [ 'canWrite' ], r, () => {
-                r.type((e, type) => process.nextTick(() => {
-                    if(e)
-                    {
-                        arg.setCode(HTTPCodes.InternalServerError);
-                        callback();
-                        return;
-                    }
-                    if(!type.isFile)
-                    {
-                        arg.setCode(HTTPCodes.MethodNotAllowed);
-                        callback();
-                        return;
-                    }
-
-                    r.write(data, targetSource, (e) => process.nextTick(() => {
-                        if(e)
-                            arg.setCode(HTTPCodes.InternalServerError)
-                        else
-                            arg.setCode(HTTPCodes.OK)
-                        callback();
-                    }))
-                }))
-            })
-        }
+        })
     })
 }

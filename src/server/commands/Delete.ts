@@ -11,14 +11,16 @@ export default function(arg : MethodCallArgs, callback)
             return;
         }
 
-        arg.requirePrivilege([ 'canDelete' ], r, () => {
-            r.delete((e) => process.nextTick(() => {
-                if(e)
-                    arg.setCode(HTTPCodes.InternalServerError);
-                else
-                    arg.setCode(HTTPCodes.OK);
-                callback();
-            }))
+        arg.checkIfHeader(r, () => {
+            arg.requirePrivilege([ 'canDelete' ], r, () => {
+                r.delete((e) => process.nextTick(() => {
+                    if(e)
+                        arg.setCode(HTTPCodes.InternalServerError);
+                    else
+                        arg.setCode(HTTPCodes.OK);
+                    callback();
+                }))
+            })
         })
     })
 }
