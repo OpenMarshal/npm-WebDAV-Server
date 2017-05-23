@@ -11,4 +11,5 @@ export declare class Lock {
     user: IUser;
     constructor(lockKind: LockKind, user: IUser, owner: LockOwner);
     expired(): boolean;
+    refresh(timeout?: number): void;
 }
