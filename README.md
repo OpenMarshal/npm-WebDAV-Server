@@ -25,7 +25,6 @@
     * Privileges
 * Control the response body type
 * Persistence
-* Persistence
     * Overview
     * Example
         * Save
@@ -113,39 +112,37 @@ var file = new webdav.VirtualFile('testFile.txt');
 // Set the content of the virtual file
 file.content = 'The content of the virtual file.';
 
-// Add the virtual file to the root folder
-server.rootResource.addChild(file, e => {
+// Add the virtual resources to the root folder
+// Note that you can add resources even when the
+// server is running
+server.addResourceTree({
+    r: new webdav.VirtualFolder('testFolder'),
+    c: [{
+        r: new webdav.VirtualFolder('test1'),
+        c: new webdav.VirtualFile('test2')
+    }, {
+        r: new webdav.VirtualFolder('test2'),
+        c: [{
+            r: new webdav.VirtualFolder('test1'),
+            c: new webdav.VirtualFile('test2')
+        },{
+            r: new webdav.VirtualFolder('test2'),
+            c: new webdav.VirtualFile('test2')
+        }]
+    }]
+}, e => {
     if(e)
         throw e;
-        
-    // Create a virtual folder
-    var folder = new webdav.VirtualFolder('testFolder');
-    server.rootResource.addChild(folder, e => {
-        if(e)
-            throw e;
-        
-        var file2 = new webdav.PhysicalFile('/home/testFile2.txt');
-        folder.addChild(file2, e => {
-            if(e)
-                throw e;
-            
-            var folder2 = new webdav.PhysicalFolder('/home/testFolder2');
-            folder.addChild(folder2, e => {
-                if(e)
-                    throw e;
-                    
-                // Start the server
-                server.start();
+    
+    // Start the server
+    server.start();
 
-                // [...]
+    // [...]
 
-                // Stop the server
-                server.stop(() => {
-                    console.log('Server stopped with success!');
-                })
-            });
-        });
-    });
+    // Stop the server
+    server.stop(() => {
+        console.log('Server stopped with success!');
+    })
 });
 ```
 
