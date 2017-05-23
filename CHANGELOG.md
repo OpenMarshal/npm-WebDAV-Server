@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.3.0
+
+### New features
+* Implemented the method 'addResourceTree' in the server class to make the resource tree creation easier *[bda6e6c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/bda6e6c)*
+* Implemented the 'If' header check in all methods where it makes sense *[fab8388](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/fab8388)*
+* Added a refresh method to the Lock class *[e90274f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e90274f)*
+
+### Changes
+* Added 'process.nextTick(...)' when possible, except in resources to keep them simple *[17187bd](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/17187bd)*
+
+### Documentation
+* Modified the sample to use the new way to create the resource tree (with 'addResourceTree') *[0beebbe](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0beebbe)*
+
+### Tests
+* Added tests for the 'addResourceTree' method *[1bf0c47](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/1bf0c47)*
+* Added the 'If' header test for the LOCK test *[c4d3ace](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c4d3ace)*
+* Added the tests for the Lock refresh *[c4d3ace](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c4d3ace)*
+* Added tests for the 'source' header *[8c79901](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/8c79901)*
+
+### Other
+* Added a parser for the 'If' header *[e4e2208](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e4e2208)*
+
 ## 1.2.1
 
 ### Documentation
