@@ -93,7 +93,7 @@ export class WebDAVServer
             {
                 --nb;
                 if(nb === 0 && !found)
-                    callback(Errors.ResourceNotFound, null);
+                    process.nextTick(() => callback(Errors.ResourceNotFound, null));
             }
 
             for(const k in children)
@@ -107,8 +107,9 @@ export class WebDAVServer
                         found = true;
                         paths.removeRoot();
                         this.getResourceFromPath(paths, children[k], callback);
+                        return;
                     }
-                    done();
+                    process.nextTick(done);
                 })
             }
         })

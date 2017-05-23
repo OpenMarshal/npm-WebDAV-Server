@@ -67,12 +67,12 @@ export default function(arg : MethodCallArgs, callback)
 
                     let nb = els.length;
                     els.forEach(function(el) {
-                        fnProp(el, (e) => {
+                        fnProp(el, (e) => process.nextTick(() => {
                             notify(el, e);
                             --nb;
                             if(nb === 0)
                                 finalize();
-                        })
+                        }))
                     })
                 })
             }

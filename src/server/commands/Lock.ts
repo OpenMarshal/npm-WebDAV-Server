@@ -51,7 +51,7 @@ export default function(arg : MethodCallArgs, callback)
                     arg.requirePrivilege([ 'canAddChild' ], r, () => {
                         const resource = r.fsManager.newResource(arg.uri, path.basename(arg.uri), ResourceType.File, r);
                         arg.requirePrivilege([ 'canCreate', 'canWrite' ], resource, () => {
-                            resource.create((e) => {
+                            resource.create((e) => process.nextTick(() => {
                                 if(e)
                                 {
                                     arg.setCode(HTTPCodes.InternalServerError)
@@ -66,7 +66,7 @@ export default function(arg : MethodCallArgs, callback)
                                         arg.setCode(HTTPCodes.Created);
                                     callback();
                                 })
-                            })
+                            }))
                         })
                     })
                 })
@@ -82,7 +82,7 @@ export default function(arg : MethodCallArgs, callback)
             }
 
             arg.requirePrivilege([ 'canSetLock' ], r, () => {
-                r.setLock(lock, (e) => {
+                r.setLock(lock, (e) => process.nextTick(() => {
                     if(e)
                     {
                         arg.setCode(HTTPCodes.Locked);
@@ -107,7 +107,7 @@ export default function(arg : MethodCallArgs, callback)
                     arg.setCode(HTTPCodes.OK);
                     arg.writeXML(prop);
                     callback();
-                })
+                }))
             })
         })
     }

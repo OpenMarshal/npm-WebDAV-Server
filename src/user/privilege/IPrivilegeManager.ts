@@ -43,11 +43,11 @@ export function requirePrivilege(privilege : string | BasicPrivilege | string[] 
     {
         if(privileges.length === 0 || error || !hasAccess)
         {
-            callback(error, hasAccess);
+            process.nextTick(() => callback(error, hasAccess));
             return;
         }
 
-        pm[privileges.shift()](arg, resource, go);
+        process.nextTick(() => pm[privileges.shift()](arg, resource, go));
     }
 }
 

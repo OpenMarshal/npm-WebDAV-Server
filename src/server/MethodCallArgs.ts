@@ -183,11 +183,11 @@ export class MethodCallArgs
         if(!resource.parent)
             callback(null, '/');
         else
-            resource.webName((e, name) => {
+            resource.webName((e, name) => process.nextTick(() => {
                 this.getResourcePath(resource.parent, (e, parentName) => {
                     callback(e, parentName.replace(/\/$/, '') + '/' + name);
                 })
-            })
+            }))
     }
 
     writeXML(xmlObject : XMLElement | object)

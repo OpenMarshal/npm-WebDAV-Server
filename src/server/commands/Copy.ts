@@ -50,9 +50,9 @@ function copy(arg : MethodCallArgs, source : IResource, rDest : IResource, desti
     function _(error : Error, cb)
     {
         if(error)
-            callback(error);
+            process.nextTick(() => callback(error));
         else
-            cb();
+            process.nextTick(() => cb());
     }
 
     arg.requirePrivilege([ 'canGetType', 'canRead', 'canGetChildren', 'canGetProperties' ], source, () => {
@@ -107,12 +107,12 @@ function copy(arg : MethodCallArgs, source : IResource, rDest : IResource, desti
                                         }
 
                                         children.forEach((child) => {
-                                            child.webName((e, name) => {
+                                            child.webName((e, name) => process.nextTick(() => {
                                                 if(e)
                                                     done(e);
                                                 else
                                                     copy(arg, child, dest, destination.getChildPath(name), done);
-                                            })
+                                            }))
                                         })
                                     }))
                                 }
@@ -159,7 +159,7 @@ export default function(arg : MethodCallArgs, callback)
 
             arg.requirePrivilege([ 'canGetType' ], source, () => {
                 arg.requirePrivilege([ 'canGetChildren' ], rDest, () => {
-                    source.type((e, type) => {
+                    source.type((e, type) => process.nextTick(() => {
                         if(e)
                         {
                             arg.setCode(HTTPCodes.InternalServerError);
@@ -203,7 +203,7 @@ export default function(arg : MethodCallArgs, callback)
                                     return;
                                 }
 
-                                destCollision.type((e, destType) => {
+                                destCollision.type((e, destType) => process.nextTick(() => {
                                     if(e)
                                     {
                                         callback(e);
@@ -217,7 +217,7 @@ export default function(arg : MethodCallArgs, callback)
                                         return;
                                     }
                                     
-                                    destCollision.delete((e) => {
+                                    destCollision.delete((e) => process.nextTick(() => {
                                         if(e)
                                         {
                                             callback(e);
@@ -225,8 +225,8 @@ export default function(arg : MethodCallArgs, callback)
                                         }
 
                                         done(true);
-                                    })
-                                })
+                                    }))
+                                }))
                                 return;
                             }
 
@@ -238,7 +238,7 @@ export default function(arg : MethodCallArgs, callback)
                         }
 
                         // Find child name collision
-                        rDest.getChildren((e, children) => {
+                        rDest.getChildren((e, children) => process.nextTick(() => {
                             if(e)
                             {
                                 go(e, null);
@@ -252,12 +252,12 @@ export default function(arg : MethodCallArgs, callback)
                                 return;
                             }
                             children.forEach((child) => {
-                                child.webName((e, name) => {
+                                child.webName((e, name) => process.nextTick(() => {
                                     go(e, name === destination.fileName() ? child : null);
-                                })
+                                }))
                             })
-                        })
-                    })
+                        }))
+                    }))
                 })
             })
         })

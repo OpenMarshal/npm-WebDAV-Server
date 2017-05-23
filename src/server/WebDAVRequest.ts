@@ -1,4 +1,4 @@
-import { IResource, ReturnCallback } from '../resource/Resource'
+import { IResource, ReturnCallback } from '../resource/IResource'
 import { WebDAVServer } from '../server/WebDAVServer'
 import { FSPath } from '../manager/FSManager'
 import HTTPCodes from './HTTPCodes'

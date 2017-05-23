@@ -12,13 +12,13 @@ export default function(arg : MethodCallArgs, callback)
         }
 
         arg.requirePrivilege([ 'canDelete' ], r, () => {
-            r.delete((e) => {
+            r.delete((e) => process.nextTick(() => {
                 if(e)
                     arg.setCode(HTTPCodes.InternalServerError);
                 else
                     arg.setCode(HTTPCodes.OK);
                 callback();
-            })
+            }))
         })
     })
 }

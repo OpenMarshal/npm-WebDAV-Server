@@ -20,7 +20,7 @@ export default function(arg : MethodCallArgs, callback)
             'xmlns:D': 'DAV:'
         })
 
-        resource.type((e, type) => {
+        resource.type((e, type) => process.nextTick(() => {
             if(!type.isDirectory || arg.depth === 0)
             {
                 addXMLInfo(resource, multistatus, () => done(multistatus))
@@ -28,7 +28,7 @@ export default function(arg : MethodCallArgs, callback)
             }
             
             arg.requirePrivilege('canGetChildren', resource, () => {
-                resource.getChildren((e, children) => {
+                resource.getChildren((e, children) => process.nextTick(() => {
                     let nb = children.length + 1;
 
                     function nbOut(error)
@@ -48,12 +48,12 @@ export default function(arg : MethodCallArgs, callback)
 
                     addXMLInfo(resource, multistatus, nbOut)
                     
-                    children.forEach((child) => {
+                    children.forEach((child) => process.nextTick(() => {
                         addXMLInfo(child, multistatus, nbOut)
-                    })
-                })
+                    }))
+                }))
             })
-        })
+        }))
         
         function addXMLInfo(resource : IResource, multistatus, callback)
         {
@@ -99,11 +99,11 @@ export default function(arg : MethodCallArgs, callback)
                         callback();
                 }
 
-                resource.creationDate((e, ticks) => {
+                resource.creationDate((e, ticks) => process.nextTick(() => {
                     if(!e)
                         prop.ele('D:creationdate').add(arg.dateISO8601(ticks));
                     nbOut(e);
-                })
+                }))
 
                 arg.getResourcePath(resource, (e, path) => {
                     if(!e)
@@ -111,14 +111,14 @@ export default function(arg : MethodCallArgs, callback)
                     nbOut(e);
                 })
 
-                resource.webName((e, name) => {
+                resource.webName((e, name) => process.nextTick(() => {
                     if(!e)
                         prop.ele('D:displayname').add(name ? name : '');
                     nbOut(e);
-                })
+                }))
 
                 const supportedlock = prop.ele('D:supportedlock')
-                resource.getAvailableLocks((e, lockKinds) => {
+                resource.getAvailableLocks((e, lockKinds) => process.nextTick(() => {
                     if(e)
                     {
                         nbOut(e);
@@ -135,9 +135,9 @@ export default function(arg : MethodCallArgs, callback)
                         locktype.ele('D:' + lockKind.type.value.toLowerCase())
                     })
                     nbOut();
-                })
+                }))
 
-                resource.getProperties((e, properties) => {
+                resource.getProperties((e, properties) => process.nextTick(() => {
                     if(e)
                     {
                         nbOut(e);
@@ -150,9 +150,9 @@ export default function(arg : MethodCallArgs, callback)
                         prop.ele(name).add(value)
                     }
                     nbOut();
-                })
+                }))
 
-                resource.type((e, type) => {
+                resource.type((e, type) => process.nextTick(() => {
                     if(e)
                     {
                         nbOut(e);
@@ -166,29 +166,29 @@ export default function(arg : MethodCallArgs, callback)
                     if(type.isFile)
                     {
                         nb += 2;
-                        resource.mimeType(targetSource, (e, mimeType) => {
+                        resource.mimeType(targetSource, (e, mimeType) => process.nextTick(() => {
                             if(!e)
                                 prop.ele('D:getcontenttype').add(mimeType)
                             nbOut(e);
-                        })
-                        resource.size(targetSource, (e, size) => {
+                        }))
+                        resource.size(targetSource, (e, size) => process.nextTick(() => {
                             if(!e)
                                 prop.ele('D:getcontentlength').add(size)
                             nbOut(e);
-                        })
+                        }))
                     }
 
                     nbOut();
-                })
+                }))
 
-                resource.lastModifiedDate((e, lastModifiedDate) => {
+                resource.lastModifiedDate((e, lastModifiedDate) => process.nextTick(() => {
                     if(!e)
                     {
                         prop.ele('D:getetag').add(ETag.createETag(lastModifiedDate))
                         prop.ele('D:getlastmodified').add(new Date(lastModifiedDate).toUTCString())
                     }
                     nbOut(e);
-                })
+                }))
             })
         }
 

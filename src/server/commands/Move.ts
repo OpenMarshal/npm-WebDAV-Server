@@ -29,13 +29,13 @@ export default function(arg : MethodCallArgs, callback)
 
             arg.server.getResourceFromPath(destination.getParent(), (e, rDest) => {
                 arg.requirePrivilege([ 'canAddChild' ], rDest, () => {
-                    r.moveTo(rDest, destination.fileName(), overwrite, (e) => {
+                    r.moveTo(rDest, destination.fileName(), overwrite, (e) => process.nextTick(() => {
                         if(e)
                             arg.setCode(HTTPCodes.InternalServerError)
                         else
                             arg.setCode(HTTPCodes.Created)
                         callback()
-                    })
+                    }))
                 })
             })
         })

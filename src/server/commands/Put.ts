@@ -23,7 +23,7 @@ function createResource(arg : MethodCallArgs, callback, validCallback : (resourc
         arg.requirePrivilege([ 'canAddChild' ], r, () => {
             const resource = r.fsManager.newResource(arg.uri, path.basename(arg.uri), ResourceType.File, r);
             arg.requirePrivilege([ 'canCreate', 'canWrite' ], resource, () => {
-                resource.create((e) => {
+                resource.create((e) => process.nextTick(() => {
                     if(e)
                     {
                         arg.setCode(HTTPCodes.InternalServerError)
@@ -31,7 +31,7 @@ function createResource(arg : MethodCallArgs, callback, validCallback : (resourc
                         return;
                     }
                 
-                    r.addChild(resource, (e) => {
+                    r.addChild(resource, (e) => process.nextTick(() => {
                         if(e)
                         {
                             arg.setCode(HTTPCodes.InternalServerError)
@@ -39,8 +39,8 @@ function createResource(arg : MethodCallArgs, callback, validCallback : (resourc
                         }
                         else
                             validCallback(resource);
-                    })
-                })
+                    }))
+                }))
             })
         })
     })
@@ -63,13 +63,13 @@ export default function(arg : MethodCallArgs, callback)
             if(r)
             { // Resource exists => empty it
                 arg.requirePrivilege(targetSource ? [ 'canSource', 'canWrite' ] : [ 'canWrite' ], r, () => {
-                    r.write(new Buffer(0), targetSource, (e) => {
+                    r.write(new Buffer(0), targetSource, (e) => process.nextTick(() => {
                         if(e)
                             arg.setCode(HTTPCodes.InternalServerError)
                         else
                             arg.setCode(HTTPCodes.OK)
                         callback()
-                    })
+                    }))
                 })
                 return;
             }
@@ -86,19 +86,19 @@ export default function(arg : MethodCallArgs, callback)
             if(e)
             { // Resource not found
                 createResource(arg, callback, (r) => {
-                    r.write(data, targetSource, (e) => {
+                    r.write(data, targetSource, (e) => process.nextTick(() => {
                         if(e)
                             arg.setCode(HTTPCodes.InternalServerError)
                         else
                             arg.setCode(HTTPCodes.OK)
                         callback();
-                    })
+                    }))
                 })
                 return;
             }
 
             arg.requirePrivilege(targetSource ? [ 'canSource', 'canWrite' ] : [ 'canWrite' ], r, () => {
-                r.type((e, type) => {
+                r.type((e, type) => process.nextTick(() => {
                     if(e)
                     {
                         arg.setCode(HTTPCodes.InternalServerError);
@@ -112,14 +112,14 @@ export default function(arg : MethodCallArgs, callback)
                         return;
                     }
 
-                    r.write(data, targetSource, (e) => {
+                    r.write(data, targetSource, (e) => process.nextTick(() => {
                         if(e)
                             arg.setCode(HTTPCodes.InternalServerError)
                         else
                             arg.setCode(HTTPCodes.OK)
                         callback();
-                    })
-                })
+                    }))
+                }))
             })
         }
     })

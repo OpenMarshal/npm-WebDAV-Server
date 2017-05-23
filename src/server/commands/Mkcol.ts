@@ -23,7 +23,7 @@ export default function(arg : MethodCallArgs, callback)
             
             const resource = r.fsManager.newResource(arg.uri, path.basename(arg.uri), ResourceType.Directory, r);
             arg.requirePrivilege([ 'canCreate' ], resource, () => {
-                resource.create((e) => {
+                resource.create((e) => process.nextTick(() => {
                     if(e)
                     {
                         arg.setCode(HTTPCodes.InternalServerError)
@@ -31,14 +31,14 @@ export default function(arg : MethodCallArgs, callback)
                         return;
                     }
                 
-                    r.addChild(resource, (e) => {
+                    r.addChild(resource, (e) => process.nextTick(() => {
                         if(e)
                             arg.setCode(HTTPCodes.InternalServerError)
                         else
                             arg.setCode(HTTPCodes.Created)
                         callback();
-                    })
-                })
+                    }))
+                }))
             })
         })
     })
