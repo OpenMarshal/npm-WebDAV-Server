@@ -95,7 +95,7 @@ module.exports = (test, options, index) => test('lock', isValid =>
             }))
         }))
     }))
-    /*
+    
     server.rootResource.addChild(new webdav.VirtualFile('test4.txt'), e => _(e, () => {
         request({
             url: url + '/test4.txt',
@@ -112,12 +112,11 @@ module.exports = (test, options, index) => test('lock', isValid =>
                 method: 'LOCK',
                 headers: {
                     Authorization: 'Basic dXNlcm5hbWVYOnBhc3N3b3Jk'
-                },
-                body: '<?xml version="1.0" encoding="utf-8" ?><D:lockinfo xmlns:D="DAV:"><D:lockscope><D:exclusive/></D:lockscope><D:locktype><D:write/></D:locktype><D:owner><D:href>'+url+'/user</D:href></D:owner></D:lockinfo>'
+                }
             }, (e, res, body) => _(e, () => {
-                if(res.statusCode !== 412)
+                if(res.statusCode !== 428)
                 {
-                    isValid(res.statusCode === 412, 'LOCK on a locked resource without a proper If header must lead to a 412 Precondition Failed');
+                    isValid(res.statusCode === 428, 'LOCK on a locked resource without a proper If header must lead to a 428 Precondition Required');
                     return;
                 }
 
@@ -127,14 +126,28 @@ module.exports = (test, options, index) => test('lock', isValid =>
                     headers: {
                         If: '(<' + lock + '>)',
                         Authorization: 'Basic dXNlcm5hbWVYOnBhc3N3b3Jk'
-                    },
-                    body: '<?xml version="1.0" encoding="utf-8" ?><D:lockinfo xmlns:D="DAV:"><D:lockscope><D:exclusive/></D:lockscope><D:locktype><D:write/></D:locktype><D:owner><D:href>'+url+'/user</D:href></D:owner></D:lockinfo>'
+                    }
                 }, (e, res, body) => _(e, () => {
-                    isValid(res.statusCode === 200, 'LOCK on a locked resource with a If header in order to refresh the lock must lead to a 200 OK');
+                    if(res.statusCode !== 200)
+                    {
+                        isValid(res.statusCode === 200, 'LOCK on a locked resource with a If header in order to refresh the lock must lead to a 200 OK');
+                        return;
+                    }
+
+                    request({
+                        url: url + '/test4.txt',
+                        method: 'LOCK',
+                        headers: {
+                            If: '(<' + lock + 'bad>)',
+                            Authorization: 'Basic dXNlcm5hbWVYOnBhc3N3b3Jk'
+                        }
+                    }, (e, res, body) => _(e, () => {
+                        isValid(res.statusCode === 412, 'LOCK on a locked resource without a proper If header must lead to a 412 Precondition Failed');
+                    }))
                 }))
             }))
         }))
-    }))*/
+    }))
     
     request({
         url: url + '/testDoesNotExist.txt',
