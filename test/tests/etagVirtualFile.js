@@ -45,7 +45,7 @@ module.exports = (test, options, index) => test('etag of virtual file', isValid 
                 }
                 catch(e)
                 {
-                    isValid(e);
+                    isValid(false, e);
                 }
             })
         }

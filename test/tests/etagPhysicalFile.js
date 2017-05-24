@@ -52,7 +52,7 @@ module.exports = (test, options, index) => test('etag of physical file', isValid
                 }
                 catch(e)
                 {
-                    isValid(e);
+                    isValid(false, e);
                 }
             })
         }

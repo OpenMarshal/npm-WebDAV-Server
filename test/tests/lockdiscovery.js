@@ -30,7 +30,7 @@ module.exports = (test, options, index) => test('lockdiscovery', isValid =>
             }
             catch(e)
             {
-                isValid(e);
+                isValid(false, e);
             }
         }))
     }
@@ -62,11 +62,11 @@ module.exports = (test, options, index) => test('lockdiscovery', isValid =>
                         const activelock = xml['D:multistatus'][0]['D:response'][0]['D:propstat'][0]['D:prop'][0]['D:lockdiscovery'][0]['D:activelock'][0];
                         if(activelock['D:locktype'][0]['D:write'][0]
                             && activelock['D:lockscope'][0]['D:exclusive'][0]
-                            && activelock['D:depth'][0]._text.toLowerCase() === 'infinity'
-                            && activelock['D:owner'][0]['D:href'][0]._text === url
+                            && activelock['D:depth'][0]._text[0].toLowerCase() === 'infinity'
+                            && activelock['D:owner'][0]['DAV:href'][0]._text[0] === url + '/user'
                             && activelock['D:locktoken'][0]['D:href'][0]
-                            && activelock['D:timeout'][0]._text.toLowerCase().indexOf('second-') === 0
-                            && activelock['D:lockroot'][0]['D:href'][0]._text === url + '/testFolder')
+                            && activelock['D:timeout'][0]._text[0].toLowerCase().indexOf('second-') === 0
+                            && activelock['D:lockroot'][0]['D:href'][0]._text[0] === url + '/testFolder')
                         {
                             callback();
                         }
