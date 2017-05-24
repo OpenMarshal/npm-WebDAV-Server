@@ -225,7 +225,7 @@ export class WebDAVServer
         this.unknownMethod = unknownMethod;
     }
 
-    start(port : number = this.options.port)
+    start(port : number = this.options.port, callback ?: () => void)
     {
         this.server = http.createServer((req : http.IncomingMessage, res : http.ServerResponse) =>
         {
@@ -279,7 +279,7 @@ export class WebDAVServer
                 }
             })
         })
-        this.server.listen(port, this.options.hostname,);
+        this.server.listen(port, this.options.hostname, callback);
     }
 
     stop(callback : () => void)

@@ -33,7 +33,7 @@ export declare class WebDAVServer {
     addResourceTree(resoureceTree: ResourceTreeNode, callback: (e: Error) => void): any;
     addResourceTree(rootResource: IResource, resoureceTree: ResourceTreeNode, callback: (e: Error) => void): any;
     onUnknownMethod(unknownMethod: WebDAVRequest): void;
-    start(port?: number): void;
+    start(port?: number, callback?: () => void): void;
     stop(callback: () => void): void;
     load(obj: SerializedObject, managers: FSManager[], callback: (error: Error) => void): void;
     save(callback: (error: Error, obj: any) => void): void;
