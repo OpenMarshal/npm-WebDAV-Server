@@ -253,14 +253,6 @@ export class WebDAVServer
             if(callback)
                 throw new Error('Illegal arguments');
         }
-        if(_callback)
-        {
-            const _callback_ = _callback;
-            _callback = () => {
-                if(_callback_)
-                    _callback_(this.server);
-            }
-        }
 
         if(!this.server)
         {
@@ -318,7 +310,10 @@ export class WebDAVServer
             })
         }
 
-        this.server.listen(_port, this.options.hostname, _callback);
+        this.server.listen(_port, this.options.hostname, () => {
+            if(_callback)
+                _callback(this.server);
+        });
     }
 
     stop(callback : () => void)

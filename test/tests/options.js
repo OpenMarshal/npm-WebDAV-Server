@@ -2,10 +2,8 @@
 var webdav = require('../../lib/index.js'),
     request = require('request')
 
-module.exports = (test, options, index) => test('OPTIONS method', isValid =>
+module.exports = (test, options, index) => test('OPTIONS method', (isValid, server) =>
 {
-    var server = new webdav.WebDAVServer();
-    server.start(options.port + index);
     isValid = isValid.multiple(1, server);
 
     request({

@@ -6,9 +6,8 @@ var webdav = require('../../lib/index.js'),
     path = require('path'),
     fs = require('fs')
 
-module.exports = (test, options, index) => test('etag of physical file', isValid =>
+module.exports = (test, options, index) => test('etag of physical file', (isValid, server) =>
 {
-    var server = new webdav.WebDAVServer();
     isValid = isValid.multiple(1, server);
     const _ = (e, cb) => {
         if(e)
@@ -23,7 +22,6 @@ module.exports = (test, options, index) => test('etag of physical file', isValid
     fs.writeFileSync(filePath, 'Old content');
 
     server.rootResource.addChild(new webdav.PhysicalFile(filePath), e => _(e, () => {
-        server.start(options.port + index);
 
         var wfs = Client(
             'http://127.0.0.1:' + (options.port + index)

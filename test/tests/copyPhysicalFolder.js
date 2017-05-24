@@ -5,10 +5,8 @@ var webdav = require('../../lib/index.js'),
     path = require('path'),
     fs = require('fs');
 
-module.exports = (test, options, index) => test('copy a physical folder', isValid =>
+module.exports = (test, options, index) => test('copy a physical folder', (isValid, server) =>
 {
-    var server = new webdav.WebDAVServer();
-    server.start(options.port + index);
     isValid = isValid.multiple(2, server);
     const _ = (e, cb) => {
         if(e)

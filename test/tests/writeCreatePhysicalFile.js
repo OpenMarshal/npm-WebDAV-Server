@@ -4,10 +4,8 @@ var webdav = require('../../lib/index.js'),
     path = require('path'),
     fs = require('fs')
 
-module.exports = (test, options, index) => test('write/create a physical file', isValid =>
+module.exports = (test, options, index) => test('write/create a physical file', (isValid, server) =>
 {
-    var server = new webdav.WebDAVServer();
-    server.start(options.port + index);
     isValid = isValid.multiple(1, server);
     const _ = (e, cb) => {
         if(e)

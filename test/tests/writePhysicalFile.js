@@ -4,15 +4,13 @@ var webdav = require('../../lib/index.js'),
     path = require('path'),
     fs = require('fs')
 
-module.exports = (test, options, index) => test('write in a physical file', isValid =>
+module.exports = (test, options, index) => test('write in a physical file', (isValid, server) =>
 {
     var files = {
         'file1.txt': 'this is the content!',
         'file2.txt': new Buffer([ 10, 12, 16, 100, 125, 200, 250 ])
     }
 
-    var server = new webdav.WebDAVServer();
-    server.start(options.port + index);
     isValid = isValid.multiple(Object.keys(files).length, server);
     const _ = (e, cb) => {
         if(e)

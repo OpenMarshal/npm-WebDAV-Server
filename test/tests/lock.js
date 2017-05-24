@@ -3,10 +3,8 @@ var webdav = require('../../lib/index.js'),
     request = require('request'),
     Client = require('webdav-fs');
 
-module.exports = (test, options, index) => test('lock', isValid =>
+module.exports = (test, options, index) => test('lock', (isValid, server) =>
 {
-    var server = new webdav.WebDAVServer();
-    server.start(options.port + index);
     isValid = isValid.multiple(6, server);
     const _ = (e, cb) => {
         if(e)

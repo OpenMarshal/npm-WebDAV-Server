@@ -4,9 +4,8 @@ var webdav = require('../../lib/index.js'),
     path = require('path'),
     fs = require('fs')
 
-module.exports = (test, options, index) => test('make a folder', isValid =>
+module.exports = (test, options, index) => test('make a folder', (isValid, server) =>
 {
-    var server = new webdav.WebDAVServer();
     isValid = isValid.multiple(4, server);
     const _ = (e, cb) => {
         if(e)
@@ -16,7 +15,6 @@ module.exports = (test, options, index) => test('make a folder', isValid =>
     }
     
     server.rootResource.addChild(new webdav.VirtualFile('testFile.txt'), e => _(e, () => {
-        server.start(options.port + index);
 
         var wfs = Client(
             'http://127.0.0.1:' + (options.port + index)

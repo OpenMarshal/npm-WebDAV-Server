@@ -3,10 +3,8 @@ var webdav = require('../../lib/index.js'),
     request = require('request'),
     xmljs = require('xml-js');
 
-module.exports = (test, options, index) => test('move a virtual resource with properties', isValid =>
+module.exports = (test, options, index) => test('move a virtual resource with properties', (isValid, server) =>
 {
-    var server = new webdav.WebDAVServer();
-    server.start(options.port + index);
     isValid = isValid.multiple(1, server);
     const _ = (e, cb) => {
         if(e)

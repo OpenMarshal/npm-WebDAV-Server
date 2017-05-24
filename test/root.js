@@ -1,5 +1,6 @@
 "use strict";
-var path = require('path'),
+var webdav = require('../lib/index.js'),
+    path = require('path'),
     fs = require('fs')
 
 module.exports = (callback, options) => {
@@ -27,6 +28,9 @@ module.exports = (callback, options) => {
     {
         try
         {
+            if(fn.constructor !== Function)
+                throw fn;
+
             let callback = (valid, details) => {
                 callback = (valid, details) => { }
 
@@ -58,7 +62,11 @@ module.exports = (callback, options) => {
                 }
             }
             setTimeout(() => callback(false, 'Timeout'), options.timeout);
-            fn(callback)
+
+            const server = new webdav.WebDAVServer();
+            server.start(options.port + this.index, () => {
+                fn(callback, server);
+            })
         }
         catch(ex)
         {
@@ -82,14 +90,14 @@ module.exports = (callback, options) => {
             f = path.join(root, f);
             try
             {
-                require(f)(isValid, options, index);
+                require(f)(isValid.bind({ index }), options, index);
             }
             catch(ex)
             {
                 if(options.showExceptions)
                     console.error(ex);
                     
-                isValid(f, isValid => isValid(false, ex));
+                isValid(f, ex);
             }
         })
     })

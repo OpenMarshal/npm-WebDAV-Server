@@ -4,9 +4,8 @@ var webdav = require('../../lib/index.js'),
     request = require('request'),
     xmljs = require('xml-js')
 
-module.exports = (test, options, index) => test('etag of virtual file', isValid =>
+module.exports = (test, options, index) => test('etag of virtual file', (isValid, server) =>
 {
-    var server = new webdav.WebDAVServer();
     isValid = isValid.multiple(1, server);
     const _ = (e, cb) => {
         if(e)
@@ -16,7 +15,6 @@ module.exports = (test, options, index) => test('etag of virtual file', isValid 
     }
     
     server.rootResource.addChild(new webdav.VirtualFile('testFile.txt'), e => _(e, () => {
-        server.start(options.port + index);
 
         var wfs = Client(
             'http://127.0.0.1:' + (options.port + index)

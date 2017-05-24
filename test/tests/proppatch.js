@@ -5,10 +5,8 @@ var webdav = require('../../lib/index.js'),
     path = require('path'),
     fs = require('fs')
 
-module.exports = (test, options, index) => test('PROPPATCH method', isValid =>
+module.exports = (test, options, index) => test('PROPPATCH method', (isValid, server) =>
 {
-    var server = new webdav.WebDAVServer();
-    server.start(options.port + index);
     isValid = isValid.multiple(4 * 2, server);
     const _ = (e, cb) => {
         if(e)

@@ -2,9 +2,8 @@
 var webdav = require('../../lib/index.js'),
     Client = require('webdav-fs');
 
-module.exports = (test, options, index) => test('persistence', isValid =>
+module.exports = (test, options, index) => test('persistence', (isValid, server) =>
 {
-    var server = new webdav.WebDAVServer();
     isValid = isValid.multiple(1, server);
     const _ = (e, cb) => {
         if(e)
@@ -13,22 +12,21 @@ module.exports = (test, options, index) => test('persistence', isValid =>
             cb();
     }
     
+    const server2 = new webdav.WebDAVServer();
     const f1 = new webdav.VirtualFile('file1.txt');
     const f1Content = 'ok, This content is the test';
     f1.content = f1Content;
-    server.rootResource.addChild(f1, e => _(e, () => {
-        server.rootResource.addChild(new webdav.VirtualFile('file2.txt'), e => _(e, () => {
+    server2.rootResource.addChild(f1, e => _(e, () => {
+        server2.rootResource.addChild(new webdav.VirtualFile('file2.txt'), e => _(e, () => {
             const folder1 = new webdav.VirtualFolder('folder1');
-            server.rootResource.addChild(folder1, e => _(e, () => {
+            server2.rootResource.addChild(folder1, e => _(e, () => {
                 folder1.addChild(new webdav.VirtualFile('sfile1.txt'), e => _(e, () => {
                     folder1.addChild(new webdav.VirtualFile('sfile2.txt'), e => _(e, () => {
-                        server.save((e, o) => _(e, () => {
+                        server2.save((e, o) => _(e, () => {
                             const json = JSON.stringify(o, null, 4);
                             const els = JSON.parse(json);
 
-                            var server2 = new webdav.WebDAVServer();
-                            server2.start(options.port + index);
-                            server2.load(els, [
+                            server.load(els, [
                                 new webdav.PhysicalFSManager(),
                                 new webdav.VirtualFSManager(),
                                 new webdav.RootFSManager()

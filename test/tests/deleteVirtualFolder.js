@@ -2,10 +2,8 @@
 var webdav = require('../../lib/index.js'),
     Client = require('webdav-fs')
 
-module.exports = (test, options, index) => test('delete a virtual folder', isValid =>
+module.exports = (test, options, index) => test('delete a virtual folder', (isValid, server) =>
 {
-    var server = new webdav.WebDAVServer();
-    server.start(options.port + index);
     isValid = isValid.multiple(2, server);
     const _ = (e, cb) => {
         if(e)

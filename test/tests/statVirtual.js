@@ -2,9 +2,8 @@
 var webdav = require('../../lib/index.js'),
     Client = require('webdav-fs')
 
-module.exports = (test, options, index) => test('stat of virtual resources', isValid =>
+module.exports = (test, options, index) => test('stat of virtual resources', (isValid, server) =>
 {
-    var server = new webdav.WebDAVServer();
     isValid = isValid.multiple(2, server);
     const _ = (e, cb) => {
         if(e)
@@ -20,7 +19,6 @@ module.exports = (test, options, index) => test('stat of virtual resources', isV
         const file = new webdav.VirtualFile('testFile.txt');
         file.content = content;
         folder.addChild(file, e => _(e, () => {
-            server.start(options.port + index);
 
             var wfs = Client(
                 'http://127.0.0.1:' + (options.port + index)
