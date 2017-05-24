@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.3.1
+
+### New features
+* Implemented the callback on the start method *[880dd8a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/880dd8a)*
+* Implemented the server option 'hostname' *[0ab2be2](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0ab2be2)*
+* Implemented DAV:lockdiscovery in PROPFIND *[9009ad1](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/9009ad1)*
+
+### Changes
+* Made the arguments of the start method optional *[880dd8a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/880dd8a)*
+* Added a callback to the start method to 'synchronize' with the server opening *[e3eb1e0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e3eb1e0)*
+
+### Documentation
+* Modified the sample to use the callback on the start method *[4313cba](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/4313cba)*
+* Added the 'hostname' option in the documentation *[ef4a3c0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/ef4a3c0)*
+
+### Tests
+* Implemented the server start callback in the whole tests *[609f855](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/609f855)*
+* Added more tests for the start method *[516a7fb](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/516a7fb)*
+* Fixed the try-catch of the PROPFIND method in the tests *[38630f5](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/38630f5)*
+* Added tests for copying the properties (COPY method) *[911029f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/911029f)*
+* Added tests for moving the properties (MOVE method) *[7236e50](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7236e50)*
+* Added tests for DAV:lockdiscovery *[2b9cde8](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2b9cde8)*
+
+### Bug fix
+* Fixed callback error in the start method *[ca72e94](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/ca72e94)*
+
 ## 1.3.0
 
 ### New features
