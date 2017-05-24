@@ -15,6 +15,8 @@ import * as http from 'http'
 
 export { WebDAVServerOptions } from './WebDAVServerOptions'
 
+export type WebDAVServerStartCallback = (server ?: http.Server) => void;
+
 export interface IResourceTreeNode
 {
     r ?: IResource
@@ -225,61 +227,93 @@ export class WebDAVServer
         this.unknownMethod = unknownMethod;
     }
 
-    start(port : number = this.options.port, callback ?: () => void)
+    start(port : number)
+    start(callback : WebDAVServerStartCallback)
+    start(port : number, callback : WebDAVServerStartCallback)
+    start(port ?: number | WebDAVServerStartCallback, callback ?: WebDAVServerStartCallback)
     {
-        this.server = http.createServer((req : http.IncomingMessage, res : http.ServerResponse) =>
+        let _port : number = this.options.port;
+        let _callback : WebDAVServerStartCallback;
+
+        if(port && port.constructor === Number)
         {
-            let method : WebDAVRequest = this.methods[this.normalizeMethodName(req.method)];
-            if(!method)
-                method = this.unknownMethod;
+            _port = port as number;
+            if(callback)
+            {
+                if(callback instanceof Function)
+                    _callback = callback;
+                else
+                    throw new Error('Illegal arguments');
+            }
+        }
+        else if(port && port.constructor === Function)
+        {
+            _port = this.options.port;
+            _callback = port as WebDAVServerStartCallback;
+            if(callback)
+                throw new Error('Illegal arguments');
+        }
 
-            MethodCallArgs.create(this, req, res, (e, base) => {
-                if(e)
-                {
-                    if(e === Errors.AuenticationPropertyMissing)
-                        base.setCode(HTTPCodes.Forbidden);
-                    else
-                        base.setCode(HTTPCodes.InternalServerError);
-                    res.end();
-                    return;
-                }
+        if(!this.server)
+        {
+            this.server = http.createServer((req : http.IncomingMessage, res : http.ServerResponse) =>
+            {
+                let method : WebDAVRequest = this.methods[this.normalizeMethodName(req.method)];
+                if(!method)
+                    method = this.unknownMethod;
 
-                if(!method.chunked)
-                {
-                    let data = '';
-                    const go = () =>
+                MethodCallArgs.create(this, req, res, (e, base) => {
+                    if(e)
                     {
-                        base.data = data;
-                        this.invokeBeforeRequest(base, () => {
-                            base.exit = () =>
-                            {
-                                res.end();
-                                this.invokeAfterRequest(base, null);
-                            };
-                            method(base, base.exit);
-                        })
+                        if(e === Errors.AuenticationPropertyMissing)
+                            base.setCode(HTTPCodes.Forbidden);
+                        else
+                            base.setCode(HTTPCodes.InternalServerError);
+                        res.end();
+                        return;
                     }
-                    
-                    if(base.contentLength === 0)
+
+                    if(!method.chunked)
                     {
-                        go();
+                        let data = '';
+                        const go = () =>
+                        {
+                            base.data = data;
+                            this.invokeBeforeRequest(base, () => {
+                                base.exit = () =>
+                                {
+                                    res.end();
+                                    this.invokeAfterRequest(base, null);
+                                };
+                                method(base, base.exit);
+                            })
+                        }
+                        
+                        if(base.contentLength === 0)
+                        {
+                            go();
+                        }
+                        else
+                        {
+                            req.on('data', (chunk) => {
+                                data += chunk.toString();
+                                if(data.length >= base.contentLength)
+                                {
+                                    if(data.length > base.contentLength)
+                                        data = data.substring(0, base.contentLength);
+                                    go();
+                                }
+                            });
+                        }
                     }
-                    else
-                    {
-                        req.on('data', (chunk) => {
-                            data += chunk.toString();
-                            if(data.length >= base.contentLength)
-                            {
-                                if(data.length > base.contentLength)
-                                    data = data.substring(0, base.contentLength);
-                                go();
-                            }
-                        });
-                    }
-                }
+                })
             })
-        })
-        this.server.listen(port, this.options.hostname, callback);
+        }
+
+        this.server.listen(_port, this.options.hostname, () => {
+            if(_callback)
+                _callback(this.server);
+        });
     }
 
     stop(callback : () => void)
