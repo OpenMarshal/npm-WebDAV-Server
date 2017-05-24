@@ -85,13 +85,14 @@ const server = new webdav.WebDAVServer(options);
 ### Options
 Key | Default value | Description
 -|-|-
-requireAuthentification | false | Define if your require to be authenticated.
-httpAuthentication | new HTTPBasicAuthentication('default realm') | Define the object which will provide the authentication method (HTTP : Basic, Digest, custom, etc).
-privilegeManager | new FakePrivilegeManager() | Allow to check the privileges of the user (grant or restrict access).
-rootResource | new RootResource() | The root resource to use as `/`.
-userManager | new SimpleUserManager() | Define the object which will provide the users.
-lockTimeout | 3600 | Define the lock timeout.
-port | 1900 | The default port to use if no port is specified when calling `server.start()`.
+requireAuthentification | `false` | Define if your require to be authenticated.
+httpAuthentication | `new HTTPBasicAuthentication('default realm')` | Define the object which will provide the authentication method (HTTP : Basic, Digest, custom, etc).
+privilegeManager | `new FakePrivilegeManager()` | Allow to check the privileges of the user (grant or restrict access).
+rootResource | `new RootResource()` | The root resource to use as `/`.
+userManager | `new SimpleUserManager()` | Define the object which will provide the users.
+lockTimeout | `3600` | Define the lock timeout.
+hostname | `'::'` | Define the scope of the listening server.
+port | `1900` | The default port to use if no port is specified when calling `server.start()`.
 
 ## Sample
 
