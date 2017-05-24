@@ -15,6 +15,7 @@ export class WebDAVServerOptions
     rootResource ?: IResource = new RootResource()
     userManager ?: IUserManager = new SimpleUserManager()
     lockTimeout ?: number = 3600
+    hostname ?: string = '::'
     port ?: number = 1900
 }
 export default WebDAVServerOptions;

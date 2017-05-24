@@ -9,6 +9,7 @@ export declare class WebDAVServerOptions {
     rootResource?: IResource;
     userManager?: IUserManager;
     lockTimeout?: number;
+    hostname?: string;
     port?: number;
 }
 export default WebDAVServerOptions;

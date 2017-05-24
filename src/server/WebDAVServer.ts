@@ -279,7 +279,7 @@ export class WebDAVServer
                 }
             })
         })
-        this.server.listen(port);
+        this.server.listen(port, this.options.hostname,);
     }
 
     stop(callback : () => void)
