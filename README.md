@@ -136,14 +136,16 @@ server.addResourceTree({
         throw e;
     
     // Start the server
-    server.start();
+    server.start(httpServer => {
+        console.log('Server started with success on the port : ' + httpServer.address().port);
 
-    // [...]
+        // [...]
 
-    // Stop the server
-    server.stop(() => {
-        console.log('Server stopped with success!');
-    })
+        // Stop the server
+        server.stop(() => {
+            console.log('Server stopped with success!');
+        })
+    });
 });
 ```
 
