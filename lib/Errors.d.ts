@@ -1,6 +1,11 @@
 export declare class ManagerNotFound extends Error {
     constructor(managerUID: string);
 }
+export declare class HTTPError extends Error {
+    HTTPCode: number;
+    inheritedError: Error;
+    constructor(HTTPCode: number, inheritedError?: Error);
+}
 export declare const Errors: {
     BadAuthentication: Error;
     AuenticationPropertyMissing: Error;
@@ -16,6 +21,7 @@ export declare const Errors: {
     AlreadyAuthenticated: Error;
     UserNotFound: Error;
     XMLNotFound: Error;
+    ExpectedAFileResourceType: Error;
     None: any;
 };
 export default Errors;

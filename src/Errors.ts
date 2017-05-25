@@ -7,6 +7,14 @@ export class ManagerNotFound extends Error
     }
 }
 
+export class HTTPError extends Error
+{
+    constructor(public HTTPCode : number, public inheritedError ?: Error)
+    {
+        super('Error ' + HTTPCode)
+    }
+}
+
 export const Errors = {
     BadAuthentication: new Error('Bad authentication'),
     AuenticationPropertyMissing: new Error('Properties are missing'),
@@ -22,6 +30,7 @@ export const Errors = {
     AlreadyAuthenticated: new Error('Already authenticated'),
     UserNotFound: new Error('User not found'),
     XMLNotFound: new Error('Can\'t find the XML element.'),
+    ExpectedAFileResourceType: new Error('Expected a file resource type.'),
 
     None: null
 };
