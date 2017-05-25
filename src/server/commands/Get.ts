@@ -27,6 +27,8 @@ export default function(arg : MethodCallArgs, callback)
                             content = new Buffer(0);
                         else if(c.constructor === Boolean || c.constructor === Number)
                             content = c.toString()
+                        else if(c.constructor === Int8Array)
+                            content = new Buffer(c as Int8Array);
                         else
                             content = c;
                         
