@@ -1,7 +1,7 @@
 /// <reference types="node" />
+import { MethodCallArgs, WebDAVRequest } from './WebDAVRequest';
 import { WebDAVServerOptions } from './WebDAVServerOptions';
 import { SerializedObject } from '../manager/ISerializer';
-import { MethodCallArgs, WebDAVRequest } from './WebDAVRequest';
 import { IResource, ReturnCallback } from '../resource/IResource';
 import { HTTPAuthentication } from '../user/authentication/HTTPAuthentication';
 import { IPrivilegeManager } from '../user/privilege/IPrivilegeManager';

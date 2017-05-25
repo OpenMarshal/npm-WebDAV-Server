@@ -17,7 +17,7 @@ export declare class MethodCallArgs {
     host: string;
     path: FSPath;
     uri: string;
-    data: string;
+    data: Int8Array;
     user: IUser;
     protected constructor(server: WebDAVServer, request: http.IncomingMessage, response: http.ServerResponse, exit: () => void, callback: () => void);
     static create(server: WebDAVServer, request: http.IncomingMessage, response: http.ServerResponse, callback: (error: Error, mca: MethodCallArgs) => void): void;

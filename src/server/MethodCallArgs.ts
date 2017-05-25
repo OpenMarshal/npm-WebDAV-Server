@@ -18,7 +18,7 @@ export class MethodCallArgs
     path : FSPath
     uri : string
     
-    data : string
+    data : Int8Array
     user : IUser
 
     protected constructor(

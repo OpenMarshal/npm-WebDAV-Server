@@ -1,15 +1,15 @@
+import { HTTPCodes, MethodCallArgs, WebDAVRequest, ChunkOnDataCallback } from './WebDAVRequest'
 import { WebDAVServerOptions, setDefaultServerOptions } from './WebDAVServerOptions'
 import { SerializedObject, unserialize, serialize } from '../manager/ISerializer'
-import { HTTPCodes, MethodCallArgs, WebDAVRequest } from './WebDAVRequest'
 import { IResource, ReturnCallback } from '../resource/IResource'
 import { FakePrivilegeManager } from '../user/privilege/FakePrivilegeManager'
 import { HTTPAuthentication } from '../user/authentication/HTTPAuthentication'
 import { IPrivilegeManager } from '../user/privilege/IPrivilegeManager'
 import { SimpleUserManager } from '../user/simple/SimpleUserManager'
 import { FSManager, FSPath } from '../manager/FSManager'
+import { Errors, HTTPError } from '../Errors'
 import { RootResource } from '../resource/std/RootResource'
 import { IUserManager } from '../user/IUserManager'
-import { Errors } from '../Errors'
 import Commands from './commands/Commands'
 import * as http from 'http'
 
@@ -273,38 +273,74 @@ export class WebDAVServer
                         return;
                     }
 
-                    if(!method.chunked)
+                    base.exit = () =>
                     {
-                        let data = '';
+                        base.response.end();
+                        this.invokeAfterRequest(base, null);
+                    };
+
+                    if(!this.options.canChunk || !method.startChunked || base.contentLength <= 0)
+                    {
                         const go = () =>
                         {
-                            base.data = data;
                             this.invokeBeforeRequest(base, () => {
-                                base.exit = () =>
-                                {
-                                    res.end();
-                                    this.invokeAfterRequest(base, null);
-                                };
                                 method(base, base.exit);
                             })
                         }
-                        
-                        if(base.contentLength === 0)
+
+                        if(base.contentLength <= 0)
                         {
+                            base.data = new Buffer(0);
                             go();
                         }
                         else
                         {
+                            const data = new Buffer(base.contentLength);
+                            let index = 0;
                             req.on('data', (chunk) => {
-                                data += chunk.toString();
-                                if(data.length >= base.contentLength)
+                                if(chunk.constructor === String)
+                                    chunk = new Buffer(chunk as string);
+                                
+                                for(let i = 0; i < chunk.length && index < data.length; ++i, ++index)
+                                    data[index] = (chunk as Buffer)[i];
+                                
+                                if(index >= base.contentLength)
                                 {
-                                    if(data.length > base.contentLength)
-                                        data = data.substring(0, base.contentLength);
+                                    base.data = data;
                                     go();
                                 }
                             });
                         }
+                    }
+                    else
+                    {
+                        this.invokeBeforeRequest(base, () => {
+                            this.invokeBeforeRequest(base, () => {
+                                method.startChunked(base, (error : HTTPError, onData : ChunkOnDataCallback) => {
+                                    if(error)
+                                    {
+                                        base.setCode(error.HTTPCode);
+                                        base.exit();
+                                        return;
+                                    }
+
+                                    if(!onData)
+                                    {
+                                        base.exit();
+                                        return;
+                                    }
+                                    
+                                    let size = 0;
+                                    req.on('data', (chunk) => {
+                                        if(chunk.constructor === String)
+                                            chunk = new Buffer(chunk as string);
+                                        size += chunk.length;
+                                        
+                                        onData(chunk as Buffer, size === chunk.length, size >= base.contentLength);
+                                    });
+                                });
+                            })
+                        })
                     }
                 })
             })
