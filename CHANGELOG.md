@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.3.2
+
+### New features
+* Added the ability to switch to the chunked version of a command (method) when possible *[71c7073](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/71c7073)*
+* Added the server option 'canChunk' *[6396a81](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6396a81)*
+* Implemented the chunked version of the PUT method *[5923925](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5923925)*
+
+### Documentation
+* Added the server option 'canChunk' in the documentation *[470b15e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/470b15e)*
+
+### Tests
+* Added the tests for the chunked packets *[06b9c56](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/06b9c56)*
+
+### Other
+* Added the HTTPError class *[c60f5dd](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c60f5dd)*
+* Added the 'ExpectedAFileResourceType' standard error *[c60f5dd](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c60f5dd)*
+
+### Bug fix
+* Fixed the error with the type Int8Array with the GET method *[7e942c2](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7e942c2)*
+
 ## 1.3.1
 
 ### New features
