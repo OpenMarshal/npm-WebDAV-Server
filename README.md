@@ -52,6 +52,7 @@ The full set of the standard WebDAV methods are implemented :
 This is an active project. Do not hesitate to post an issue if you have an idea or if you encounter a problem.
 
 Currently working on providing a real documentation of the module.
+The documentation on this page will lightened. The more complete version will be available [here](https://github.com/OpenMarshal/npm-WebDAV-Server/wiki).
 
 # Install
 
