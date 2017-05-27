@@ -1,13 +1,22 @@
+/// <reference types="node" />
 import { IResource, SimpleCallback, ReturnCallback, ResourceType } from '../IResource';
+import { Readable, ReadableOptions } from 'stream';
 import { VirtualResource } from './VirtualResource';
 import { FSManager } from '../../manager/FSManager';
+export declare class VirtualFileReadable extends Readable {
+    contents: Int8Array[];
+    blockIndex: number;
+    constructor(contents: Int8Array[], options?: ReadableOptions);
+    _read(size: number): void;
+}
 export declare class VirtualFile extends VirtualResource {
-    content: Int8Array;
+    content: Int8Array[];
+    len: number;
     constructor(name: string, parent?: IResource, fsManager?: FSManager);
     type(callback: ReturnCallback<ResourceType>): void;
     append(data: Int8Array, targetSource: boolean, callback: SimpleCallback): void;
     write(data: Int8Array, targetSource: boolean, callback: SimpleCallback): void;
-    read(targetSource: boolean, callback: ReturnCallback<Int8Array>): void;
+    read(targetSource: boolean, callback: ReturnCallback<Int8Array | Readable>): void;
     mimeType(targetSource: boolean, callback: ReturnCallback<string>): void;
     size(targetSource: boolean, callback: ReturnCallback<number>): void;
     addChild(resource: IResource, callback: SimpleCallback): void;

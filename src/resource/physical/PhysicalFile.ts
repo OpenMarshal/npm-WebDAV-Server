@@ -1,4 +1,5 @@
 import { IResource, SimpleCallback, ReturnCallback, ResourceType } from '../IResource'
+import { Readable, ReadableOptions } from 'stream'
 import { PhysicalResource } from './PhysicalResource'
 import { FSManager } from '../../manager/FSManager'
 import { Errors } from '../../Errors'
@@ -72,7 +73,7 @@ export class PhysicalFile extends PhysicalResource
             }
         });
     }
-    read(targetSource : boolean, callback : ReturnCallback<Int8Array>)
+    read(targetSource : boolean, callback : ReturnCallback<Int8Array|Readable>)
     {
         fs.readFile(this.realPath, callback);
     }

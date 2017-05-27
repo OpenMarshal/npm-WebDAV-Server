@@ -1,4 +1,5 @@
 import { IResource, SimpleCallback, ReturnCallback, Return2Callback, ResourceType } from '../IResource'
+import { Readable, ReadableOptions } from 'stream'
 import { PhysicalFSManager } from '../../manager/PhysicalFSManager'
 import { StandardResource } from '../std/StandardResource'
 import { FSManager } from '../../manager/FSManager'
@@ -78,7 +79,7 @@ export abstract class PhysicalResource extends StandardResource
     // ****************************** Content ****************************** //
     abstract append(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
     abstract write(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
-    abstract read(targetSource : boolean, callback : ReturnCallback<Int8Array>)
+    abstract read(targetSource : boolean, callback : ReturnCallback<Int8Array|Readable>)
     abstract mimeType(targetSource : boolean, callback : ReturnCallback<string>)
     abstract size(targetSource : boolean, callback : ReturnCallback<number>)
     

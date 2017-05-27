@@ -1,5 +1,6 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
 import { IResource, ResourceType, SimpleCallback } from '../../resource/IResource'
+import { Readable } from 'stream'
 import { FSPath } from '../../manager/FSManager'
 
 function copyAllProperties(source : IResource, destination : IResource, callback : SimpleCallback)
@@ -71,7 +72,23 @@ function copy(arg : MethodCallArgs, source : IResource, rDest : IResource, desti
                                 }
 
                                 source.read(true, (e, data) => _(e, () => {
-                                    dest.write(data, true, (e) => _(e, next))
+                                    if((data as Readable).readable)
+                                    {
+                                        const rdata = data as Readable;
+                                        let isFirst = true;
+                                        rdata.on('data', (chunk) => {
+                                            if(isFirst)
+                                            {
+                                                isFirst = false;
+                                                dest.write(new Int8Array(0), true, (e) => _(e, () => { }));
+                                            }
+                                            else
+                                                dest.append(chunk as Buffer, true, (e) => _(e, next));
+                                        });
+                                        rdata.on('end', next);
+                                    }
+                                    else
+                                        dest.write(data as Int8Array, true, (e) => _(e, next))
                                 }))
 
                                 function next()

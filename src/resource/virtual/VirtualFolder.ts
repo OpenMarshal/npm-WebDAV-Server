@@ -1,4 +1,5 @@
 import { IResource, SimpleCallback, ReturnCallback, ResourceType } from '../IResource'
+import { Readable, ReadableOptions } from 'stream'
 import { StandardResource } from '../std/StandardResource'
 import { ResourceChildren } from '../std/ResourceChildren'
 import { VirtualResource } from './VirtualResource'
@@ -31,7 +32,7 @@ export class VirtualFolder extends VirtualResource
     {
         callback(Errors.InvalidOperation);
     }
-    read(targetSource : boolean, callback : ReturnCallback<Int8Array>)
+    read(targetSource : boolean, callback : ReturnCallback<Int8Array|Readable>)
     {
         callback(Errors.InvalidOperation, null);
     }

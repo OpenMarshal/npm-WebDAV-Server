@@ -12,19 +12,19 @@ export class VirtualFSManager implements FSManager
 
     serialize(resource : any, obj : SerializedObject) : object
     {
-        const result : {
-            name,
-            content
-        } = {
+        const result : any = {
             dateCreation: resource.dateCreation,
             dateLastModified: resource.dateLastModified,
             locks: resource.lockBag.locks,
             properties: resource.properties
-        } as any;
+        };
 
         result.name = resource.name;
         if(resource.content)
+        {
             result.content = resource.content;
+            result.len = resource.len;
+        }
 
         return result;
     }
@@ -44,7 +44,10 @@ export class VirtualFSManager implements FSManager
         {
             const rs = new VirtualFile(data.name, null, this);
             if(data.content)
-                rs.content = new Buffer(data.content);
+            {
+                rs.content = data.content;
+                rs.len = data.len;
+            }
             rs.dateCreation = data.dateCreation;
             rs.dateLastModified = data.dateLastModified;
             rs.lockBag.locks = data.locks;

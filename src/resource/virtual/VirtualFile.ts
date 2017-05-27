@@ -1,18 +1,50 @@
 import { IResource, SimpleCallback, ReturnCallback, ResourceType } from '../IResource'
+import { Readable, ReadableOptions } from 'stream'
 import { VirtualResource } from './VirtualResource'
 import { FSManager } from '../../manager/FSManager'
 import { Errors } from '../../Errors'
 import * as mimeTypes from 'mime-types'
 
+export class VirtualFileReadable extends Readable
+{
+    blockIndex : number
+
+    constructor(public contents : Int8Array[], options ?: ReadableOptions)
+    {
+        super(options);
+
+        this.blockIndex = -1;
+    }
+
+    _read(size : number)
+    {
+        while(true)
+        {
+            ++this.blockIndex;
+
+            if(this.blockIndex >= this.contents.length)
+            {
+                this.push(null);
+                break;
+            }
+
+            if(!this.push(this.contents[this.blockIndex]))
+                break;
+        }
+    }
+}
+
 export class VirtualFile extends VirtualResource
 {
-    content : Int8Array
+    content : Int8Array[]
+    len : number
 
     constructor(name : string, parent ?: IResource, fsManager ?: FSManager)
     {
         super(name, parent, fsManager);
 
-        this.content = new Buffer(0);
+        this.content = [];
+        this.len = 0;
     }
 
     // ****************************** Std meta-data ****************************** //
@@ -24,26 +56,21 @@ export class VirtualFile extends VirtualResource
     // ****************************** Content ****************************** //
     append(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
     {
-        const newContent = new Int8Array(this.content.length + data.length)
-
-        for(let i = 0; i < this.content.length; ++i)
-            newContent[i] = this.content[i];
-        for(let i = 0; i < data.length; ++i)
-            newContent[i + this.content.length] = data[i];
-
-        this.content = newContent;
+        this.content.push(data);
+        this.len += data.length;
         this.updateLastModified();
         callback(null);
     }
     write(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
     {
-        this.content = data;
+        this.content = [ data ];
+        this.len = data.length;
         this.updateLastModified();
         callback(null);
     }
-    read(targetSource : boolean, callback : ReturnCallback<Int8Array>)
+    read(targetSource : boolean, callback : ReturnCallback<Int8Array|Readable>)
     {
-        callback(null, this.content);
+        callback(null, new VirtualFileReadable(this.content));
     }
     mimeType(targetSource : boolean, callback : ReturnCallback<string>)
     {
@@ -52,7 +79,7 @@ export class VirtualFile extends VirtualResource
     }
     size(targetSource : boolean, callback : ReturnCallback<number>)
     {
-        callback(null, this.content.length);
+        callback(null, this.len);
     }
     
     // ****************************** Children ****************************** //

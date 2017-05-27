@@ -1,4 +1,5 @@
 import { IResource, SimpleCallback, ReturnCallback, ResourceType } from '../IResource'
+import { Readable, ReadableOptions } from 'stream'
 import { ResourceChildren } from '../std/ResourceChildren'
 import { StandardResource } from '../std/StandardResource'
 import { PhysicalResource } from './PhysicalResource'
@@ -89,7 +90,7 @@ export class PhysicalFolder extends PhysicalResource
     {
         callback(Errors.InvalidOperation);
     }
-    read(targetSource : boolean, callback : ReturnCallback<Int8Array>)
+    read(targetSource : boolean, callback : ReturnCallback<Int8Array|Readable>)
     {
         callback(Errors.InvalidOperation, null);
     }

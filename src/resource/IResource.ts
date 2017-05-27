@@ -1,3 +1,4 @@
+import { Readable, ReadableOptions } from 'stream'
 import { FSManager, FSPath } from '../manager/FSManager'
 import { XMLElement } from '../helper/XML'
 import { LockKind } from './lock/LockKind'
@@ -49,7 +50,7 @@ export interface IResource
     // ****************************** Content ****************************** //
     append(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
     write(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
-    read(targetSource : boolean, callback : ReturnCallback<Int8Array>)
+    read(targetSource : boolean, callback : ReturnCallback<Int8Array|Readable>)
     mimeType(targetSource : boolean, callback : ReturnCallback<string>)
     size(targetSource : boolean, callback : ReturnCallback<number>)
     

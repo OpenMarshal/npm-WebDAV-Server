@@ -1,4 +1,5 @@
 import { IResource, SimpleCallback, ReturnCallback, Return2Callback, ResourceType } from '../IResource'
+import { Readable, ReadableOptions } from 'stream'
 import { StandardResource } from './StandardResource'
 import { ResourceChildren } from './ResourceChildren'
 import { RootFSManager } from '../../manager/RootFSManager'
@@ -53,7 +54,7 @@ export class RootResource extends StandardResource
     {
         callback(Errors.InvalidOperation)
     }
-    read(targetSource : boolean, callback : ReturnCallback<Int8Array>)
+    read(targetSource : boolean, callback : ReturnCallback<Int8Array|Readable>)
     {
         callback(Errors.InvalidOperation, null)
     }

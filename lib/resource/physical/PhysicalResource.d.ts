@@ -1,4 +1,6 @@
+/// <reference types="node" />
 import { IResource, SimpleCallback, ReturnCallback, Return2Callback, ResourceType } from '../IResource';
+import { Readable } from 'stream';
 import { StandardResource } from '../std/StandardResource';
 import { FSManager } from '../../manager/FSManager';
 export declare abstract class PhysicalResource extends StandardResource {
@@ -13,7 +15,7 @@ export declare abstract class PhysicalResource extends StandardResource {
     abstract type(callback: ReturnCallback<ResourceType>): any;
     abstract append(data: Int8Array, targetSource: boolean, callback: SimpleCallback): any;
     abstract write(data: Int8Array, targetSource: boolean, callback: SimpleCallback): any;
-    abstract read(targetSource: boolean, callback: ReturnCallback<Int8Array>): any;
+    abstract read(targetSource: boolean, callback: ReturnCallback<Int8Array | Readable>): any;
     abstract mimeType(targetSource: boolean, callback: ReturnCallback<string>): any;
     abstract size(targetSource: boolean, callback: ReturnCallback<number>): any;
     abstract addChild(resource: IResource, callback: SimpleCallback): any;

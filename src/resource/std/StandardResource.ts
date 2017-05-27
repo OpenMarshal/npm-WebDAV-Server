@@ -1,4 +1,5 @@
 import { IResource, ReturnCallback, SimpleCallback, Return2Callback, ResourceType, ResourcePropertyValue } from '../IResource'
+import { Readable, ReadableOptions } from 'stream'
 import { FSManager, FSPath } from '../../manager/FSManager'
 import { LockScope } from '../lock/LockScope'
 import { LockType } from '../lock/LockType'
@@ -183,7 +184,7 @@ export abstract class StandardResource implements IResource
     // ****************************** Content ****************************** //
     abstract append(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
     abstract write(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
-    abstract read(targetSource : boolean, callback : ReturnCallback<Int8Array>)
+    abstract read(targetSource : boolean, callback : ReturnCallback<Int8Array|Readable>)
     abstract mimeType(targetSource : boolean, callback : ReturnCallback<string>)
     abstract size(targetSource : boolean, callback : ReturnCallback<number>)
     

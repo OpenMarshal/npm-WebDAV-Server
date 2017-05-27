@@ -1,4 +1,6 @@
+/// <reference types="node" />
 import { IResource, ReturnCallback, SimpleCallback, Return2Callback, ResourceType, ResourcePropertyValue } from '../IResource';
+import { Readable } from 'stream';
 import { FSManager } from '../../manager/FSManager';
 import { LockKind } from '../lock/LockKind';
 import { LockBag } from '../lock/LockBag';
@@ -31,7 +33,7 @@ export declare abstract class StandardResource implements IResource {
     abstract rename(newName: string, callback: Return2Callback<string, string>): any;
     abstract append(data: Int8Array, targetSource: boolean, callback: SimpleCallback): any;
     abstract write(data: Int8Array, targetSource: boolean, callback: SimpleCallback): any;
-    abstract read(targetSource: boolean, callback: ReturnCallback<Int8Array>): any;
+    abstract read(targetSource: boolean, callback: ReturnCallback<Int8Array | Readable>): any;
     abstract mimeType(targetSource: boolean, callback: ReturnCallback<string>): any;
     abstract size(targetSource: boolean, callback: ReturnCallback<number>): any;
     creationDate(callback: ReturnCallback<number>): void;

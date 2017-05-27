@@ -1,5 +1,6 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
 import { IResource } from '../../resource/IResource'
+import { Readable } from 'stream'
 
 export default function(arg : MethodCallArgs, callback)
 {
@@ -22,17 +23,28 @@ export default function(arg : MethodCallArgs, callback)
                     {
                         arg.setCode(HTTPCodes.OK);
 
-                        let content : any = c;
-                        if(c === undefined || c === null)
-                            content = new Buffer(0);
-                        else if(c.constructor === Boolean || c.constructor === Number)
-                            content = c.toString()
-                        else if(c.constructor === Int8Array)
-                            content = new Buffer(c as Int8Array);
+                        if((c as Readable).readable)
+                        {
+                            const rdata = c as Readable;
+                            let isFirst = true;
+                            rdata.on('end', callback);
+                            rdata.pipe(arg.response);
+                            return;
+                        }
                         else
-                            content = c;
-                        
-                        arg.response.write(content);
+                        {
+                            let content : any = c;
+                            if(c === undefined || c === null)
+                                content = new Buffer(0);
+                            else if(c.constructor === Boolean || c.constructor === Number)
+                                content = c.toString()
+                            else if(c.constructor === Int8Array)
+                                content = new Buffer(c as Int8Array);
+                            else
+                                content = c;
+                            
+                            arg.response.write(content);
+                        }
                     }
                     callback();
                 }))
