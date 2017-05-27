@@ -113,42 +113,45 @@ const server = new webdav.WebDAVServer({
 // Create a virtual file
 var file = new webdav.VirtualFile('testFile.txt');
 // Set the content of the virtual file
-file.content = 'The content of the virtual file.';
+file.write('The content of the virtual file.', false, (e) => {
+    if(e)
+        throw e;
 
-// Add the virtual resources to the root folder
-// Note that you can add resources even when the
-// server is running
-server.addResourceTree({
-    r: new webdav.VirtualFolder('testFolder'),
-    c: [{
-        r: new webdav.VirtualFolder('test1'),
-        c: new webdav.VirtualFile('test2')
-    }, {
-        r: new webdav.VirtualFolder('test2'),
+    // Add the virtual resources to the root folder
+    // Note that you can add resources even when the
+    // server is running
+    server.addResourceTree({
+        r: new webdav.VirtualFolder('testFolder'),
         c: [{
             r: new webdav.VirtualFolder('test1'),
             c: new webdav.VirtualFile('test2')
-        },{
+        }, {
             r: new webdav.VirtualFolder('test2'),
-            c: new webdav.VirtualFile('test2')
+            c: [{
+                r: new webdav.VirtualFolder('test1'),
+                c: new webdav.VirtualFile('test2')
+            },{
+                r: new webdav.VirtualFolder('test2'),
+                c: new webdav.VirtualFile('test2')
+            }]
         }]
-    }]
-}, e => {
-    if(e)
-        throw e;
-    
-    // Start the server
-    server.start(httpServer => {
-        console.log('Server started with success on the port : ' + httpServer.address().port);
+    }, e => {
+        if(e)
+            throw e;
+        
+        // Start the server
+        server.start(httpServer => {
+            console.log('Server started with success on the port : ' + httpServer.address().port);
 
-        // [...]
+            // [...]
 
-        // Stop the server
-        server.stop(() => {
-            console.log('Server stopped with success!');
-        })
+            // Stop the server
+            server.stop(() => {
+                console.log('Server stopped with success!');
+            })
+        });
     });
-});
+}
 ```
 
 In this example, the resource tree will be the following :

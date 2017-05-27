@@ -10,6 +10,9 @@ module.exports = (test, options, index) => test('read a virtual file', (isValid,
         'testFile3.txt': new Buffer([ 10, 12, 16, 100, 125, 200, 250 ]),
         'testFile4.txt': true
     }
+    for(const fileName in files)
+        if(!files[fileName])
+            files[fileName] = '';
 
     isValid = isValid.multiple(Object.keys(files).length + 1, server);
     const _ = (e, cb) => {
@@ -26,20 +29,17 @@ module.exports = (test, options, index) => test('read a virtual file', (isValid,
     for(const fileName in files)
     {
         const file = new webdav.VirtualFile(fileName);
-        file.content = files[fileName];
-
-        if(!files[fileName])
-            files[fileName] = '';
-
-        server.rootResource.addChild(file, e => _(e, () => {
-            wfs.readFile('/' + fileName, (e, content) => {
-                if(e)
-                    isValid(false, e)
-                else
-                    isValid(content.toString() === files[fileName].toString(), 'Received : ' + content.toString() + ' but expected : ' + files[fileName].toString());
-            })
-            
-        }));
+        file.write(files[fileName].toString(), true, e => _(e, () => {
+            server.rootResource.addChild(file, e => _(e, () => {
+                wfs.readFile('/' + fileName, (e, content) => {
+                    if(e)
+                        isValid(false, e)
+                    else
+                        isValid(content.toString() === files[fileName].toString(), 'Received : ' + content.toString() + ' but expected : ' + files[fileName].toString());
+                })
+                
+            }));
+        }))
     }
 
     wfs.readFile('/fileNotFound.txt', (e, content) => {
