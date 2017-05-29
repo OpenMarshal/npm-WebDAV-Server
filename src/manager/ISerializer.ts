@@ -32,7 +32,7 @@ export function unserialize(obj : SerializedObject, managers : FSManager[], call
 
             if(!obj.children || obj.children.length === 0)
             {
-                callback(null, resource);
+                process.nextTick(() => callback(null, resource));
                 return;
             }
 
@@ -44,12 +44,12 @@ export function unserialize(obj : SerializedObject, managers : FSManager[], call
                 if(e)
                 {
                     nb = -1;
-                    callback(e, resource);
+                    process.nextTick(() => callback(e, resource));
                     return;
                 }
                 --nb;
                 if(nb === 0)
-                    callback(null, resource);
+                    process.nextTick(() => callback(null, resource));
             }
 
             obj.children.forEach((c) => unserialize(c, managers, (e, r) => {
@@ -61,7 +61,7 @@ export function unserialize(obj : SerializedObject, managers : FSManager[], call
             return;
         }
     
-    callback(new ManagerNotFound(obj.managerUID), null);
+    process.nextTick(() => callback(new ManagerNotFound(obj.managerUID), null));
 }
 
 export function serialize(resource : IResource, callback : (error : Error, obj : SerializedObject) => void)
@@ -76,34 +76,36 @@ export function serialize(resource : IResource, callback : (error : Error, obj :
             return;
         }
         resource.getChildren((e, children) => {
-            if(e)
-            {
-                callback(e, obj);
-                return;
-            }
-            if(children.length === 0)
-            {
-                callback(null, obj);
-                return;
-            }
-
-            let nb = children.length;
-            function go(error, subObj)
-            {
-                if(nb <= 0)
-                    return;
-                if(error)
+            process.nextTick(() => {
+                if(e)
                 {
-                    nb = -1;
-                    callback(error, obj);
+                    callback(e, obj);
                     return;
                 }
-                obj.children.push(subObj);
-                --nb;
-                if(nb === 0)
+                if(children.length === 0)
+                {
                     callback(null, obj);
-            }
-            children.forEach((c) => serialize(c, go));
+                    return;
+                }
+
+                let nb = children.length;
+                function go(error, subObj)
+                {
+                    if(nb <= 0)
+                        return;
+                    if(error)
+                    {
+                        nb = -1;
+                        process.nextTick(() => callback(error, obj));
+                        return;
+                    }
+                    obj.children.push(subObj);
+                    --nb;
+                    if(nb === 0)
+                        process.nextTick(() => callback(null, obj));
+                }
+                children.forEach((c) => serialize(c, go));
+            })
         })
     })
 }
