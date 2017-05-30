@@ -76,9 +76,9 @@ export interface XMLElement
 
 export abstract class XML
 {
-    static parse(xml : string) : XMLElement
+    static parse(xml : string | Int8Array) : XMLElement
     {
-        const x = xmljs.xml2js(xml, {
+        const x = xmljs.xml2js(xml.constructor === String ? xml as string : new Buffer(xml as Int8Array).toString(), {
             compact: false
         });
 

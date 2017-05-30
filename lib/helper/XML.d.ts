@@ -7,7 +7,7 @@ export interface XMLElement {
     findMany(name: string): XMLElement[];
 }
 export declare abstract class XML {
-    static parse(xml: string): XMLElement;
+    static parse(xml: string | Int8Array): XMLElement;
     static toJSON(xml: string): string;
     static toXML(xml: XMLElement | any, includeDeclaration?: boolean): string;
     static createElement(name: string, attributes?: any, text?: string): {
