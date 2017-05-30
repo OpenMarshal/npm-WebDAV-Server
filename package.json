@@ -21,8 +21,8 @@
     "virtual"
   ],
   "scripts": {
-    "dev": "dev-watch package.json dev",
-    "build": "dev-watch package.json prod",
+    "dev": "cd src && tsc --declaration -w",
+    "build": "cd src && tsc --declaration",
     "test": "node test/root.js"
   },
   "name": "webdav-server",
