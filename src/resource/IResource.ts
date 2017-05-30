@@ -1,4 +1,4 @@
-import { Readable, ReadableOptions } from 'stream'
+import { Readable, Writable } from 'stream'
 import { FSManager, FSPath } from '../manager/FSManager'
 import { XMLElement } from '../helper/XML'
 import { LockKind } from './lock/LockKind'
@@ -48,9 +48,8 @@ export interface IResource
     isOnTheSameFSWith(resource : IResource, callback : ReturnCallback<boolean>)
     
     // ****************************** Content ****************************** //
-    append(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
-    write(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
-    read(targetSource : boolean, callback : ReturnCallback<Int8Array|Readable>)
+    write(targetSource : boolean, callback : ReturnCallback<Writable>)
+    read(targetSource : boolean, callback : ReturnCallback<Readable>)
     mimeType(targetSource : boolean, callback : ReturnCallback<string>)
     size(targetSource : boolean, callback : ReturnCallback<number>)
     

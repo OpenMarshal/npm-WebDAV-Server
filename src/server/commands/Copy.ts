@@ -71,24 +71,11 @@ function copy(arg : MethodCallArgs, source : IResource, rDest : IResource, desti
                                     return;
                                 }
 
-                                source.read(true, (e, data) => _(e, () => {
-                                    if((data as Readable).readable)
-                                    {
-                                        const rdata = data as Readable;
-                                        let isFirst = true;
-                                        rdata.on('data', (chunk) => {
-                                            if(isFirst)
-                                            {
-                                                isFirst = false;
-                                                dest.write(new Int8Array(0), true, (e) => _(e, () => { }));
-                                            }
-                                            else
-                                                dest.append(chunk as Buffer, true, (e) => _(e, next));
-                                        });
-                                        rdata.on('end', next);
-                                    }
-                                    else
-                                        dest.write(data as Int8Array, true, (e) => _(e, next))
+                                source.read(true, (e, rstream) => _(e, () => {
+                                    dest.write(true, (e, wstream) => _(e, () => {
+                                        rstream.on('end', next);
+                                        rstream.pipe(wstream);
+                                    }))
                                 }))
 
                                 function next()

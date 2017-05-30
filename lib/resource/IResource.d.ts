@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { Readable } from 'stream';
+import { Readable, Writable } from 'stream';
 import { FSManager } from '../manager/FSManager';
 import { XMLElement } from '../helper/XML';
 import { LockKind } from './lock/LockKind';
@@ -29,9 +29,8 @@ export interface IResource {
     rename(newName: string, callback: Return2Callback<string, string>): any;
     isSame(resource: IResource, callback: ReturnCallback<boolean>): any;
     isOnTheSameFSWith(resource: IResource, callback: ReturnCallback<boolean>): any;
-    append(data: Int8Array, targetSource: boolean, callback: SimpleCallback): any;
-    write(data: Int8Array, targetSource: boolean, callback: SimpleCallback): any;
-    read(targetSource: boolean, callback: ReturnCallback<Int8Array | Readable>): any;
+    write(targetSource: boolean, callback: ReturnCallback<Writable>): any;
+    read(targetSource: boolean, callback: ReturnCallback<Readable>): any;
     mimeType(targetSource: boolean, callback: ReturnCallback<string>): any;
     size(targetSource: boolean, callback: ReturnCallback<number>): any;
     getLocks(callback: ReturnCallback<Lock[]>): any;

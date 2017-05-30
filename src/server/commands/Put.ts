@@ -64,7 +64,10 @@ export default function unchunkedMethod(arg : MethodCallArgs, callback)
                 if(r)
                 { // Resource exists => empty it
                     arg.requirePrivilege(targetSource ? [ 'canSource', 'canWrite' ] : [ 'canWrite' ], r, () => {
-                        r.write(new Buffer(0), targetSource, (e) => process.nextTick(() => {
+                        r.write(targetSource, (e, stream) => process.nextTick(() => {
+                            if(stream)
+                                stream.end();
+
                             if(e)
                                 arg.setCode(HTTPCodes.InternalServerError)
                             else
@@ -82,17 +85,24 @@ export default function unchunkedMethod(arg : MethodCallArgs, callback)
             }
             else
             { // Write to a file
-                const data = new Buffer(arg.data);
-
                 if(e)
                 { // Resource not found
                     createResource(arg, callback, (r) => {
-                        r.write(data, targetSource, (e) => process.nextTick(() => {
+                        r.write(targetSource, (e, stream) => process.nextTick(() => {
                             if(e)
-                                arg.setCode(HTTPCodes.InternalServerError)
-                            else
-                                arg.setCode(HTTPCodes.OK)
-                            callback();
+                            {
+                                arg.setCode(HTTPCodes.InternalServerError);
+                                callback();
+                                return;
+                            }
+
+                            stream.end(arg.data, (e) => {
+                                if(e)
+                                    arg.setCode(HTTPCodes.InternalServerError)
+                                else
+                                    arg.setCode(HTTPCodes.OK)
+                                callback();
+                            });
                         }))
                     })
                     return;
@@ -113,12 +123,21 @@ export default function unchunkedMethod(arg : MethodCallArgs, callback)
                             return;
                         }
 
-                        r.write(data, targetSource, (e) => process.nextTick(() => {
+                        r.write(targetSource, (e, stream) => process.nextTick(() => {
                             if(e)
-                                arg.setCode(HTTPCodes.InternalServerError)
-                            else
-                                arg.setCode(HTTPCodes.OK)
-                            callback();
+                            {
+                                arg.setCode(HTTPCodes.InternalServerError);
+                                callback();
+                                return;
+                            }
+
+                            stream.end(arg.data, (e) => {
+                                if(e)
+                                    arg.setCode(HTTPCodes.InternalServerError)
+                                else
+                                    arg.setCode(HTTPCodes.OK)
+                                callback();
+                            });
                         }))
                     }))
                 })
@@ -126,7 +145,7 @@ export default function unchunkedMethod(arg : MethodCallArgs, callback)
         })
     })
 }
-
+/*
 function asyncWrite(arg : MethodCallArgs, callback : StartChunkedCallback, resource : IResource, targetSource : boolean)
 {
     function errorCallback(isLast : boolean)
@@ -207,3 +226,4 @@ function asyncWrite(arg : MethodCallArgs, callback : StartChunkedCallback, resou
         })
     })
 }
+*/

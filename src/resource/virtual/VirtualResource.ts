@@ -1,5 +1,5 @@
 import { IResource, SimpleCallback, ReturnCallback, Return2Callback, ResourceType } from '../IResource'
-import { Readable, ReadableOptions } from 'stream'
+import { Readable, Writable } from 'stream'
 import { FSManager, FSPath } from '../../manager/FSManager'
 import { VirtualFSManager } from '../../manager/VirtualFSManager'
 import { StandardResource } from '../std/StandardResource'
@@ -69,9 +69,8 @@ export abstract class VirtualResource extends StandardResource
     abstract type(callback : ReturnCallback<ResourceType>)
 
     // ****************************** Content ****************************** //
-    abstract append(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
-    abstract write(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
-    abstract read(targetSource : boolean, callback : ReturnCallback<Int8Array|Readable>)
+    abstract write(targetSource : boolean, callback : ReturnCallback<Writable>)
+    abstract read(targetSource : boolean, callback : ReturnCallback<Readable>)
     abstract mimeType(targetSource : boolean, callback : ReturnCallback<string>)
     abstract size(targetSource : boolean, callback : ReturnCallback<number>)
     

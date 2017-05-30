@@ -1,5 +1,5 @@
 import { IResource, SimpleCallback, ReturnCallback, ResourceType } from '../IResource'
-import { Readable, ReadableOptions } from 'stream'
+import { Readable, Writable } from 'stream'
 import { ResourceChildren } from '../std/ResourceChildren'
 import { StandardResource } from '../std/StandardResource'
 import { PhysicalResource } from './PhysicalResource'
@@ -82,15 +82,11 @@ export class PhysicalFolder extends PhysicalResource
     }
 
     // ****************************** Content ****************************** //
-    append(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
+    write(targetSource : boolean, callback : ReturnCallback<Writable>)
     {
-        callback(Errors.InvalidOperation);
+        callback(Errors.InvalidOperation, null);
     }
-    write(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
-    {
-        callback(Errors.InvalidOperation);
-    }
-    read(targetSource : boolean, callback : ReturnCallback<Int8Array|Readable>)
+    read(targetSource : boolean, callback : ReturnCallback<Readable>)
     {
         callback(Errors.InvalidOperation, null);
     }
@@ -114,7 +110,11 @@ export class PhysicalFolder extends PhysicalResource
     }
     removeChild(resource : IResource, callback : SimpleCallback)
     {
-        this.children.remove(resource, callback);
+        this.children.remove(resource, (e) => {
+            if(!e)
+                resource.parent = null;
+            callback(e);
+        });
     }
     getChildren(callback : ReturnCallback<IResource[]>)
     {

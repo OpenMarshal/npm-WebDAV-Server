@@ -1,3 +1,4 @@
+import { MethodCallArgs } from '../MethodCallArgs'
 import NotImplemented from './NotImplemented'
 import Proppatch from './Proppatch'
 import Propfind from './Propfind'

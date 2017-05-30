@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { IResource, SimpleCallback, ReturnCallback, Return2Callback, ResourceType } from '../IResource';
-import { Readable } from 'stream';
+import { Readable, Writable } from 'stream';
 import { StandardResource } from './StandardResource';
 import { ResourceChildren } from './ResourceChildren';
 export declare class RootResource extends StandardResource {
@@ -12,9 +12,8 @@ export declare class RootResource extends StandardResource {
     rename(newName: string, callback: Return2Callback<string, string>): void;
     webName(callback: ReturnCallback<string>): void;
     type(callback: ReturnCallback<ResourceType>): void;
-    append(data: Int8Array, targetSource: boolean, callback: SimpleCallback): void;
-    write(data: Int8Array, targetSource: boolean, callback: SimpleCallback): void;
-    read(targetSource: boolean, callback: ReturnCallback<Int8Array | Readable>): void;
+    write(targetSource: boolean, callback: ReturnCallback<Writable>): void;
+    read(targetSource: boolean, callback: ReturnCallback<Readable>): void;
     mimeType(targetSource: boolean, callback: ReturnCallback<string>): void;
     size(targetSource: boolean, callback: ReturnCallback<number>): void;
     addChild(resource: IResource, callback: SimpleCallback): void;

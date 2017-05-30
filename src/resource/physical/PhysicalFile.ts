@@ -1,5 +1,5 @@
 import { IResource, SimpleCallback, ReturnCallback, ResourceType } from '../IResource'
-import { Readable, ReadableOptions } from 'stream'
+import { Readable, Writable } from 'stream'
 import { PhysicalResource } from './PhysicalResource'
 import { FSManager } from '../../manager/FSManager'
 import { Errors } from '../../Errors'
@@ -49,33 +49,31 @@ export class PhysicalFile extends PhysicalResource
     }
 
     // ****************************** Content ****************************** //
-    append(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
+    write(targetSource : boolean, callback : ReturnCallback<Writable>)
     {
-        fs.appendFile(this.realPath, data, (e) => {
+        fs.open(this.realPath, 'w', (e, fd) => {
             if(e)
-                callback(e);
-            else
             {
-                this.updateLastModified();
-                callback(null);
+                callback(e, null);
+                return;
             }
-        });
+            
+            callback(null, fs.createWriteStream(null, { fd }));
+            this.updateLastModified();
+        })
     }
-    write(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
+    read(targetSource : boolean, callback : ReturnCallback<Readable>)
     {
-        fs.writeFile(this.realPath, data, (e) => {
+        fs.open(this.realPath, 'r', (e, fd) => {
             if(e)
-                callback(e);
-            else
             {
-                this.updateLastModified();
-                callback(null);
+                callback(e, null);
+                return;
             }
-        });
-    }
-    read(targetSource : boolean, callback : ReturnCallback<Int8Array|Readable>)
-    {
-        fs.readFile(this.realPath, callback);
+            
+            callback(null, fs.createReadStream(null, { fd }));
+            this.updateLastModified();
+        })
     }
     mimeType(targetSource : boolean, callback : ReturnCallback<string>)
     {

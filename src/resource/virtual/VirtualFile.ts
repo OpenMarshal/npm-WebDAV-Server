@@ -1,5 +1,5 @@
 import { IResource, SimpleCallback, ReturnCallback, ResourceType } from '../IResource'
-import { Readable, ReadableOptions } from 'stream'
+import { Readable, Writable } from 'stream'
 import { VirtualResource } from './VirtualResource'
 import { FSManager } from '../../manager/FSManager'
 import { Errors } from '../../Errors'
@@ -9,9 +9,9 @@ export class VirtualFileReadable extends Readable
 {
     blockIndex : number
 
-    constructor(public contents : Int8Array[], options ?: ReadableOptions)
+    constructor(public contents : Int8Array[])
     {
-        super(options);
+        super();
 
         this.blockIndex = -1;
     }
@@ -31,6 +31,20 @@ export class VirtualFileReadable extends Readable
             if(!this.push(this.contents[this.blockIndex]))
                 break;
         }
+    }
+}
+
+export class VirtualFileWritable extends Writable
+{
+    constructor(public contents : Int8Array[])
+    {
+        super(null);
+    }
+
+    _write(chunk : Buffer | string | any, encoding : string, callback : (error : Error) => void)
+    {
+        this.contents.push(chunk);
+        callback(null);
     }
 }
 
@@ -54,21 +68,18 @@ export class VirtualFile extends VirtualResource
     }
 
     // ****************************** Content ****************************** //
-    append(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
+    write(targetSource : boolean, callback : ReturnCallback<Writable>)
     {
-        this.content.push(data);
-        this.len += data.length;
-        this.updateLastModified();
-        callback(null);
+        let content = [];
+        const stream = new VirtualFileWritable(content);
+        stream.on('finish', () => {
+            this.content = content;
+            this.len = content.map((c) => c.length).reduce((s, n) => s + n, 0);
+            this.updateLastModified();
+        })
+        callback(null, stream);
     }
-    write(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
-    {
-        this.content = [ data ];
-        this.len = data.length;
-        this.updateLastModified();
-        callback(null);
-    }
-    read(targetSource : boolean, callback : ReturnCallback<Int8Array|Readable>)
+    read(targetSource : boolean, callback : ReturnCallback<Readable>)
     {
         callback(null, new VirtualFileReadable(this.content));
     }

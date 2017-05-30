@@ -1,5 +1,5 @@
 import { IResource, SimpleCallback, ReturnCallback, Return2Callback, ResourceType } from '../IResource'
-import { Readable, ReadableOptions } from 'stream'
+import { Readable, Writable } from 'stream'
 import { StandardResource } from './StandardResource'
 import { ResourceChildren } from './ResourceChildren'
 import { RootFSManager } from '../../manager/RootFSManager'
@@ -46,15 +46,11 @@ export class RootResource extends StandardResource
     }
 
     // ****************************** Content ****************************** //
-    append(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
+    write(targetSource : boolean, callback : ReturnCallback<Writable>)
     {
-        callback(Errors.InvalidOperation)
+        callback(Errors.InvalidOperation, null)
     }
-    write(data : Int8Array, targetSource : boolean, callback : SimpleCallback)
-    {
-        callback(Errors.InvalidOperation)
-    }
-    read(targetSource : boolean, callback : ReturnCallback<Int8Array|Readable>)
+    read(targetSource : boolean, callback : ReturnCallback<Readable>)
     {
         callback(Errors.InvalidOperation, null)
     }
