@@ -15,7 +15,7 @@ module.exports = (test, options, index) => test('persistence', (isValid, server)
     const server2 = new webdav.WebDAVServer();
     const f1 = new webdav.VirtualFile('file1.txt');
     const f1Content = 'ok, This content is the test';
-    f1.write(f1Content, true, e => _(e, () => {
+    f1.write(true, (e, stream) => _(e, () => stream.end(f1Content, (e) => _(e, () => {
         server2.rootResource.addChild(f1, e => _(e, () => {
             server2.rootResource.addChild(new webdav.VirtualFile('file2.txt'), e => _(e, () => {
                 const folder1 = new webdav.VirtualFolder('folder1');
@@ -56,5 +56,5 @@ module.exports = (test, options, index) => test('persistence', (isValid, server)
                 }));
             }));
         }));
-    }))
+    }))))
 })

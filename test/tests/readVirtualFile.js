@@ -29,7 +29,7 @@ module.exports = (test, options, index) => test('read a virtual file', (isValid,
     for(const fileName in files)
     {
         const file = new webdav.VirtualFile(fileName);
-        file.write(files[fileName].toString(), true, e => _(e, () => {
+        file.write(true, (e, stream) => _(e, () => stream.end(files[fileName].toString(), (e) => _(e, () => {
             server.rootResource.addChild(file, e => _(e, () => {
                 wfs.readFile('/' + fileName, (e, content) => {
                     if(e)
@@ -39,7 +39,7 @@ module.exports = (test, options, index) => test('read a virtual file', (isValid,
                 })
                 
             }));
-        }))
+        }))))
     }
 
     wfs.readFile('/fileNotFound.txt', (e, content) => {

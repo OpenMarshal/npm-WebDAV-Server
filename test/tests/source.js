@@ -1,6 +1,7 @@
 "use strict";
 var webdav = require('../../lib/index.js'),
-    request = require('request');
+    request = require('request'),
+    stream = require('stream');
 
 module.exports = (test, options, index) => test('source', (isValid, server) =>
 {
@@ -28,25 +29,28 @@ module.exports = (test, options, index) => test('source', (isValid, server) =>
     let unprocessed = 'unprocessed content';
     
     server.rootResource.addChild({
-        append(data, targetSource, callback)
+        write(targetSource, callback)
         {
-            if(targetSource)
-                unprocessed += data;
-            else
-                processed += data;
-            callback(null);
-        },
-        write(data, targetSource, callback)
-        {
-            if(targetSource)
-                unprocessed = data;
-            else
-                processed = data;
-            callback(null);
+            callback(null, new stream.Writable({
+                write: (chunk, encoding, callback) => {
+                    if(targetSource)
+                        unprocessed = chunk;
+                    else
+                        processed = chunk;
+                    
+                    callback(null);
+                }
+            }));
         },
         read(targetSource, callback)
         {
-            callback(null, targetSource ? unprocessed : processed);
+            callback(null, new stream.Readable({
+                read: function(size)
+                {
+                    this.push(targetSource ? unprocessed : processed);
+                    this.push(null);
+                }
+            }));
         },
         webName(callback)
         {

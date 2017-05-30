@@ -17,7 +17,7 @@ module.exports = (test, options, index) => test('stat of virtual resources', (is
     const folder = new webdav.VirtualFolder('testFolder');
     server.rootResource.addChild(folder, e => _(e, () => {
         const file = new webdav.VirtualFile('testFile.txt');
-        file.write(content, true, e => _(e, () => {
+        file.write(true, (e, stream) => _(e, () => stream.end(content, (e) => _(e, () => {
             folder.addChild(file, e => _(e, () => {
 
                 var wfs = Client(
@@ -36,6 +36,6 @@ module.exports = (test, options, index) => test('stat of virtual resources', (is
                     isValid(!!e);
                 })
             }));
-        }))
+        }))))
     }));
 })
