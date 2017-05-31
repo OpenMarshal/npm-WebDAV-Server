@@ -98,51 +98,6 @@ export abstract class StandardResource implements IResource
         this.lockBag.removeLock(uuid);
         this.updateLastModified();
         callback(null, true);
-        /*
-        this.getChildren((e, children) => {
-            if(e)
-            {
-                callback(e, false);
-                return;
-            }
-
-            let nb = children.length + 1;
-            children.forEach((child) => {
-                child.canRemoveLock(uuid, go);
-            });
-            go(null, true);
-
-            function go(e, can)
-            {
-                if(e)
-                {
-                    nb = -1;
-                    callback(e, false);
-                    return;
-                }
-                if(!can)
-                {
-                    nb = -1;
-                    callback(null, false);
-                    return;
-                }
-                --nb;
-                if(nb === 0)
-                {
-                    this.lockBag.removeLock(uuid);
-                    this.updateLastModified();
-                    callback(null, true);
-                }
-            }
-        })*/
-    }
-    canRemoveLock(uuid : string, callback : ReturnCallback<boolean>)
-    {
-        callback(null, this.lockBag.canRemoveLock(uuid));
-    }
-    canLock(lockKind : LockKind, callback : ReturnCallback<boolean>)
-    {
-        callback(null, this.lockBag.canLock(lockKind));
     }
     getLock(uuid : string, callback : ReturnCallback<Lock>)
     {

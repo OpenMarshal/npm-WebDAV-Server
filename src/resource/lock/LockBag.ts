@@ -42,11 +42,6 @@ export class LockBag
     {
         this.locks = this.locks.filter((l) => this.notExpired(l) && l.uuid !== uuid);
     }
-    canRemoveLock(uuid : string) : boolean
-    {
-        this.cleanLocks();
-        return this.locks.some((l) => l.uuid === uuid);
-    }
 
     canLock(lockKind : LockKind) : boolean
     {

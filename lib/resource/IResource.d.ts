@@ -36,9 +36,7 @@ export interface IResource {
     getLocks(callback: ReturnCallback<Lock[]>): any;
     setLock(lock: Lock, callback: SimpleCallback): any;
     removeLock(uuid: string, callback: ReturnCallback<boolean>): any;
-    canLock(lockKind: LockKind, callback: ReturnCallback<boolean>): any;
     getAvailableLocks(callback: ReturnCallback<LockKind[]>): any;
-    canRemoveLock(uuid: string, callback: ReturnCallback<boolean>): any;
     getLock(uuid: string, callback: ReturnCallback<Lock>): any;
     addChild(resource: IResource, callback: SimpleCallback): any;
     removeChild(resource: IResource, callback: SimpleCallback): any;

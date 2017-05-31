@@ -20,8 +20,6 @@ export declare abstract class StandardResource implements IResource {
     getLocks(callback: ReturnCallback<Lock[]>): void;
     setLock(lock: Lock, callback: SimpleCallback): void;
     removeLock(uuid: string, callback: ReturnCallback<boolean>): void;
-    canRemoveLock(uuid: string, callback: ReturnCallback<boolean>): void;
-    canLock(lockKind: LockKind, callback: ReturnCallback<boolean>): void;
     getLock(uuid: string, callback: ReturnCallback<Lock>): void;
     setProperty(name: string, value: ResourcePropertyValue, callback: SimpleCallback): void;
     getProperty(name: string, callback: ReturnCallback<ResourcePropertyValue>): void;
