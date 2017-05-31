@@ -44,7 +44,7 @@ export default function(arg : MethodCallArgs, callback)
                         return;
                     }
 
-                    if(lock.user !== arg.user)
+                    if(lock.userUid !== arg.user.uid)
                     {
                         arg.setCode(HTTPCodes.Forbidden);
                         callback();

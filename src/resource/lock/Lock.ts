@@ -40,15 +40,20 @@ export class Lock
     expirationDate : number
     owner : LockOwner
     uuid : string
-    user : IUser
+    userUid : string
 
-    constructor(lockKind : LockKind, user : IUser, owner : LockOwner)
+    constructor(lockKind : LockKind, user : IUser | string, owner : LockOwner)
     {
         this.expirationDate = Date.now() + lockKind.timeout;
         this.lockKind = lockKind;
         this.owner = owner;
         this.uuid = Lock.generateUUID(this.expirationDate);
-        this.user = user;
+        this.userUid = user.constructor === String ? user as string : (user as IUser).uid;
+    }
+
+    isSame(lock : Lock) : boolean
+    {
+        return this.uuid === lock.uuid && this.userUid === lock.userUid && this.expirationDate === lock.expirationDate && this.lockKind.isSimilar(lock.lockKind);
     }
 
     expired() : boolean

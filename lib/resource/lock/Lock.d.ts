@@ -8,8 +8,9 @@ export declare class Lock {
     expirationDate: number;
     owner: LockOwner;
     uuid: string;
-    user: IUser;
-    constructor(lockKind: LockKind, user: IUser, owner: LockOwner);
+    userUid: string;
+    constructor(lockKind: LockKind, user: IUser | string, owner: LockOwner);
+    isSame(lock: Lock): boolean;
     expired(): boolean;
     refresh(timeout?: number): void;
 }
