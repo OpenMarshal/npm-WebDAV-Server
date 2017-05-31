@@ -1,8 +1,7 @@
-import { VirtualFolder } from '../resource/virtual/VirtualFolder'
-import { VirtualFile } from '../resource/virtual/VirtualFile'
-import { IResource } from '../resource/IResource'
-import { FSManager } from '../manager/FSManager'
-import { XML } from '../helper/XML'
+import { VirtualFolder } from '../virtual/VirtualFolder'
+import { VirtualFile } from '../virtual/VirtualFile'
+import { IResource } from '../IResource'
+import { XML } from '../../helper/XML'
 
 export interface ResourceTesterOptions
 {

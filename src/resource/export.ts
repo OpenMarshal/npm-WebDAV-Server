@@ -13,6 +13,7 @@ export * from './virtual/VirtualFile'
 export * from './std/StandardResource'
 export * from './std/ResourceChildren'
 export * from './std/RootResource'
+export * from './std/ResourceTester'
 export * from './IResource'
 
 // Locks

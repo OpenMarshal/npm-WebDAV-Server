@@ -7,6 +7,7 @@ export * from './virtual/VirtualFile';
 export * from './std/StandardResource';
 export * from './std/ResourceChildren';
 export * from './std/RootResource';
+export * from './std/ResourceTester';
 export * from './IResource';
 export * from './lock/LockScope';
 export * from './lock/LockKind';

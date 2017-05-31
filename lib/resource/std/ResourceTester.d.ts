@@ -1,4 +1,4 @@
-import { IResource } from '../resource/IResource';
+import { IResource } from '../IResource';
 export interface ResourceTesterOptions {
     canHaveVirtualFolderChildren: boolean;
     canHaveVirtualFileChildren: boolean;
