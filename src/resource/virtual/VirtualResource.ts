@@ -32,29 +32,7 @@ export abstract class VirtualResource extends StandardResource
     }
     moveTo(parent : IResource, newName : string, overwrite : boolean, callback : SimpleCallback)
     {
-        if(parent === this.parent)
-        {
-            this.rename(newName, (e, oldName, newName) => {
-                callback(e);
-            })
-            return;
-        }
-
-        const oldName = this.name;
-        this.removeFromParent((e) => {
-            if(e)
-            {
-                this.name = oldName;
-                callback(e);
-            }
-            else
-            {
-                this.name = newName;
-                parent.addChild(this, (e) => {
-                    callback(e);
-                })
-            }
-        })
+        StandardResource.standardMoveTo(this, parent, newName, overwrite, (name) => this.name = name, callback);
     }
     rename(newName : string, callback : Return2Callback<string, string>)
     {

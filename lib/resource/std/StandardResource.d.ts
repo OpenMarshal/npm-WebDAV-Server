@@ -44,4 +44,6 @@ export declare abstract class StandardResource implements IResource {
     abstract getChildren(callback: ReturnCallback<IResource[]>): any;
     protected updateLastModified(): void;
     protected removeFromParent(callback: SimpleCallback): void;
+    static standardRemoveFromParent(resource: IResource, callback: SimpleCallback): void;
+    static standardMoveTo(resource: IResource, parent: IResource, newName: string, overwrite: boolean, setName: (name: string) => void, callback: SimpleCallback): void;
 }
