@@ -41,7 +41,6 @@ export abstract class VirtualResource extends StandardResource
         }
 
         const oldName = this.name;
-        this.name = newName;
         this.removeFromParent((e) => {
             if(e)
             {
@@ -49,9 +48,12 @@ export abstract class VirtualResource extends StandardResource
                 callback(e);
             }
             else
+            {
+                this.name = newName;
                 parent.addChild(this, (e) => {
                     callback(e);
                 })
+            }
         })
     }
     rename(newName : string, callback : Return2Callback<string, string>)
