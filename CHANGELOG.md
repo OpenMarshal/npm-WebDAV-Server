@@ -1,5 +1,41 @@
 # Changelog
 
+## 1.4.0
+
+### New features
+* Implemented a virtual stored resource, able to delegate its content to a content manager *[f3fff2b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/f3fff2b)*
+* Implemented a resource tester to make the resource development easier and more stable *[36414fc](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/36414fc)*
+
+### Changes
+* Now return an error when requesting the size or mime-type of a virtual or physical folder *[12bdd45](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/12bdd45)*
+* Added a UID for the IUser interface *[6c2b0be](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6c2b0be)*
+* Use the UID of the user instead of the reference to compare the users *[6c2b0be](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6c2b0be)*
+* Removed the 'canLock' and 'canRemoveLock' methods from the resources *[3902d35](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3902d35)*
+* Implemented 'stream.Readable' and 'stream.Writable' for the 'write' and 'read' methods of resources instead of using a 'Int8Array' :
+    * *[b88370a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b88370a)*
+    * *[d6b1b3e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d6b1b3e)*
+
+### Documentation
+* Modified the sample in the README file to match the new 'write' method in the resources *[9f1b0f0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/9f1b0f0)*
+
+### Tests
+* Added tests for the virtual stored resources using the resource tester *[cdd56d0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/cdd56d0)*
+* Added ResourceTester tests for the virtual and physical resources *[aea18ee](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/aea18ee)*
+* Adapted the tests to the 'stream.Readable' and the 'stream.Writable' addings *[2d30e39](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2d30e39)*
+* Increased the timeout value for the tests *[4f73875](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/4f73875)*
+* Modified the '*.content = *' into '*.write(...) in the tests *[b81f383](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b81f383)*
+
+### Other
+* Added the ResourceTester class to the resource exports *[92903ff](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/92903ff)*
+* Standardized the 'moveTo' method of resources *[c6868fa](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c6868fa)*
+* Modified the 'moveTo' method of the virtual and physical resources to be more reliable *[44b38fe](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/44b38fe)*
+* Changed from 'dev-watch' to 'tsc' to compile *[9f1f60c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/9f1f60c)*
+* Added 'process.nextTick(...)' for the serialization helper *[cbaa8f6](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/cbaa8f6)*
+
+### Bug fix
+* Fixed content un/serialization for virtual files *[0a41414](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0a41414)*
+* Fixed XML error with the 'parse' function *[d96ea6d](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d96ea6d)*
+
 ## 1.3.2
 
 ### New features
