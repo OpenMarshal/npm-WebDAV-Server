@@ -1,6 +1,5 @@
 import { IResource, ResourceType } from '../resource/IResource'
 import { SerializedObject } from './ISerializer'
-import { VirtualResource } from '../resource/virtual/VirtualResource'
 import { VirtualFolder } from '../resource/virtual/VirtualFolder'
 import { VirtualFile } from '../resource/virtual/VirtualFile'
 import { FSManager } from './FSManager'

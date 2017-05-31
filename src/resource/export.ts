@@ -9,6 +9,11 @@ export * from './virtual/VirtualResource'
 export * from './virtual/VirtualFolder'
 export * from './virtual/VirtualFile'
 
+// Virtual stored resources
+export * from './virtualStored/VirtualStoredResource'
+export * from './virtualStored/VirtualStoredFolder'
+export * from './virtualStored/VirtualStoredFile'
+
 // Standard classes
 export * from './std/StandardResource'
 export * from './std/ResourceChildren'
