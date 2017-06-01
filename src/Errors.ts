@@ -1,7 +1,7 @@
 
 export class ManagerNotFound extends Error
 {
-    constructor(managerUID : string)
+    constructor(public managerUID : string)
     {
         super('Cannot find the manager : ' + managerUID);
     }

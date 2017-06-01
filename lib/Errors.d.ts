@@ -1,4 +1,5 @@
 export declare class ManagerNotFound extends Error {
+    managerUID: string;
     constructor(managerUID: string);
 }
 export declare class HTTPError extends Error {
