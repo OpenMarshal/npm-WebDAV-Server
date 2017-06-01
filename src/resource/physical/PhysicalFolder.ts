@@ -92,11 +92,11 @@ export class PhysicalFolder extends PhysicalResource
     }
     mimeType(targetSource : boolean, callback : ReturnCallback<string>)
     {
-        callback(new Error('Cannot get the mime type of a folder type resource'), null);
+        callback(Errors.NoMimeTypeForAFolder, null);
     }
     size(targetSource : boolean, callback : ReturnCallback<number>)
     {
-        callback(new Error('Cannot get the size of a folder type resource'), null);
+        callback(Errors.NoSizeForAFolder, null);
     }
     
     // ****************************** Children ****************************** //

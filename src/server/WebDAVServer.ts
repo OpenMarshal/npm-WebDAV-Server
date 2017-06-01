@@ -243,7 +243,7 @@ export class WebDAVServer
                 if(callback instanceof Function)
                     _callback = callback;
                 else
-                    throw new Error('Illegal arguments');
+                    throw Errors.IllegalArguments;
             }
         }
         else if(port && port.constructor === Function)
@@ -251,7 +251,7 @@ export class WebDAVServer
             _port = this.options.port;
             _callback = port as WebDAVServerStartCallback;
             if(callback)
-                throw new Error('Illegal arguments');
+                throw Errors.IllegalArguments;
         }
 
         if(!this.server)

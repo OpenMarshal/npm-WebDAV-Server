@@ -22,6 +22,9 @@ export declare const Errors: {
     UserNotFound: Error;
     XMLNotFound: Error;
     ExpectedAFileResourceType: Error;
+    NoMimeTypeForAFolder: Error;
+    NoSizeForAFolder: Error;
+    IllegalArguments: Error;
     None: any;
 };
 export default Errors;

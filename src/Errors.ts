@@ -31,6 +31,9 @@ export const Errors = {
     UserNotFound: new Error('User not found'),
     XMLNotFound: new Error('Can\'t find the XML element.'),
     ExpectedAFileResourceType: new Error('Expected a file resource type.'),
+    NoMimeTypeForAFolder: new Error('Cannot get the mime type of a folder type resource'),
+    NoSizeForAFolder: new Error('Cannot get the size of a folder type resource'),
+    IllegalArguments: new Error('Illegal arguments'),
 
     None: null
 };
