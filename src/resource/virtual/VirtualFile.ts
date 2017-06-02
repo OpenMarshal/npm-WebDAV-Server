@@ -70,7 +70,7 @@ export class VirtualFile extends VirtualResource
     // ****************************** Content ****************************** //
     write(targetSource : boolean, callback : ReturnCallback<Writable>)
     {
-        let content = [];
+        const content = [];
         const stream = new VirtualFileWritable(content);
         stream.on('finish', () => {
             this.content = content;

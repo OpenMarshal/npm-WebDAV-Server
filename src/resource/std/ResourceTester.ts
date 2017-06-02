@@ -147,7 +147,7 @@ export class ResourceTester<T extends IResource>
         test('rename');
         test('writeRead');
         test('mimeType');
-        test('size');/*
+        test('size'); /*
         test('getLocks');
         test('setLock');
         test('removeLock');

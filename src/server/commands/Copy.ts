@@ -53,7 +53,7 @@ function copy(arg : MethodCallArgs, source : IResource, rDest : IResource, desti
         if(error)
             process.nextTick(() => callback(error));
         else
-            process.nextTick(() => cb());
+            process.nextTick(cb);
     }
 
     arg.requirePrivilege([ 'canGetType', 'canRead', 'canGetChildren', 'canGetProperties' ], source, () => {

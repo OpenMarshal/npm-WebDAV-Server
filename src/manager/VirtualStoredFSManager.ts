@@ -54,7 +54,7 @@ export abstract class VirtualStoredContentManager implements IVirtualStoredConte
 export class SimpleVirtualStoredContentManager extends VirtualStoredContentManager
 {
     initialized : boolean = false;
-    uid : string = "SimpleVirtualStoredContentManager_1.3.3";
+    uid : string = 'SimpleVirtualStoredContentManager_1.3.3';
     cid : number = 0;
 
     constructor(public storeFolderPath : string)
