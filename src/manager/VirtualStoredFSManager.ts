@@ -56,8 +56,8 @@ export abstract class VirtualStoredContentManager implements IVirtualStoredConte
 
 export interface IVirtualStoredContentManagerMiddleware
 {
-    readStream(stream : Readable, callback : (stream : Readable) => void);
-    writeStream(stream : Writable, callback : (stream : Writable) => void);
+    readStream(uid : string, stream : Readable, callback : (stream : Readable) => void);
+    writeStream(uid : string, stream : Writable, callback : (stream : Writable) => void);
 }
 
 export class SimpleVirtualStoredContentManager extends VirtualStoredContentManager
@@ -109,7 +109,7 @@ export class SimpleVirtualStoredContentManager extends VirtualStoredContentManag
                 if(!this.middleware)
                     callback(null, stream);
                 else
-                    this.middleware.readStream(stream, (s) => callback(null, s));
+                    this.middleware.readStream(contentUid, stream, (s) => callback(null, s));
             }
         })
     }
@@ -127,7 +127,7 @@ export class SimpleVirtualStoredContentManager extends VirtualStoredContentManag
                 if(!this.middleware)
                     callback(null, stream);
                 else
-                    this.middleware.writeStream(stream, (s) => callback(null, s));
+                    this.middleware.writeStream(contentUid, stream, (s) => callback(null, s));
             }
         })
     }

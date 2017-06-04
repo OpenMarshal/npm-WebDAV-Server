@@ -23,8 +23,8 @@ export declare abstract class VirtualStoredContentManager implements IVirtualSto
     allocate(options: any, callback: ReturnCallback<string>): any;
 }
 export interface IVirtualStoredContentManagerMiddleware {
-    readStream(stream: Readable, callback: (stream: Readable) => void): any;
-    writeStream(stream: Writable, callback: (stream: Writable) => void): any;
+    readStream(uid: string, stream: Readable, callback: (stream: Readable) => void): any;
+    writeStream(uid: string, stream: Writable, callback: (stream: Writable) => void): any;
 }
 export declare class SimpleVirtualStoredContentManager extends VirtualStoredContentManager {
     storeFolderPath: string;
