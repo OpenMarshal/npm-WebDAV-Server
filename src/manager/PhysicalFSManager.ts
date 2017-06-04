@@ -20,7 +20,6 @@ export class PhysicalFSManager implements FSManager
             realPath: resource.realPath,
             dateCreation: resource.dateCreation,
             dateLastModified: resource.dateLastModified,
-            locks: resource.lockBag.locks,
             properties: resource.properties
         };
     }
@@ -34,7 +33,6 @@ export class PhysicalFSManager implements FSManager
         
         rs.dateCreation = data.dateCreation;
         rs.dateLastModified = data.dateLastModified;
-        rs.lockBag.locks = data.locks;
         rs.properties = data.properties;
 
         return rs;

@@ -152,7 +152,6 @@ export class VirtualStoredFSManager implements FSManager
         const result : any = {
             dateCreation: resource.dateCreation,
             dateLastModified: resource.dateLastModified,
-            locks: resource.lockBag.locks,
             properties: resource.properties
         };
 
@@ -171,7 +170,6 @@ export class VirtualStoredFSManager implements FSManager
             const rs = new VirtualStoredFolder(data.name, null, this);
             rs.dateCreation = data.dateCreation;
             rs.dateLastModified = data.dateLastModified;
-            rs.lockBag.locks = data.locks;
             rs.properties = data.properties;
             return rs;
         }
@@ -183,7 +181,6 @@ export class VirtualStoredFSManager implements FSManager
             rs.contentUid = data.contentUid;
             rs.dateCreation = data.dateCreation;
             rs.dateLastModified = data.dateLastModified;
-            rs.lockBag.locks = data.locks;
             rs.properties = data.properties;
             return rs;
         }
