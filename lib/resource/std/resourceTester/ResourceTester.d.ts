@@ -1,11 +1,11 @@
-import { IResource } from '../IResource';
-import { ResourceTesterOptions, ResourceTesterProducer, ResourceTesterTestCallback } from './resourceTester/Types';
-import * as actions from './resourceTester/Actions';
-import * as children from './resourceTester/Children';
-import * as content from './resourceTester/Content';
-import * as locks from './resourceTester/Locks';
-import * as properties from './resourceTester/Properties';
-import * as stdMetaData from './resourceTester/StdMetaData';
+import { ResourceTesterOptions, ResourceTesterProducer, ResourceTesterTestCallback } from './Types';
+import { IResource } from '../../IResource';
+import * as actions from './Actions';
+import * as children from './Children';
+import * as content from './Content';
+import * as locks from './Locks';
+import * as properties from './Properties';
+import * as stdMetaData from './StdMetaData';
 export declare class ResourceTester<T extends IResource> {
     options: ResourceTesterOptions;
     producer: ResourceTesterProducer<T>;

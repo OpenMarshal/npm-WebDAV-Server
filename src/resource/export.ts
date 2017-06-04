@@ -18,7 +18,7 @@ export * from './virtualStored/VirtualStoredFile'
 export * from './std/StandardResource'
 export * from './std/ResourceChildren'
 export * from './std/RootResource'
-export * from './std/ResourceTester'
+export * from './std/resourceTester/ResourceTester'
 export * from './IResource'
 
 // Locks
