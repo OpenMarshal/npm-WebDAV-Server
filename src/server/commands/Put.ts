@@ -1,4 +1,4 @@
-import { HTTPCodes, MethodCallArgs, WebDAVRequest, StartChunkedCallback } from '../WebDAVRequest'
+import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
 import { IResource, ResourceType } from '../../resource/IResource'
 import { Errors, HTTPError } from '../../Errors'
 import * as path from 'path'
@@ -145,38 +145,16 @@ export default function unchunkedMethod(arg : MethodCallArgs, callback)
         })
     })
 }
-/*
-function asyncWrite(arg : MethodCallArgs, callback : StartChunkedCallback, resource : IResource, targetSource : boolean)
-{
-    function errorCallback(isLast : boolean)
-    {
-        return (error : Error) => {
-            if(error)
-                callback(new HTTPError(HTTPCodes.InternalServerError, error), null)
-            else if(isLast)
-            {
-                arg.setCode(HTTPCodes.OK);
-                arg.exit();
-            }
-        }
-    }
 
-    callback(null, (data, isFirst, isLast) => {
-        if(isFirst)
-            resource.write(data, targetSource, errorCallback(isLast))
-        else
-            resource.append(data, targetSource, errorCallback(isLast))
-    })
-}
-
-(unchunkedMethod as WebDAVRequest).startChunked = function(arg : MethodCallArgs, callback : StartChunkedCallback)
+(unchunkedMethod as WebDAVRequest).chunked = function(arg : MethodCallArgs, callback)
 {
     const targetSource = arg.findHeader('source', 'F').toUpperCase() === 'T';
 
     arg.getResource((e, r) => {
         if(e && e !== Errors.ResourceNotFound)
         {
-            callback(new HTTPError(HTTPCodes.InternalServerError, e), null);
+            arg.setCode(HTTPCodes.InternalServerError);
+            callback();
             return;
         }
 
@@ -186,14 +164,23 @@ function asyncWrite(arg : MethodCallArgs, callback : StartChunkedCallback, resou
                 if(r)
                 { // Resource exists => empty it
                     arg.requirePrivilege(targetSource ? [ 'canSource', 'canWrite' ] : [ 'canWrite' ], r, () => {
-                        asyncWrite(arg, callback, r, targetSource);
+                        r.write(targetSource, (e, stream) => process.nextTick(() => {
+                            if(stream)
+                                stream.end();
+
+                            if(e)
+                                arg.setCode(HTTPCodes.InternalServerError)
+                            else
+                                arg.setCode(HTTPCodes.OK)
+                            callback()
+                        }))
                     })
                     return;
                 }
                 
                 createResource(arg, callback, (r) => {
                     arg.setCode(HTTPCodes.OK)
-                    callback(null, null);
+                    callback();
                 })
             }
             else
@@ -201,7 +188,24 @@ function asyncWrite(arg : MethodCallArgs, callback : StartChunkedCallback, resou
                 if(e)
                 { // Resource not found
                     createResource(arg, callback, (r) => {
-                        asyncWrite(arg, callback, r, targetSource);
+                        r.write(targetSource, (e, stream) => process.nextTick(() => {
+                            if(e)
+                            {
+                                arg.setCode(HTTPCodes.InternalServerError);
+                                callback();
+                                return;
+                            }
+
+                            arg.request.pipe(stream);
+                            stream.on('finish', (e) => {
+                                arg.setCode(HTTPCodes.OK)
+                                callback();
+                            });
+                            stream.on('error', (e) => {
+                                arg.setCode(HTTPCodes.InternalServerError)
+                                callback();
+                            });
+                        }))
                     })
                     return;
                 }
@@ -210,20 +214,38 @@ function asyncWrite(arg : MethodCallArgs, callback : StartChunkedCallback, resou
                     r.type((e, type) => process.nextTick(() => {
                         if(e)
                         {
-                            callback(new HTTPError(HTTPCodes.InternalServerError, e), null);
+                            arg.setCode(HTTPCodes.InternalServerError);
+                            callback();
                             return;
                         }
                         if(!type.isFile)
                         {
-                            callback(new HTTPError(HTTPCodes.MethodNotAllowed, Errors.ExpectedAFileResourceType), null);
+                            arg.setCode(HTTPCodes.MethodNotAllowed);
+                            callback();
                             return;
                         }
 
-                        asyncWrite(arg, callback, r, targetSource);
+                        r.write(targetSource, (e, stream) => process.nextTick(() => {
+                            if(e)
+                            {
+                                arg.setCode(HTTPCodes.InternalServerError);
+                                callback();
+                                return;
+                            }
+
+                            arg.request.pipe(stream);
+                            stream.on('finish', (e) => {
+                                arg.setCode(HTTPCodes.OK)
+                                callback();
+                            });
+                            stream.on('error', (e) => {
+                                arg.setCode(HTTPCodes.InternalServerError)
+                                callback();
+                            });
+                        }))
                     }))
                 })
             }
         })
     })
 }
-*/

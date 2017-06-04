@@ -1,7 +1,7 @@
 /// <reference types="node" />
-import { WebDAVRequest } from '../WebDAVRequest';
 import { WebDAVServerOptions } from '../WebDAVServerOptions';
 import { ResourceTreeNode, WebDAVServerStartCallback } from './Types';
+import { WebDAVRequest } from '../WebDAVRequest';
 import { IResource, ReturnCallback } from '../../resource/IResource';
 import { HTTPAuthentication } from '../../user/authentication/HTTPAuthentication';
 import { IPrivilegeManager } from '../../user/privilege/IPrivilegeManager';

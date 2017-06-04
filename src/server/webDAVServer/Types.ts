@@ -1,6 +1,6 @@
-import { HTTPCodes, MethodCallArgs, WebDAVRequest, ChunkOnDataCallback } from '../WebDAVRequest'
 import { WebDAVServerOptions, setDefaultServerOptions } from '../WebDAVServerOptions'
 import { SerializedObject, unserialize, serialize } from '../../manager/ISerializer'
+import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
 import { IResource, ReturnCallback } from '../../resource/IResource'
 import { FakePrivilegeManager } from '../../user/privilege/FakePrivilegeManager'
 import { HTTPAuthentication } from '../../user/authentication/HTTPAuthentication'

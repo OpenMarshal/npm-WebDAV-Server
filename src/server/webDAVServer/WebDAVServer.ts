@@ -1,6 +1,6 @@
-import { HTTPCodes, MethodCallArgs, WebDAVRequest, ChunkOnDataCallback } from '../WebDAVRequest'
 import { WebDAVServerOptions, setDefaultServerOptions } from '../WebDAVServerOptions'
 import { ResourceTreeNode, WebDAVServerStartCallback } from './Types'
+import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
 import { IResource, ReturnCallback } from '../../resource/IResource'
 import { HTTPAuthentication } from '../../user/authentication/HTTPAuthentication'
 import { IPrivilegeManager } from '../../user/privilege/IPrivilegeManager'

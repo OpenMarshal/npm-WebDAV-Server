@@ -1,4 +1,4 @@
-import { HTTPCodes, MethodCallArgs, WebDAVRequest, ChunkOnDataCallback } from '../WebDAVRequest'
+import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
 import { WebDAVServerStartCallback } from './Types'
 import { Errors, HTTPError } from '../../Errors'
 import * as http from 'http'
@@ -52,7 +52,7 @@ export function start(port ?: number | WebDAVServerStartCallback, callback ?: We
                     this.invokeAfterRequest(base, null);
                 };
 
-                if(!this.options.canChunk || !method.startChunked || base.contentLength <= 0)
+                if(!this.options.canChunk || !method.chunked || base.contentLength <= 0)
                 {
                     const go = () =>
                     {
@@ -88,31 +88,7 @@ export function start(port ?: number | WebDAVServerStartCallback, callback ?: We
                 else
                 {
                     this.invokeBeforeRequest(base, () => {
-                        this.invokeBeforeRequest(base, () => {
-                            method.startChunked(base, (error : HTTPError, onData : ChunkOnDataCallback) => {
-                                if(error)
-                                {
-                                    base.setCode(error.HTTPCode);
-                                    base.exit();
-                                    return;
-                                }
-
-                                if(!onData)
-                                {
-                                    base.exit();
-                                    return;
-                                }
-                                
-                                let size = 0;
-                                req.on('data', (chunk) => {
-                                    if(chunk.constructor === String)
-                                        chunk = new Buffer(chunk as string);
-                                    size += chunk.length;
-                                    
-                                    onData(chunk as Buffer, size === chunk.length, size >= base.contentLength);
-                                });
-                            });
-                        })
+                        method.chunked(base, base.exit);
                     })
                 }
             })
