@@ -116,10 +116,7 @@ export class SimpleVirtualStoredContentManager extends VirtualStoredContentManag
         const callback = (_1, _2) => process.nextTick(() => _callback(_1, _2));
 
         if(!this.initialized)
-        {
-            callback(new Error('SimpleVirtualStoredContentManager not initialized'), null);
-            return;
-        }
+            throw new Error('SimpleVirtualStoredContentManager not initialized');
         
         const uid = (++this.cid).toString(16);
 
