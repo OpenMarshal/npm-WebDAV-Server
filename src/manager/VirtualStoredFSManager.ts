@@ -159,6 +159,8 @@ export class VirtualStoredFSManager implements FSManager
         result.name = resource.name;
         if(resource.len)
             result.len = resource.len;
+        if(resource.contentUid)
+            result.contentUid = resource.contentUid;
 
         return result;
     }
@@ -177,8 +179,8 @@ export class VirtualStoredFSManager implements FSManager
         if(obj.type.isFile)
         {
             const rs = new VirtualStoredFile(data.name, null, this);
-            if(data.len)
-                rs.len = data.len;
+            rs.len = data.len;
+            rs.contentUid = data.contentUid;
             rs.dateCreation = data.dateCreation;
             rs.dateLastModified = data.dateLastModified;
             rs.lockBag.locks = data.locks;
