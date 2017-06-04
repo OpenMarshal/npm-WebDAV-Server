@@ -51,13 +51,19 @@ export abstract class VirtualStoredContentManager implements IVirtualStoredConte
     }
 }
 
+export interface IVirtualStoredContentManagerMiddleware
+{
+    readStream(stream : Readable, callback : (stream : Readable) => void);
+    writeStream(stream : Writable, callback : (stream : Writable) => void);
+}
+
 export class SimpleVirtualStoredContentManager extends VirtualStoredContentManager
 {
     initialized : boolean = false;
     uid : string = 'SimpleVirtualStoredContentManager_1.3.3';
     cid : number = 0;
 
-    constructor(public storeFolderPath : string)
+    constructor(public storeFolderPath : string, public middleware ?: IVirtualStoredContentManagerMiddleware)
     {
         super();
     }
@@ -95,7 +101,13 @@ export class SimpleVirtualStoredContentManager extends VirtualStoredContentManag
             if(e)
                 callback(e, null);
             else
-                callback(null, fs.createReadStream(null, { fd }));
+            {
+                const stream = fs.createReadStream(null, { fd });
+                if(!this.middleware)
+                    callback(null, stream);
+                else
+                    this.middleware.readStream(stream, (s) => callback(null, s));
+            }
         })
     }
 
@@ -107,7 +119,13 @@ export class SimpleVirtualStoredContentManager extends VirtualStoredContentManag
             if(e)
                 callback(e, null);
             else
-                callback(null, fs.createWriteStream(null, { fd }));
+            {
+                const stream = fs.createWriteStream(null, { fd });
+                if(!this.middleware)
+                    callback(null, stream);
+                else
+                    this.middleware.writeStream(stream, (s) => callback(null, s));
+            }
         })
     }
 
