@@ -1,5 +1,5 @@
 import { IResource, SimpleCallback, ReturnCallback, ResourceType } from '../IResource'
-import { Readable, Writable } from 'stream'
+import { Readable, Writable, Transform } from 'stream'
 import { VirtualStoredResource } from './VirtualStoredResource'
 import { FSManager } from '../../manager/FSManager'
 import { VirtualStoredFSManager } from '../../manager/VirtualStoredFSManager'
@@ -55,10 +55,12 @@ export class VirtualStoredFile extends VirtualStoredResource
 
             let size = 0;
 
-            const wr = new Writable({
-                write: (chunk, encoding, cb) => {
+            const wr = new Transform({
+                transform(chunk, encoding, cb)
+                {
                     size += chunk.length;
-                    return w.write(chunk, encoding, cb);
+                    this.push(chunk);
+                    cb();
                 }
             });
             wr.on('finish', () => {
@@ -66,13 +68,7 @@ export class VirtualStoredFile extends VirtualStoredResource
                 this.len = size;
             })
 
-            function emit(name : string)
-            {
-                wr.on(name, (_1, _2) => w.emit(name, _1, _2));
-            }
-            emit('close');
-            emit('error');
-            emit('finish');
+            wr.pipe(w);
 
             callback(null, wr);
         });
