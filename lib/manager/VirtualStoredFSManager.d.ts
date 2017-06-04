@@ -1,13 +1,14 @@
 /// <reference types="node" />
-import { IResource, ResourceType, ReturnCallback } from '../resource/IResource';
+import { IResource, ResourceType, ReturnCallback, SimpleCallback } from '../resource/IResource';
+import { Readable, Writable } from 'stream';
 import { SerializedObject } from './ISerializer';
 import { FSManager } from './FSManager';
-import { Readable, Writable } from 'stream';
 export interface IVirtualStoredContentManager {
     uid: string;
     initialize(callback: (error: Error) => void): any;
     read(contentUid: string, callback: ReturnCallback<Readable>): any;
     write(contentUid: string, callback: ReturnCallback<Writable>): any;
+    deallocate(contentId: string, callback: SimpleCallback): any;
     allocate(callback: ReturnCallback<string>): any;
     allocate(options: any, callback: ReturnCallback<string>): any;
 }
@@ -17,6 +18,7 @@ export declare abstract class VirtualStoredContentManager implements IVirtualSto
     abstract read(contentUid: string, callback: ReturnCallback<Readable>): any;
     abstract write(contentUid: string, callback: ReturnCallback<Writable>): any;
     protected abstract _allocate(options: any, callback: ReturnCallback<string>): any;
+    abstract deallocate(contentId: string, callback: SimpleCallback): any;
     allocate(callback: ReturnCallback<string>): any;
     allocate(options: any, callback: ReturnCallback<string>): any;
 }
@@ -34,6 +36,7 @@ export declare class SimpleVirtualStoredContentManager extends VirtualStoredCont
     initialize(callback: (error: Error) => void): void;
     read(contentUid: string, _callback: ReturnCallback<Readable>): void;
     write(contentUid: string, _callback: ReturnCallback<Writable>): void;
+    deallocate(uid: string, callback: SimpleCallback): void;
     protected _allocate(options: any, _callback: ReturnCallback<string>): void;
 }
 export declare class VirtualStoredFSManager implements FSManager {

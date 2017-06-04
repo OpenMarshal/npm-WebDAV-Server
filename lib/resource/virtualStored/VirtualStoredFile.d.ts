@@ -8,6 +8,7 @@ export declare class VirtualStoredFile extends VirtualStoredResource {
     len: number;
     constructor(name: string, parent?: IResource, fsManager?: FSManager);
     create(callback: SimpleCallback): void;
+    delete(callback: SimpleCallback): void;
     type(callback: ReturnCallback<ResourceType>): void;
     write(targetSource: boolean, callback: ReturnCallback<Writable>): void;
     read(targetSource: boolean, callback: ReturnCallback<Readable>): void;

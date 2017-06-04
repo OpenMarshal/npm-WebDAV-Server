@@ -32,6 +32,10 @@ export class VirtualStoredFile extends VirtualStoredResource
             callback(e);
         })
     }
+    delete(callback : SimpleCallback)
+    {
+        (this.fsManager as VirtualStoredFSManager).contentManager.deallocate(this.contentUid, callback);
+    }
 
     // ****************************** Std meta-data ****************************** //
     type(callback : ReturnCallback<ResourceType>)

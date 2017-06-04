@@ -1,10 +1,10 @@
-import { IResource, ResourceType, ReturnCallback } from '../resource/IResource'
-import { SerializedObject } from './ISerializer'
+import { IResource, ResourceType, ReturnCallback, SimpleCallback } from '../resource/IResource'
 import { VirtualStoredFolder } from '../resource/virtualStored/VirtualStoredFolder'
+import { Readable, Writable } from 'stream'
 import { VirtualStoredFile } from '../resource/virtualStored/VirtualStoredFile'
+import { SerializedObject } from './ISerializer'
 import { FSManager } from './FSManager'
 import { Errors } from '../Errors'
-import { Readable, Writable } from 'stream'
 import * as path from 'path'
 import * as fs from 'fs'
 
@@ -17,6 +17,8 @@ export interface IVirtualStoredContentManager
     read(contentUid : string, callback : ReturnCallback<Readable>)
     write(contentUid : string, callback : ReturnCallback<Writable>)
 
+    deallocate(contentId : string, callback : SimpleCallback);
+
     allocate(callback : ReturnCallback<string>);
     allocate(options : any, callback : ReturnCallback<string>)
 }
@@ -28,6 +30,7 @@ export abstract class VirtualStoredContentManager implements IVirtualStoredConte
     abstract read(contentUid : string, callback : ReturnCallback<Readable>)
     abstract write(contentUid : string, callback : ReturnCallback<Writable>)
     protected abstract _allocate(options : any, callback : ReturnCallback<string>)
+    abstract deallocate(contentId : string, callback : SimpleCallback);
 
     allocate(callback : ReturnCallback<string>);
     allocate(options : any, callback : ReturnCallback<string>)
@@ -127,6 +130,11 @@ export class SimpleVirtualStoredContentManager extends VirtualStoredContentManag
                     this.middleware.writeStream(stream, (s) => callback(null, s));
             }
         })
+    }
+    
+    deallocate(uid : string, callback : SimpleCallback)
+    {
+        fs.unlink(path.join(this.storeFolderPath, uid), callback);
     }
 
     protected _allocate(options : any, _callback : ReturnCallback<string>)
