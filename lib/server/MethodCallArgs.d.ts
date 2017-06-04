@@ -2,7 +2,7 @@
 import { BasicPrivilege } from '../user/privilege/IPrivilegeManager';
 import { IResource, ReturnCallback } from '../resource/IResource';
 import { XMLElement } from '../helper/XML';
-import { WebDAVServer } from '../server/WebDAVServer';
+import { WebDAVServer } from './webDAVServer/WebDAVServer';
 import { FSPath } from '../manager/FSManager';
 import { IUser } from '../user/IUser';
 import * as http from 'http';
