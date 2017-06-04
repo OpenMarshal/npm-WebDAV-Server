@@ -65,6 +65,15 @@ export class VirtualStoredFile extends VirtualStoredResource
                 this.updateLastModified();
                 this.len = size;
             })
+
+            function emit(name : string)
+            {
+                wr.on(name, (_1, _2) => w.emit(name, _1, _2));
+            }
+            emit('close');
+            emit('error');
+            emit('finish');
+
             callback(null, wr);
         });
     }
