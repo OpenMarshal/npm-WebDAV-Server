@@ -103,7 +103,7 @@ module.exports = (test, options, index) => test('lock', (isValid, server) =>
             },
             body: '<?xml version="1.0" encoding="utf-8" ?><D:lockinfo xmlns:D="DAV:"><D:lockscope><D:exclusive/></D:lockscope><D:locktype><D:write/></D:locktype><D:owner><D:href>'+url+'/user</D:href></D:owner></D:lockinfo>'
         }, (e, res, body) => _(e, () => {
-            const lock = body.substr(body.indexOf('<D:locktoken><D:href>') + '<D:locktoken><D:href>'.length, 'urn:uuid:24fa520c-520c-14fa-00d6-0000d546f655'.length);
+            const lock = body.substring(body.indexOf('<D:locktoken><D:href>') + '<D:locktoken><D:href>'.length, body.indexOf('</D:href>', body.indexOf('<D:locktoken><D:href>')));
             
             request({
                 url: url + '/test4.txt',
