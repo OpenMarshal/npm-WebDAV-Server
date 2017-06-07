@@ -13,6 +13,9 @@ export class Lock
 
         function pad(value : number, nb : number)
         {
+            if(value < 0)
+                value *= -1;
+            
             let str = Math.ceil(value).toString(16);
             while(str.length < nb)
                 str = '0' + str;
