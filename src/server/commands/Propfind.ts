@@ -6,8 +6,22 @@ import { Lock } from '../../resource/lock/Lock'
 import { XML } from '../../helper/XML'
 import * as http from 'http'
 
-function lockDiscovery(arg : MethodCallArgs, path : FSPath, resource : IResource, callback : ReturnCallback<any>)
+function lockDiscovery(lockDiscoveryCache : any, arg : MethodCallArgs, path : FSPath, resource : IResource, callback : ReturnCallback<any>)
 {
+    const cached = lockDiscoveryCache[path.toString()];
+    if(cached)
+    {
+        callback(null, cached);
+        return;
+    }
+
+    const _Callback = callback;
+    callback = (e, l) => {
+        if(!e)
+            lockDiscoveryCache[path.toString()] = l;
+        _Callback(e, l);
+    }
+
     arg.requireErPrivilege('canListLocks', resource, (e, can) => {
         if(e || !can)
         {
@@ -19,7 +33,7 @@ function lockDiscovery(arg : MethodCallArgs, path : FSPath, resource : IResource
             if(resource.parent)
             {
                 const parentPath = path.getParent();
-                lockDiscovery(arg, parentPath, resource.parent, (e, l) => {
+                lockDiscovery(lockDiscoveryCache, arg, parentPath, resource.parent, (e, l) => {
                     if(e)
                         callback(e, null);
                     else
@@ -46,6 +60,8 @@ export default function(arg : MethodCallArgs, callback)
             callback();
             return;
         }
+
+        const lockDiscoveryCache = {};
 
         arg.checkIfHeader(resource, () => {
             const targetSource = arg.findHeader('source', 'F').toUpperCase() === 'T';
@@ -144,7 +160,7 @@ export default function(arg : MethodCallArgs, callback)
                         {
                             response.ele('D:href').add(arg.fullUri(path).replace(' ', '%20'));
                             const lockdiscovery = prop.ele('D:lockdiscovery');
-                            lockDiscovery(arg, new FSPath(path), resource, (e, l) => {
+                            lockDiscovery(lockDiscoveryCache, arg, new FSPath(path), resource, (e, l) => {
                                 if(e)
                                 {
                                     nbOut(e);
