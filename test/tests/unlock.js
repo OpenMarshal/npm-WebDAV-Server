@@ -37,7 +37,7 @@ module.exports = (test, options, index) => test('unlock', (isValid, server) =>
                 }
 
                 const lock = body.substring(body.indexOf('<D:locktoken><D:href>') + '<D:locktoken><D:href>'.length, body.indexOf('</D:href>', body.indexOf('<D:locktoken><D:href>')));
-                console.log(lock);
+                
                 request({
                     url: url + '/test.txt',
                     method: 'UNLOCK',
