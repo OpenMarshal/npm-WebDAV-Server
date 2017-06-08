@@ -254,7 +254,7 @@ export default function(arg : MethodCallArgs, callback)
                             }))
                             resource.size(targetSource, (e, size) => process.nextTick(() => {
                                 if(!e)
-                                    prop.ele('D:getcontentlength').add(size)
+                                    prop.ele('D:getcontentlength').add(size === undefined || size === null || size.constructor !== Number ? 0 : size)
                                 nbOut(e);
                             }))
                         }
