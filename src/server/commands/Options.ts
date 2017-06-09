@@ -10,7 +10,6 @@ export default function(arg : MethodCallArgs, callback)
         
         arg.setCode(HTTPCodes.OK);
         arg.response.setHeader('Allow', methods);
-        arg.response.setHeader('DAV', '1,2');
         callback();
     })
 }
