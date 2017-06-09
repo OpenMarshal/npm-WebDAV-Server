@@ -26,6 +26,9 @@ function seekForNS(node : any, parentNS : any) : any
 
 function mutateNodeNS(node : any, parentNS = { _default: 'DAV:' })
 {
+    if(!node)
+        return;
+    
     const nss = seekForNS(node, parentNS);
 
     if(node.name)
@@ -48,14 +51,14 @@ function mutateNodeNS(node : any, parentNS = { _default: 'DAV:' })
     node.findIndex = function(name : string) : number
     {
         for(let index = 0; index < node.elements.length; ++index)
-            if(node.elements[index].name && node.elements[index].name === name)
+            if(node.elements[index] && node.elements[index].name && node.elements[index].name === name)
                 return index;
         return -1;
     }
     node.find = function(name : string) : XMLElement
     {
         for(const element of node.elements)
-            if(element.name && element.name === name)
+            if(element && element.name && element.name === name)
                 return element;
         throw Errors.XMLNotFound;
     }
@@ -64,7 +67,7 @@ function mutateNodeNS(node : any, parentNS = { _default: 'DAV:' })
         const elements : XMLElement[] = [];
 
         for(const element of node.elements)
-            if(element.name && element.name === name)
+            if(element && element.name && element.name === name)
                 elements.push(element);
         
         return elements;
@@ -139,12 +142,12 @@ export abstract class XML
         
         const li1 = name.lastIndexOf(':');
         const li2 = name.indexOf(':');
-        const lindex = Math.max(li1 === li2 ? -1 : li1, name.lastIndexOf('/')) + 1;
+        const lindex = Math.max(li1 === li2 && name.indexOf('DAV:') !== 0 ? -1 : li1, name.lastIndexOf('/')) + 1;
         if(lindex !== 0)
         {
             let kname = 'a';
             const value = name.substring(0, lindex);
-            while(attributes['xmlns:' + kname] !== undefined || value.indexOf(kname + ':') === -1)
+            while(attributes['xmlns:' + kname] !== undefined || value.indexOf(kname + ':') === 0)
             {
                 const newChar = kname.charCodeAt(0) + 1;
                 if(newChar > 'z'.charCodeAt(0))
