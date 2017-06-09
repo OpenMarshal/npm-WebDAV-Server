@@ -95,6 +95,7 @@ lockTimeout | `3600` | Define the lock timeout.
 canChunk | `true` | Define if the server must recreate the full message or if it must keep it splitted (if `false`, `IResource.append(...)` will never be called, only `IResource.write(...)`). Set the value to `false` if you encounter a problem with the order of the content, this feature hasn't been tested enough.
 hostname | `'::'` | Define the scope of the listening server.
 port | `1900` | The default port to use if no port is specified when calling `server.start()`.
+strictMode | `false` | Define if the server must blindly follow the WebDAV RFC (`true`) or allow more flexibility (`false`) (for instance disallow a body in a request which doesn't use a body).
 
 ## Sample
 
