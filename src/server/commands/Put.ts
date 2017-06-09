@@ -79,7 +79,7 @@ export default function unchunkedMethod(arg : MethodCallArgs, callback)
                 }
                 
                 createResource(arg, callback, (r) => {
-                    arg.setCode(HTTPCodes.OK)
+                    arg.setCode(HTTPCodes.Created)
                     callback();
                 })
             }
@@ -100,7 +100,7 @@ export default function unchunkedMethod(arg : MethodCallArgs, callback)
                                 if(e)
                                     arg.setCode(HTTPCodes.InternalServerError)
                                 else
-                                    arg.setCode(HTTPCodes.OK)
+                                    arg.setCode(HTTPCodes.Created)
                                 callback();
                             });
                         }))
@@ -179,7 +179,7 @@ export default function unchunkedMethod(arg : MethodCallArgs, callback)
                 }
                 
                 createResource(arg, callback, (r) => {
-                    arg.setCode(HTTPCodes.OK)
+                    arg.setCode(HTTPCodes.Created)
                     callback();
                 })
             }
@@ -198,7 +198,7 @@ export default function unchunkedMethod(arg : MethodCallArgs, callback)
 
                             arg.request.pipe(stream);
                             stream.on('finish', (e) => {
-                                arg.setCode(HTTPCodes.OK)
+                                arg.setCode(HTTPCodes.Created)
                                 callback();
                             });
                             stream.on('error', (e) => {

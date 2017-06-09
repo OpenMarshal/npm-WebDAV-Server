@@ -56,6 +56,7 @@ export function start(port ?: number | WebDAVServerStartCallback, callback ?: We
                 {
                     const go = () =>
                     {
+                        console.log(base.data.toString());
                         this.invokeBeforeRequest(base, () => {
                             method(base, base.exit);
                         })

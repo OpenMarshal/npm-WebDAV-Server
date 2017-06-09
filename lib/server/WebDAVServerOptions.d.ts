@@ -12,6 +12,7 @@ export declare class WebDAVServerOptions {
     canChunk?: boolean;
     hostname?: string;
     port?: number;
+    strictMode?: boolean;
 }
 export default WebDAVServerOptions;
 export declare function setDefaultServerOptions(options: WebDAVServerOptions): WebDAVServerOptions;

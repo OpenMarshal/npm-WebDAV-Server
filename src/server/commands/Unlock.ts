@@ -16,47 +16,49 @@ export default function(arg : MethodCallArgs, callback)
         return;
     }
 
-    let token = arg.findHeader('Lock-Token');
-    if(!token)
-    {
-        arg.setCode(HTTPCodes.BadRequest);
-        callback();
-        return;
-    }
-    token = token.replace('<', '').replace('>', '').trim();
-    arg.response.setHeader('Lock-Token', '<' + token + '>');
-
-    arg.getResource((e, r) => {
-        if(e)
+    arg.noBodyExpected(() => {
+        let token = arg.findHeader('Lock-Token');
+        if(!token)
         {
-            arg.setCode(HTTPCodes.NotFound);
+            arg.setCode(HTTPCodes.BadRequest);
             callback();
             return;
         }
+        token = token.replace('<', '').replace('>', '').trim();
+        arg.response.setHeader('Lock-Token', '<' + token + '>');
 
-        arg.checkIfHeader(r, () => {
-            arg.requirePrivilege([ 'canGetLock', 'canRemoveLock' ], r, () => {
-                r.getLock(token, (e, lock) => {
-                    if(e || !lock)
-                    {
-                        arg.setCode(HTTPCodes.Conflict);
-                        callback();
-                        return;
-                    }
+        arg.getResource((e, r) => {
+            if(e)
+            {
+                arg.setCode(HTTPCodes.NotFound);
+                callback();
+                return;
+            }
 
-                    if(lock.userUid !== arg.user.uid)
-                    {
-                        arg.setCode(HTTPCodes.Forbidden);
-                        callback();
-                        return;
-                    }
+            arg.checkIfHeader(r, () => {
+                arg.requirePrivilege([ 'canGetLock', 'canRemoveLock' ], r, () => {
+                    r.getLock(token, (e, lock) => {
+                        if(e || !lock)
+                        {
+                            arg.setCode(HTTPCodes.Conflict);
+                            callback();
+                            return;
+                        }
 
-                    r.removeLock(lock.uuid, (e, done) => {
-                        if(e || !done)
+                        if(lock.userUid !== arg.user.uid)
+                        {
                             arg.setCode(HTTPCodes.Forbidden);
-                        else
-                            arg.setCode(HTTPCodes.NoContent);
-                        callback();
+                            callback();
+                            return;
+                        }
+
+                        r.removeLock(lock.uuid, (e, done) => {
+                            if(e || !done)
+                                arg.setCode(HTTPCodes.Forbidden);
+                            else
+                                arg.setCode(HTTPCodes.NoContent);
+                            callback();
+                        })
                     })
                 })
             })

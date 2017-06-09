@@ -18,6 +18,7 @@ export class WebDAVServerOptions
     canChunk ?: boolean = true
     hostname ?: string = '::'
     port ?: number = 1900
+    strictMode ?: boolean = false
 }
 export default WebDAVServerOptions;
 

@@ -64,6 +64,17 @@ export class MethodCallArgs
         })
     }
 
+    noBodyExpected(callback : () => void)
+    {
+        if(this.server.options.strictMode && this.contentLength !== 0)
+        {
+            this.setCode(HTTPCodes.UnsupportedMediaType);
+            this.exit();
+        }
+        else
+            callback();
+    }
+
     checkIfHeader(defaultResource : IResource, callback : () => void)
     {
         const ifHeader = this.findHeader('If');

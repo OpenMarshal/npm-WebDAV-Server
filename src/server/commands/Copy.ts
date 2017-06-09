@@ -131,138 +131,140 @@ function copy(arg : MethodCallArgs, source : IResource, rDest : IResource, desti
 
 export default function(arg : MethodCallArgs, callback)
 {
-    arg.getResource((e, source) => {
-        if(e)
-        {
-            arg.setCode(HTTPCodes.NotFound)
-            callback();
-            return;
-        }
-
-        arg.checkIfHeader(source, () => {
-            const overwrite = arg.findHeader('overwrite') !== 'F';
-
-            let destination : any = arg.findHeader('destination');
-            if(!destination)
+    arg.noBodyExpected(() => {
+        arg.getResource((e, source) => {
+            if(e)
             {
-                arg.setCode(HTTPCodes.BadRequest);
+                arg.setCode(HTTPCodes.NotFound)
                 callback();
                 return;
             }
-            
-            destination = destination.substring(destination.indexOf('://') + '://'.length)
-            destination = destination.substring(destination.indexOf('/'))
-            destination = new FSPath(destination)
 
-            arg.server.getResourceFromPath(destination.getParent(), (e, rDest) => {
-                if(e)
+            arg.checkIfHeader(source, () => {
+                const overwrite = arg.findHeader('overwrite') !== 'F';
+
+                let destination : any = arg.findHeader('destination');
+                if(!destination)
                 {
-                    arg.setCode(HTTPCodes.InternalServerError);
+                    arg.setCode(HTTPCodes.BadRequest);
                     callback();
                     return;
                 }
+                
+                destination = destination.substring(destination.indexOf('://') + '://'.length)
+                destination = destination.substring(destination.indexOf('/'))
+                destination = new FSPath(destination)
 
-                arg.requirePrivilege([ 'canGetType' ], source, () => {
-                    arg.requirePrivilege([ 'canGetChildren' ], rDest, () => {
-                        source.type((e, type) => process.nextTick(() => {
-                            if(e)
-                            {
-                                arg.setCode(HTTPCodes.InternalServerError);
-                                callback();
-                                return;
-                            }
-                            
-                            function done(overridded : boolean)
-                            {
-                                copy(arg, source, rDest, destination, (e) => {
-                                    if(e)
-                                        arg.setCode(HTTPCodes.InternalServerError);
-                                    else if(overridded)
-                                        arg.setCode(HTTPCodes.NoContent);
-                                    else
-                                        arg.setCode(HTTPCodes.Created);
-                                    callback();
-                                })
-                            }
+                arg.server.getResourceFromPath(destination.getParent(), (e, rDest) => {
+                    if(e)
+                    {
+                        arg.setCode(HTTPCodes.InternalServerError);
+                        callback();
+                        return;
+                    }
 
-                            let nb = 0;
-                            function go(error, destCollision : IResource)
-                            {
-                                if(nb <= 0)
-                                    return;
-                                if(error)
+                    arg.requirePrivilege([ 'canGetType' ], source, () => {
+                        arg.requirePrivilege([ 'canGetChildren' ], rDest, () => {
+                            source.type((e, type) => process.nextTick(() => {
+                                if(e)
                                 {
-                                    nb = -1;
                                     arg.setCode(HTTPCodes.InternalServerError);
                                     callback();
                                     return;
                                 }
-                                if(destCollision)
+                                
+                                function done(overridded : boolean)
                                 {
-                                    nb = -1;
+                                    copy(arg, source, rDest, destination, (e) => {
+                                        if(e)
+                                            arg.setCode(HTTPCodes.InternalServerError);
+                                        else if(overridded)
+                                            arg.setCode(HTTPCodes.NoContent);
+                                        else
+                                            arg.setCode(HTTPCodes.Created);
+                                        callback();
+                                    })
+                                }
 
-                                    if(!overwrite)
-                                    { // No overwrite allowed
+                                let nb = 0;
+                                function go(error, destCollision : IResource)
+                                {
+                                    if(nb <= 0)
+                                        return;
+                                    if(error)
+                                    {
+                                        nb = -1;
                                         arg.setCode(HTTPCodes.InternalServerError);
                                         callback();
                                         return;
                                     }
+                                    if(destCollision)
+                                    {
+                                        nb = -1;
 
-                                    destCollision.type((e, destType) => process.nextTick(() => {
-                                        if(e)
-                                        {
-                                            callback(e);
-                                            return;
-                                        }
-
-                                        if(destType !== type)
-                                        { // Type collision
+                                        if(!overwrite)
+                                        { // No overwrite allowed
                                             arg.setCode(HTTPCodes.InternalServerError);
                                             callback();
                                             return;
                                         }
-                                        
-                                        destCollision.delete((e) => process.nextTick(() => {
+
+                                        destCollision.type((e, destType) => process.nextTick(() => {
                                             if(e)
                                             {
                                                 callback(e);
                                                 return;
                                             }
 
-                                            done(true);
+                                            if(destType !== type)
+                                            { // Type collision
+                                                arg.setCode(HTTPCodes.InternalServerError);
+                                                callback();
+                                                return;
+                                            }
+                                            
+                                            destCollision.delete((e) => process.nextTick(() => {
+                                                if(e)
+                                                {
+                                                    callback(e);
+                                                    return;
+                                                }
+
+                                                done(true);
+                                            }))
                                         }))
-                                    }))
-                                    return;
+                                        return;
+                                    }
+
+                                    --nb;
+                                    if(nb === 0)
+                                    {
+                                        done(false);
+                                    }
                                 }
 
-                                --nb;
-                                if(nb === 0)
-                                {
-                                    done(false);
-                                }
-                            }
+                                // Find child name collision
+                                rDest.getChildren((e, children) => process.nextTick(() => {
+                                    if(e)
+                                    {
+                                        go(e, null);
+                                        return;
+                                    }
 
-                            // Find child name collision
-                            rDest.getChildren((e, children) => process.nextTick(() => {
-                                if(e)
-                                {
-                                    go(e, null);
-                                    return;
-                                }
-
-                                nb += children.length;
-                                if(nb === 0)
-                                {
-                                    done(false);
-                                    return;
-                                }
-                                children.forEach((child) => {
-                                    child.webName((e, name) => process.nextTick(() => {
-                                        go(e, name === destination.fileName() ? child : null);
-                                    }))
-                                })
+                                    nb += children.length;
+                                    if(nb === 0)
+                                    {
+                                        done(false);
+                                        return;
+                                    }
+                                    children.forEach((child) => {
+                                        child.webName((e, name) => process.nextTick(() => {
+                                            go(e, name === destination.fileName() ? child : null);
+                                        }))
+                                    })
+                                }))
                             }))
-                        }))
+                        })
                     })
                 })
             })
