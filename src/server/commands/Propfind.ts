@@ -1,9 +1,10 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
 import { IResource, ETag, ReturnCallback } from '../../resource/IResource'
+import { XML, XMLElement } from '../../helper/XML'
 import { BasicPrivilege } from '../../user/privilege/IPrivilegeManager'
 import { FSPath } from '../../manager/FSPath'
+import { Errors } from '../../Errors'
 import { Lock } from '../../resource/lock/Lock'
-import { XML } from '../../helper/XML'
 import * as http from 'http'
 
 function lockDiscovery(lockDiscoveryCache : any, arg : MethodCallArgs, path : FSPath, resource : IResource, callback : ReturnCallback<any>)
@@ -49,6 +50,67 @@ function lockDiscovery(lockDiscoveryCache : any, arg : MethodCallArgs, path : FS
                 });
         });
     })
+}
+
+interface PropertyRule
+{
+    leftElements : XMLElement[]
+    mustDisplay : (propertyName : string) => boolean
+    mustDisplayValue : (propertyName : string) => boolean
+}
+
+function parseRequestBody(arg : MethodCallArgs) : PropertyRule
+{
+    const xml = XML.parse(arg.data);
+
+    const allTrue : PropertyRule = {
+        leftElements: [],
+        mustDisplay: () => true,
+        mustDisplayValue: () => true
+    }
+    const onlyName : PropertyRule = {
+        leftElements: [],
+        mustDisplay: () => true,
+        mustDisplayValue: () => false
+    }
+
+    if(arg.contentLength <= 0)
+        return allTrue;
+
+    try
+    {
+        const propfind = xml.find('DAV:propfind');
+
+        if(propfind.findIndex('DAV:propname') !== -1)
+            return onlyName;
+
+        if(propfind.findIndex('DAV:allprop') !== -1)
+            return allTrue;
+
+        const prop = propfind.find('DAV:prop');
+        const fn = (name : string) => {
+            const index = prop.findIndex(name);
+            if(index === -1)
+                return false;
+            delete prop.elements[index];
+            return true;
+        };
+
+        return {
+            leftElements: prop.elements,
+            mustDisplay: fn,
+            mustDisplayValue: () => true
+        }
+    }
+    catch(ex)
+    {
+        return allTrue;
+    }
+}
+
+function propstatStatus(status : number)
+{
+    return 'HTTP/1.1 ' + status + ' ' + http.STATUS_CODES[status];
 }
 
 export default function(arg : MethodCallArgs, callback)
@@ -107,6 +169,8 @@ export default function(arg : MethodCallArgs, callback)
             
             function addXMLInfo(resource : IResource, multistatus, callback)
             {
+                const reqBody = parseRequestBody(arg);
+
                 const response = multistatus.ele('D:response')
 
                 const propstat = response.ele('D:propstat')
@@ -119,14 +183,14 @@ export default function(arg : MethodCallArgs, callback)
                 arg.requireErPrivilege(privileges, resource, (e, can) => {
                     if(e)
                     {
-                        propstat.ele('D:status').add('HTTP/1.1 ' + HTTPCodes.InternalServerError + ' ' + http.STATUS_CODES[HTTPCodes.InternalServerError]);
+                        propstat.ele('D:status').add(propstatStatus(HTTPCodes.InternalServerError));
                         callback();
                         return;
                     }
                     
                     if(!can)
                     {
-                        propstat.ele('D:status').add('HTTP/1.1 ' + HTTPCodes.Forbidden + ' ' + http.STATUS_CODES[HTTPCodes.Forbidden]);
+                        propstat.ele('D:status').add(propstatStatus(HTTPCodes.Forbidden));
                         callback();
                         return;
                     }
@@ -135,31 +199,84 @@ export default function(arg : MethodCallArgs, callback)
 
                     const prop = propstat.ele('D:prop')
                     
-                    let nb = 7;
+                    let nb = 1;
                     function nbOut(error?)
                     {
                         if(nb > 0 && error)
                         {
-                            nb = -1;
+                            nb = -1000;
                             callback(error);
                             return;
                         }
+
                         --nb;
                         if(nb === 0)
+                        {
+                            if(reqBody.leftElements.length > 0)
+                            {
+                                const propstatError = response.ele('D:propstat');
+                                const prop = propstatError.ele('D:prop');
+                                propstatError.ele('D:status').add(propstatStatus(HTTPCodes.NotFound));
+
+                                for(let i = 0; i < reqBody.leftElements.length; ++i)
+                                    if(reqBody.leftElements[i])
+                                        prop.ele(reqBody.leftElements[i].name);
+                            }
                             callback();
+                        }
+                    }
+                    
+                    const tags : any = {};
+
+                    function mustDisplayTag(name : string)
+                    {
+                        if(reqBody.mustDisplay('DAV:' + name))
+                            tags[name] = {
+                                el: prop.ele('D:' + name),
+                                value: reqBody.mustDisplayValue('DAV:' + name)
+                            };
+                        else
+                            tags[name] = {
+                                value: false
+                            };
+                    }
+                    mustDisplayTag('creationdate')
+                    mustDisplayTag('lockdiscovery')
+                    mustDisplayTag('getetag')
+                    mustDisplayTag('getlastmodified')
+                    mustDisplayTag('resourcetype')
+                    mustDisplayTag('displayname')
+                    mustDisplayTag('supportedlock')
+
+                    function displayValue(values : string[] | string, fn : () => void)
+                    {
+                        if(values.constructor === String ? tags[values as string].value : (values as string[]).some((n) => tags[n].value))
+                        {
+                            ++nb;
+                            process.nextTick(fn);
+                        }
                     }
 
-                    resource.creationDate((e, ticks) => process.nextTick(() => {
-                        if(!e)
-                            prop.ele('D:creationdate').add(arg.dateISO8601(ticks));
-                        nbOut(e);
-                    }))
+                    displayValue('creationdate', () =>
+                    {
+                        resource.creationDate((e, ticks) => process.nextTick(() => {
+                            if(!e)
+                                tags.creationdate.el.add(arg.dateISO8601(ticks));
+                            nbOut(e);
+                        }))
+                    })
 
+                    ++nb;
                     arg.getResourcePath(resource, (e, path) => {
-                        if(!e)
+                        if(e)
                         {
-                            response.ele('D:href').add(arg.fullUri(path).replace(' ', '%20'));
-                            const lockdiscovery = prop.ele('D:lockdiscovery');
+                            nbOut(e);
+                            return;
+                        }
+                            
+                        if(tags.lockdiscovery.value)
+                        {
+                            ++nb;
                             lockDiscovery(lockDiscoveryCache, arg, new FSPath(path), resource, (e, l) => {
                                 if(e)
                                 {
@@ -172,7 +289,7 @@ export default function(arg : MethodCallArgs, callback)
                                     for(const _lock of l[path])
                                     {
                                         const lock : Lock = _lock;
-                                        const activelock = lockdiscovery.ele('D:activelock');
+                                        const activelock = tags.lockdiscovery.el.ele('D:activelock');
                                         
                                         activelock.ele('D:lockscope').ele('D:' + lock.lockKind.scope.value.toLowerCase())
                                         activelock.ele('D:locktype').ele('D:' + lock.lockKind.type.value.toLowerCase())
@@ -188,88 +305,118 @@ export default function(arg : MethodCallArgs, callback)
                                 nbOut(null);
                             })
                         }
-                        else
-                            nbOut(e);
+                        
+                        resource.type((e, type) => process.nextTick(() => {
+                            if(e)
+                            {
+                                nbOut(e);
+                                return;
+                            }
+                            
+                            const p = arg.fullUri(path).replace(' ', '%20');
+                            response.ele('D:href').add(p.lastIndexOf('/') !== p.length - 1 && type.isDirectory ? p + '/' : p);
+
+                            if(tags.resourcetype.value && type.isDirectory)
+                                tags.resourcetype.el.ele('D:collection')
+                                
+                            if(type.isFile)
+                            {
+                                mustDisplayTag('getcontentlength')
+                                mustDisplayTag('getcontenttype')
+                                
+                                if(tags.getcontenttype.value)
+                                {
+                                    ++nb;
+                                    resource.mimeType(targetSource, (e, mimeType) => process.nextTick(() => {
+                                        if(!e)
+                                            tags.getcontenttype.el.add(mimeType)
+                                        nbOut(e);
+                                    }))
+                                }
+
+                                if(tags.getcontentlength.value)
+                                {
+                                    ++nb;
+                                    resource.size(targetSource, (e, size) => process.nextTick(() => {
+                                        if(!e)
+                                            tags.getcontentlength.el.add(size === undefined || size === null || size.constructor !== Number ? 0 : size)
+                                        nbOut(e);
+                                    }))
+                                }
+                            }
+
+                            nbOut();
+                        }))
                     })
 
-                    resource.webName((e, name) => process.nextTick(() => {
-                        if(!e)
-                            prop.ele('D:displayname').add(name ? name : '');
-                        nbOut(e);
-                    }))
-
-                    const supportedlock = prop.ele('D:supportedlock')
-                    resource.getAvailableLocks((e, lockKinds) => process.nextTick(() => {
-                        if(e)
-                        {
+                    displayValue('displayname', () =>
+                    {
+                        resource.webName((e, name) => process.nextTick(() => {
+                            if(!e)
+                                tags.displayname.el.add(name ? name : '');
                             nbOut(e);
-                            return;
-                        }
+                        }))
+                    })
 
-                        lockKinds.forEach((lockKind) => {
-                            const lockentry = supportedlock.ele('D:lockentry')
-
-                            const lockscope = lockentry.ele('D:lockscope')
-                            lockscope.ele('D:' + lockKind.scope.value.toLowerCase())
-
-                            const locktype = lockentry.ele('D:locktype')
-                            locktype.ele('D:' + lockKind.type.value.toLowerCase())
-                        })
-                        nbOut();
-                    }))
-
-                    resource.getProperties((e, properties) => process.nextTick(() => {
-                        if(e)
-                        {
-                            nbOut(e);
-                            return;
-                        }
-
-                        for(const name in properties)
-                        {
-                            const value = properties[name];
-                            prop.ele(name).add(value)
-                        }
-                        nbOut();
-                    }))
-
-                    resource.type((e, type) => process.nextTick(() => {
-                        if(e)
-                        {
-                            nbOut(e);
-                            return;
-                        }
-
-                        const resourcetype = prop.ele('D:resourcetype')
-                        if(type.isDirectory)
-                            resourcetype.ele('D:collection')
-                        
-                        if(type.isFile)
-                        {
-                            nb += 2;
-                            resource.mimeType(targetSource, (e, mimeType) => process.nextTick(() => {
-                                if(!e)
-                                    prop.ele('D:getcontenttype').add(mimeType)
+                    displayValue('supportedlock', () =>
+                    {
+                        resource.getAvailableLocks((e, lockKinds) => process.nextTick(() => {
+                            if(e)
+                            {
                                 nbOut(e);
-                            }))
-                            resource.size(targetSource, (e, size) => process.nextTick(() => {
-                                if(!e)
-                                    prop.ele('D:getcontentlength').add(size === undefined || size === null || size.constructor !== Number ? 0 : size)
+                                return;
+                            }
+
+                            lockKinds.forEach((lockKind) => {
+                                const lockentry = tags.supportedlock.el.ele('D:lockentry')
+
+                                const lockscope = lockentry.ele('D:lockscope')
+                                lockscope.ele('D:' + lockKind.scope.value.toLowerCase())
+
+                                const locktype = lockentry.ele('D:locktype')
+                                locktype.ele('D:' + lockKind.type.value.toLowerCase())
+                            })
+                            nbOut();
+                        }))
+                    })
+
+                    ++nb;
+                    process.nextTick(() => {
+                        resource.getProperties((e, properties) => process.nextTick(() => {
+                            if(e)
+                            {
                                 nbOut(e);
-                            }))
-                        }
+                                return;
+                            }
 
-                        nbOut();
-                    }))
+                            for(const name in properties)
+                            {
+                                if(reqBody.mustDisplay(name))
+                                {
+                                    const tag = prop.ele(name);
+                                    if(reqBody.mustDisplayValue(name))
+                                        tag.add(properties[name]);
+                                }
+                            }
+                            nbOut();
+                        }))
+                    })
 
-                    resource.lastModifiedDate((e, lastModifiedDate) => process.nextTick(() => {
-                        if(!e)
-                        {
-                            prop.ele('D:getetag').add(ETag.createETag(lastModifiedDate))
-                            prop.ele('D:getlastmodified').add(new Date(lastModifiedDate).toUTCString())
-                        }
-                        nbOut(e);
-                    }))
+                    displayValue([ 'getetag', 'getlastmodified' ], () =>
+                    {
+                        resource.lastModifiedDate((e, lastModifiedDate) => process.nextTick(() => {
+                            if(!e)
+                            {
+                                if(tags.getetag.value)
+                                    tags.getetag.el.add(ETag.createETag(lastModifiedDate))
+                                if(tags.getlastmodified.value)
+                                    tags.getlastmodified.el.add(new Date(lastModifiedDate).toUTCString())
+                            }
+                            nbOut(e);
+                        }))
+                    })
+
+                    nbOut();
                 })
             }
 
