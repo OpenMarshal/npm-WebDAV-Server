@@ -3,93 +3,93 @@
 ## 1.6.0
 
 ### New features
-Now PROPFIND can filter properties depending on the request body (according to the RFC) *[7af0e36](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7af0e36)*
-Added a 'strictMode' to let more flexibilities to the communications client/server
+* Now PROPFIND can filter properties depending on the request body (according to the RFC) *[7af0e36](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7af0e36)*
+* Added a 'strictMode' to let more flexibilities to the communications client/server
 
 ### Changes
-Added the 'DAV' header with the values '1,2' => class 1 + 2 supported (RFC) *[27abc4e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/27abc4e)*
-Add a trailing '/' to the resource path of collections (folders) in the 'DAV:href' tag (response) *[7af0e36](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7af0e36)*
-Removed the 'DAV' in the OPTION method file to provide it to all responses *[63aa8a3](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/63aa8a3)*
-Added more compliance with the WebDAV RFC (body checking, errors returned, etc...) *[46cbef7](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/46cbef7)*
-Added xmlns attribute for 'DAV:' presence in a tag name *[3bc3f07](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3bc3f07)*
+* Added the 'DAV' header with the values '1,2' => class 1 + 2 supported (RFC) *[27abc4e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/27abc4e)*
+* Add a trailing '/' to the resource path of collections (folders) in the 'DAV:href' tag (response) *[7af0e36](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7af0e36)*
+* Removed the 'DAV' in the OPTION method file to provide it to all responses *[63aa8a3](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/63aa8a3)*
+* Added more compliance with the WebDAV RFC (body checking, errors returned, etc...) *[46cbef7](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/46cbef7)*
+* Added xmlns attribute for 'DAV:' presence in a tag name *[3bc3f07](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3bc3f07)*
 
 ### Documentation
-Added the 'strictMode' server option in the README *[24dd02b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/24dd02b)*
+* Added the 'strictMode' server option in the README *[24dd02b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/24dd02b)*
 
 ### Tests
-Removed useless test in the 'VirtualFSManager' class *[c4dc8db](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c4dc8db)*
+* Removed useless test in the 'VirtualFSManager' class *[c4dc8db](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c4dc8db)*
 
 ### Other
-Removed displays (console.log) *[efa5449](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/efa5449)*
-Removed tests for compliance in the PROPFIND method *[6298c65](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6298c65)*
+* Removed displays (console.log) *[efa5449](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/efa5449)*
+* Removed tests for compliance in the PROPFIND method *[6298c65](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6298c65)*
 
 ### Bug fix
-Fixed a potential '//' at the end of the path of a resource *[27abc4e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/27abc4e)*
-Fixed an XML bug leading to an infinite loop *[3bc3f07](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3bc3f07)*
-Fixed the issue of not applying to the name of XML elements the default namespace *[aa793d5](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/aa793d5)*
+* Fixed a potential '//' at the end of the path of a resource *[27abc4e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/27abc4e)*
+* Fixed an XML bug leading to an infinite loop *[3bc3f07](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3bc3f07)*
+* Fixed the issue of not applying to the name of XML elements the default namespace *[aa793d5](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/aa793d5)*
 
 
 ## 1.5.5
 
 ### Bug fix
-Added missing exports *[e8aa467](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e8aa467)*
+* Added missing exports *[e8aa467](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e8aa467)*
 
 ## 1.5.4
 
 ### Changes
-Added a local cache for lock discovery in PROPFIND *[bc744b0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/bc744b0)*
+* Added a local cache for lock discovery in PROPFIND *[bc744b0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/bc744b0)*
 
 ### Tests
-Removed debug display in tests *[40fa39a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/40fa39a)*
-Fixed the way to get the lock-token from a LOCK response in the tests *[a745c95](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a745c95)*
+* Removed debug display in tests *[40fa39a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/40fa39a)*
+* Fixed the way to get the lock-token from a LOCK response in the tests *[a745c95](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a745c95)*
 
 ### Bug fix
-Fixed recurrent size error in the Propfind method *[67d7485](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/67d7485)*
-Fixed negative values in the lock-token generation *[5ad148f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5ad148f)*
+* Fixed recurrent size error in the Propfind method *[67d7485](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/67d7485)*
+* Fixed negative values in the lock-token generation *[5ad148f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5ad148f)*
 
 ## 1.5.3
 
 ### Changes
-Now skip the tag 'owner' in the PROPFIND response when the lock has no owner content *[e3d81c8](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e3d81c8)*
+* Now skip the tag 'owner' in the PROPFIND response when the lock has no owner content *[e3d81c8](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e3d81c8)*
 
 ### Bug fix
-Fixed a bug when serializing a VirtualStoredFile having a content length of 0 *[c81190d](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c81190d)*
+* Fixed a bug when serializing a VirtualStoredFile having a content length of 0 *[c81190d](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c81190d)*
 
 ## 1.5.2
 
 ### Bug fix
-Fixed unremoved resource from parent when calling 'delete' on a VirtualStoredFile *[a81a906](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a81a906)*
+* Fixed unremoved resource from parent when calling 'delete' on a VirtualStoredFile *[a81a906](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a81a906)*
 
 ## 1.5.1
 
 ### Changes
-Added the content uid to the list of the arguments of the 'IVirtualStoredContentManagerMiddleware' methods *[4f9cbf1](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/4f9cbf1)*
+* Added the content uid to the list of the arguments of the 'IVirtualStoredContentManagerMiddleware' methods *[4f9cbf1](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/4f9cbf1)*
 
 ## 1.5.0
 
 ### New features
-Implemented the new chunked version of the PUT method *[7f605b1](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7f605b1)*
-Added the 'deallocate' method to the virtual stored resource management *[7506c3c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7506c3c)*
-Added a middleware for the 'SimpleVirtualStoredContentManager' class *[a322b75](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a322b75)*
+* Implemented the new chunked version of the PUT method *[7f605b1](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7f605b1)*
+* Added the 'deallocate' method to the virtual stored resource management *[7506c3c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7506c3c)*
+* Added a middleware for the 'SimpleVirtualStoredContentManager' class *[a322b75](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a322b75)*
 
 ### Changes
-Replaced the middleware 'stream.Writable' into a 'stream.Transform' for the VirtualStoredFile *[36bc500](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/36bc500)*
-Modified the HEAD method implementation to avoid the use of the 'read' method of the resources *[25d120b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/25d120b)*
-Removed the un/serialization of the locks in the FSManagers *[2786bea](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2786bea)*
-Now throw an Error when the 'SimpleVirtualStoredContentManager' instance is not initialized, helping for debugging *[c3eb727](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c3eb727)*
-The member 'managerUID' can now be accessed from outside of the error class 'ManagerNotFound' *[6378c48](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6378c48)*
+* Replaced the middleware 'stream.Writable' into a 'stream.Transform' for the VirtualStoredFile *[36bc500](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/36bc500)*
+* Modified the HEAD method implementation to avoid the use of the 'read' method of the resources *[25d120b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/25d120b)*
+* Removed the un/serialization of the locks in the FSManagers *[2786bea](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2786bea)*
+* Now throw an Error when the 'SimpleVirtualStoredContentManager' instance is not initialized, helping for debugging *[c3eb727](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c3eb727)*
+* The member 'managerUID' can now be accessed from outside of the error class 'ManagerNotFound' *[6378c48](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6378c48)*
 
 ### Other
-Splitted the 'WebDAVServer' class file into smaller files *[1f1d13c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/1f1d13c)*
-Splitted the 'ResourceTester' class file into smaller files *[8f8af70](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/8f8af70)*
-Added a dot (.) at the end of the text of each common error *[1daac87](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/1daac87)*
-Used more standard errors *[155035c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/155035c)*
+* Splitted the 'WebDAVServer' class file into smaller files *[1f1d13c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/1f1d13c)*
+* Splitted the 'ResourceTester' class file into smaller files *[8f8af70](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/8f8af70)*
+* Added a dot (.) at the end of the text of each common error *[1daac87](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/1daac87)*
+* Used more standard errors *[155035c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/155035c)*
 
 ### Bug fix
-Added event inheritance in the 'VirtualStoredFile' class *[eaefedc](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/eaefedc)*
-Cleaned the 'lib' folder *[e2e054c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e2e054c)*
-Added the un/serialization of the property 'contentUid' for the 'VirtualStoredFile' class *[62556f5](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/62556f5)*
-Fixed CodeClimate issues (code formatting) *[325f30f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/325f30f)*
+* Added event inheritance in the 'VirtualStoredFile' class *[eaefedc](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/eaefedc)*
+* Cleaned the 'lib' folder *[e2e054c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e2e054c)*
+* Added the un/serialization of the property 'contentUid' for the 'VirtualStoredFile' class *[62556f5](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/62556f5)*
+* Fixed CodeClimate issues (code formatting) *[325f30f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/325f30f)*
 
 ## 1.4.0
 
