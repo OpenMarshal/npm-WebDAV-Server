@@ -3,6 +3,7 @@ export interface XMLElement {
     attributes?: any;
     elements: XMLElement[];
     name?: string;
+    findIndex(name: string): number;
     find(name: string): XMLElement;
     findMany(name: string): XMLElement[];
 }

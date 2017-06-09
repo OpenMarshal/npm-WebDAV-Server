@@ -24,7 +24,7 @@ function seekForNS(node : any, parentNS : any) : any
     return ns;
 }
 
-function mutateNodeNS(node : any, parentNS = { _default: 'DAV' })
+function mutateNodeNS(node : any, parentNS = { _default: 'DAV:' })
 {
     const nss = seekForNS(node, parentNS);
 
@@ -32,27 +32,40 @@ function mutateNodeNS(node : any, parentNS = { _default: 'DAV' })
     {
         for(const ns in nss)
         {
-            if(ns === '_default')
-                continue;
-            if(node.name.indexOf(ns + ':') === 0)
+            if(ns === '_default' && node.name.indexOf(':') === -1)
+            {
+                node.name = nss[ns] + node.name;
+                break;
+            }
+            else if(node.name.indexOf(ns + ':') === 0)
+            {
                 node.name = nss[ns] + node.name.substring((ns + ':').length);
+                break;
+            }
         }
     }
 
+    node.findIndex = function(name : string) : number
+    {
+        for(let index = 0; index < node.elements.length; ++index)
+            if(node.elements[index].name && node.elements[index].name === name)
+                return index;
+        return -1;
+    }
     node.find = function(name : string) : XMLElement
     {
-        for(const index in node.elements)
-            if(node.elements[index].name && node.elements[index].name === name)
-                return node.elements[index];
+        for(const element of node.elements)
+            if(element.name && element.name === name)
+                return element;
         throw Errors.XMLNotFound;
     }
     node.findMany = function(name : string) : XMLElement[]
     {
         const elements : XMLElement[] = [];
 
-        for(const index in node.elements)
-            if(node.elements[index].name && node.elements[index].name === name)
-                elements.push(node.elements[index]);
+        for(const element of node.elements)
+            if(element.name && element.name === name)
+                elements.push(element);
         
         return elements;
     }
@@ -70,6 +83,7 @@ export interface XMLElement
     elements : XMLElement[]
     name ?: string
 
+    findIndex(name : string) : number
     find(name : string) : XMLElement
     findMany(name : string) : XMLElement[]
 }
