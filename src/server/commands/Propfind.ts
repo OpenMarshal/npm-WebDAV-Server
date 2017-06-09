@@ -134,8 +134,6 @@ export default function(arg : MethodCallArgs, callback)
                     propstat.ele('D:status').add('HTTP/1.1 200 OK')
 
                     const prop = propstat.ele('D:prop')
-
-                    prop.ele('N:executable', { 'xmlns:N': 'http://apache.org/dav/props/' }).add('F');
                     
                     let nb = 7;
                     function nbOut(error?)
@@ -259,10 +257,6 @@ export default function(arg : MethodCallArgs, callback)
                                     prop.ele('D:getcontentlength').add(size === undefined || size === null || size.constructor !== Number ? 0 : size)
                                 nbOut(e);
                             }))
-                        }
-                        else
-                        {
-                            prop.ele('D:getcontentlength').add(0)
                         }
 
                         nbOut();
