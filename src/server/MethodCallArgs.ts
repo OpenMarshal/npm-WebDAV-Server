@@ -43,6 +43,7 @@ export class MethodCallArgs
         callback : (error : Error, mca : MethodCallArgs) => void)
     {
         const mca = new MethodCallArgs(server, request, response, null, null);
+        response.setHeader('DAV', '1,2');
 
         mca.askForAuthentication(false, (e) => {
             if(e)
@@ -208,7 +209,7 @@ export class MethodCallArgs
         if(!uri)
             uri = this.uri;
         
-        return this.prefixUri() + uri.replace(/\/\//g, '/');
+        return (this.prefixUri() + uri).replace(/([^:])\/\//g, '$1/');
     }
 
     prefixUri()
