@@ -1,8 +1,6 @@
 import { ISerializer, SerializedObject } from './ISerializer'
 import { IResource, ResourceType } from '../resource/IResource'
 
-export { PhysicalFSManager } from './PhysicalFSManager'
-export { VirtualFSManager } from './VirtualFSManager'
 export { FSPath } from './FSPath'
 
 export interface FSManager extends ISerializer
