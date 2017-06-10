@@ -22,7 +22,20 @@ export default function(arg : MethodCallArgs, callback)
                         else if(!type.isFile)
                             arg.setCode(HTTPCodes.MethodNotAllowed)
                         else
-                            arg.setCode(HTTPCodes.OK);
+                        {
+                            r.size(targetSource, (e, size) => {
+                                if(e)
+                                    arg.setCode(HTTPCodes.InternalServerError)
+                                else
+                                {
+                                    arg.setCode(HTTPCodes.OK);
+                                    arg.response.setHeader('Accept-Ranges', 'bytes')
+                                    arg.response.setHeader('Content-Length', size.toString());
+                                    callback();
+                                }
+                            })
+                            return;
+                        }
 
                         callback();
                     })
