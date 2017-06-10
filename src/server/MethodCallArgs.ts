@@ -13,6 +13,7 @@ import * as url from 'url'
 export class MethodCallArgs
 {
     contentLength : number
+    isSource : boolean
     depth : number
     host : string
     path : FSPath
@@ -29,6 +30,7 @@ export class MethodCallArgs
         public callback : () => void
     ) {
         this.contentLength = parseInt(this.findHeader('Content-length', '0'), 10);
+        this.isSource = this.findHeader('source', 'F').toUpperCase() === 'T' || this.findHeader('translate', 'F').toUpperCase() === 'T';
         this.depth = parseInt(this.findHeader('Depth', '0'), 10);
         this.host = this.findHeader('Host');
         

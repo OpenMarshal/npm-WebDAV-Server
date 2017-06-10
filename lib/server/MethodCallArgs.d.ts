@@ -13,6 +13,7 @@ export declare class MethodCallArgs {
     exit: () => void;
     callback: () => void;
     contentLength: number;
+    isSource: boolean;
     depth: number;
     host: string;
     path: FSPath;
