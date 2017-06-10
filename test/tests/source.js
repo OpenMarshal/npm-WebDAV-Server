@@ -5,7 +5,7 @@ var webdav = require('../../lib/index.js'),
 
 module.exports = (test, options, index) => test('source', (isValid, server) =>
 {
-    isValid = isValid.multiple(1, server);
+    isValid = isValid.multiple(2, server);
     const _ = (e, cb) => {
         if(e)
             isValid(false, e);
@@ -25,105 +25,111 @@ module.exports = (test, options, index) => test('source', (isValid, server) =>
 
     const url = 'http://localhost:' + (options.port + index)
 
-    let processed = '<html><body>processed content</body></html>';
-    let unprocessed = 'unprocessed content';
-    
-    server.rootResource.addChild({
-        write(targetSource, callback)
-        {
-            callback(null, new stream.Writable({
-                write: (chunk, encoding, callback) => {
-                    if(targetSource)
-                        unprocessed = chunk;
-                    else
-                        processed = chunk;
-                    
-                    callback(null);
-                }
-            }));
-        },
-        read(targetSource, callback)
-        {
-            callback(null, new stream.Readable({
-                read: function(size)
-                {
-                    this.push(targetSource ? unprocessed : processed);
-                    this.push(null);
-                }
-            }));
-        },
-        webName(callback)
-        {
-            callback(null, 'testFile.txt');
-        },
-        mimeType(targetSource, callback)
-        {
-            callback(null, targetSource ? 'text/plain' : 'text/html');
-        },
-        size(targetSource, callback)
-        {
-            callback(null, targetSource ? unprocessed.length : processed.length);
-        },
-        getLocks(callback)
-        {
-            callback(null, []);
-        },
-        type(callback)
-        {
-            callback(null, webdav.ResourceType.File);
-        }
-    }, (e) => _(e, () => {
-        request({
-            url: url + '/testFile.txt',
-            method: 'GET',
-            headers: {
+    test('source');
+    test('translate');
+
+    function test(headerName)
+    {
+        let processed = '<html><body>processed content</body></html>';
+        let unprocessed = 'unprocessed content';
+        
+        server.rootResource.addChild({
+            write(targetSource, callback)
+            {
+                callback(null, new stream.Writable({
+                    write: (chunk, encoding, callback) => {
+                        if(targetSource)
+                            unprocessed = chunk;
+                        else
+                            processed = chunk;
+                        
+                        callback(null);
+                    }
+                }));
+            },
+            read(targetSource, callback)
+            {
+                callback(null, new stream.Readable({
+                    read: function(size)
+                    {
+                        this.push(targetSource ? unprocessed : processed);
+                        this.push(null);
+                    }
+                }));
+            },
+            webName(callback)
+            {
+                callback(null, 'testFile.txt');
+            },
+            mimeType(targetSource, callback)
+            {
+                callback(null, targetSource ? 'text/plain' : 'text/html');
+            },
+            size(targetSource, callback)
+            {
+                callback(null, targetSource ? unprocessed.length : processed.length);
+            },
+            getLocks(callback)
+            {
+                callback(null, []);
+            },
+            type(callback)
+            {
+                callback(null, webdav.ResourceType.File);
             }
-        }, expect(processed, () => {
+        }, (e) => _(e, () => {
             request({
                 url: url + '/testFile.txt',
                 method: 'GET',
                 headers: {
-                    source: 'T'
                 }
-            }, expect(unprocessed, () => {
-                const old = {
-                    processed,
-                    unprocessed
-                }
+            }, expect(processed, () => {
                 request({
                     url: url + '/testFile.txt',
-                    method: 'PUT',
+                    method: 'GET',
                     headers: {
-                    },
-                    body: processed + 'addon'
-                }, (e, res, body) => _(e, () => {
+                        [headerName]: 'T'
+                    }
+                }, expect(unprocessed, () => {
+                    const old = {
+                        processed,
+                        unprocessed
+                    }
                     request({
                         url: url + '/testFile.txt',
                         method: 'PUT',
                         headers: {
-                            source: 'T'
                         },
-                        body: unprocessed + 'addonX'
+                        body: processed + 'addon'
                     }, (e, res, body) => _(e, () => {
                         request({
                             url: url + '/testFile.txt',
-                            method: 'GET',
+                            method: 'PUT',
                             headers: {
-                            }
-                        }, expect(old.processed + 'addon', () => {
+                                [headerName]: 'T'
+                            },
+                            body: unprocessed + 'addonX'
+                        }, (e, res, body) => _(e, () => {
                             request({
                                 url: url + '/testFile.txt',
                                 method: 'GET',
                                 headers: {
-                                    source: 'T'
                                 }
-                            }, expect(old.unprocessed + 'addonX', () => {
-                                isValid(true);
+                            }, expect(old.processed + 'addon', () => {
+                                request({
+                                    url: url + '/testFile.txt',
+                                    method: 'GET',
+                                    headers: {
+                                        [headerName]: 'T'
+                                    }
+                                }, expect(old.unprocessed + 'addonX', () => {
+                                    isValid(true);
+                                }))
                             }))
                         }))
                     }))
                 }))
             }))
         }))
-    }))
+    }
 })
