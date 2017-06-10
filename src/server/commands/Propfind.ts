@@ -240,13 +240,14 @@ export default function(arg : MethodCallArgs, callback)
                                 value: false
                             };
                     }
-                    mustDisplayTag('creationdate')
-                    mustDisplayTag('lockdiscovery')
-                    mustDisplayTag('getetag')
+
                     mustDisplayTag('getlastmodified')
+                    mustDisplayTag('lockdiscovery')
+                    mustDisplayTag('supportedlock')
+                    mustDisplayTag('creationdate')
                     mustDisplayTag('resourcetype')
                     mustDisplayTag('displayname')
-                    mustDisplayTag('supportedlock')
+                    mustDisplayTag('getetag')
 
                     function displayValue(values : string[] | string, fn : () => void)
                     {
@@ -315,6 +316,7 @@ export default function(arg : MethodCallArgs, callback)
                             
                             const p = arg.fullUri(path).replace(' ', '%20');
                             response.ele('D:href').add(p.lastIndexOf('/') !== p.length - 1 && type.isDirectory ? p + '/' : p);
+                            response.ele('D:location').ele('D:href').add(p);
 
                             if(tags.resourcetype.value && type.isDirectory)
                                 tags.resourcetype.el.ele('D:collection')
@@ -323,7 +325,7 @@ export default function(arg : MethodCallArgs, callback)
                             {
                                 mustDisplayTag('getcontentlength')
                                 mustDisplayTag('getcontenttype')
-                                
+
                                 if(tags.getcontenttype.value)
                                 {
                                     ++nb;
@@ -380,6 +382,20 @@ export default function(arg : MethodCallArgs, callback)
                         }))
                     })
 
+                    displayValue([ 'getetag', 'getlastmodified' ], () =>
+                    {
+                        resource.lastModifiedDate((e, lastModifiedDate) => process.nextTick(() => {
+                            if(!e)
+                            {
+                                if(tags.getetag.value)
+                                    tags.getetag.el.add(ETag.createETag(lastModifiedDate))
+                                if(tags.getlastmodified.value)
+                                    tags.getlastmodified.el.add(new Date(lastModifiedDate).toUTCString())
+                            }
+                            nbOut(e);
+                        }))
+                    })
+
                     ++nb;
                     process.nextTick(() => {
                         resource.getProperties((e, properties) => process.nextTick(() => {
@@ -399,20 +415,6 @@ export default function(arg : MethodCallArgs, callback)
                                 }
                             }
                             nbOut();
-                        }))
-                    })
-
-                    displayValue([ 'getetag', 'getlastmodified' ], () =>
-                    {
-                        resource.lastModifiedDate((e, lastModifiedDate) => process.nextTick(() => {
-                            if(!e)
-                            {
-                                if(tags.getetag.value)
-                                    tags.getetag.el.add(ETag.createETag(lastModifiedDate))
-                                if(tags.getlastmodified.value)
-                                    tags.getlastmodified.el.add(new Date(lastModifiedDate).toUTCString())
-                            }
-                            nbOut(e);
                         }))
                     })
 
