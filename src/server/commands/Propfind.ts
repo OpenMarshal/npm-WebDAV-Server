@@ -126,7 +126,7 @@ export default function(arg : MethodCallArgs, callback)
         const lockDiscoveryCache = {};
 
         arg.checkIfHeader(resource, () => {
-            const targetSource = arg.findHeader('source', 'F').toUpperCase() === 'T';
+            const targetSource = arg.isSource;
 
             const multistatus = XML.createElement('D:multistatus', {
                 'xmlns:D': 'DAV:'

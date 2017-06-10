@@ -48,7 +48,7 @@ function createResource(arg : MethodCallArgs, callback, validCallback : (resourc
 
 export default function unchunkedMethod(arg : MethodCallArgs, callback)
 {
-    const targetSource = arg.findHeader('source', 'F').toUpperCase() === 'T';
+    const targetSource = arg.isSource;
 
     arg.getResource((e, r) => {
         if(e && e !== Errors.ResourceNotFound)
@@ -148,7 +148,7 @@ export default function unchunkedMethod(arg : MethodCallArgs, callback)
 
 (unchunkedMethod as WebDAVRequest).chunked = function(arg : MethodCallArgs, callback)
 {
-    const targetSource = arg.findHeader('source', 'F').toUpperCase() === 'T';
+    const targetSource = arg.isSource;
 
     arg.getResource((e, r) => {
         if(e && e !== Errors.ResourceNotFound)

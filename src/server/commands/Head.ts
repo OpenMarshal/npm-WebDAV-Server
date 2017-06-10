@@ -12,7 +12,7 @@ export default function(arg : MethodCallArgs, callback)
                 return;
             }
 
-            const targetSource = arg.findHeader('source', 'F').toUpperCase() === 'T';
+            const targetSource = arg.isSource;
 
             arg.checkIfHeader(r, () => {
                 arg.requirePrivilege(targetSource ? [ 'canRead', 'canSource' ] : [ 'canRead' ], r, () => {
