@@ -18,7 +18,10 @@ export default function(arg : MethodCallArgs, callback)
                         if(e)
                             arg.setCode(HTTPCodes.InternalServerError);
                         else
+                        {
                             arg.setCode(HTTPCodes.OK);
+                            arg.invokeEvent('delete', r);
+                        }
                         callback();
                     }))
                 })

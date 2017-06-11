@@ -35,7 +35,10 @@ export default function(arg : MethodCallArgs, callback)
                                 if(e)
                                     arg.setCode(HTTPCodes.InternalServerError)
                                 else
+                                {
+                                    arg.invokeEvent('move', r, destination);
                                     arg.setCode(HTTPCodes.Created)
+                                }
                                 callback()
                             }))
                         })

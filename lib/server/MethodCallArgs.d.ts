@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import { BasicPrivilege } from '../user/privilege/IPrivilegeManager';
 import { IResource, ReturnCallback } from '../resource/IResource';
+import { EventsName, DetailsType } from './webDAVServer/Events';
 import { XMLElement } from '../helper/XML';
 import { WebDAVServer } from './webDAVServer/WebDAVServer';
 import { FSPath } from '../manager/FSManager';
@@ -33,6 +34,8 @@ export declare class MethodCallArgs {
     findHeader(name: string, defaultValue?: string): string;
     getResource(callback: ReturnCallback<IResource>): void;
     dateISO8601(ticks: number): string;
+    invokeEvent(event: EventsName, subjectResource?: IResource, details?: DetailsType): void;
+    wrapEvent(event: EventsName, subjectResource?: IResource, details?: DetailsType): () => void;
     fullUri(uri?: string): string;
     prefixUri(): string;
     getResourcePath(resource: IResource, callback: ReturnCallback<string>): void;

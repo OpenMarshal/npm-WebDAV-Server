@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import { WebDAVServerOptions } from '../WebDAVServerOptions';
 import { ResourceTreeNode, WebDAVServerStartCallback } from './Types';
-import { WebDAVRequest } from '../WebDAVRequest';
+import { MethodCallArgs, WebDAVRequest } from '../WebDAVRequest';
 import { IResource, ReturnCallback } from '../../resource/IResource';
 import { HTTPAuthentication } from '../../user/authentication/HTTPAuthentication';
 import { IPrivilegeManager } from '../../user/privilege/IPrivilegeManager';
@@ -11,6 +11,7 @@ import * as http from 'http';
 import * as persistence from './Persistence';
 import * as beforeAfter from './BeforeAfter';
 import * as startStop from './StartStop';
+import * as events from './Events';
 export { WebDAVServerOptions } from '../WebDAVServerOptions';
 export declare class WebDAVServer {
     httpAuthentication: HTTPAuthentication;
@@ -42,4 +43,11 @@ export declare class WebDAVServer {
     protected invokeBARequest: typeof beforeAfter.invokeBARequest;
     protected invokeBeforeRequest: typeof beforeAfter.invokeBeforeRequest;
     protected invokeAfterRequest: typeof beforeAfter.invokeAfterRequest;
+    invoke(event: events.EventsName, arg: MethodCallArgs, subjectResource?: IResource | FSPath, details?: events.DetailsType): void;
+    on(event: events.EventsName, listener: events.Listener): any;
+    on(event: events.EventsName, eventName: string, listener: events.Listener): any;
+    clearEvent(event: events.EventsName): void;
+    clearEvents(event: events.EventsName): void;
+    removeEvent(event: events.EventsName, listener: events.Listener): any;
+    removeEvent(event: events.EventsName, eventName: string): any;
 }

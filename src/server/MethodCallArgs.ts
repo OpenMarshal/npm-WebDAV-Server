@@ -1,5 +1,6 @@
 import { requirePrivilege, BasicPrivilege } from '../user/privilege/IPrivilegeManager'
 import { IResource, ReturnCallback } from '../resource/IResource'
+import { EventsName, DetailsType } from './webDAVServer/Events'
 import { XML, XMLElement } from '../helper/XML'
 import { parseIfHeader } from '../helper/IfParser'
 import { WebDAVServer } from './webDAVServer/WebDAVServer'
@@ -204,6 +205,22 @@ export class MethodCallArgs
         result += h + ':' + m;
         
         return result;
+    }
+
+    invokeEvent(event : EventsName, subjectResource ?: IResource, details ?: DetailsType)
+    {
+        this.server.invoke(event, this, subjectResource, details);
+    }
+    wrapEvent(event : EventsName, subjectResource ?: IResource, details ?: DetailsType)
+    {
+        const oldExit = this.exit;
+        this.exit = () => {
+            if(Math.floor(this.response.statusCode / 100) === 2)
+                this.invokeEvent(event, subjectResource, details);
+
+            oldExit();
+        }
+        return this.exit;
     }
 
     fullUri(uri : string = null)

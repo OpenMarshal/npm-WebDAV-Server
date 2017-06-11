@@ -63,7 +63,11 @@ function copy(arg : MethodCallArgs, source : IResource, rDest : IResource, desti
 
                 arg.requirePrivilege([ 'canCreate', 'canSetProperty', 'canWrite' ], dest, () => {
                     dest.create((e) => _(e, () => {
+                        arg.invokeEvent('create', dest);
+                        
                         rDest.addChild(dest, (e) => _(e, () => {
+                            arg.invokeEvent('addChild', rDest, dest);
+                            
                             copyAllProperties(source, dest, (e) => _(e, () => {
                                 if(!type.isFile)
                                 {
@@ -73,7 +77,13 @@ function copy(arg : MethodCallArgs, source : IResource, rDest : IResource, desti
 
                                 source.read(true, (e, rstream) => _(e, () => {
                                     dest.write(true, (e, wstream) => _(e, () => {
-                                        rstream.on('end', next);
+                                        rstream.on('end', () => {
+                                            arg.invokeEvent('read', source);
+                                            next();
+                                        });
+                                        wstream.on('finish', () => {
+                                            arg.invokeEvent('write', dest);
+                                        })
                                         rstream.pipe(wstream);
                                     }))
                                 }))
@@ -82,6 +92,7 @@ function copy(arg : MethodCallArgs, source : IResource, rDest : IResource, desti
                                 {
                                     if(!type.isDirectory)
                                     {
+                                        arg.invokeEvent('copy', source, dest);
                                         callback(null);
                                         return;
                                     }
@@ -101,12 +112,16 @@ function copy(arg : MethodCallArgs, source : IResource, rDest : IResource, desti
 
                                             --nb;
                                             if(nb === 0)
+                                            {
+                                                arg.invokeEvent('copy', source, dest);
                                                 callback(null);
+                                            }
                                         }
 
                                         if(nb === 0)
                                         {
                                             callback(null);
+                                            arg.invokeEvent('copy', source, dest);
                                             return;
                                         }
 
@@ -151,8 +166,12 @@ export default function(arg : MethodCallArgs, callback)
                     return;
                 }
                 
-                destination = destination.substring(destination.indexOf('://') + '://'.length)
-                destination = destination.substring(destination.indexOf('/'))
+                const startIndex = destination.indexOf('://');
+                if(startIndex !== -1)
+                {
+                    destination = destination.substring(startIndex + '://'.length)
+                    destination = destination.substring(destination.indexOf('/')) // Remove the hostname + port
+                }
                 destination = new FSPath(destination)
 
                 arg.server.getResourceFromPath(destination.getParent(), (e, rDest) => {
@@ -230,6 +249,7 @@ export default function(arg : MethodCallArgs, callback)
                                                     return;
                                                 }
 
+                                                arg.invokeEvent('delete', destCollision);
                                                 done(true);
                                             }))
                                         }))

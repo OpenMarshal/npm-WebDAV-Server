@@ -64,6 +64,8 @@ export default function(arg : MethodCallArgs, callback)
                         }
                         else
                         {
+                            arg.invokeEvent('read', r);
+
                             const range = arg.findHeader('Range');
                             if(range)
                             {

@@ -42,11 +42,15 @@ export default function(arg : MethodCallArgs, callback)
                                     return;
                                 }
                             
+                                arg.invokeEvent('create', resource);
                                 r.addChild(resource, (e) => process.nextTick(() => {
                                     if(e)
                                         arg.setCode(HTTPCodes.InternalServerError)
                                     else
+                                    {
+                                        arg.invokeEvent('addChild', r, resource);
                                         arg.setCode(HTTPCodes.Created)
+                                    }
                                     callback();
                                 }))
                             }))

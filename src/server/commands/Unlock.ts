@@ -56,7 +56,10 @@ export default function(arg : MethodCallArgs, callback)
                             if(e || !done)
                                 arg.setCode(HTTPCodes.Forbidden);
                             else
+                            {
+                                arg.invokeEvent('unlock', r, lock);
                                 arg.setCode(HTTPCodes.NoContent);
+                            }
                             callback();
                         })
                     })

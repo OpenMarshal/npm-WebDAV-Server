@@ -72,12 +72,22 @@ function createLock(arg : MethodCallArgs, callback)
                                         return;
                                     }
                                 
+                                    arg.invokeEvent('create', resource);
                                     r.addChild(resource, (e) => {
                                         if(e)
+                                        {
                                             arg.setCode(HTTPCodes.InternalServerError);
+                                            callback();
+                                        }
                                         else
-                                            arg.setCode(HTTPCodes.Created);
-                                        callback();
+                                        {
+                                            arg.invokeEvent('addChild', r, resource);
+                                            writeLock(resource, () => {
+                                                arg.setCode(HTTPCodes.Created);
+                                                arg.writeXML(createResponse(arg, lock));
+                                                callback();
+                                            });
+                                        }
                                     })
                                 }))
                             })
@@ -95,7 +105,8 @@ function createLock(arg : MethodCallArgs, callback)
                 return;
             }
 
-            arg.checkIfHeader(r, () => {
+            function writeLock(r : IResource, cb)
+            {
                 arg.requirePrivilege([ 'canSetLock' ], r, () => {
                     r.setLock(lock, (e) => process.nextTick(() => {
                         if(e)
@@ -105,11 +116,18 @@ function createLock(arg : MethodCallArgs, callback)
                             return;
                         }
                         
+                        arg.invokeEvent('lock', r, lock);
                         arg.response.setHeader('Lock-Token', lock.uuid);
-                        arg.setCode(HTTPCodes.OK);
-                        arg.writeXML(createResponse(arg, lock));
-                        callback();
+                        cb();
                     }))
+                })
+            }
+
+            arg.checkIfHeader(r, () => {
+                writeLock(r, () => {
+                    arg.setCode(HTTPCodes.OK);
+                    arg.writeXML(createResponse(arg, lock));
+                    callback();
                 })
             })
         })
@@ -143,6 +161,7 @@ function refreshLock(arg : MethodCallArgs, lockUUID : string, callback)
                 
                 lock.refresh();
                 
+                arg.invokeEvent('refreshLock', r, lock);
                 arg.setCode(HTTPCodes.OK);
                 arg.writeXML(createResponse(arg, lock));
                 callback();
