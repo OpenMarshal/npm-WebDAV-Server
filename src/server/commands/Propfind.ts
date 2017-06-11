@@ -61,8 +61,6 @@ interface PropertyRule
 
 function parseRequestBody(arg : MethodCallArgs) : PropertyRule
 {
-    const xml = XML.parse(arg.data);
-
     const allTrue : PropertyRule = {
         leftElements: [],
         mustDisplay: () => true,
@@ -79,6 +77,8 @@ function parseRequestBody(arg : MethodCallArgs) : PropertyRule
 
     try
     {
+        const xml = XML.parse(arg.data);
+
         const propfind = xml.find('DAV:propfind');
 
         if(propfind.findIndex('DAV:propname') !== -1)
