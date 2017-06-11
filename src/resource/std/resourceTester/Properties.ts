@@ -12,7 +12,7 @@ export function setProperty(callback : ResourceTesterTestCallback)
 
         r1.setProperty(name, value, (e) => {
             callback(e, !e, 'setProperty error', undefined, () => {
-                r1.getProperty('prop-test_test:test//test/test.test', (e, v) => {
+                r1.getProperty(name, (e, v) => {
                     callback(e, v === value, 'Value returned by getProperty is different of the value provided to setProperty')
                 })
             })
@@ -25,7 +25,7 @@ export function setProperty(callback : ResourceTesterTestCallback)
 
         r1.setProperty(name, value, (e) => {
             callback(e, !e, 'setProperty error', undefined, () => {
-                r1.getProperty('prop-test_test:test//test/test.test', (e, v) => {
+                r1.getProperty(name, (e, v) => {
                     callback(e, v === value, 'Value returned by getProperty is different of the value provided to setProperty')
                 })
             })
@@ -44,7 +44,7 @@ export function removeProperty(callback : ResourceTesterTestCallback)
             callback(e, !e, 'setProperty error', undefined, () => {
                 r1.removeProperty(name, (e) => {
                     callback(e, !e, 'removeProperty error', undefined, () => {
-                        r1.getProperty('prop-test_test:test//test/test.test', (e, v) => {
+                        r1.getProperty(name, (e, v) => {
                             callback(e, !e && !!v, 'The property has not been removed from removeProperty', false)
                         })
                     })
