@@ -96,6 +96,7 @@ canChunk | `true` | Define if the server must recreate the full message or if it
 hostname | `'::'` | Define the scope of the listening server.
 port | `1900` | The default port to use if no port is specified when calling `server.start()`.
 strictMode | `false` | Define if the server must blindly follow the WebDAV RFC (`true`) or allow more flexibility (`false`) (for instance disallow a body in a request which doesn't use a body).
+autoSave | `null` | Define an auto-saver to automatically save the state of the server and taking care of any conflict which can happen while writing the persistence file and limit the number of writes when some are not required (3 PUT in a row will lead to 2 writes, the first and last ones) (the GET request, for instance, doesn't lead to a write). The `autoSave` option is an `object` of type : `{ treeFilePath : string, tempTreeFilePath : string, onSaveError ?: (error : Error) => void, streamProvider ?: (inputStream : Writable, callback : (outputStream ?: Writable) => void) => void }`.
 
 ## Sample
 
