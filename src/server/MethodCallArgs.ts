@@ -31,7 +31,7 @@ export class MethodCallArgs
         public callback : () => void
     ) {
         this.contentLength = parseInt(this.findHeader('Content-length', '0'), 10);
-        this.isSource = this.findHeader('source', 'F').toUpperCase() === 'T' || this.findHeader('translate', 'F').toUpperCase() === 'T';
+        this.isSource = this.findHeader('source', 'F').toUpperCase() === 'T' || this.findHeader('translate', 'T').toUpperCase() === 'F';
         this.depth = parseInt(this.findHeader('Depth', '0'), 10);
         this.host = this.findHeader('Host');
         
