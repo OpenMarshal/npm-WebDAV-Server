@@ -2,7 +2,7 @@ import { MethodCallArgs } from '../../server/MethodCallArgs';
 import { IResource } from '../../resource/IResource';
 export declare type PrivilegeManagerCallback = (error: Error, hasAccess: boolean) => void;
 export declare type PrivilegeManagerMethod = (arg: MethodCallArgs, resource: IResource, callback: PrivilegeManagerCallback) => void;
-export declare type BasicPrivilege = 'canCreate' | 'canDelete' | 'canMove' | 'canRename' | 'canAppend' | 'canWrite' | 'canRead' | 'canSource' | 'canGetMimeType' | 'canGetSize' | 'canListLocks' | 'canSetLock' | 'canRemoveLock' | 'canGetAvailableLocks' | 'canGetLock' | 'canAddChild' | 'canRemoveChild' | 'canGetChildren' | 'canSetProperty' | 'canGetProperty' | 'canGetProperties' | 'canRemoveProperty' | 'canGetCreationDate' | 'canGetLastModifiedDate' | 'canGetWebName' | 'canGetType';
+export declare type BasicPrivilege = 'all' | 'canCreate' | 'canDelete' | 'canMove' | 'canRename' | 'canAppend' | 'canWrite' | 'canRead' | 'canSource' | 'canGetMimeType' | 'canGetSize' | 'canListLocks' | 'canSetLock' | 'canRemoveLock' | 'canGetAvailableLocks' | 'canGetLock' | 'canAddChild' | 'canRemoveChild' | 'canGetChildren' | 'canSetProperty' | 'canGetProperty' | 'canGetProperties' | 'canRemoveProperty' | 'canGetCreationDate' | 'canGetLastModifiedDate' | 'canGetWebName' | 'canGetType';
 export declare function requirePrivilege(privilege: string | BasicPrivilege | string[] | BasicPrivilege[], arg: MethodCallArgs, resource: IResource, callback: PrivilegeManagerCallback): void;
 export interface IPrivilegeManager {
     canCreate: PrivilegeManagerMethod;

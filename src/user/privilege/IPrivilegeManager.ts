@@ -6,7 +6,8 @@ export type PrivilegeManagerCallback = (error : Error, hasAccess : boolean) => v
 export type PrivilegeManagerMethod = (arg : MethodCallArgs, resource : IResource, callback : PrivilegeManagerCallback) => void
 
 export type BasicPrivilege = 
-      'canCreate'
+    'all'
+    | 'canCreate'
     | 'canDelete'
     | 'canMove'
     | 'canRename'
