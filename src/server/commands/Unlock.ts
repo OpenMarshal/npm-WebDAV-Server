@@ -36,7 +36,21 @@ export default function(arg : MethodCallArgs, callback)
             }
 
             arg.checkIfHeader(r, () => {
-                arg.requirePrivilege([ 'canGetLock', 'canRemoveLock' ], r, () => {
+                arg.requireErPrivilege([ 'canGetLock', 'canRemoveLock' ], r, (e, can) => {
+                    if(e)
+                    {
+                        arg.setCode(HTTPCodes.InternalServerError);
+                        callback();
+                        return;
+                    }
+
+                    if(!can)
+                    {
+                        arg.setCode(HTTPCodes.Forbidden);
+                        callback();
+                        return;
+                    }
+
                     r.getLock(token, (e, lock) => {
                         if(e || !lock)
                         {
