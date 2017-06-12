@@ -63,7 +63,9 @@ module.exports = (callback, options) => {
             }
             setTimeout(() => callback(false, 'Timeout'), options.timeout);
 
-            const server = new webdav.WebDAVServer();
+            const server = new webdav.WebDAVServer({
+                httpAuthentication: new webdav.HTTPBasicAuthentication('default realm')
+            });
             server.start(options.port + this.index, () => {
                 fn(callback, server);
             })
