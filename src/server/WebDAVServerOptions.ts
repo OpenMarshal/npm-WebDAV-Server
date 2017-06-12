@@ -6,6 +6,7 @@ import { SimpleUserManager } from '../user/simple/SimpleUserManager'
 import { RootResource } from '../resource/std/RootResource'
 import { IUserManager } from '../user/IUserManager'
 import { IResource } from '../resource/IResource'
+import { Writable } from 'stream'
 
 export class WebDAVServerOptions
 {
@@ -19,6 +20,12 @@ export class WebDAVServerOptions
     hostname ?: string = '::'
     port ?: number = 1900
     strictMode ?: boolean = false
+    autoSave ?: {
+        treeFilePath : string
+        tempTreeFilePath : string
+        onSaveError ?: (error : Error) => void
+        streamProvider ?: (stream : Writable, callback : () => void) => void
+    } = null
 }
 export default WebDAVServerOptions;
 

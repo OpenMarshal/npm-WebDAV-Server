@@ -1,7 +1,104 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
 import { WebDAVServerStartCallback } from './Types'
 import { Errors, HTTPError } from '../../Errors'
+import { WebDAVServer } from './WebDAVServer'
+import { Writable, Readable } from 'stream'
 import * as http from 'http'
+import * as zlib from 'zlib'
+import * as fs from 'fs'
+
+function autoSave(treeFilePath : string, tempTreeFilePath : string, onSaveError ?: (error : Error) => void, streamProvider ?: (inputStream : Writable, callback : (outputStream ?: Writable) => void) => void)
+{
+    if(!streamProvider)
+        streamProvider = (s, cb) => cb(s);
+    if(!onSaveError)
+        onSaveError = () => {};
+
+    let saving = false;
+    let saveRequested = false;
+    this.afterRequest((arg, next) => {
+        switch(arg.request.method.toUpperCase())
+        {
+            case 'PROPPATCH':
+            case 'DELETE':
+            case 'MKCOL':
+            case 'MOVE':
+            case 'COPY':
+            case 'POST':
+            case 'PUT':
+                // Avoid concurrent saving
+                if(saving)
+                {
+                    saveRequested = true;
+                    next();
+                    return;
+                }
+
+                const save = function()
+                {
+                    this.save((e, data) => {
+                        if(e)
+                        {
+                            onSaveError(e);
+                            next();
+                        }
+                        else
+                        {
+                            const stream = zlib.createGzip();
+                            streamProvider(stream, (outputStream) => {
+                                if(!outputStream)
+                                    outputStream = stream;
+                                outputStream.pipe(fs.createWriteStream(tempTreeFilePath));
+
+                                stream.end(JSON.stringify(data), (e) => {
+                                    if(e)
+                                    {
+                                        onSaveError(e);
+                                        next();
+                                        return;
+                                    }
+                                });
+
+                                stream.on('close', () => {
+                                    fs.unlink(treeFilePath, (e) => {
+                                        if(e && e.code !== 'ENOENT') // An error other than ENOENT (no file/folder found)
+                                        {
+                                            onSaveError(e);
+                                            next();
+                                            return;
+                                        }
+
+                                        fs.rename(tempTreeFilePath, treeFilePath, (e) => {
+                                            if(e)
+                                                onSaveError(e);
+                                            next();
+                                        })
+                                    })
+                                })
+                            })
+                        }
+                    })
+                }
+
+                saving = true;
+                next = () => {
+                    if(saveRequested)
+                    {
+                        saveRequested = false;
+                        save.bind(this)();
+                    }
+                    else
+                        saving = false;
+                }
+                save.bind(this)();
+                break;
+            
+            default:
+                next();
+                break;
+        }
+    })
+}
 
 export function start(port ?: number | WebDAVServerStartCallback, callback ?: WebDAVServerStartCallback)
 {
@@ -93,6 +190,9 @@ export function start(port ?: number | WebDAVServerStartCallback, callback ?: We
                 }
             })
         })
+
+        if(this.options.autoSave)
+            autoSave.bind(this)(this.options.autoSave.treeFilePath, this.options.autoSave.tempTreeFilePath, this.options.autoSave.onError, this.options.autoSave.streamProvider);
     }
 
     this.server.listen(_port, this.options.hostname, () => {
