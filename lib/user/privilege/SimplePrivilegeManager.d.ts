@@ -1,5 +1,6 @@
 import { PrivilegeManagerMethod } from './IPrivilegeManager';
 import { IPrivilegeManager } from './IPrivilegeManager';
+export declare type SimpleBasicPrivilege = 'all' | 'canCreate' | 'canDelete' | 'canWrite' | 'canSource' | 'canRead' | 'canListLocks' | 'canSetLock' | 'canGetAvailableLocks' | 'canAddChild' | 'canRemoveChild' | 'canGetChildren' | 'canSetProperty' | 'canGetProperty';
 export declare abstract class SimplePrivilegeManager implements IPrivilegeManager {
     abstract canCreate: PrivilegeManagerMethod;
     abstract canDelete: PrivilegeManagerMethod;

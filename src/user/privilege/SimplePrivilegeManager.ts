@@ -4,6 +4,22 @@ import { MethodCallArgs } from '../../server/MethodCallArgs'
 import { IResource } from '../../resource/IResource'
 import { LockType } from '../../resource/lock/LockType'
 
+export type SimpleBasicPrivilege = 
+    'all'
+    | 'canCreate'
+    | 'canDelete'
+    | 'canWrite'
+    | 'canSource'
+    | 'canRead'
+    | 'canListLocks'
+    | 'canSetLock'
+    | 'canGetAvailableLocks'
+    | 'canAddChild'
+    | 'canRemoveChild'
+    | 'canGetChildren'
+    | 'canSetProperty'
+    | 'canGetProperty';
+
 export abstract class SimplePrivilegeManager implements IPrivilegeManager
 {
     abstract canCreate : PrivilegeManagerMethod
