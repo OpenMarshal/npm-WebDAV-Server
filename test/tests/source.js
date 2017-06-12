@@ -25,10 +25,10 @@ module.exports = (test, options, index) => test('source', (isValid, server) =>
 
     const url = 'http://localhost:' + (options.port + index)
 
-    test('source');
-    test('translate');
+    test('source', 'T', 'F');
+    test('translate', 'F', 'T');
 
-    function test(headerName)
+    function test(headerName, unprocessedHeaderValue, processedHeaderValue)
     {
         let processed = '<html><body>processed content</body></html>';
         let unprocessed = 'unprocessed content';
@@ -88,7 +88,7 @@ module.exports = (test, options, index) => test('source', (isValid, server) =>
                     url: url + '/testFile.txt',
                     method: 'GET',
                     headers: {
-                        [headerName]: 'T'
+                        [headerName]: unprocessedHeaderValue
                     }
                 }, expect(unprocessed, () => {
                     const old = {
@@ -99,6 +99,7 @@ module.exports = (test, options, index) => test('source', (isValid, server) =>
                         url: url + '/testFile.txt',
                         method: 'PUT',
                         headers: {
+                            [headerName]: processedHeaderValue
                         },
                         body: processed + 'addon'
                     }, (e, res, body) => _(e, () => {
@@ -106,7 +107,7 @@ module.exports = (test, options, index) => test('source', (isValid, server) =>
                             url: url + '/testFile.txt',
                             method: 'PUT',
                             headers: {
-                                [headerName]: 'T'
+                                [headerName]: unprocessedHeaderValue
                             },
                             body: unprocessed + 'addonX'
                         }, (e, res, body) => _(e, () => {
@@ -114,13 +115,14 @@ module.exports = (test, options, index) => test('source', (isValid, server) =>
                                 url: url + '/testFile.txt',
                                 method: 'GET',
                                 headers: {
+                                    [headerName]: processedHeaderValue
                                 }
                             }, expect(old.processed + 'addon', () => {
                                 request({
                                     url: url + '/testFile.txt',
                                     method: 'GET',
                                     headers: {
-                                        [headerName]: 'T'
+                                        [headerName]: unprocessedHeaderValue
                                     }
                                 }, expect(old.unprocessed + 'addonX', () => {
                                     isValid(true);
