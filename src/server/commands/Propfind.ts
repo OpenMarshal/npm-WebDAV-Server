@@ -135,7 +135,18 @@ export default function(arg : MethodCallArgs, callback)
             resource.type((e, type) => process.nextTick(() => {
                 if(!type.isDirectory || arg.depth === 0)
                 {
-                    addXMLInfo(resource, multistatus, () => done(multistatus))
+                    addXMLInfo(resource, multistatus, (e) => {
+                        if(!e)
+                            done(multistatus);
+                        else
+                        {
+                            if(e === Errors.BadAuthentication)
+                                arg.setCode(HTTPCodes.Unauthorized);
+                            else
+                                arg.setCode(HTTPCodes.InternalServerError);
+                            callback();
+                        }
+                    })
                     return;
                 }
                 
@@ -148,7 +159,10 @@ export default function(arg : MethodCallArgs, callback)
                             if(nb > 0 && error)
                             {
                                 nb = -1;
-                                arg.setCode(HTTPCodes.InternalServerError);
+                                if(error === Errors.BadAuthentication)
+                                    arg.setCode(HTTPCodes.Unauthorized);
+                                else
+                                    arg.setCode(HTTPCodes.InternalServerError);
                                 callback();
                                 return;
                             }
@@ -158,8 +172,8 @@ export default function(arg : MethodCallArgs, callback)
                                 done(multistatus);
                         }
 
-                        addXMLInfo(resource, multistatus, nbOut)
-                        
+                        addXMLInfo(resource, multistatus, nbOut);
+
                         children.forEach((child) => process.nextTick(() => {
                             addXMLInfo(child, multistatus, nbOut)
                         }))
@@ -183,15 +197,13 @@ export default function(arg : MethodCallArgs, callback)
                 arg.requireErPrivilege(privileges, resource, (e, can) => {
                     if(e)
                     {
-                        propstat.ele('D:status').add(propstatStatus(HTTPCodes.InternalServerError));
-                        callback();
+                        callback(e);
                         return;
                     }
                     
                     if(!can)
                     {
-                        propstat.ele('D:status').add(propstatStatus(HTTPCodes.Forbidden));
-                        callback();
+                        callback(Errors.BadAuthentication);
                         return;
                     }
 

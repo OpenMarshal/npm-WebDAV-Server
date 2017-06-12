@@ -117,7 +117,7 @@ export class MethodCallArgs
 
             if(!can)
             {
-                this.setCode(HTTPCodes.Forbidden);
+                this.setCode(HTTPCodes.Unauthorized);
                 this.exit();
                 return;
             }
