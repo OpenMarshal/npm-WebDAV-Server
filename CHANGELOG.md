@@ -1,5 +1,42 @@
 # Changelog
 
+# 1.7.0
+
+### New features
+* Added resource events in the system *[83bb59e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/83bb59e)*
+* Added an 'autoSave' mode to the server to embed a robust way to save the state of the server *[bd2f12f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/bd2f12f)*
+* Implemented a 'SimplePathPrivilegeManager' to manage easily user privileges (pretty bare) *[b5b81f3](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b5b81f3)*
+* Changed the response code/message (to 401 Unauthorized) to ask the client to authenticate the user *[14e7c76](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/14e7c76)*
+* Added the 'all' privilege in the 'BasicPrivilege' type *[318e526](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/318e526)*
+* Added support for the 'translate' header (alias of the 'source' header) *[2d9627e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2d9627e)*
+* Added support for ranged GET requests *[5bee991](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5bee991)*
+
+### Changes
+* Use the 'HTTPDigestAuthentication' instance by default instead of a 'HTTPBasicAuthentication' instance in the server's options *[0795df3](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0795df3)*
+* Changed 'addUser' of the 'SimpleUserManager' class to return the created user *[155ea74](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/155ea74)*
+* Added the 'Content-Length' header and the 'Accept-Ranges' header in the HEAD method *[992620b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/992620b)*
+* Added the 'DAV:location' tag to the propfind response *[3df40bb](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3df40bb)*
+
+### Tests
+* Use a 'HTTPBasicAuthentication' as a default authentication system for tests *[dde8001](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/dde8001)*
+* Added tests for the server events *[759befc](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/759befc)*
+* Added tests for the 'translate' header *[30ea0d3](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/30ea0d3)*
+
+### Other
+* Added a 'SimpleBasicPrivilege' type to represent the possibilities of the 'SimplePrivilegeManager' classes *[218af11](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/218af11)*
+* Added the 'MethodCallArgs' type to a function definition (for better code clarity) *[2175459](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2175459)*
+* Added the export of the 'SimplePathPrivilegeManager' class *[b6548aa](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b6548aa)*
+* Added the 'autoSave' option *[eef40f0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/eef40f0)*
+* Removed duplicates in the code of the 'ResourceTester' class *[b254f51](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b254f51)*
+* Changed the order of the imports to be more stable on future changes *[0ad2594](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0ad2594)*
+* Removed useless imports/exports which could cause circular dependencies *[4e14885](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/4e14885)*
+* Centralized the 'source' header check in the 'MethodCallArgs' class *[163914f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/163914f)*
+
+### Bug fix
+* Changed the Unlock response status code/message when unauthorized (to 403 Forbidden) *[65423c8](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/65423c8)*
+* Fixed bugs in the 'HTTPBasicAuthentication' and the 'HTTPDigestAuthentication' classes *[4e8c78c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/4e8c78c)*
+* Fixed PROPPATCH and PROPFIND xml parsing errors when the request body was not valid *[e7fed58](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e7fed58)*
+
 ## 1.6.0
 
 ### New features
@@ -27,7 +64,6 @@
 * Fixed a potential '//' at the end of the path of a resource *[27abc4e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/27abc4e)*
 * Fixed an XML bug leading to an infinite loop *[3bc3f07](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3bc3f07)*
 * Fixed the issue of not applying to the name of XML elements the default namespace *[aa793d5](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/aa793d5)*
-
 
 ## 1.5.5
 
