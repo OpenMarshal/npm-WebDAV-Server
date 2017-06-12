@@ -1,4 +1,5 @@
 import { HTTPBasicAuthentication } from '../user/authentication/HTTPBasicAuthentication'
+import { HTTPDigestAuthentication } from '../user/authentication/HTTPDigestAuthentication'
 import { FakePrivilegeManager } from '../user/privilege/FakePrivilegeManager'
 import { HTTPAuthentication } from '../user/authentication/HTTPAuthentication'
 import { IPrivilegeManager } from '../user/privilege/IPrivilegeManager'
@@ -11,7 +12,7 @@ import { Writable } from 'stream'
 export class WebDAVServerOptions
 {
     requireAuthentification ?: boolean = false
-    httpAuthentication ?: HTTPAuthentication = new HTTPBasicAuthentication('default realm')
+    httpAuthentication ?: HTTPAuthentication = new HTTPDigestAuthentication('default realm')
     privilegeManager ?: IPrivilegeManager = new FakePrivilegeManager()
     rootResource ?: IResource = new RootResource()
     userManager ?: IUserManager = new SimpleUserManager()
