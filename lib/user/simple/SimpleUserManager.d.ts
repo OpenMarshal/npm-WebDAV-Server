@@ -5,6 +5,6 @@ export declare class SimpleUserManager implements IUserManager {
     constructor();
     getUserByName(name: string, callback: (error: Error, user: IUser) => void): void;
     getDefaultUser(callback: (user: IUser) => void): void;
-    addUser(name: string, password: string, isAdmin?: boolean): void;
+    addUser(name: string, password: string, isAdmin?: boolean): IUser;
     getUsers(callback: (error: Error, users: IUser[]) => void): void;
 }
