@@ -16,7 +16,7 @@ function autoSave(treeFilePath : string, tempTreeFilePath : string, onSaveError 
 
     let saving = false;
     let saveRequested = false;
-    this.afterRequest((arg, next) => {
+    this.afterRequest((arg : MethodCallArgs, next) => {
         switch(arg.request.method.toUpperCase())
         {
             case 'PROPPATCH':
