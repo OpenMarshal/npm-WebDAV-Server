@@ -46,7 +46,7 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
             onError(Errors.MissingAuthorisationHeader)
             return;
         }
-        if(!/^Digest (\s*[a-zA-Z]+\s*=\s*"(\\"|[^"])+"\s*(,|$))+$/.test(authHeader))
+        if(!/^Digest (\s*[a-zA-Z]+\s*=\s*(("(\\"|[^"])+")|([^,\s]+))\s*(,|$))+$/.test(authHeader))
         {
             onError(Errors.WrongHeaderFormat);
             return;
@@ -56,11 +56,11 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
 
         const authProps : any = { };
 
-        const rex = /([a-zA-Z]+)\s*=\s*"((?:\\"|[^"])+)"/g;
+        const rex = /([a-zA-Z]+)\s*=\s*(?:(?:"((?:\\"|[^"])+)")|([^,\s]+))/g;
         let match = rex.exec(authHeader);
         while(match)
         {
-            authProps[match[1]] = match[2];
+            authProps[match[1]] = match[3] ? match[3] : match[2];
             match = rex.exec(authHeader);
         }
         
@@ -77,7 +77,7 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
                 return;
             }
         
-            const ha1 = md5(authProps.username + ':' + this.realm + ':' + user.password ? user.password : '');
+            const ha1 = md5(authProps.username + ':' + this.realm + ':' + (user.password ? user.password : ''));
             const ha2 = md5(arg.request.method.toString().toUpperCase() + ':' + arg.uri);
             const result = md5(ha1 + ':' + authProps.nonce + ':' + authProps.nc + ':' + authProps.cnonce + ':' + authProps.qop + ':' + ha2);
 
