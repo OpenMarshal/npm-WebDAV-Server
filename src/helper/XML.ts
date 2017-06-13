@@ -164,10 +164,13 @@ export abstract class XML
             name,
             attributes,
             elements: [],
-            ele(name : string, attributes ?: any)
+            ele(name : string, attributes ?: any, insertAtStart ?: boolean)
             {
                 const el = result.eleFn(name, attributes);
-                result.elements.push(el);
+                if(insertAtStart)
+                    result.elements.unshift(el);
+                else
+                    result.elements.push(el);
                 return el;
             },
             add(element : any)

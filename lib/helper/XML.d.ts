@@ -16,7 +16,7 @@ export declare abstract class XML {
         name: string;
         attributes: any;
         elements: any[];
-        ele(name: string, attributes?: any): any;
+        ele(name: string, attributes?: any, insertAtStart?: boolean): any;
         add(element: any): any;
         eleFn: (name: string, attributes?: any, text?: string) => any;
     };
