@@ -310,8 +310,8 @@ export default function(arg : MethodCallArgs, callback)
                                         if(lock.owner)
                                             activelock.ele('D:owner').add(lock.owner)
                                         activelock.ele('D:timeout').add('Second-' + (lock.expirationDate - Date.now()))
-                                        activelock.ele('D:locktoken').ele('D:href').add(lock.uuid)
-                                        activelock.ele('D:lockroot').ele('D:href').add(arg.fullUri(path).replace(' ', '%20'))
+                                        activelock.ele('D:locktoken').ele('D:href', undefined, true).add(lock.uuid)
+                                        activelock.ele('D:lockroot').ele('D:href', undefined, true).add(arg.fullUri(path).replace(' ', '%20'))
                                     }
                                 }
                                 
@@ -327,8 +327,8 @@ export default function(arg : MethodCallArgs, callback)
                             }
                             
                             const p = arg.fullUri(path).replace(' ', '%20');
-                            response.ele('D:href').add(p.lastIndexOf('/') !== p.length - 1 && type.isDirectory ? p + '/' : p);
-                            response.ele('D:location').ele('D:href').add(p);
+                            response.ele('D:href', undefined, true).add(p.lastIndexOf('/') !== p.length - 1 && type.isDirectory ? p + '/' : p);
+                            response.ele('D:location').ele('D:href', undefined, true).add(p);
 
                             if(tags.resourcetype.value && type.isDirectory)
                                 tags.resourcetype.el.ele('D:collection')

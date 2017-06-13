@@ -20,7 +20,7 @@ export default function(arg : MethodCallArgs, callback)
                     'xmlns:D': 'DAV:'
                 });
                 const response = multistatus.ele('D:response');
-                response.ele('D:href').add(arg.fullUri());
+                response.ele('D:href', undefined, true).add(arg.fullUri());
 
                 try
                 {
