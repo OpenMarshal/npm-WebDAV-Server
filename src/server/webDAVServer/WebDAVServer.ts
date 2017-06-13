@@ -7,6 +7,7 @@ import { IPrivilegeManager } from '../../user/privilege/IPrivilegeManager'
 import { FSManager, FSPath } from '../../manager/FSManager'
 import { IUserManager } from '../../user/IUserManager'
 import Commands from '../commands/Commands'
+import * as https from 'https'
 import * as http from 'http'
 
 import * as persistence from './Persistence'
@@ -30,7 +31,7 @@ export class WebDAVServer
     protected beforeManagers : WebDAVRequest[]
     protected afterManagers : WebDAVRequest[]
     protected unknownMethod : WebDAVRequest
-    protected server : http.Server
+    protected server : http.Server | https.Server
 
     constructor(options ?: WebDAVServerOptions)
     {

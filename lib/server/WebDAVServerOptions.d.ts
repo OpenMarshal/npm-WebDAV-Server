@@ -4,6 +4,7 @@ import { IPrivilegeManager } from '../user/privilege/IPrivilegeManager';
 import { IUserManager } from '../user/IUserManager';
 import { IResource } from '../resource/IResource';
 import { Writable } from 'stream';
+import * as https from 'https';
 export declare class WebDAVServerOptions {
     requireAuthentification?: boolean;
     httpAuthentication?: HTTPAuthentication;
@@ -11,10 +12,11 @@ export declare class WebDAVServerOptions {
     rootResource?: IResource;
     userManager?: IUserManager;
     lockTimeout?: number;
+    strictMode?: boolean;
     canChunk?: boolean;
     hostname?: string;
+    https?: https.ServerOptions;
     port?: number;
-    strictMode?: boolean;
     autoSave?: {
         treeFilePath: string;
         tempTreeFilePath: string;

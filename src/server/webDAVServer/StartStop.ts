@@ -3,6 +3,7 @@ import { WebDAVServerStartCallback } from './Types'
 import { Errors, HTTPError } from '../../Errors'
 import { WebDAVServer } from './WebDAVServer'
 import { Writable, Readable } from 'stream'
+import * as https from 'https'
 import * as http from 'http'
 import * as zlib from 'zlib'
 import * as fs from 'fs'
@@ -126,7 +127,8 @@ export function start(port ?: number | WebDAVServerStartCallback, callback ?: We
 
     if(!this.server)
     {
-        this.server = http.createServer((req : http.IncomingMessage, res : http.ServerResponse) =>
+        const serverCreator = this.options.https ? (c) => https.createServer(this.options.https, c) : (c) => http.createServer(c);
+        this.server = serverCreator((req : http.IncomingMessage, res : http.ServerResponse) =>
         {
             let method : WebDAVRequest = this.methods[this.normalizeMethodName(req.method)];
             if(!method)

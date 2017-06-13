@@ -7,6 +7,7 @@ import { HTTPAuthentication } from '../../user/authentication/HTTPAuthentication
 import { IPrivilegeManager } from '../../user/privilege/IPrivilegeManager';
 import { FSPath } from '../../manager/FSManager';
 import { IUserManager } from '../../user/IUserManager';
+import * as https from 'https';
 import * as http from 'http';
 import * as persistence from './Persistence';
 import * as beforeAfter from './BeforeAfter';
@@ -23,7 +24,7 @@ export declare class WebDAVServer {
     protected beforeManagers: WebDAVRequest[];
     protected afterManagers: WebDAVRequest[];
     protected unknownMethod: WebDAVRequest;
-    protected server: http.Server;
+    protected server: http.Server | https.Server;
     constructor(options?: WebDAVServerOptions);
     getResourceFromPath(path: FSPath | string[] | string, callback: ReturnCallback<IResource>): any;
     getResourceFromPath(path: FSPath | string[] | string, rootResource: IResource, callback: ReturnCallback<IResource>): any;

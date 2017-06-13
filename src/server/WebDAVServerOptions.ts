@@ -8,6 +8,7 @@ import { RootResource } from '../resource/std/RootResource'
 import { IUserManager } from '../user/IUserManager'
 import { IResource } from '../resource/IResource'
 import { Writable } from 'stream'
+import * as https from 'https'
 
 export class WebDAVServerOptions
 {
@@ -17,10 +18,11 @@ export class WebDAVServerOptions
     rootResource ?: IResource = new RootResource()
     userManager ?: IUserManager = new SimpleUserManager()
     lockTimeout ?: number = 3600
+    strictMode ?: boolean = false
     canChunk ?: boolean = true
     hostname ?: string = '::'
+    https ?: https.ServerOptions = null
     port ?: number = 1900
-    strictMode ?: boolean = false
     autoSave ?: {
         treeFilePath : string
         tempTreeFilePath : string
