@@ -1,5 +1,52 @@
 # Changelog
 
+# 1.7.4
+
+### Documentation
+* Changed the code type from 'typescript' to 'javascript' of the code sample in the README *[34a19f1](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/34a19f1)*
+
+### Tests
+* Added tests for the streaming PUT *[ae0cf70](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/ae0cf70)*
+
+### Bug fix
+* Changed the behavior of the server regarding the 'Content-Length' header in order to use the chunked version of a method everytime *[0b675b0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0b675b0)*
+
+# 1.7.3
+
+### New features
+* Added support to HTTPS *[4781457](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/4781457)*
+
+### Changes
+* The 'mimeType' method of the implemented resources now return the content type instead of the mime-type only *[d1247af](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d1247af)*
+
+### Documentation
+* Simplified the README.md *[0bc3801](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0bc3801)*
+
+### Other
+* Added a 'Workflow' class to replace similar codes in the project *[eb22a3d](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/eb22a3d)*
+
+### Bug fix
+* Added the 'Content-Type' and the 'Content-Length' headers to the GET and HEAD methods *[787ed4e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/787ed4e)*
+
+# 1.7.2
+
+### Tests
+* Removed support for the unstable version 4.0 version of node *[418332a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/418332a)*
+
+### Other
+* Added a way to add new XML elements at the head of the perent's children in the XML file utility *[310b860](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/310b860)*
+
+### Bug fix
+* Now write 'DAV:href' at the head of the parent's children, fixing issues with 'cadaver', 'davfs2', etc... *[9d9d512](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/9d9d512)*
+
+# 1.7.1
+
+### Tests
+* Improved the tests for the 'source' and 'translate' headers *[b99024b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b99024b)*
+
+### Bug fix
+* Fixed a bug with the 'translate' header *[ccdd7ed](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/ccdd7ed)*
+
 # 1.7.0
 
 ### New features
