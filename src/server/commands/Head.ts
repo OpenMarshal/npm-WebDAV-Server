@@ -15,14 +15,29 @@ export default function(arg : MethodCallArgs, callback)
             const targetSource = arg.isSource;
 
             arg.checkIfHeader(r, () => {
-                arg.requirePrivilege(targetSource ? [ 'canRead', 'canSource' ] : [ 'canRead' ], r, () => {
+                arg.requirePrivilege(targetSource ? [ 'canRead', 'canSource', 'canGetMimeType' ] : [ 'canRead', 'canGetMimeType' ], r, () => {
                     r.type((e, type) => {
                         if(e)
-                            arg.setCode(HTTPCodes.InternalServerError)
-                        else if(!type.isFile)
-                            arg.setCode(HTTPCodes.MethodNotAllowed)
-                        else
                         {
+                            arg.setCode(HTTPCodes.InternalServerError)
+                            callback();
+                            return;
+                        }
+                        if(!type.isFile)
+                        {
+                            arg.setCode(HTTPCodes.MethodNotAllowed)
+                            callback();
+                            return;
+                        }
+                        
+                        r.mimeType(targetSource, (e, mimeType) => process.nextTick(() => {
+                            if(e)
+                            {
+                                arg.setCode(HTTPCodes.InternalServerError);
+                                callback();
+                                return;
+                            }
+
                             r.size(targetSource, (e, size) => {
                                 if(e)
                                     arg.setCode(HTTPCodes.InternalServerError)
@@ -30,14 +45,12 @@ export default function(arg : MethodCallArgs, callback)
                                 {
                                     arg.setCode(HTTPCodes.OK);
                                     arg.response.setHeader('Accept-Ranges', 'bytes')
+                                    arg.response.setHeader('Content-Type', mimeType);
                                     arg.response.setHeader('Content-Length', size.toString());
                                     callback();
                                 }
                             })
-                            return;
-                        }
-
-                        callback();
+                        }))
                     })
                 })
             })
