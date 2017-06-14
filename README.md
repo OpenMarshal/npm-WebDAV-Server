@@ -33,7 +33,7 @@ npm install webdav-server
 
 # Quick usage
 
-```typescript
+```javascript
 // TypeScript
 import * as webdav from 'webdav-server'
 // Javascript
