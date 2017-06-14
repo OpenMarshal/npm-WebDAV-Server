@@ -1,5 +1,6 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
 import { IResource, ResourceType, SimpleCallback } from '../../resource/IResource'
+import { Workflow } from '../../helper/Workflow'
 import { Readable } from 'stream'
 import { FSPath } from '../../manager/FSManager'
 
@@ -12,36 +13,12 @@ function copyAllProperties(source : IResource, destination : IResource, callback
             return;
         }
 
-        let nb = Object.keys(props).length;
-        function go(error)
-        {
-            if(nb <= 0)
-                return;
-            if(error)
-            {
-                nb = -1;
-                callback(error);
-                return;
-            }
-
-            --nb;
-            if(nb === 0)
-                callback(null);
-        }
-
-        if(nb === 0)
-        {
-            callback(null);
-            return;
-        }
-
-        for(const name in props)
-        {
-            if(nb <= 0)
-                break;
-            
-            destination.setProperty(name, JSON.parse(JSON.stringify(props[name])), go)
-        }
+        new Workflow()
+            .eachProperties(props, (name, value, cb) => {
+                destination.setProperty(name, JSON.parse(JSON.stringify(value)), cb)
+            })
+            .error(callback)
+            .done(() => callback(null));
     })
 }
 
@@ -98,41 +75,20 @@ function copy(arg : MethodCallArgs, source : IResource, rDest : IResource, desti
                                     }
 
                                     source.getChildren((e, children) => _(e, () => {
-                                        let nb = children.length;
-                                        function done(error)
-                                        {
-                                            if(nb <= 0)
-                                                return;
-                                            if(error)
-                                            {
-                                                nb = -1;
-                                                callback(e);
-                                                return;
-                                            }
-
-                                            --nb;
-                                            if(nb === 0)
-                                            {
+                                        new Workflow()
+                                            .each(children, (child, cb) => {
+                                                child.webName((e, name) => process.nextTick(() => {
+                                                    if(e)
+                                                        cb(e);
+                                                    else
+                                                        copy(arg, child, dest, destination.getChildPath(name), cb);
+                                                }))
+                                            })
+                                            .error(callback)
+                                            .done(() => {
                                                 arg.invokeEvent('copy', source, dest);
                                                 callback(null);
-                                            }
-                                        }
-
-                                        if(nb === 0)
-                                        {
-                                            callback(null);
-                                            arg.invokeEvent('copy', source, dest);
-                                            return;
-                                        }
-
-                                        children.forEach((child) => {
-                                            child.webName((e, name) => process.nextTick(() => {
-                                                if(e)
-                                                    done(e);
-                                                else
-                                                    copy(arg, child, dest, destination.getChildPath(name), done);
-                                            }))
-                                        })
+                                            })
                                     }))
                                 }
                             }))

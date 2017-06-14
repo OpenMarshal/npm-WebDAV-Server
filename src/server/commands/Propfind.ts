@@ -2,6 +2,7 @@ import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
 import { IResource, ETag, ReturnCallback } from '../../resource/IResource'
 import { XML, XMLElement } from '../../helper/XML'
 import { BasicPrivilege } from '../../user/privilege/IPrivilegeManager'
+import { Workflow } from '../../helper/Workflow'
 import { FSPath } from '../../manager/FSPath'
 import { Errors } from '../../Errors'
 import { Lock } from '../../resource/lock/Lock'
@@ -152,31 +153,30 @@ export default function(arg : MethodCallArgs, callback)
                 
                 arg.requirePrivilege('canGetChildren', resource, () => {
                     resource.getChildren((e, children) => process.nextTick(() => {
-                        let nb = children.length + 1;
 
-                        function nbOut(error)
+                        function err(e)
                         {
-                            if(nb > 0 && error)
+                            if(e === Errors.BadAuthentication)
+                                arg.setCode(HTTPCodes.Unauthorized);
+                            else
+                                arg.setCode(HTTPCodes.InternalServerError);
+                            callback();
+                        }
+
+                        addXMLInfo(resource, multistatus, (e) => {
+                            if(e)
                             {
-                                nb = -1;
-                                if(error === Errors.BadAuthentication)
-                                    arg.setCode(HTTPCodes.Unauthorized);
-                                else
-                                    arg.setCode(HTTPCodes.InternalServerError);
-                                callback();
+                                err(e);
                                 return;
                             }
 
-                            --nb;
-                            if(nb === 0)
-                                done(multistatus);
-                        }
-
-                        addXMLInfo(resource, multistatus, nbOut);
-
-                        children.forEach((child) => process.nextTick(() => {
-                            addXMLInfo(child, multistatus, nbOut)
-                        }))
+                            new Workflow()
+                                .each(children, (r, cb) => addXMLInfo(r, multistatus, cb))
+                                .error(err)
+                                .done(() => {
+                                    done(multistatus)
+                                });
+                        });
                     }))
                 })
             }))

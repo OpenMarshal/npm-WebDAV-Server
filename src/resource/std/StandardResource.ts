@@ -2,6 +2,7 @@ import { IResource, ReturnCallback, SimpleCallback, Return2Callback, ResourceTyp
 import { Readable, Writable } from 'stream'
 import { FSManager, FSPath } from '../../manager/FSManager'
 import { LockScope } from '../lock/LockScope'
+import { Workflow } from '../../helper/Workflow'
 import { LockType } from '../lock/LockType'
 import { LockKind } from '../lock/LockKind'
 import { LockBag } from '../lock/LockBag'
@@ -19,31 +20,12 @@ export abstract class StandardResource implements IResource
                 return;
             }
 
-            if(children.length === 0)
-            {
-                callback(null, 0);
-                return;
-            }
-
-            let size = 0;
-            let nb = children.length;
-            function go(e, s)
-            {
-                if(nb <= 0)
-                    return;
-                if(e)
-                {
-                    nb = -1;
-                    callback(e, size);
-                    return;
-                }
-                size += s;
-                --nb;
-                if(nb === 0)
-                    callback(null, size);
-            }
-
-            children.forEach((c) => c.size(targetSource, go))
+            new Workflow()
+                .each(children, (child, cb) => {
+                    child.size(targetSource, cb);
+                })
+                .error((e) => callback(e, 0))
+                .done((sizes) => callback(null, sizes.reduce((o, s) => o + s, 0)))
         })
     }
 

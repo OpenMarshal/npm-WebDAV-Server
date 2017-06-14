@@ -2,6 +2,7 @@ import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
 import { STATUS_CODES } from 'http'
 import { EventsName } from '../../server/webDAVServer/events'
 import { IResource } from '../../resource/IResource'
+import { Workflow } from '../../helper/Workflow'
 import { XML } from '../../helper/XML'
 
 export default function(arg : MethodCallArgs, callback)
@@ -56,23 +57,15 @@ export default function(arg : MethodCallArgs, callback)
 
                         list.forEach(function(el) {
                             const els = el.find('DAV:prop').elements;
-                            if(els.length === 0)
-                            {
-                                finalize();
-                                return;
-                            }
-
-                            let nb = els.length;
-                            els.forEach(function(el) {
-                                fnProp(el, (e) => process.nextTick(() => {
+                            
+                            new Workflow(false)
+                                .each(els, fnProp)
+                                .intermediate((el, e) => {
                                     if(!e)
-                                        arg.invokeEvent(eventName, r, el);
-                                    notify(el, e);
-                                    --nb;
-                                    if(nb === 0)
-                                        finalize();
-                                }))
-                            })
+                                        arg.invokeEvent(eventName, r, el)
+                                    notify(el, e)
+                                })
+                                .done(() => finalize())
                         })
                     }
 
