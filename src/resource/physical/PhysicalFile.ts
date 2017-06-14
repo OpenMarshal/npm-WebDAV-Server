@@ -77,7 +77,7 @@ export class PhysicalFile extends PhysicalResource
     }
     mimeType(targetSource : boolean, callback : ReturnCallback<string>)
     {
-        const mt = mimeTypes.lookup(this.realPath);
+        const mt = mimeTypes.contentType(this.realPath);
         callback(null, mt ? mt as string : 'application/octet-stream');
     }
     size(targetSource : boolean, callback : ReturnCallback<number>)

@@ -85,7 +85,7 @@ export class VirtualFile extends VirtualResource
     }
     mimeType(targetSource : boolean, callback : ReturnCallback<string>)
     {
-        const mt = mimeTypes.lookup(this.name);
+        const mt = mimeTypes.contentType(this.name);
         callback(null, mt ? mt as string : 'application/octet-stream');
     }
     size(targetSource : boolean, callback : ReturnCallback<number>)

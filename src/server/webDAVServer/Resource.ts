@@ -85,6 +85,12 @@ export function addResourceTree(_rootResource : IResource | ResourceTreeNode, _r
         rootResource = _rootResource as IResource;
     }
 
+    const cb = callback;
+    callback = (e) => {
+        if(cb)
+            cb(e);
+    }
+
     if(resoureceTree.constructor === Array)
     {
         const array = resoureceTree as any[];
