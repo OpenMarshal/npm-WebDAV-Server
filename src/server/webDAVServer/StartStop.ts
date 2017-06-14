@@ -151,7 +151,7 @@ export function start(port ?: number | WebDAVServerStartCallback, callback ?: We
                     this.invokeAfterRequest(base, null);
                 };
 
-                if(!this.options.canChunk || !method.chunked || base.contentLength <= 0)
+                if(!this.options.canChunk || !method.chunked)
                 {
                     const go = () =>
                     {
