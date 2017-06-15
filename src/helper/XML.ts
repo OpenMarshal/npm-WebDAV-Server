@@ -95,6 +95,30 @@ export abstract class XML
 {
     static parse(xml : string | Int8Array) : XMLElement
     {
+        try
+        {
+            return XML.parseXML(xml);
+        }
+        catch(_)
+        {
+            try
+            {
+                return XML.parseJSON(xml, true);
+            }
+            catch(_)
+            {
+                return XML.parseJSON(xml, false);
+            }
+        }
+    }
+
+    static parseJSON(xml : string | Int8Array, compact : boolean = true) : XMLElement
+    {
+        return XML.parseXML(xmljs.json2xml(xml.toString(), { compact }));
+    }
+
+    static parseXML(xml : string | Int8Array) : XMLElement
+    {
         const x = xmljs.xml2js(xml.constructor === String ? xml as string : new Buffer(xml as Int8Array).toString(), {
             compact: false
         });

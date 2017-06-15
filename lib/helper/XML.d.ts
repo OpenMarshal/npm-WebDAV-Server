@@ -9,6 +9,8 @@ export interface XMLElement {
 }
 export declare abstract class XML {
     static parse(xml: string | Int8Array): XMLElement;
+    static parseJSON(xml: string | Int8Array, compact?: boolean): XMLElement;
+    static parseXML(xml: string | Int8Array): XMLElement;
     static toJSON(xml: string): string;
     static toXML(xml: XMLElement | any, includeDeclaration?: boolean): string;
     static createElement(name: string, attributes?: any, text?: string): {
