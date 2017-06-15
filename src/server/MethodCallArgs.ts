@@ -47,6 +47,11 @@ export class MethodCallArgs
     {
         const mca = new MethodCallArgs(server, request, response, null, null);
         response.setHeader('DAV', '1,2');
+        response.setHeader('Server', server.options.serverName + '/' + server.options.version);
+        response.setHeader('Allow', Object
+            .keys(server.methods)
+            .map(s => s.toUpperCase())
+            .join(','));
 
         mca.askForAuthentication(false, (e) => {
             if(e)
