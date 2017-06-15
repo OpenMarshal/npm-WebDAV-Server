@@ -7,17 +7,16 @@ import { IPrivilegeManager } from '../../user/privilege/IPrivilegeManager'
 import { FSManager, FSPath } from '../../manager/FSManager'
 import { IUserManager } from '../../user/IUserManager'
 import Commands from '../commands/Commands'
-import * as https from 'https'
-import * as http from 'http'
 
 import * as persistence from './Persistence'
 import * as beforeAfter from './BeforeAfter'
 import * as startStop from './StartStop'
 import * as resource from './Resource'
 import * as events from './Events'
+import * as https from 'https'
+import * as http from 'http'
 
 export { WebDAVServerOptions } from '../WebDAVServerOptions'
-
 
 export class WebDAVServer
 {
@@ -100,7 +99,6 @@ export class WebDAVServer
     beforeRequest = beforeAfter.beforeRequest
     afterRequest = beforeAfter.afterRequest
 
-    protected invokeBARequest = beforeAfter.invokeBARequest
     protected invokeBeforeRequest = beforeAfter.invokeBeforeRequest
     protected invokeAfterRequest = beforeAfter.invokeAfterRequest
 

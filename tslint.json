@@ -25,7 +25,7 @@
         "no-conditional-assignment": true,
         "no-debugger": true,
         "no-invalid-template-strings": true,
-        "no-invalid-this": true,
+        "no-invalid-this": false,
         "no-misused-new": true,
         "no-object-literal-type-assertion": false,
         "no-sparse-arrays": true,

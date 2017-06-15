@@ -7,12 +7,12 @@ import { HTTPAuthentication } from '../../user/authentication/HTTPAuthentication
 import { IPrivilegeManager } from '../../user/privilege/IPrivilegeManager';
 import { FSPath } from '../../manager/FSManager';
 import { IUserManager } from '../../user/IUserManager';
-import * as https from 'https';
-import * as http from 'http';
 import * as persistence from './Persistence';
 import * as beforeAfter from './BeforeAfter';
 import * as startStop from './StartStop';
 import * as events from './Events';
+import * as https from 'https';
+import * as http from 'http';
 export { WebDAVServerOptions } from '../WebDAVServerOptions';
 export declare class WebDAVServer {
     httpAuthentication: HTTPAuthentication;
@@ -43,7 +43,6 @@ export declare class WebDAVServer {
     protected normalizeMethodName(method: string): string;
     beforeRequest: typeof beforeAfter.beforeRequest;
     afterRequest: typeof beforeAfter.afterRequest;
-    protected invokeBARequest: typeof beforeAfter.invokeBARequest;
     protected invokeBeforeRequest: typeof beforeAfter.invokeBeforeRequest;
     protected invokeAfterRequest: typeof beforeAfter.invokeAfterRequest;
     invoke(event: events.EventsName, arg: MethodCallArgs, subjectResource?: IResource | FSPath, details?: events.DetailsType): void;
