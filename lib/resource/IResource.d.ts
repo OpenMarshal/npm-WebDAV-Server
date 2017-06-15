@@ -27,8 +27,6 @@ export interface IResource {
     delete(callback: SimpleCallback): any;
     moveTo(parent: IResource, newName: string, overwrite: boolean, callback: SimpleCallback): any;
     rename(newName: string, callback: Return2Callback<string, string>): any;
-    isSame(resource: IResource, callback: ReturnCallback<boolean>): any;
-    isOnTheSameFSWith(resource: IResource, callback: ReturnCallback<boolean>): any;
     write(targetSource: boolean, callback: ReturnCallback<Writable>): any;
     read(targetSource: boolean, callback: ReturnCallback<Readable>): any;
     mimeType(targetSource: boolean, callback: ReturnCallback<string>): any;

@@ -47,16 +47,6 @@ export abstract class StandardResource implements IResource
         this.dateLastModified = this.dateCreation;
     }
 
-    // ****************************** Tests ****************************** //
-    isSame(resource : IResource, callback : ReturnCallback<boolean>)
-    {
-        callback(null, resource === (this as object));
-    }
-    isOnTheSameFSWith(resource : IResource, callback : ReturnCallback<boolean>)
-    {
-        callback(null, resource.fsManager === this.fsManager);
-    }
-
     // ****************************** Locks ****************************** //
     getAvailableLocks(callback : ReturnCallback<LockKind[]>)
     {

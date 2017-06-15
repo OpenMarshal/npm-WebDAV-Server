@@ -42,10 +42,6 @@ export interface IResource
     delete(callback : SimpleCallback)
     moveTo(parent : IResource, newName : string, overwrite : boolean, callback : SimpleCallback)
     rename(newName : string, callback : Return2Callback<string, string>)
-
-    // ****************************** Tests ****************************** //
-    isSame(resource : IResource, callback : ReturnCallback<boolean>)
-    isOnTheSameFSWith(resource : IResource, callback : ReturnCallback<boolean>)
     
     // ****************************** Content ****************************** //
     write(targetSource : boolean, callback : ReturnCallback<Writable>)

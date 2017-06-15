@@ -14,8 +14,6 @@ export declare abstract class StandardResource implements IResource {
     dateCreation: number;
     dateLastModified: number;
     constructor(parent: IResource, fsManager: FSManager);
-    isSame(resource: IResource, callback: ReturnCallback<boolean>): void;
-    isOnTheSameFSWith(resource: IResource, callback: ReturnCallback<boolean>): void;
     getAvailableLocks(callback: ReturnCallback<LockKind[]>): void;
     getLocks(callback: ReturnCallback<Lock[]>): void;
     setLock(lock: Lock, callback: SimpleCallback): void;
