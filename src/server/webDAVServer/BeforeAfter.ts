@@ -9,7 +9,7 @@ export function afterRequest(manager : WebDAVRequest)
     this.afterManagers.push(manager);
 }
 
-export function invokeBARequest(collection : WebDAVRequest[], base : MethodCallArgs, callback)
+function invokeBARequest(collection : WebDAVRequest[], base : MethodCallArgs, callback)
 {
     function callCallback()
     {
@@ -38,11 +38,12 @@ export function invokeBARequest(collection : WebDAVRequest[], base : MethodCallA
     }
     next();
 }
+
 export function invokeBeforeRequest(base : MethodCallArgs, callback)
 {
-    this.invokeBARequest(this.beforeManagers, base, callback);
+    invokeBARequest(this.beforeManagers, base, callback);
 }
 export function invokeAfterRequest(base : MethodCallArgs, callback)
 {
-    this.invokeBARequest(this.afterManagers, base, callback);
+    invokeBARequest(this.afterManagers, base, callback);
 }
