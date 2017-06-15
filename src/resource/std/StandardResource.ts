@@ -8,6 +8,7 @@ import { LockKind } from '../lock/LockKind'
 import { LockBag } from '../lock/LockBag'
 import { Errors } from '../../Errors'
 import { Lock } from '../lock/Lock'
+import * as mimeTypes from 'mime-types'
 
 export abstract class StandardResource implements IResource
 {
@@ -203,6 +204,27 @@ export abstract class StandardResource implements IResource
                             })
                         })
                 })
+        })
+    }
+    public static standardMimeType(resource : IResource, targetSource : boolean, callback : ReturnCallback<string>)
+    {
+        resource.type((e, type) => {
+            if(e)
+                callback(e, null);
+            else if(type.isFile)
+            {
+                resource.webName((e, name) => {
+                    if(e)
+                        callback(e, null);
+                    else
+                    {
+                        const mt = mimeTypes.contentType(name);
+                        callback(null, mt ? mt as string : 'application/octet-stream');
+                    }
+                })
+            }
+            else
+                callback(Errors.NoMimeTypeForAFolder, null);
         })
     }
 }

@@ -42,4 +42,5 @@ export declare abstract class StandardResource implements IResource {
     protected removeFromParent(callback: SimpleCallback): void;
     static standardRemoveFromParent(resource: IResource, callback: SimpleCallback): void;
     static standardMoveTo(resource: IResource, parent: IResource, newName: string, overwrite: boolean, setName: (name: string) => void, callback: SimpleCallback): void;
+    static standardMimeType(resource: IResource, targetSource: boolean, callback: ReturnCallback<string>): void;
 }
