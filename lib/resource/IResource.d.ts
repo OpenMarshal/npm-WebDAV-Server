@@ -46,5 +46,6 @@ export interface IResource {
     creationDate(callback: ReturnCallback<number>): any;
     lastModifiedDate(callback: ReturnCallback<number>): any;
     webName(callback: ReturnCallback<string>): any;
+    displayName?(callback: ReturnCallback<string>): any;
     type(callback: ReturnCallback<ResourceType>): any;
 }

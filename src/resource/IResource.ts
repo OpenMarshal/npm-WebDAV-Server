@@ -71,5 +71,6 @@ export interface IResource
     creationDate(callback : ReturnCallback<number>)
     lastModifiedDate(callback : ReturnCallback<number>)
     webName(callback : ReturnCallback<string>)
+    displayName?(callback : ReturnCallback<string>)
     type(callback : ReturnCallback<ResourceType>)
 }

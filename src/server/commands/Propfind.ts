@@ -365,7 +365,11 @@ export default function(arg : MethodCallArgs, callback)
 
                     displayValue('displayname', () =>
                     {
-                        resource.webName((e, name) => process.nextTick(() => {
+                        let methodDisplayName = resource.webName;
+                        if(resource.displayName)
+                            methodDisplayName = resource.displayName;
+                        
+                        methodDisplayName.bind(resource)((e, name) => process.nextTick(() => {
                             if(!e)
                                 tags.displayname.el.add(name ? name : '');
                             nbOut(e);
