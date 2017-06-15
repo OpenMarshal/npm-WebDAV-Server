@@ -17,9 +17,12 @@ This is a fully configurable server. You can use you own user manager, your own 
 
 # Project information
 
-You can find the documentation [here](https://github.com/OpenMarshal/npm-WebDAV-Server/wiki).
-
-Find more details on the development process at [https://github.com/OpenMarshal/npm-WebDAV-Server/projects/1](https://github.com/OpenMarshal/npm-WebDAV-Server/projects/1).
+Here are some project related links :
+* [Documentation](https://github.com/OpenMarshal/npm-WebDAV-Server/wiki)
+* [Project development details](https://github.com/OpenMarshal/npm-WebDAV-Server/projects)
+* [Changelog](https://github.com/OpenMarshal/npm-WebDAV-Server/blob/master/CHANGELOG.md)
+* [Issues](https://github.com/OpenMarshal/npm-WebDAV-Server/issues)
+* [GitHub](https://github.com/OpenMarshal/npm-WebDAV-Server)
 
 This project rely upon the [RFC4918](http://www.webdav.org/specs/rfc4918.html).
 
