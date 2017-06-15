@@ -1,4 +1,5 @@
 import { MethodCallArgs } from './MethodCallArgs'
+import { ResourceType } from '../resource/IResource'
 import { HTTPError } from '../Errors'
 
 export { MethodCallArgs } from './MethodCallArgs'
@@ -9,4 +10,5 @@ export interface WebDAVRequest
     (arg : MethodCallArgs, callback : () => void) : void
 
     chunked ?: (arg : MethodCallArgs, callback : () => void) => void
+    isValidFor ?: (type ?: ResourceType) => boolean
 }

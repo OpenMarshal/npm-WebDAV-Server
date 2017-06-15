@@ -4,7 +4,7 @@ import { FSPath } from '../../manager/FSManager'
 import { Errors } from '../../Errors'
 import * as path from 'path'
 
-export default function(arg : MethodCallArgs, callback)
+export function method(arg : MethodCallArgs, callback)
 {
     arg.noBodyExpected(() => {
         arg.checkIfHeader(undefined, () => {
@@ -61,3 +61,10 @@ export default function(arg : MethodCallArgs, callback)
         })
     })
 }
+
+(method as WebDAVRequest).isValidFor = function(type : ResourceType)
+{
+    return !type;
+};
+
+export default method;

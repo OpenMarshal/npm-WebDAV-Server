@@ -1,5 +1,5 @@
+import { IResource, ReturnCallback, ResourceType } from '../resource/IResource'
 import { requirePrivilege, BasicPrivilege } from '../user/privilege/IPrivilegeManager'
-import { IResource, ReturnCallback } from '../resource/IResource'
 import { EventsName, DetailsType } from './webDAVServer/Events'
 import { XML, XMLElement } from '../helper/XML'
 import { parseIfHeader } from '../helper/IfParser'
@@ -19,6 +19,8 @@ export class MethodCallArgs
     host : string
     path : FSPath
     uri : string
+    resource : IResource
+    resourceType : ResourceType
     
     data : Int8Array
     user : IUser
@@ -48,29 +50,62 @@ export class MethodCallArgs
         const mca = new MethodCallArgs(server, request, response, null, null);
         response.setHeader('DAV', '1,2');
         response.setHeader('Server', server.options.serverName + '/' + server.options.version);
-        response.setHeader('Allow', Object
-            .keys(server.methods)
-            .map(s => s.toUpperCase())
-            .join(','));
 
-        mca.askForAuthentication(false, (e) => {
-            if(e)
+        server.getResourceFromPath(mca.uri, (e, r) => {
+            if(e || !r)
             {
-                callback(e, mca);
+                setAllowHeader();
                 return;
             }
 
-            server.httpAuthentication.getUser(mca, server.userManager, (e, user) => {
-                mca.user = user;
-                if(e)
+            mca.resource = r;
+
+            r.type((e, type) => {
+                if(e || !type)
                 {
-                    if(e === Errors.MissingAuthorisationHeader)
-                        e = null;
+                    setAllowHeader();
+                    return;
                 }
 
-                callback(e, mca);
+                mca.resourceType = type;
+                setAllowHeader(type);
             })
         })
+
+        function setAllowHeader(type ?: ResourceType)
+        {
+            const allowedMethods = [];
+            for(const name in server.methods)
+            {
+                const method = server.methods[name];
+                if(!method.isValidFor || method.isValidFor(type))
+                    allowedMethods.push(name.toUpperCase());
+            }
+
+            response.setHeader('Allow', allowedMethods.join(','));
+            next();
+        }
+        function next()
+        {
+            mca.askForAuthentication(false, (e) => {
+                if(e)
+                {
+                    callback(e, mca);
+                    return;
+                }
+
+                server.httpAuthentication.getUser(mca, server.userManager, (e, user) => {
+                    mca.user = user;
+                    if(e)
+                    {
+                        if(e === Errors.MissingAuthorisationHeader)
+                            e = null;
+                    }
+
+                    callback(e, mca);
+                })
+            })
+        }
     }
 
     noBodyExpected(callback : () => void)
@@ -185,7 +220,7 @@ export class MethodCallArgs
 
     getResource(callback : ReturnCallback<IResource>)
     {
-        this.server.getResourceFromPath(this.uri, callback);
+        callback(!this.resource ? Errors.ResourceNotFound : null, this.resource);
     }
 
     dateISO8601(ticks : number) : string

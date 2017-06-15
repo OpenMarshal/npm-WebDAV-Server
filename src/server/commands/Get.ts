@@ -1,5 +1,5 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
-import { IResource } from '../../resource/IResource'
+import { IResource, ResourceType } from '../../resource/IResource'
 import { Readable, Transform } from 'stream'
 
 class RangedStream extends Transform
@@ -41,7 +41,7 @@ class RangedStream extends Transform
     }
 }
 
-export default function(arg : MethodCallArgs, callback)
+export function method(arg : MethodCallArgs, callback)
 {
     arg.noBodyExpected(() => {
         arg.getResource((e, r) => {
@@ -129,3 +129,10 @@ export default function(arg : MethodCallArgs, callback)
         })
     })
 }
+
+(method as WebDAVRequest).isValidFor = function(type : ResourceType)
+{
+    return type && type.isFile;
+}
+
+export default method;

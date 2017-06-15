@@ -1,6 +1,6 @@
 /// <reference types="node" />
+import { IResource, ReturnCallback, ResourceType } from '../resource/IResource';
 import { BasicPrivilege } from '../user/privilege/IPrivilegeManager';
-import { IResource, ReturnCallback } from '../resource/IResource';
 import { EventsName, DetailsType } from './webDAVServer/Events';
 import { XMLElement } from '../helper/XML';
 import { WebDAVServer } from './webDAVServer/WebDAVServer';
@@ -19,6 +19,8 @@ export declare class MethodCallArgs {
     host: string;
     path: FSPath;
     uri: string;
+    resource: IResource;
+    resourceType: ResourceType;
     data: Int8Array;
     user: IUser;
     protected constructor(server: WebDAVServer, request: http.IncomingMessage, response: http.ServerResponse, exit: () => void, callback: () => void);

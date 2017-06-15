@@ -1,5 +1,5 @@
+import { IResource, ETag, ReturnCallback, ResourceType } from '../../resource/IResource'
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
-import { IResource, ETag, ReturnCallback } from '../../resource/IResource'
 import { XML, XMLElement } from '../../helper/XML'
 import { BasicPrivilege } from '../../user/privilege/IPrivilegeManager'
 import { Workflow } from '../../helper/Workflow'
@@ -114,7 +114,7 @@ function propstatStatus(status : number)
     return 'HTTP/1.1 ' + status + ' ' + http.STATUS_CODES[status];
 }
 
-export default function(arg : MethodCallArgs, callback)
+export function method(arg : MethodCallArgs, callback)
 {
     arg.getResource((e, resource) => {
         if(e || !resource)
@@ -447,3 +447,10 @@ export default function(arg : MethodCallArgs, callback)
         })
     })
 }
+
+(method as WebDAVRequest).isValidFor = function(type : ResourceType)
+{
+    return !!type;
+};
+
+export default method;

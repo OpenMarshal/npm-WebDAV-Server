@@ -159,6 +159,11 @@ export default function unchunkedMethod(arg : MethodCallArgs, callback)
     })
 }
 
+(unchunkedMethod as WebDAVRequest).isValidFor = function(type : ResourceType)
+{
+    return !type || type.isFile;
+};
+
 (unchunkedMethod as WebDAVRequest).chunked = function(arg : MethodCallArgs, callback)
 {
     const targetSource = arg.isSource;

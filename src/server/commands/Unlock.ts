@@ -1,13 +1,13 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
+import { IResource, ResourceType } from '../../resource/IResource'
 import { STATUS_CODES } from 'http'
-import { IResource } from '../../resource/IResource'
-import { Lock } from '../../resource/lock/Lock'
-import { LockKind } from '../../resource/lock/LockKind'
 import { LockScope } from '../../resource/lock/LockScope'
+import { LockKind } from '../../resource/lock/LockKind'
 import { LockType } from '../../resource/lock/LockType'
+import { Lock } from '../../resource/lock/Lock'
 import { XML } from '../../helper/XML'
 
-export default function(arg : MethodCallArgs, callback)
+export function method(arg : MethodCallArgs, callback)
 {
     if(!arg.user)
     {
@@ -82,3 +82,10 @@ export default function(arg : MethodCallArgs, callback)
         })
     })
 }
+
+(method as WebDAVRequest).isValidFor = function(type : ResourceType)
+{
+    return !!type;
+};
+
+export default method;

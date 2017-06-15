@@ -1,11 +1,11 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
+import { IResource, ResourceType } from '../../resource/IResource'
 import { STATUS_CODES } from 'http'
 import { EventsName } from '../../server/webDAVServer/events'
-import { IResource } from '../../resource/IResource'
 import { Workflow } from '../../helper/Workflow'
 import { XML } from '../../helper/XML'
 
-export default function(arg : MethodCallArgs, callback)
+export function method(arg : MethodCallArgs, callback)
 {
     arg.getResource((e, r) => {
         if(e)
@@ -85,3 +85,10 @@ export default function(arg : MethodCallArgs, callback)
         })
     })
 }
+
+(method as WebDAVRequest).isValidFor = function(type : ResourceType)
+{
+    return !!type;
+};
+
+export default method;

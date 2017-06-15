@@ -20,7 +20,9 @@ export declare class WebDAVServer {
     rootResource: IResource;
     userManager: IUserManager;
     options: WebDAVServerOptions;
-    methods: object;
+    methods: {
+        [methodName: string]: WebDAVRequest;
+    };
     protected beforeManagers: WebDAVRequest[];
     protected afterManagers: WebDAVRequest[];
     protected unknownMethod: WebDAVRequest;

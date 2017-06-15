@@ -26,7 +26,7 @@ export class WebDAVServer
     public rootResource : IResource
     public userManager : IUserManager
     public options : WebDAVServerOptions
-    public methods : object
+    public methods : { [methodName : string]: WebDAVRequest }
 
     protected beforeManagers : WebDAVRequest[]
     protected afterManagers : WebDAVRequest[]

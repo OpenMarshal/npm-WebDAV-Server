@@ -1,2 +1,3 @@
 import { MethodCallArgs } from '../WebDAVRequest';
-export default function (arg: MethodCallArgs, callback: any): void;
+export declare function method(arg: MethodCallArgs, callback: any): void;
+export default method;

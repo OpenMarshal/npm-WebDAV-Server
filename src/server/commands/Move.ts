@@ -2,7 +2,7 @@ import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
 import { IResource, ResourceType } from '../../resource/IResource'
 import { FSPath } from '../../manager/FSManager'
 
-export default function(arg : MethodCallArgs, callback)
+export function method(arg : MethodCallArgs, callback)
 {
     arg.noBodyExpected(() => {
         arg.getResource((e, r) => {
@@ -48,3 +48,10 @@ export default function(arg : MethodCallArgs, callback)
         })
     })
 }
+
+(method as WebDAVRequest).isValidFor = function(type : ResourceType)
+{
+    return !!type;
+};
+
+export default method;
