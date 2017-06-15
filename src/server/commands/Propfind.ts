@@ -93,7 +93,7 @@ function parseRequestBody(arg : MethodCallArgs) : PropertyRule
             const index = prop.findIndex(name);
             if(index === -1)
                 return false;
-            delete prop.elements[index];
+            prop.elements.splice(index, 1);
             return true;
         };
 
