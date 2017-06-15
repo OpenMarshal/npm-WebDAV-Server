@@ -159,7 +159,7 @@ export abstract class StandardResource implements IResource
         else
             callback(null);
     }
-    public static standardMoveTo(resource : IResource, parent : IResource, newName : string, overwrite : boolean, setName : (name : string) => void, callback : SimpleCallback)
+    public static standardMoveTo(resource : IResource, parent : IResource, newName : string, overwrite : boolean, callback : SimpleCallback)
     {
         parent.getChildren((e, children) => {
             new Workflow()
@@ -196,9 +196,13 @@ export abstract class StandardResource implements IResource
                                 }
                                 else
                                 {
-                                    setName(newName);
-                                    parent.addChild(resource, (e) => {
-                                        callback(e);
+                                    resource.rename(newName, (e, oldName, newName) => {
+                                        if(e)
+                                            callback(e);
+                                        else
+                                            parent.addChild(resource, (e) => {
+                                                callback(e);
+                                            })
                                     })
                                 }
                             })

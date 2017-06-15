@@ -32,7 +32,7 @@ export abstract class VirtualResource extends StandardResource
     }
     moveTo(parent : IResource, newName : string, overwrite : boolean, callback : SimpleCallback)
     {
-        StandardResource.standardMoveTo(this, parent, newName, overwrite, (name) => this.name = name, callback);
+        StandardResource.standardMoveTo(this, parent, newName, overwrite, callback);
     }
     rename(newName : string, callback : Return2Callback<string, string>)
     {
