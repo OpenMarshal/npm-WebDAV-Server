@@ -1,5 +1,31 @@
 # Changelog
 
+# 1.8.0
+
+### New features
+* Added the ability to parse JSON in the request body *[cf0debb](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/cf0debb)*
+* Added the 'Allow' header to all the methods and filter the allowed methods according to the existence of the requested resource and its 'ResourceType' *[7db537e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7db537e)*
+* Added the server options 'serverName' and 'version' to display in the 'Server' HTTP header *[fd4158b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/fd4158b)*
+* Added the 'Server' header to the responses *[e015847](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e015847)*
+* Added a 'displayName' optional method in the 'IResource' interface *[c9812d6](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c9812d6)*
+
+### Changes
+* Moved the 'Allow' response header from the 'OPTIONS' method to all the methods *[e015847](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e015847)*
+* Use the 'displayName' method when available as text for the 'DAV:displayname' XML element in the PROPFIND response body *[c9812d6](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c9812d6)*
+* Removed the 'setName' parameter of the 'StandardResource.standardMoveTo(...)' static method to use instead the 'IResource.rename(...)' method *[c3f8b6a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c3f8b6a)*
+* Removed the unused 'isOnTheSameFSWith' and 'isSame' methods of the 'IResource' interface *[8660bbf](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/8660bbf)*
+
+### Tests
+* Added tests for the JSON in the request body *[84bd1c9](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/84bd1c9)*
+* Added tests for the 'Overwrite' header for the 'MOVE' method *[4be3904](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/4be3904)*
+
+### Other
+* Added a new helper : 'StandardResource.standardMimeType(...)' *[695a93a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/695a93a)*
+
+### Bug fix
+* Fixed the '404' status always in the responses of the 'PROPRFIND' method even when empty *[f1243e7](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/f1243e7)*
+* Fixed the overwrite behavior in the 'StandardResource.standardMoveTo' static method *[8b1caad](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/8b1caad)*
+
 # 1.7.4
 
 ### Documentation
