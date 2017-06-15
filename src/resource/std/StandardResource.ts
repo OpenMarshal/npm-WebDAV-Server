@@ -160,26 +160,49 @@ export abstract class StandardResource implements IResource
     }
     public static standardMoveTo(resource : IResource, parent : IResource, newName : string, overwrite : boolean, setName : (name : string) => void, callback : SimpleCallback)
     {
-        if(parent === resource.parent)
-        {
-            resource.rename(newName, (e, oldName, newName) => {
-                callback(e);
-            })
-            return;
-        }
+        parent.getChildren((e, children) => {
+            new Workflow()
+                .each(children, (child, cb) => child.webName((e, name) => {
+                    if(e)
+                        cb(e);
+                    else if(name === newName && !overwrite)
+                        cb(Errors.ResourceAlreadyExists);
+                    else if(name === newName && overwrite)
+                        cb(null, child);
+                    else
+                        cb();
+                }))
+                .error(callback)
+                .done((conflictingChildren) => {
+                    conflictingChildren = conflictingChildren.filter((c) => !!c);
 
-        StandardResource.standardRemoveFromParent(resource, (e) => {
-            if(e)
-            {
-                callback(e);
-            }
-            else
-            {
-                setName(newName);
-                parent.addChild(resource, (e) => {
-                    callback(e);
+                    new Workflow()
+                        .each(conflictingChildren, (child : IResource, cb) => child.delete(cb))
+                        .error(callback)
+                        .done(() => {
+                            if(parent === resource.parent)
+                            {
+                                resource.rename(newName, (e, oldName, newName) => {
+                                    callback(e);
+                                })
+                                return;
+                            }
+
+                            StandardResource.standardRemoveFromParent(resource, (e) => {
+                                if(e)
+                                {
+                                    callback(e);
+                                }
+                                else
+                                {
+                                    setName(newName);
+                                    parent.addChild(resource, (e) => {
+                                        callback(e);
+                                    })
+                                }
+                            })
+                        })
                 })
-            }
         })
     }
 }
