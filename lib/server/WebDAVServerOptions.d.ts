@@ -17,6 +17,8 @@ export declare class WebDAVServerOptions {
     hostname?: string;
     https?: https.ServerOptions;
     port?: number;
+    serverName?: string;
+    version?: string;
     autoSave?: {
         treeFilePath: string;
         tempTreeFilePath: string;

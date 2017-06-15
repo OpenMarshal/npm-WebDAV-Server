@@ -23,6 +23,8 @@ export class WebDAVServerOptions
     hostname ?: string = '::'
     https ?: https.ServerOptions = null
     port ?: number = 1900
+    serverName ?: string = 'webdav-server'
+    version ?: string = '1.5.0'
     autoSave ?: {
         treeFilePath : string
         tempTreeFilePath : string
