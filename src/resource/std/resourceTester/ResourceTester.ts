@@ -20,6 +20,7 @@ class DefaultResourceTesterOptions implements ResourceTesterOptions
     canBeCreated : boolean = true
     canBeDeleted : boolean = true
     canBeRenamed : boolean = true
+    canGetLocks : boolean = true
     canGetSize : boolean = true
     canBeMoved : boolean = true
     canWrite : boolean = true
