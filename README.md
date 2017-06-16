@@ -26,6 +26,7 @@ Here are some project related links :
 * [Examples](https://github.com/OpenMarshal/npm-WebDAV-Server/tree/master/examples)
 * [Issues](https://github.com/OpenMarshal/npm-WebDAV-Server/issues)
 * [GitHub](https://github.com/OpenMarshal/npm-WebDAV-Server)
+* [Gitter (chat)](https://gitter.im/npm-WebDAV-Server/Lobby)
 
 This project rely upon the [RFC4918](http://www.webdav.org/specs/rfc4918.html).
 
