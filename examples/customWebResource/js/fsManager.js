@@ -31,4 +31,6 @@ module.exports.WebFSManager = function()
     {
         throw webdav.Errors.InvalidOperation;
     }
+
+    return fsManager;
 }

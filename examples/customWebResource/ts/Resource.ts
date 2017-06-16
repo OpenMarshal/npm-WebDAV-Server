@@ -1,5 +1,6 @@
-import * as webdav from 'webdav-server'
+import * as webFSManager from './FSManager'
 import * as request from 'request'
+import * as webdav from 'webdav-server'
 
 export class WebFile extends webdav.StandardResource
 {
@@ -11,7 +12,7 @@ export class WebFile extends webdav.StandardResource
 
     constructor(webUrl : string, fileName : string, refreshTimeoutMs : number = 10000)
     {
-        super(null, null);
+        super(null, new webFSManager.WebFSManager());
 
         this.refreshTimeoutMs = refreshTimeoutMs;
         this.lenUpdateTime = 0;
