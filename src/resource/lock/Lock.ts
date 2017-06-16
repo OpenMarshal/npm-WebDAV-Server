@@ -47,7 +47,7 @@ export class Lock
 
     constructor(lockKind : LockKind, user : IUser | string, owner : LockOwner)
     {
-        this.expirationDate = Date.now() + lockKind.timeout;
+        this.expirationDate = Date.now() + lockKind.timeout * 1000;
         this.lockKind = lockKind;
         this.owner = owner;
         this.uuid = Lock.generateUUID(this.expirationDate);
