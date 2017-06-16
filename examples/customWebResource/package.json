@@ -9,6 +9,6 @@
   "author": "Adrien Castex <adrien.castex@protonmail.com>",
   "license": "Unlicense",
   "dependencies": {
-    "webdav-server": "^1.8.0"
+    "webdav-server": "^1.8.2"
   }
 }
