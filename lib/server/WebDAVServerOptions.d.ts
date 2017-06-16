@@ -23,7 +23,7 @@ export declare class WebDAVServerOptions {
         treeFilePath: string;
         tempTreeFilePath: string;
         onSaveError?: (error: Error) => void;
-        streamProvider?: (stream: Writable, callback: () => void) => void;
+        streamProvider?: (inputStream: Writable, callback: (outputStream?: Writable) => void) => void;
     };
 }
 export default WebDAVServerOptions;
