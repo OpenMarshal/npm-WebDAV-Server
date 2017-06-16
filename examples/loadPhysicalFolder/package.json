@@ -1,0 +1,14 @@
+{
+  "name": "loadphysicalfolder",
+  "version": "1.0.0",
+  "description": "Example to show how to load a physical folder.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "author": "Adrien Castex <adrien.castex@protonmail.com>",
+  "license": "Unlicense",
+  "dependencies": {
+    "webdav-server": "^1.8.2"
+  }
+}
