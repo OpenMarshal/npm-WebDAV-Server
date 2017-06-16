@@ -3,9 +3,48 @@ import { Readable, Writable } from 'stream'
 import { ResourceChildren } from '../std/ResourceChildren'
 import { StandardResource } from '../std/StandardResource'
 import { PhysicalResource } from './PhysicalResource'
+import { PhysicalFile } from './PhysicalFile'
 import { FSManager } from '../../manager/FSManager'
+import { Workflow } from '../../helper/Workflow'
 import { Errors } from '../../Errors'
+import * as path from 'path'
 import * as fs from 'fs'
+
+function loader(fpath : string, callback : (error : Error, resources ?: IResource[]) => void)
+{
+    fs.readdir(fpath, (e, files) => {
+        if(e) throw e;
+
+        new Workflow()
+            .each(files, (file, cb) => {
+                const fullPath = path.join(fpath, file);
+
+                fs.stat(fullPath, (e, stat) => {
+                    if(e)
+                        cb(e);
+                    else if(stat.isFile())
+                        cb(null, new PhysicalFile(fullPath));
+                    else
+                    {
+                        const folder = new PhysicalFolder(fullPath);
+                        loader(fullPath, (e, resources) => {
+                            if(e)
+                                cb(e);
+                            else
+                            {
+                                new Workflow()
+                                    .each(resources, (r, cb) => folder.addChild(r, cb))
+                                    .error(cb)
+                                    .done(() => cb(null, folder));
+                            }
+                        })
+                    }
+                })
+            })
+            .error(callback)
+            .done((resources) => callback(null, resources));
+    });
+}
 
 export class PhysicalFolder extends PhysicalResource
 {
@@ -119,5 +158,21 @@ export class PhysicalFolder extends PhysicalResource
     getChildren(callback : ReturnCallback<IResource[]>)
     {
         callback(null, this.children.children);
+    }
+    
+    static loadFromPath(path : string, callback : ReturnCallback<PhysicalFolder>)
+    {
+        loader(path, (e, resources) => {
+            if(!e)
+            {
+                const folder = new PhysicalFolder(path);
+                new Workflow()
+                    .each(resources, (r, cb) => folder.addChild(r, cb))
+                    .error((e) => callback(e, null))
+                    .done(() => callback(null, folder));
+            }
+            else
+                callback(e, null);
+        })
     }
 }

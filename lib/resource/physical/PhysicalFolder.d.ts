@@ -17,4 +17,5 @@ export declare class PhysicalFolder extends PhysicalResource {
     addChild(resource: IResource, callback: SimpleCallback): void;
     removeChild(resource: IResource, callback: SimpleCallback): void;
     getChildren(callback: ReturnCallback<IResource[]>): void;
+    static loadFromPath(path: string, callback: ReturnCallback<PhysicalFolder>): void;
 }
