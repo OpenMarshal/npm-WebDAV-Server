@@ -118,7 +118,7 @@ export function addResourceTree(_rootResource : IResource | ResourceTreeNode, _r
 
         array.forEach((r) => this.addResourceTree(rootResource, r, doneArray));
     }
-    else if((resoureceTree as IResource).fsManager)
+    else if((resoureceTree as IResource).fsManager !== undefined)
     { // resoureceTree is IResource
         rootResource.addChild(resoureceTree as IResource, callback);
     }
