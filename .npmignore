@@ -4,3 +4,4 @@ test
 .*
 tslint.json
 *.log
+examples
