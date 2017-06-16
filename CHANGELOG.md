@@ -1,5 +1,22 @@
 # Changelog
 
+# 1.8.1
+
+### Documentation
+* Added an example folder to provide real/full examples *[14cdf33](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/14cdf33)*
+* Added the example : Custom Web Resource *[14cdf33](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/14cdf33)*
+* Replaced test from the 'Project information' section in the README by a list of links *[be2c77a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/be2c77a)*
+
+### Other
+* Implemented the lock tests for the 'ResourceTester' *[cb90c9f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/cb90c9f)*
+* Added a missing option for the 'ResourceTester' *[b007f28](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b007f28)*
+* Fixed code format *[40dba6b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/40dba6b)*
+* Removed useless exports from 'BeforeAfter.ts' file *[be66fb5](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/be66fb5)*
+
+### Bug fix
+* Fixed a bug when a resource added to the server had no fsManager (= volatile resource) *[3c4cd72](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3c4cd72)*
+* Fixed a timeout error for the locks *[6097857](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6097857)*
+
 # 1.8.0
 
 ### New features
