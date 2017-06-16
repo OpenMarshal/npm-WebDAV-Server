@@ -1,11 +1,12 @@
 import { WebDAVServerOptions, setDefaultServerOptions } from '../WebDAVServerOptions'
 import { ResourceTreeNode, WebDAVServerStartCallback } from './Types'
+import { IResource, ReturnCallback, SimpleCallback } from '../../resource/IResource'
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
-import { IResource, ReturnCallback } from '../../resource/IResource'
 import { HTTPAuthentication } from '../../user/authentication/HTTPAuthentication'
 import { IPrivilegeManager } from '../../user/privilege/IPrivilegeManager'
 import { FSManager, FSPath } from '../../manager/FSManager'
 import { IUserManager } from '../../user/IUserManager'
+import { Readable } from 'stream'
 import Commands from '../commands/Commands'
 
 import * as persistence from './Persistence'
@@ -82,6 +83,7 @@ export class WebDAVServer
     stop = startStop.stop
 
     // Persistence
+    autoLoad = persistence.autoLoad
     load = persistence.load
     save = persistence.save
 

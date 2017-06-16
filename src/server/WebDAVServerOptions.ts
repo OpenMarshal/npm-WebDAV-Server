@@ -2,12 +2,13 @@ import { HTTPBasicAuthentication } from '../user/authentication/HTTPBasicAuthent
 import { HTTPDigestAuthentication } from '../user/authentication/HTTPDigestAuthentication'
 import { FakePrivilegeManager } from '../user/privilege/FakePrivilegeManager'
 import { HTTPAuthentication } from '../user/authentication/HTTPAuthentication'
+import { Writable, Readable } from 'stream'
 import { IPrivilegeManager } from '../user/privilege/IPrivilegeManager'
 import { SimpleUserManager } from '../user/simple/SimpleUserManager'
 import { RootResource } from '../resource/std/RootResource'
 import { IUserManager } from '../user/IUserManager'
 import { IResource } from '../resource/IResource'
-import { Writable } from 'stream'
+import { FSManager } from '../manager/FSManager'
 import * as https from 'https'
 
 export interface IAutoSave
@@ -16,6 +17,13 @@ export interface IAutoSave
     tempTreeFilePath : string,
     onSaveError ?: (error : Error) => void,
     streamProvider ?: (inputStream : Writable, callback : (outputStream ?: Writable) => void) => void
+}
+
+export interface IAutoLoad
+{
+    treeFilePath : string,
+    fsManagers : FSManager[],
+    streamProvider ?: (inputStream : Readable, callback : (outputStream ?: Readable) => void) => void
 }
 
 export class WebDAVServerOptions
@@ -34,6 +42,7 @@ export class WebDAVServerOptions
     serverName ?: string = 'webdav-server'
     version ?: string = '1.8.0'
     autoSave ?: IAutoSave = null
+    autoLoad ?: IAutoLoad = null
 }
 export default WebDAVServerOptions;
 

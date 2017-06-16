@@ -1,8 +1,8 @@
 /// <reference types="node" />
 import { WebDAVServerOptions } from '../WebDAVServerOptions';
 import { ResourceTreeNode, WebDAVServerStartCallback } from './Types';
-import { MethodCallArgs, WebDAVRequest } from '../WebDAVRequest';
 import { IResource, ReturnCallback } from '../../resource/IResource';
+import { MethodCallArgs, WebDAVRequest } from '../WebDAVRequest';
 import { HTTPAuthentication } from '../../user/authentication/HTTPAuthentication';
 import { IPrivilegeManager } from '../../user/privilege/IPrivilegeManager';
 import { FSPath } from '../../manager/FSManager';
@@ -37,6 +37,7 @@ export declare class WebDAVServer {
     start(callback: WebDAVServerStartCallback): any;
     start(port: number, callback: WebDAVServerStartCallback): any;
     stop: typeof startStop.stop;
+    autoLoad: typeof persistence.autoLoad;
     load: typeof persistence.load;
     save: typeof persistence.save;
     method(name: string, manager: WebDAVRequest): void;
