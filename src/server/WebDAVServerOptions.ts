@@ -10,6 +10,14 @@ import { IResource } from '../resource/IResource'
 import { Writable } from 'stream'
 import * as https from 'https'
 
+export interface IAutoSave
+{
+    treeFilePath : string,
+    tempTreeFilePath : string,
+    onSaveError ?: (error : Error) => void,
+    streamProvider ?: (inputStream : Writable, callback : (outputStream ?: Writable) => void) => void
+}
+
 export class WebDAVServerOptions
 {
     requireAuthentification ?: boolean = false
@@ -25,12 +33,7 @@ export class WebDAVServerOptions
     port ?: number = 1900
     serverName ?: string = 'webdav-server'
     version ?: string = '1.8.0'
-    autoSave ?: {
-        treeFilePath : string
-        tempTreeFilePath : string
-        onSaveError ?: (error : Error) => void
-        streamProvider ?: (inputStream : Writable, callback : (outputStream ?: Writable) => void) => void
-    } = null
+    autoSave ?: IAutoSave = null
 }
 export default WebDAVServerOptions;
 

@@ -5,6 +5,12 @@ import { IUserManager } from '../user/IUserManager';
 import { IResource } from '../resource/IResource';
 import { Writable } from 'stream';
 import * as https from 'https';
+export interface IAutoSave {
+    treeFilePath: string;
+    tempTreeFilePath: string;
+    onSaveError?: (error: Error) => void;
+    streamProvider?: (inputStream: Writable, callback: (outputStream?: Writable) => void) => void;
+}
 export declare class WebDAVServerOptions {
     requireAuthentification?: boolean;
     httpAuthentication?: HTTPAuthentication;
@@ -19,12 +25,7 @@ export declare class WebDAVServerOptions {
     port?: number;
     serverName?: string;
     version?: string;
-    autoSave?: {
-        treeFilePath: string;
-        tempTreeFilePath: string;
-        onSaveError?: (error: Error) => void;
-        streamProvider?: (inputStream: Writable, callback: (outputStream?: Writable) => void) => void;
-    };
+    autoSave?: IAutoSave;
 }
 export default WebDAVServerOptions;
 export declare function setDefaultServerOptions(options: WebDAVServerOptions): WebDAVServerOptions;

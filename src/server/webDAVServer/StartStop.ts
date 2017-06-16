@@ -1,19 +1,20 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
 import { WebDAVServerStartCallback } from './Types'
+import { Writable, Readable } from 'stream'
 import { Errors, HTTPError } from '../../Errors'
 import { WebDAVServer } from './WebDAVServer'
-import { Writable, Readable } from 'stream'
+import { IAutoSave } from '../WebDAVServerOptions'
 import * as https from 'https'
 import * as http from 'http'
 import * as zlib from 'zlib'
 import * as fs from 'fs'
 
-function autoSave(treeFilePath : string, tempTreeFilePath : string, onSaveError ?: (error : Error) => void, streamProvider ?: (inputStream : Writable, callback : (outputStream ?: Writable) => void) => void)
+function autoSave(options : IAutoSave)
 {
-    if(!streamProvider)
-        streamProvider = (s, cb) => cb(s);
-    if(!onSaveError)
-        onSaveError = () => {};
+    if(!options.streamProvider)
+        options.streamProvider = (s, cb) => cb(s);
+    if(!options.onSaveError)
+        options.onSaveError = () => {};
 
     let saving = false;
     let saveRequested = false;
@@ -40,38 +41,38 @@ function autoSave(treeFilePath : string, tempTreeFilePath : string, onSaveError 
                     this.save((e, data) => {
                         if(e)
                         {
-                            onSaveError(e);
+                            options.onSaveError(e);
                             next();
                         }
                         else
                         {
                             const stream = zlib.createGzip();
-                            streamProvider(stream, (outputStream) => {
+                            options.streamProvider(stream, (outputStream) => {
                                 if(!outputStream)
                                     outputStream = stream;
-                                outputStream.pipe(fs.createWriteStream(tempTreeFilePath));
+                                outputStream.pipe(fs.createWriteStream(options.tempTreeFilePath));
 
                                 stream.end(JSON.stringify(data), (e) => {
                                     if(e)
                                     {
-                                        onSaveError(e);
+                                        options.onSaveError(e);
                                         next();
                                         return;
                                     }
                                 });
 
                                 stream.on('close', () => {
-                                    fs.unlink(treeFilePath, (e) => {
+                                    fs.unlink(options.treeFilePath, (e) => {
                                         if(e && e.code !== 'ENOENT') // An error other than ENOENT (no file/folder found)
                                         {
-                                            onSaveError(e);
+                                            options.onSaveError(e);
                                             next();
                                             return;
                                         }
 
-                                        fs.rename(tempTreeFilePath, treeFilePath, (e) => {
+                                        fs.rename(options.tempTreeFilePath, options.treeFilePath, (e) => {
                                             if(e)
-                                                onSaveError(e);
+                                                options.onSaveError(e);
                                             next();
                                         })
                                     })
@@ -194,7 +195,7 @@ export function start(port ?: number | WebDAVServerStartCallback, callback ?: We
         })
 
         if(this.options.autoSave)
-            autoSave.bind(this)(this.options.autoSave.treeFilePath, this.options.autoSave.tempTreeFilePath, this.options.autoSave.onError, this.options.autoSave.streamProvider);
+            autoSave.bind(this)(this.options.autoSave);
     }
 
     this.server.listen(_port, this.options.hostname, () => {
