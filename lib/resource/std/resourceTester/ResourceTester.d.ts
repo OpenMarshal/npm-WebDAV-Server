@@ -21,11 +21,7 @@ export declare class ResourceTester<T extends IResource> {
     protected writeRead: typeof content.writeRead;
     protected mimeType: typeof content.mimeType;
     protected size: typeof content.size;
-    protected getLocks: typeof locks.getLocks;
-    protected setLock: typeof locks.setLock;
-    protected removeLock: typeof locks.removeLock;
-    protected getAvailableLocks: typeof locks.getAvailableLocks;
-    protected getLock: typeof locks.getLock;
+    protected lock: typeof locks.lock;
     protected addChild: typeof children.addChild;
     protected removeChild: typeof children.removeChild;
     protected getChildren: typeof children.getChildren;

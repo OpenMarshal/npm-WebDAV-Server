@@ -20,11 +20,11 @@ class DefaultResourceTesterOptions implements ResourceTesterOptions
     canBeCreated : boolean = true
     canBeDeleted : boolean = true
     canBeRenamed : boolean = true
-    canGetLocks : boolean = true
     canGetSize : boolean = true
     canBeMoved : boolean = true
     canWrite : boolean = true
     canRead : boolean = true
+    canLock : boolean = true
 }
 
 export class ResourceTester<T extends IResource>
@@ -135,12 +135,8 @@ export class ResourceTester<T extends IResource>
         test('rename');
         test('writeRead');
         test('mimeType');
-        test('size'); /*
-        test('getLocks');
-        test('setLock');
-        test('removeLock');
-        test('getAvailableLocks');
-        test('getLock');*/
+        test('size');
+        test('lock');
         test('addChild');
         test('removeChild');
         test('getChildren');
@@ -165,11 +161,7 @@ export class ResourceTester<T extends IResource>
     protected size = content.size
     
     // ****************************** Locks ****************************** //
-    protected getLocks = locks.getLocks
-    protected setLock = locks.setLock
-    protected removeLock = locks.removeLock
-    protected getAvailableLocks = locks.getAvailableLocks
-    protected getLock = locks.getLock
+    protected lock = locks.lock
 
     // ****************************** Children ****************************** //
     protected addChild = children.addChild

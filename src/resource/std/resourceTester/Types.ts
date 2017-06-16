@@ -12,11 +12,11 @@ export interface ResourceTesterOptions
     canBeCreated : boolean
     canBeDeleted : boolean
     canBeRenamed : boolean
-    canGetLocks : boolean
     canGetSize : boolean
     canBeMoved : boolean
     canWrite : boolean
     canRead : boolean
+    canLock : boolean
 }
 
 export type ResourceTesterTestCallback = (error : Error, isValid : boolean, text : string, optionReverse ?: boolean, cbNext ?: () => void) => void;
