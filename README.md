@@ -21,6 +21,7 @@ Here are some project related links :
 * [Documentation](https://github.com/OpenMarshal/npm-WebDAV-Server/wiki)
 * [Project development details](https://github.com/OpenMarshal/npm-WebDAV-Server/projects)
 * [Changelog](https://github.com/OpenMarshal/npm-WebDAV-Server/blob/master/CHANGELOG.md)
+* [Examples](https://github.com/OpenMarshal/npm-WebDAV-Server/tree/master/examples)
 * [Issues](https://github.com/OpenMarshal/npm-WebDAV-Server/issues)
 * [GitHub](https://github.com/OpenMarshal/npm-WebDAV-Server)
 
