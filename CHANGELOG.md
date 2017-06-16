@@ -1,5 +1,24 @@
 # Changelog
 
+# 1.8.2
+
+### New features
+* Implemented an 'autoLoad' method in the server to help loading files saved by the 'autoSave' *[5acdf13](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5acdf13)*
+* Added the static method 'loadFromPath(...)' in the 'PhysicalFolder' class to allow easy resource tree loading based on a url *[b8c5ca0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b8c5ca0)*
+
+### Documentation
+* Used the 'autoLoad' method to load the content in the 'customWebResource' example *[f0365f2](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/f0365f2)*
+* Added the 'loadPhysicalFolder' example *[7ed6c7a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7ed6c7a)*
+* Added the 'examples' folder in the list of links in the README *[595bcf1](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/595bcf1)*
+* Fixed the 'Custom Web Resource' example *[d9b3761](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d9b3761)*
+
+### Other
+* Upgraded the 'webdav-server' version needed in the example 'customWebResource' to 1.8.2 *[9af7d93](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/9af7d93)*
+* Moved the 'autoSave' signature (in the server options) to an external interface *[fcb22cf](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/fcb22cf)*
+
+### Bug fix
+* Fixed the wrong signature of the 'autoSave.streamProvider' server option *[d80491a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d80491a)*
+
 # 1.8.1
 
 ### Documentation
