@@ -1,5 +1,47 @@
 # Changelog
 
+# 1.9.0
+
+### New features
+* A 'FSManager.serialize(...)' returning 'undefined' or 'null' will lead to skip the serialization of the resource *[f5e06ae](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/f5e06ae)*
+* Added the 'finalSize' to the 'write(...)' method of resources when available :
+  * *[a58d38f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a58d38f)*
+  * *[8d4df3e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/8d4df3e)*
+* Added a 'MustIgnore' error which can make the server to skip some checks (mostly lock tests) :
+  * *[aa8a629](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/aa8a629)*
+  * *[ccb786e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/ccb786e)*
+  * *[a58d38f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a58d38f)*
+* Added the ability to a resource to provide its own sub-tree based on the requested path (Gateway) :
+  * *[485b270](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/485b270)*
+  * *[a58d38f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a58d38f)*
+  * *[05fd08c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/05fd08c)*
+
+### Changes
+* Cleaned the code *[d55ab4d](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d55ab4d)*
+* The user is now optional for lock creation leading to skip the user checking when testing the user privileges :
+  * *[2c89532](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2c89532)*
+  * *[0a9ca37](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0a9ca37)*
+* Added the 'XMLElement' methods 'findText() : string' and 'findTexts() : string[]' *[164022b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/164022b)*
+* Now export the 'XML', 'IfParser' and 'Workflow' to allow easier resource/FSManager creation :
+  * *[55c71b3](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/55c71b3)*
+  * *[585b172](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/585b172)*
+
+### Documentation
+* Added an example for the gateway : FTP Gateway *[45f1055](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/45f1055)*
+* Added the Gitter link to the README *[dbbfb12](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/dbbfb12)*
+
+### Tests
+* Fixed a broken test with the 'DAV:lockdiscovery' *[9d5b3c9](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/9d5b3c9)*
+
+### Other
+* Improved the XML 'name to namespace' feature *[164022b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/164022b)*
+
+### Bug fix
+* Fixed the 'moveTo(...)' which was calling the the 'rename(...)' method even when the oldName and newName were equal *[05fd08c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/05fd08c)*
+* Fixed ResourceTester error *[083a5c0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/083a5c0)*
+* Modified the 'FSPath' to remove '//' sequences ('//' => '/') *[0315270](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0315270)*
+* Fixed the example of the Custom Web Resource, which was not loading the 'webdav-server' module but the 'lib/index.js' of the root folder *[00661a0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/00661a0)*
+
 # 1.8.2
 
 ### New features
