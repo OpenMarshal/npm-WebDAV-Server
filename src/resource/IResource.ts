@@ -1,5 +1,6 @@
 import { Readable, Writable } from 'stream'
 import { FSManager, FSPath } from '../manager/FSManager'
+import { MethodCallArgs } from '../server/MethodCallArgs'
 import { XMLElement } from '../helper/XML'
 import { LockKind } from './lock/LockKind'
 import { LockType } from './lock/LockType'
@@ -44,7 +45,7 @@ export interface IResource
     rename(newName : string, callback : Return2Callback<string, string>)
     
     // ****************************** Content ****************************** //
-    write(targetSource : boolean, callback : ReturnCallback<Writable>)
+    write(targetSource : boolean, callback : ReturnCallback<Writable>, finalSize ?: number)
     read(targetSource : boolean, callback : ReturnCallback<Readable>)
     mimeType(targetSource : boolean, callback : ReturnCallback<string>)
     size(targetSource : boolean, callback : ReturnCallback<number>)
@@ -73,4 +74,7 @@ export interface IResource
     webName(callback : ReturnCallback<string>)
     displayName?(callback : ReturnCallback<string>)
     type(callback : ReturnCallback<ResourceType>)
+    
+    // ****************************** Gateway ****************************** //
+    gateway?(arg : MethodCallArgs, path : FSPath, callback : (error : Error, resource ?: IResource) => void)
 }

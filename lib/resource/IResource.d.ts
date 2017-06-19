@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import { Readable, Writable } from 'stream';
-import { FSManager } from '../manager/FSManager';
+import { FSManager, FSPath } from '../manager/FSManager';
+import { MethodCallArgs } from '../server/MethodCallArgs';
 import { XMLElement } from '../helper/XML';
 import { LockKind } from './lock/LockKind';
 import { Lock } from './lock/Lock';
@@ -27,7 +28,7 @@ export interface IResource {
     delete(callback: SimpleCallback): any;
     moveTo(parent: IResource, newName: string, overwrite: boolean, callback: SimpleCallback): any;
     rename(newName: string, callback: Return2Callback<string, string>): any;
-    write(targetSource: boolean, callback: ReturnCallback<Writable>): any;
+    write(targetSource: boolean, callback: ReturnCallback<Writable>, finalSize?: number): any;
     read(targetSource: boolean, callback: ReturnCallback<Readable>): any;
     mimeType(targetSource: boolean, callback: ReturnCallback<string>): any;
     size(targetSource: boolean, callback: ReturnCallback<number>): any;
@@ -48,4 +49,5 @@ export interface IResource {
     webName(callback: ReturnCallback<string>): any;
     displayName?(callback: ReturnCallback<string>): any;
     type(callback: ReturnCallback<ResourceType>): any;
+    gateway?(arg: MethodCallArgs, path: FSPath, callback: (error: Error, resource?: IResource) => void): any;
 }
