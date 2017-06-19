@@ -51,7 +51,7 @@ export function writeRead(callback : ResourceTesterTestCallback)
                     })
                 })
             });
-        })
+        }, values.join('').length)
     })
 }
 export function mimeType(callback : ResourceTesterTestCallback)
@@ -93,6 +93,6 @@ export function size(callback : ResourceTesterTestCallback)
                     })
                 })
             });
-        })
+        }, value.length)
     })
 }
