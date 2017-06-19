@@ -51,7 +51,7 @@ export class Lock
         this.lockKind = lockKind;
         this.owner = owner;
         this.uuid = Lock.generateUUID(this.expirationDate);
-        this.userUid = user.constructor === String ? user as string : (user as IUser).uid;
+        this.userUid = user ? user.constructor === String ? user as string : (user as IUser).uid : null;
     }
 
     isSame(lock : Lock) : boolean
