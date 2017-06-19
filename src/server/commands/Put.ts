@@ -171,7 +171,6 @@ export default function unchunkedMethod(arg : MethodCallArgs, callback)
     arg.getResource((e, r) => {
         if(e && e !== Errors.ResourceNotFound)
         {
-                            console.log(e);
             arg.setCode(HTTPCodes.InternalServerError);
             callback();
             return;
@@ -184,7 +183,6 @@ export default function unchunkedMethod(arg : MethodCallArgs, callback)
                     r.write(targetSource, (e, stream) => process.nextTick(() => {
                         if(e)
                         {
-                            console.log(e);
                             arg.setCode(HTTPCodes.InternalServerError);
                             callback();
                             return;
@@ -197,7 +195,6 @@ export default function unchunkedMethod(arg : MethodCallArgs, callback)
                             callback();
                         });
                         stream.on('error', (e) => {
-                            console.log(e);
                             arg.setCode(HTTPCodes.InternalServerError)
                             callback();
                         });
@@ -236,7 +233,6 @@ export default function unchunkedMethod(arg : MethodCallArgs, callback)
                             callback();
                         });
                         stream.on('error', (e) => {
-                            console.log(e);
                             arg.setCode(HTTPCodes.InternalServerError)
                             callback();
                         });

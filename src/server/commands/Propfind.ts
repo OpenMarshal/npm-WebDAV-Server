@@ -151,7 +151,6 @@ export function method(arg : MethodCallArgs, callback)
                             done(multistatus);
                         else
                         {
-                            console.log(e);
                             if(e === Errors.BadAuthentication)
                                 arg.setCode(HTTPCodes.Unauthorized);
                             else
@@ -167,7 +166,6 @@ export function method(arg : MethodCallArgs, callback)
 
                         function err(e)
                         {
-                            console.log(e);
                             if(e === Errors.BadAuthentication)
                                 arg.setCode(HTTPCodes.Unauthorized);
                             else
