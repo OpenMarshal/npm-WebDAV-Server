@@ -70,11 +70,17 @@ export function serialize(resource : IResource, callback : (error : Error, obj :
         const obj = new SerializedObject(resource.fsManager.uid, type);
         obj.data = resource.fsManager.serialize(resource, obj);
         
+        if(obj.data === undefined || obj.data === null)
+        {
+            callback(null, null);
+            return;
+        }
         if(!type.isDirectory)
         {
             callback(null, obj);
             return;
         }
+
         resource.getChildren((e, children) => {
             process.nextTick(() => {
                 if(e)
@@ -99,7 +105,8 @@ export function serialize(resource : IResource, callback : (error : Error, obj :
                         process.nextTick(() => callback(error, obj));
                         return;
                     }
-                    obj.children.push(subObj);
+                    if(subObj)
+                        obj.children.push(subObj);
                     --nb;
                     if(nb === 0)
                         process.nextTick(() => callback(null, obj));
