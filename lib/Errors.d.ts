@@ -26,6 +26,7 @@ export declare const Errors: {
     NoMimeTypeForAFolder: Error;
     NoSizeForAFolder: Error;
     IllegalArguments: Error;
+    MustIgnore: Error;
     None: any;
 };
 export default Errors;

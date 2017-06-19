@@ -34,6 +34,7 @@ export const Errors = {
     NoMimeTypeForAFolder: new Error('Cannot get the mime type of a folder type resource.'),
     NoSizeForAFolder: new Error('Cannot get the size of a folder type resource.'),
     IllegalArguments: new Error('Illegal arguments.'),
+    MustIgnore: new Error('There was an error but it must not stop the processing.'),
 
     None: null
 };
