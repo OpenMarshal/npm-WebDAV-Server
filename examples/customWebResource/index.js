@@ -1,6 +1,6 @@
 const webFsManager = require('./js/fsManager.js'),
       webFile = require('./js/resource.js'),
-      webdav = require('../../lib/index.js'),
+      webdav = require('webdav-server'),
       zlib = require('zlib'),
       fs = require('fs');
 
