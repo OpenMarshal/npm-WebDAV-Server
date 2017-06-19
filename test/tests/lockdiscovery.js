@@ -61,7 +61,7 @@ module.exports = (test, options, index) => test('lockdiscovery', (isValid, serve
                         if(activelock['D:locktype'][0]['D:write'][0]
                             && activelock['D:lockscope'][0]['D:exclusive'][0]
                             && activelock['D:depth'][0]._text[0].toLowerCase() === 'infinity'
-                            && activelock['D:owner'][0]['DAV:href'][0]._text[0] === url + '/user'
+                            && activelock['D:owner'][0]['a:href'][0]._text[0] === url + '/user'
                             && activelock['D:locktoken'][0]['D:href'][0]
                             && activelock['D:timeout'][0]._text[0].toLowerCase().indexOf('second-') === 0
                             && activelock['D:lockroot'][0]['D:href'][0]._text[0] === url + '/testFolder')
