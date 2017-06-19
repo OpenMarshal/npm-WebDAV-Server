@@ -28,8 +28,8 @@ export declare class WebDAVServer {
     protected unknownMethod: WebDAVRequest;
     protected server: http.Server | https.Server;
     constructor(options?: WebDAVServerOptions);
-    getResourceFromPath(path: FSPath | string[] | string, callback: ReturnCallback<IResource>): any;
-    getResourceFromPath(path: FSPath | string[] | string, rootResource: IResource, callback: ReturnCallback<IResource>): any;
+    getResourceFromPath(arg: MethodCallArgs, path: FSPath | string[] | string, callback: ReturnCallback<IResource>): any;
+    getResourceFromPath(arg: MethodCallArgs, path: FSPath | string[] | string, rootResource: IResource, callback: ReturnCallback<IResource>): any;
     addResourceTree(resoureceTree: ResourceTreeNode, callback: (e: Error) => void): any;
     addResourceTree(rootResource: IResource, resoureceTree: ResourceTreeNode, callback: (e: Error) => void): any;
     onUnknownMethod(unknownMethod: WebDAVRequest): void;

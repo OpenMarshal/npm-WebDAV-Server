@@ -1,9 +1,10 @@
 import { ResourceTreeNode, IResourceTreeNode } from './Types'
 import { IResource, ReturnCallback } from '../../resource/IResource'
+import { MethodCallArgs } from '../MethodCallArgs'
 import { FSPath } from '../../manager/FSManager'
 import { Errors } from '../../Errors'
 
-export function getResourceFromPath(path : FSPath | string[] | string, callbackOrRootResource : ReturnCallback<IResource> | IResource, callback ?: ReturnCallback<IResource>)
+export function getResourceFromPath(arg : MethodCallArgs, path : FSPath | string[] | string, callbackOrRootResource : ReturnCallback<IResource> | IResource, callback ?: ReturnCallback<IResource>)
 {
     let rootResource : IResource;
 
@@ -20,6 +21,12 @@ export function getResourceFromPath(path : FSPath | string[] | string, callbackO
         paths = path as FSPath;
     else
         paths = new FSPath(path);
+    
+    if(rootResource.gateway && rootResource.gateway.constructor === Function)
+    {
+        rootResource.gateway(arg, paths, (e, r) => callback(e ? Errors.ResourceNotFound : null, r));
+        return;
+    }
     
     if(paths.isRoot())
     {
@@ -58,7 +65,7 @@ export function getResourceFromPath(path : FSPath | string[] | string, callbackO
                 {
                     found = true;
                     paths.removeRoot();
-                    this.getResourceFromPath(paths, children[k], callback);
+                    this.getResourceFromPath(arg, paths, children[k], callback);
                     return;
                 }
                 process.nextTick(done);

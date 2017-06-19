@@ -53,11 +53,11 @@ export class WebDAVServer
                 this.method(k, Commands[k]);
     }
 
-    getResourceFromPath(path : FSPath | string[] | string, callback : ReturnCallback<IResource>)
-    getResourceFromPath(path : FSPath | string[] | string, rootResource : IResource, callback : ReturnCallback<IResource>)
-    getResourceFromPath(path : FSPath | string[] | string, callbackOrRootResource : ReturnCallback<IResource> | IResource, callback ?: ReturnCallback<IResource>)
+    getResourceFromPath(arg : MethodCallArgs, path : FSPath | string[] | string, callback : ReturnCallback<IResource>)
+    getResourceFromPath(arg : MethodCallArgs, path : FSPath | string[] | string, rootResource : IResource, callback : ReturnCallback<IResource>)
+    getResourceFromPath(arg : MethodCallArgs, path : FSPath | string[] | string, callbackOrRootResource : ReturnCallback<IResource> | IResource, callback ?: ReturnCallback<IResource>)
     {
-        resource.getResourceFromPath.bind(this)(path, callbackOrRootResource, callback);
+        resource.getResourceFromPath.bind(this)(arg, path, callbackOrRootResource, callback);
     }
 
     addResourceTree(resoureceTree : ResourceTreeNode, callback : (e : Error) => void)
