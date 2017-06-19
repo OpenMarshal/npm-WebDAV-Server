@@ -9,7 +9,10 @@ function NoLock()
 {
     return function(r : IResource, callback : FnReturn) {
         r.getLocks((e, locks) => {
-            callback(e, locks ? locks.length === 0 : false);
+            if(e === Errors.MustIgnore)
+                callback(null, true);
+            else
+                callback(e, locks ? locks.length === 0 : false);
         })
     }
 }
@@ -18,7 +21,10 @@ function Token(token : string)
 {
     return function(r : IResource, callback : FnReturn) {
         r.getLock(token, (e, lock) => {
-            callback(e, !!lock && !e);
+            if(e === Errors.MustIgnore)
+                callback(null, true);
+            else
+                callback(e, !!lock && !e);
         })
     }
 }
@@ -27,7 +33,10 @@ function Tag(tag : string)
 {
     return function(r : IResource, callback : FnReturn) {
         r.lastModifiedDate((e, lastModifiedDate) => {
-            callback(e, !e && ETag.createETag(lastModifiedDate) === tag);
+            if(e === Errors.MustIgnore)
+                callback(null, true);
+            else
+                callback(e, !e && ETag.createETag(lastModifiedDate) === tag);
         })
     }
 }
@@ -159,8 +168,11 @@ export function parseIfHeader(ifHeader : string)
             if(!a.path)
                 a.actions(r, done);
             else
-                arg.server.getResourceFromPath(a.path, (e, resource) => {
-                    a.actions(resource, done);
+                arg.server.getResourceFromPath(arg, a.path, (e, resource) => {
+                    if(e)
+                        done(e, null);
+                    else
+                        a.actions(resource, done);
                 });
         })
     }
