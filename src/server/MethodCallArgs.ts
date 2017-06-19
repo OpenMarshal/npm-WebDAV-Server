@@ -51,7 +51,7 @@ export class MethodCallArgs
         response.setHeader('DAV', '1,2');
         response.setHeader('Server', server.options.serverName + '/' + server.options.version);
 
-        server.getResourceFromPath(mca.uri, (e, r) => {
+        server.getResourceFromPath(mca, mca.uri, (e, r) => {
             if(e || !r)
             {
                 setAllowHeader();

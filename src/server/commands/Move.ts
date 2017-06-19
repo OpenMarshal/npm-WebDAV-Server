@@ -29,7 +29,13 @@ export function method(arg : MethodCallArgs, callback)
                     destination = destination.substring(destination.indexOf('/'))
                     destination = new FSPath(destination)
 
-                    arg.server.getResourceFromPath(destination.getParent(), (e, rDest) => {
+                    arg.server.getResourceFromPath(arg, destination.getParent(), (e, rDest) => {
+                        if(e)
+                        {
+                            arg.setCode(HTTPCodes.InternalServerError);
+                            return;
+                        }
+
                         arg.requirePrivilege([ 'canAddChild' ], rDest, () => {
                             r.moveTo(rDest, destination.fileName(), overwrite, (e) => process.nextTick(() => {
                                 if(e)

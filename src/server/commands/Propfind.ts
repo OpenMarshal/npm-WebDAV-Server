@@ -32,6 +32,16 @@ function lockDiscovery(lockDiscoveryCache : any, arg : MethodCallArgs, path : FS
         }
 
         resource.getLocks((e, locks) => {
+            if(e === Errors.MustIgnore)
+            {
+                locks = [];
+            }
+            else if(e)
+            {
+                callback(e, null);
+                return;
+            }
+
             if(resource.parent)
             {
                 const parentPath = path.getParent();
@@ -141,6 +151,7 @@ export function method(arg : MethodCallArgs, callback)
                             done(multistatus);
                         else
                         {
+                            console.log(e);
                             if(e === Errors.BadAuthentication)
                                 arg.setCode(HTTPCodes.Unauthorized);
                             else
@@ -156,6 +167,7 @@ export function method(arg : MethodCallArgs, callback)
 
                         function err(e)
                         {
+                            console.log(e);
                             if(e === Errors.BadAuthentication)
                                 arg.setCode(HTTPCodes.Unauthorized);
                             else
@@ -327,7 +339,8 @@ export function method(arg : MethodCallArgs, callback)
                             }
                             
                             const p = arg.fullUri(path).replace(' ', '%20');
-                            response.ele('D:href', undefined, true).add(p.lastIndexOf('/') !== p.length - 1 && type.isDirectory ? p + '/' : p);
+                            const href = p.lastIndexOf('/') !== p.length - 1 && type.isDirectory ? p + '/' : p;
+                            response.ele('D:href', undefined, true).add(href);
                             response.ele('D:location').ele('D:href', undefined, true).add(p);
 
                             if(tags.resourcetype.value && type.isDirectory)

@@ -52,18 +52,20 @@ function copy(arg : MethodCallArgs, source : IResource, rDest : IResource, desti
                                     return;
                                 }
 
-                                source.read(true, (e, rstream) => _(e, () => {
-                                    dest.write(true, (e, wstream) => _(e, () => {
-                                        rstream.on('end', () => {
-                                            arg.invokeEvent('read', source);
-                                            next();
-                                        });
-                                        wstream.on('finish', () => {
-                                            arg.invokeEvent('write', dest);
-                                        })
-                                        rstream.pipe(wstream);
+                                source.size(true, (e, size) => {
+                                    source.read(true, (e, rstream) => _(e, () => {
+                                        dest.write(true, (e, wstream) => _(e, () => {
+                                            rstream.on('end', () => {
+                                                arg.invokeEvent('read', source);
+                                                next();
+                                            });
+                                            wstream.on('finish', () => {
+                                                arg.invokeEvent('write', dest);
+                                            })
+                                            rstream.pipe(wstream);
+                                        }), size)
                                     }))
-                                }))
+                                })
 
                                 function next()
                                 {
@@ -130,7 +132,7 @@ export function method(arg : MethodCallArgs, callback)
                 }
                 destination = new FSPath(destination)
 
-                arg.server.getResourceFromPath(destination.getParent(), (e, rDest) => {
+                arg.server.getResourceFromPath(arg, destination.getParent(), (e, rDest) => {
                     if(e)
                     {
                         arg.setCode(HTTPCodes.InternalServerError);

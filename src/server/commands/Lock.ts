@@ -46,7 +46,7 @@ function createLock(arg : MethodCallArgs, callback)
             { // create the resource
                 
                 arg.checkIfHeader(undefined, () => {
-                    arg.server.getResourceFromPath(arg.path.getParent(), (e, r) => {
+                    arg.server.getResourceFromPath(arg, arg.path.getParent(), (e, r) => {
                         if(e)
                         {
                             arg.setCode(e === Errors.ResourceNotFound ? HTTPCodes.Conflict : HTTPCodes.InternalServerError)

@@ -4,6 +4,7 @@ import { STATUS_CODES } from 'http'
 import { LockScope } from '../../resource/lock/LockScope'
 import { LockKind } from '../../resource/lock/LockKind'
 import { LockType } from '../../resource/lock/LockType'
+import { Errors } from '../../Errors'
 import { Lock } from '../../resource/lock/Lock'
 import { XML } from '../../helper/XML'
 
@@ -52,18 +53,26 @@ export function method(arg : MethodCallArgs, callback)
                     }
 
                     r.getLock(token, (e, lock) => {
-                        if(e || !lock)
+                        if(e !== Errors.MustIgnore)
                         {
-                            arg.setCode(HTTPCodes.Conflict);
-                            callback();
-                            return;
-                        }
+                            if(e || !lock)
+                            {
+                                arg.setCode(HTTPCodes.Conflict);
+                                callback();
+                                return;
+                            }
 
-                        if(lock.userUid !== arg.user.uid)
+                            if(!!lock.userUid && lock.userUid !== arg.user.uid)
+                            {
+                                arg.setCode(HTTPCodes.Forbidden);
+                                callback();
+                                return;
+                            }
+                        }
+                        else
                         {
-                            arg.setCode(HTTPCodes.Forbidden);
-                            callback();
-                            return;
+                            lock = new Lock(new LockKind(LockScope.Exclusive, LockType.Write), undefined, undefined);
+                            lock.uuid = token;
                         }
 
                         r.removeLock(lock.uuid, (e, done) => {

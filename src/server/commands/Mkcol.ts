@@ -16,7 +16,7 @@ export function method(arg : MethodCallArgs, callback)
                     return;
                 }
                 
-                arg.server.getResourceFromPath(arg.path.getParent(), (e, r) => {
+                arg.server.getResourceFromPath(arg, arg.path.getParent(), (e, r) => {
                     if(e)
                     {
                         arg.setCode(HTTPCodes.Conflict)

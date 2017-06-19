@@ -5,7 +5,7 @@ import * as path from 'path'
 
 function createResource(arg : MethodCallArgs, callback, validCallback : (resource : IResource) => void)
 {
-    arg.server.getResourceFromPath(arg.path.getParent(), (e, r) => {
+    arg.server.getResourceFromPath(arg, arg.path.getParent(), (e, r) => {
         if(e)
         {
             arg.setCode(e === Errors.ResourceNotFound ? HTTPCodes.Conflict : HTTPCodes.InternalServerError)
@@ -80,7 +80,7 @@ export default function unchunkedMethod(arg : MethodCallArgs, callback)
                                 arg.setCode(HTTPCodes.OK)
                             }
                             callback()
-                        }))
+                        }), arg.contentLength)
                     })
                     return;
                 }
@@ -151,7 +151,7 @@ export default function unchunkedMethod(arg : MethodCallArgs, callback)
                                 }
                                 callback();
                             });
-                        }))
+                        }), arg.contentLength)
                     }))
                 })
             }
@@ -171,6 +171,7 @@ export default function unchunkedMethod(arg : MethodCallArgs, callback)
     arg.getResource((e, r) => {
         if(e && e !== Errors.ResourceNotFound)
         {
+                            console.log(e);
             arg.setCode(HTTPCodes.InternalServerError);
             callback();
             return;
@@ -183,22 +184,24 @@ export default function unchunkedMethod(arg : MethodCallArgs, callback)
                     r.write(targetSource, (e, stream) => process.nextTick(() => {
                         if(e)
                         {
+                            console.log(e);
                             arg.setCode(HTTPCodes.InternalServerError);
                             callback();
                             return;
                         }
 
                         arg.request.pipe(stream);
-                        stream.on('finish', (e) => {
+                        stream.on('finish', () => {
                             arg.setCode(HTTPCodes.Created)
                             arg.invokeEvent('write', r);
                             callback();
                         });
                         stream.on('error', (e) => {
+                            console.log(e);
                             arg.setCode(HTTPCodes.InternalServerError)
                             callback();
                         });
-                    }))
+                    }), arg.contentLength)
                 })
                 return;
             }
@@ -233,10 +236,11 @@ export default function unchunkedMethod(arg : MethodCallArgs, callback)
                             callback();
                         });
                         stream.on('error', (e) => {
+                            console.log(e);
                             arg.setCode(HTTPCodes.InternalServerError)
                             callback();
                         });
-                    }))
+                    }), arg.contentLength)
                 }))
             })
         })
