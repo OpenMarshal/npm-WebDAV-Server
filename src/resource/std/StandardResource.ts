@@ -1,6 +1,7 @@
 import { IResource, ReturnCallback, SimpleCallback, Return2Callback, ResourceType, ResourcePropertyValue } from '../IResource'
 import { Readable, Writable } from 'stream'
 import { FSManager, FSPath } from '../../manager/FSManager'
+import { MethodCallArgs } from '../../server/MethodCallArgs'
 import { LockScope } from '../lock/LockScope'
 import { Workflow } from '../../helper/Workflow'
 import { LockType } from '../lock/LockType'
@@ -131,6 +132,9 @@ export abstract class StandardResource implements IResource
     abstract addChild(resource : IResource, callback : SimpleCallback)
     abstract removeChild(resource : IResource, callback : SimpleCallback)
     abstract getChildren(callback : ReturnCallback<IResource[]>)
+    
+    // ****************************** Gateway ****************************** //
+    gateway?(arg : MethodCallArgs, path : FSPath, callback : (error : Error, resource ?: IResource) => void);
 
     protected updateLastModified()
     {
@@ -193,9 +197,18 @@ export abstract class StandardResource implements IResource
                                 if(e)
                                 {
                                     callback(e);
+                                    return;
                                 }
-                                else
-                                {
+                                
+                                resource.webName((e, name) => {
+                                    if(e || name === newName)
+                                    {
+                                        parent.addChild(resource, (e) => {
+                                            callback(e);
+                                        })
+                                        return;
+                                    }
+
                                     resource.rename(newName, (e, oldName, newName) => {
                                         if(e)
                                             callback(e);
@@ -204,7 +217,7 @@ export abstract class StandardResource implements IResource
                                                 callback(e);
                                             })
                                     })
-                                }
+                                })
                             })
                         })
                 })

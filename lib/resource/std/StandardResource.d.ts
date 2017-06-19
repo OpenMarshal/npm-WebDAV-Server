@@ -1,7 +1,8 @@
 /// <reference types="node" />
 import { IResource, ReturnCallback, SimpleCallback, Return2Callback, ResourceType, ResourcePropertyValue } from '../IResource';
 import { Readable, Writable } from 'stream';
-import { FSManager } from '../../manager/FSManager';
+import { FSManager, FSPath } from '../../manager/FSManager';
+import { MethodCallArgs } from '../../server/MethodCallArgs';
 import { LockKind } from '../lock/LockKind';
 import { LockBag } from '../lock/LockBag';
 import { Lock } from '../lock/Lock';
@@ -38,6 +39,7 @@ export declare abstract class StandardResource implements IResource {
     abstract addChild(resource: IResource, callback: SimpleCallback): any;
     abstract removeChild(resource: IResource, callback: SimpleCallback): any;
     abstract getChildren(callback: ReturnCallback<IResource[]>): any;
+    gateway?(arg: MethodCallArgs, path: FSPath, callback: (error: Error, resource?: IResource) => void): any;
     protected updateLastModified(): void;
     protected removeFromParent(callback: SimpleCallback): void;
     static standardRemoveFromParent(resource: IResource, callback: SimpleCallback): void;
