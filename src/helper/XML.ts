@@ -72,6 +72,23 @@ function mutateNodeNS(node : any, parentNS = { _default: 'DAV:' })
         
         return elements;
     }
+    node.findText = function() : string
+    {
+        for(const element of node.elements)
+            if(element && element.type === 'text')
+                return element.text;
+        return '';
+    }
+    node.findTexts = function() : string[]
+    {
+        const texts = [];
+
+        for(const element of node.elements)
+            if(element && element.type === 'text')
+                texts.push(element.text);
+        
+        return texts;
+    }
     
     if(node.elements)
         node.elements.forEach(n => mutateNodeNS(n, nss))
@@ -85,10 +102,13 @@ export interface XMLElement
     attributes ?: any
     elements : XMLElement[]
     name ?: string
+    type ?: string
 
     findIndex(name : string) : number
     find(name : string) : XMLElement
     findMany(name : string) : XMLElement[]
+    findText() : string
+    findTexts() : string[]
 }
 
 export abstract class XML
@@ -159,11 +179,8 @@ export abstract class XML
         });
     }
 
-    static createElement(name : string, attributes ?: any, text ?: string)
+    private static explodeName(name, attributes)
     {
-        if(!attributes)
-            attributes = {};
-        
         const li1 = name.lastIndexOf(':');
         const li2 = name.indexOf(':');
         const lindex = Math.max(li1 === li2 && name.indexOf('DAV:') !== 0 ? -1 : li1, name.lastIndexOf('/')) + 1;
@@ -182,6 +199,16 @@ export abstract class XML
             attributes['xmlns:' + kname] = value;
             name = kname + ':' + name.substring(lindex);
         }
+
+        return name;
+    }
+
+    static createElement(name : string, attributes ?: any, text ?: string)
+    {
+        if(!attributes)
+            attributes = {};
+        
+        name = XML.explodeName(name, attributes);
 
         const result = {
             type: 'element',
@@ -209,13 +236,27 @@ export abstract class XML
                 {
                     if(!element.attributes)
                         element.attributes = { };
-                        
-                    let lindex = element.name.lastIndexOf('/');
-                    if(lindex !== -1)
+                    
+                    element.name = XML.explodeName(element.name, element.attributes);
+                    
+                    if(element.elements)
                     {
-                        ++lindex;
-                        element.attributes['xmlns:x'] = element.name.substring(0, lindex);
-                        element.name = 'x:' + element.name.substring(lindex);
+                        const list = [];
+                        element.elements.forEach((e) => list.push(e));
+
+                        while(list.length > 0)
+                        {
+                            const current = list.shift();
+                            if(current.type !== 'element')
+                                continue;
+                                
+                            if(current.elements)
+                                current.elements.forEach((e) => list.push(e));
+
+                            if(!current.attributes)
+                                current.attributes = {};
+                            current.name = XML.explodeName(current.name, current.attributes);
+                        }
                     }
                 }
                 

@@ -3,9 +3,12 @@ export interface XMLElement {
     attributes?: any;
     elements: XMLElement[];
     name?: string;
+    type?: string;
     findIndex(name: string): number;
     find(name: string): XMLElement;
     findMany(name: string): XMLElement[];
+    findText(): string;
+    findTexts(): string[];
 }
 export declare abstract class XML {
     static parse(xml: string | Int8Array): XMLElement;
@@ -13,6 +16,7 @@ export declare abstract class XML {
     static parseXML(xml: string | Int8Array): XMLElement;
     static toJSON(xml: string): string;
     static toXML(xml: XMLElement | any, includeDeclaration?: boolean): string;
+    private static explodeName(name, attributes);
     static createElement(name: string, attributes?: any, text?: string): {
         type: string;
         name: string;
