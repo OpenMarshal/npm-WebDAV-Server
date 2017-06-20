@@ -21,8 +21,8 @@
     "virtual"
   ],
   "scripts": {
-    "dev": "cd src && tsc --declaration -w",
-    "build": "cd src && tsc --declaration",
+    "dev": "cd src && tsc --declaration -w --removeComments false",
+    "build": "cd src && tsc --declaration --removeComments false",
     "test": "node test/root.js"
   },
   "name": "webdav-server",
