@@ -1,9 +1,9 @@
 "use strict";
-const webdav = require('../../../lib/index.js'),
+const webdav = require('webdav-server'),
       FTPClient = require('ftp'),
-      PhysicalGateway = require('./PhysicalGateway.js').PhysicalGateway;
+      physicalGateway = require('./PhysicalGateway.js');
 
-module.exports.PhysicalGFSManager = function(config)
+module.exports.PhysicalGFSManager = function()
 {
     const fsManager = new webdav.PhysicalFSManager();
     fsManager.constructor = module.exports.PhysicalGFSManager;
@@ -12,7 +12,7 @@ module.exports.PhysicalGFSManager = function(config)
     
     fsManager.serialize = function(resource, obj)
     {
-        if(resource.constructor !== PhysicalGateway)
+        if(resource.constructor !== physicalGateway.PhysicalGateway)
             return null;
 
         return {
@@ -26,7 +26,7 @@ module.exports.PhysicalGFSManager = function(config)
 
     fsManager.unserialize = function(data, obj)
     {
-        const rs = new PhysicalGateway(data.realPath, data.customName, null, this);
+        const rs = new physicalGateway.PhysicalGateway(data.realPath, data.customName, null, this);
         
         rs.dateCreation = data.dateCreation;
         rs.dateLastModified = data.dateLastModified;

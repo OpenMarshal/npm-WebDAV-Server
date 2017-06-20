@@ -1,4 +1,4 @@
-const webdav = require('../../lib/index.js'),
+const webdav = require('webdav-server'),
       phyFsManager = require('./js/PhysicalGFSManager.js'),
       gateway = require('./js/PhysicalGateway.js');
 

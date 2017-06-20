@@ -1,12 +1,12 @@
 "use strict";
-const webdav = require('../../../lib/index.js'),
-      PhysicalGFSManager = require('./PhysicalGFSManager.js').PhysicalGFSManager,
+const webdav = require('webdav-server'),
+      physicalGFSManager = require('./PhysicalGFSManager.js'),
       path = require('path'),
       fs = require('fs');
 
 module.exports.PhysicalGateway = function(rootPath, customName, parent, fsManager)
 {
-    const gateway = new webdav.PhysicalFolder(rootPath, parent, fsManager ? fsManager : new PhysicalGFSManager());
+    const gateway = new webdav.PhysicalFolder(rootPath, parent, fsManager ? fsManager : new physicalGFSManager.PhysicalGFSManager());
     gateway.constructor = module.exports.PhysicalGateway;
 
     gateway.customName = customName;
