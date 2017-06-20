@@ -31,15 +31,17 @@ export abstract class StandardResource implements IResource
         })
     }
 
+    dateLastModified : number
+    deleteOnMoved : boolean
+    dateCreation : number
     properties : object
     fsManager : FSManager
     lockBag : LockBag
     parent : IResource
-    dateCreation : number
-    dateLastModified : number
     
     constructor(parent : IResource, fsManager : FSManager)
     {
+        this.deleteOnMoved = true;
         this.dateCreation = Date.now();
         this.properties = {};
         this.fsManager = fsManager;
@@ -107,8 +109,11 @@ export abstract class StandardResource implements IResource
     // ****************************** Actions ****************************** //
     abstract create(callback : SimpleCallback)
     abstract delete(callback : SimpleCallback)
-    abstract moveTo(parent : IResource, newName : string, overwrite : boolean, callback : SimpleCallback)
     abstract rename(newName : string, callback : Return2Callback<string, string>)
+    moveTo(parent : IResource, newName : string, overwrite : boolean, callback : SimpleCallback)
+    {
+        StandardResource.standardMoveByCopy(this, parent, newName, overwrite, this.deleteOnMoved, callback);
+    }
 
     // ****************************** Content ****************************** //
     abstract write(targetSource : boolean, callback : ReturnCallback<Writable>)
@@ -145,83 +150,278 @@ export abstract class StandardResource implements IResource
     {
         StandardResource.standardRemoveFromParent(this, callback);
     }
+    protected addToParent(parent : IResource, callback : SimpleCallback)
+    {
+        StandardResource.standardAddToParent(this, parent, callback);
+    }
     public static standardRemoveFromParent(resource : IResource, callback : SimpleCallback)
     {
         const parent = resource.parent;
         if(parent)
             parent.removeChild(resource, (e) => {
-                if(e)
-                {
-                    callback(e)
-                    return;
-                }
-                
-                if(resource.parent === parent) // resource.parent didn't change
+                if(!e && resource.parent === parent) // resource.parent didn't change
                     resource.parent = null;
-                callback(null);
+                callback(e);
             });
         else
             callback(null);
     }
-    public static standardMoveTo(resource : IResource, parent : IResource, newName : string, overwrite : boolean, callback : SimpleCallback)
+    public static standardAddToParent(resource : IResource, parent : IResource, callback : SimpleCallback)
+    {
+        parent.addChild(resource, (e) => {
+            if(!e)
+                resource.parent = parent;
+            
+            callback(e);
+        });
+    }
+    public static standardFindChildren(parent : IResource, predicate : (resource : IResource, callback : (error : Error, isMatching ?: boolean) => void) => void, callback : ReturnCallback<IResource[]>)
     {
         parent.getChildren((e, children) => {
+            if(e)
+            {
+                callback(e, null);
+                return;
+            }
+
             new Workflow()
-                .each(children, (child, cb) => child.webName((e, name) => {
+                .each(children, (child, cb) => {
+                    predicate(child, (e, isMatching) => cb(e, isMatching ? child : null));
+                })
+                .error((e) => callback(e, null))
+                .done((conflictingChildren) => callback(null, conflictingChildren.filter((c) => !!c)));
+        })
+    }
+    public static standardFindChildByName(parent : IResource, name : string, callback : ReturnCallback<IResource>)
+    {
+        this.standardFindChildren(parent, (r, cb) => r.webName((e, rname) => {
+            if(e)
+                cb(e);
+            else if(name === rname)
+                cb(null, true);
+            else
+                cb(null, false);
+        }), (e, rs) => {
+            if(e)
+                callback(e, null);
+            else if(rs.length > 0)
+                callback(null, rs[0])
+            else
+                callback(Errors.ResourceNotFound, null);
+        })
+    }
+    public static standardMoveByCopy(resource : IResource, parent : IResource, newName : string, overwrite : boolean, deleteSource : boolean, callback : ReturnCallback<IResource>)
+    {
+        StandardResource.standardFindChildByName(parent, newName, (e, r) => {
+            if(e === Errors.ResourceNotFound)
+                copy();
+            else if(e)
+                callback(e, null);
+            else if(!overwrite)
+                callback(Errors.ResourceAlreadyExists, null);
+            else
+                r.delete((e) => {
                     if(e)
-                        cb(e);
-                    else if(name === newName && !overwrite)
-                        cb(Errors.ResourceAlreadyExists);
-                    else if(name === newName && overwrite)
-                        cb(null, child);
+                        callback(e, null);
                     else
-                        cb();
-                }))
-                .error(callback)
-                .done((conflictingChildren) => {
-                    conflictingChildren = conflictingChildren.filter((c) => !!c);
-
-                    new Workflow()
-                        .each(conflictingChildren, (child : IResource, cb) => child.delete(cb))
-                        .error(callback)
-                        .done(() => {
-                            if(parent === resource.parent)
-                            {
-                                resource.rename(newName, (e, oldName, newName) => {
-                                    callback(e);
-                                })
-                                return;
-                            }
-
-                            StandardResource.standardRemoveFromParent(resource, (e) => {
-                                if(e)
-                                {
-                                    callback(e);
-                                    return;
-                                }
-                                
-                                resource.webName((e, name) => {
-                                    if(e || name === newName)
-                                    {
-                                        parent.addChild(resource, (e) => {
-                                            callback(e);
-                                        })
-                                        return;
-                                    }
-
-                                    resource.rename(newName, (e, oldName, newName) => {
-                                        if(e)
-                                            callback(e);
-                                        else
-                                            parent.addChild(resource, (e) => {
-                                                callback(e);
-                                            })
-                                    })
-                                })
-                            })
-                        })
+                        copy();
                 })
         })
+
+        function copy()
+        {
+            resource.type((e, type) => {
+                if(e)
+                {
+                    callback(e, null);
+                    return;
+                }
+
+                const destination = parent.fsManager.newResource(null, newName, type, parent);
+                destination.create((e) => {
+                    if(e)
+                    {
+                        callback(e, null);
+                        return;
+                    }
+
+                    parent.addChild(destination, (e) => {
+                        if(e)
+                        {
+                            callback(e, null);
+                            return;
+                        }
+
+                        if(type.isDirectory)
+                            copyDir(destination);
+                        else
+                            copyFile(destination);
+                    })
+                });
+            })
+        }
+
+        function copyProperties(destination : IResource, callback : SimpleCallback)
+        {
+            resource.getProperties((e, props) => {
+                if(e)
+                {
+                    callback(e);
+                    return;
+                }
+
+                new Workflow()
+                    .each(Object.keys(props), (key, cb) => destination.setProperty(key, props[key], cb))
+                    .error(callback)
+                    .done(() => callback(null));
+            })
+        }
+        function copyLocks(destination : IResource, callback : SimpleCallback)
+        {
+            resource.getLocks((e, locks) => {
+                if(e === Errors.MustIgnore)
+                {
+                    callback(null);
+                    return;
+                }
+
+                if(e)
+                {
+                    callback(e);
+                    return;
+                }
+
+                new Workflow()
+                    .each(locks, (lock, cb) => destination.setLock(lock, cb))
+                    .error(callback)
+                    .done(() => callback(null));
+            })
+        }
+        function finalizeCopy(destination)
+        {
+            copyProperties(destination, (e) => {
+                if(e)
+                    callback(e, null);
+                else
+                    copyLocks(destination, (e) => {
+                        if(e)
+                            callback(e, null)
+                        else if(deleteSource)
+                            resource.delete((e) => callback(e, destination));
+                        else
+                            resource.parent.removeChild(resource, (e) => callback(e, destination));
+                    });
+            })
+        }
+
+        function copyDir(destination : IResource)
+        {
+            resource.getChildren((e, children) => {
+                if(e)
+                {
+                    callback(e, null);
+                    return;
+                }
+
+                new Workflow()
+                    .each(children, (child, cb) => child.webName((e, name) => {
+                        if(e)
+                            cb(e);
+                        else
+                            child.moveTo(destination, name, overwrite, cb);
+                    }))
+                    .error((e) => callback(e, null))
+                    .done(() => finalizeCopy(destination));
+            })
+        }
+
+        function copyFile(destination : IResource)
+        {
+            resource.read(true, (e, rStream) => {
+                if(e)
+                {
+                    callback(e, null);
+                    return;
+                }
+
+                destination.write(true, (e, wStream) => {
+                    if(e)
+                    {
+                        callback(e, null);
+                        return;
+                    }
+
+                    rStream.pipe(wStream);
+                    wStream.on('error', callback);
+                    wStream.on('finish', () => finalizeCopy(destination));
+                })
+            })
+        }
+    }
+
+    public static standardMoveTo(resource : IResource, parent : IResource, newName : string, overwrite : boolean, callback : SimpleCallback)
+    {
+        StandardResource.standardMoveByCopy(resource, parent, newName, overwrite, true, callback);
+    }
+
+    /**
+     * @deprecated Prefer calling 'standardMoveByCopy(...)' instead to avoid compatibility issue between file systems.
+     */
+    public static standardMoveWithoutCopy(resource : IResource, parent : IResource, newName : string, overwrite : boolean, callback : SimpleCallback)
+    {
+        StandardResource.standardFindChildByName(parent, newName, (e, r) => {
+            if(e === Errors.ResourceNotFound)
+                move();
+            else if(e)
+                callback(e);
+            else if(!overwrite)
+                callback(Errors.ResourceAlreadyExists);
+            else
+                r.delete((e) => {
+                    if(e)
+                        callback(e);
+                    else
+                        move();
+                })
+        })
+
+        function move()
+        {
+            if(parent === resource.parent)
+            {
+                resource.rename(newName, (e, oldName, newName) => {
+                    callback(e);
+                })
+                return;
+            }
+
+            StandardResource.standardRemoveFromParent(resource, (e) => {
+                if(e)
+                {
+                    callback(e);
+                    return;
+                }
+                
+                resource.webName((e, name) => {
+                    if(e || name === newName)
+                    {
+                        parent.addChild(resource, (e) => {
+                            callback(e);
+                        })
+                        return;
+                    }
+
+                    resource.rename(newName, (e, oldName, newName) => {
+                        if(e)
+                            callback(e);
+                        else
+                            parent.addChild(resource, (e) => {
+                                callback(e);
+                            })
+                    })
+                })
+            })
+        }
     }
     public static standardMimeType(resource : IResource, targetSource : boolean, callback : ReturnCallback<string>)
     {

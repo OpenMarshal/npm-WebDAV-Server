@@ -8,12 +8,13 @@ import { LockBag } from '../lock/LockBag';
 import { Lock } from '../lock/Lock';
 export declare abstract class StandardResource implements IResource {
     static sizeOfSubFiles(resource: IResource, targetSource: boolean, callback: ReturnCallback<number>): void;
+    dateLastModified: number;
+    deleteOnMoved: boolean;
+    dateCreation: number;
     properties: object;
     fsManager: FSManager;
     lockBag: LockBag;
     parent: IResource;
-    dateCreation: number;
-    dateLastModified: number;
     constructor(parent: IResource, fsManager: FSManager);
     getAvailableLocks(callback: ReturnCallback<LockKind[]>): void;
     getLocks(callback: ReturnCallback<Lock[]>): void;
@@ -26,8 +27,8 @@ export declare abstract class StandardResource implements IResource {
     getProperties(callback: ReturnCallback<object>): void;
     abstract create(callback: SimpleCallback): any;
     abstract delete(callback: SimpleCallback): any;
-    abstract moveTo(parent: IResource, newName: string, overwrite: boolean, callback: SimpleCallback): any;
     abstract rename(newName: string, callback: Return2Callback<string, string>): any;
+    moveTo(parent: IResource, newName: string, overwrite: boolean, callback: SimpleCallback): void;
     abstract write(targetSource: boolean, callback: ReturnCallback<Writable>): any;
     abstract read(targetSource: boolean, callback: ReturnCallback<Readable>): any;
     abstract mimeType(targetSource: boolean, callback: ReturnCallback<string>): any;
@@ -42,7 +43,16 @@ export declare abstract class StandardResource implements IResource {
     gateway?(arg: MethodCallArgs, path: FSPath, callback: (error: Error, resource?: IResource) => void): any;
     protected updateLastModified(): void;
     protected removeFromParent(callback: SimpleCallback): void;
+    protected addToParent(parent: IResource, callback: SimpleCallback): void;
     static standardRemoveFromParent(resource: IResource, callback: SimpleCallback): void;
+    static standardAddToParent(resource: IResource, parent: IResource, callback: SimpleCallback): void;
+    static standardFindChildren(parent: IResource, predicate: (resource: IResource, callback: (error: Error, isMatching?: boolean) => void) => void, callback: ReturnCallback<IResource[]>): void;
+    static standardFindChildByName(parent: IResource, name: string, callback: ReturnCallback<IResource>): void;
+    static standardMoveByCopy(resource: IResource, parent: IResource, newName: string, overwrite: boolean, deleteSource: boolean, callback: ReturnCallback<IResource>): void;
     static standardMoveTo(resource: IResource, parent: IResource, newName: string, overwrite: boolean, callback: SimpleCallback): void;
+    /**
+     * @deprecated Prefer calling 'standardMoveByCopy(...)' instead to avoid compatibility issue between file systems.
+     */
+    static standardMoveWithoutCopy(resource: IResource, parent: IResource, newName: string, overwrite: boolean, callback: SimpleCallback): void;
     static standardMimeType(resource: IResource, targetSource: boolean, callback: ReturnCallback<string>): void;
 }
