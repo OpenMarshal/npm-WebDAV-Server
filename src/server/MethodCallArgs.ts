@@ -51,24 +51,44 @@ export class MethodCallArgs
         response.setHeader('DAV', '1,2');
         response.setHeader('Server', server.options.serverName + '/' + server.options.version);
 
-        server.getResourceFromPath(mca, mca.uri, (e, r) => {
-            if(e || !r)
+        mca.askForAuthentication(false, (e) => {
+            if(e)
             {
-                setAllowHeader();
+                callback(e, mca);
                 return;
             }
 
-            mca.resource = r;
-
-            r.type((e, type) => {
-                if(e || !type)
+            server.httpAuthentication.getUser(mca, server.userManager, (e, user) => {
+                mca.user = user;
+                if(e)
                 {
-                    setAllowHeader();
-                    return;
+                    if(e !== Errors.MissingAuthorisationHeader)
+                    {
+                        callback(e, mca);
+                        return;
+                    }
                 }
 
-                mca.resourceType = type;
-                setAllowHeader(type);
+                server.getResourceFromPath(mca, mca.uri, (e, r) => {
+                    if(e || !r)
+                    {
+                        setAllowHeader();
+                        return;
+                    }
+
+                    mca.resource = r;
+
+                    r.type((e, type) => {
+                        if(e || !type)
+                        {
+                            setAllowHeader();
+                            return;
+                        }
+
+                        mca.resourceType = type;
+                        setAllowHeader(type);
+                    })
+                })
             })
         })
 
@@ -83,28 +103,7 @@ export class MethodCallArgs
             }
 
             response.setHeader('Allow', allowedMethods.join(','));
-            next();
-        }
-        function next()
-        {
-            mca.askForAuthentication(false, (e) => {
-                if(e)
-                {
-                    callback(e, mca);
-                    return;
-                }
-
-                server.httpAuthentication.getUser(mca, server.userManager, (e, user) => {
-                    mca.user = user;
-                    if(e)
-                    {
-                        if(e === Errors.MissingAuthorisationHeader)
-                            e = null;
-                    }
-
-                    callback(e, mca);
-                })
-            })
+            callback(null, mca);
         }
     }
 
