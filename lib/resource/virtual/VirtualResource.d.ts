@@ -8,7 +8,6 @@ export declare abstract class VirtualResource extends StandardResource {
     constructor(name: string, parent?: IResource, fsManager?: FSManager);
     create(callback: SimpleCallback): void;
     delete(callback: SimpleCallback): void;
-    moveTo(parent: IResource, newName: string, overwrite: boolean, callback: SimpleCallback): void;
     rename(newName: string, callback: Return2Callback<string, string>): void;
     webName(callback: ReturnCallback<string>): void;
     abstract type(callback: ReturnCallback<ResourceType>): any;
