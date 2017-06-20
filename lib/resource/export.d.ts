@@ -1,4 +1,5 @@
 export * from './physical/PhysicalResource';
+export * from './physical/PhysicalGateway';
 export * from './physical/PhysicalFolder';
 export * from './physical/PhysicalFile';
 export * from './virtual/VirtualResource';
