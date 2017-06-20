@@ -48,10 +48,14 @@ module.exports = (test, options, index) => test('move a physical resource', (isV
     {
         const type = isFile ? 'file' : 'folder';
 
+        const groupFolder = prefixName;
         const fileName = prefixName + '.txt';
         const fileNameDest = prefixName + '2.txt';
-        const filePath = path.join(rootTestPath, fileName);
-        const filePathDest = path.join(rootTestPath, fileNameDest);
+        const groupFolderPath = path.join(rootTestPath, groupFolder);
+        const filePath = path.join(groupFolderPath, fileName);
+        const filePathDest = path.join(groupFolderPath, fileNameDest);
+        if(!fs.existsSync(groupFolderPath))
+            fs.mkdirSync(groupFolderPath);
         if(fs.existsSync(filePathDest))
         {
             if(isFile)
@@ -67,22 +71,24 @@ module.exports = (test, options, index) => test('move a physical resource', (isV
                 fs.mkdirSync(filePath);
         }
 
-        server.rootResource.addChild(constructor(filePath), e => _(e, () => {
-            move('/' + fileName, '/' + fileNameDest, (moved) => {
+        const groupResource = new webdav.PhysicalFolder(groupFolderPath);
+        server.rootResource.addChild(groupResource, e => _(e, () => {
+        groupResource.addChild(constructor(filePath), e => _(e, () => {
+            move('/' + groupFolder + '/' + fileName, '/' + groupFolder + '/' + fileNameDest, (moved) => {
                 if(!moved)
                 {
                     isValid(false);
                     return;
                 }
 
-                exist('/' + fileName, (exists) => {
+                exist('/' + groupFolder + '/' + fileName, (exists) => {
                     if(exists)
                     {
                         isValid(false, 'The ' + type + ' must not exist [p -> p]');
                         return;
                     }
 
-                    exist('/' + fileNameDest, (exists) => {
+                    exist('/' + groupFolder + '/' + fileNameDest, (exists) => {
                         if(!exists)
                         {
                             isValid(false, 'The ' + type + ' must exist [p -> p]');
@@ -103,6 +109,7 @@ module.exports = (test, options, index) => test('move a physical resource', (isV
                     })
                 })
             })
+        }));
         }));
     }
 
