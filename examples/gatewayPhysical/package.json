@@ -1,0 +1,11 @@
+{
+  "name": "customphysicalgateway",
+  "version": "1.0.0",
+  "description": "Example to show how to use a gateway to manage the content of a physical folder.",
+  "main": "index.js",
+  "author": "Adrien Castex <adrien.castex@protonmail.com>",
+  "license": "Unlicense",
+  "dependencies": {
+    "webdav-server": "^1.9.0"
+  }
+}
