@@ -1,4 +1,5 @@
 import { ResourceTesterTestCallback } from './Types'
+import { StandardResource } from '../../std/StandardResource'
 import { VirtualFolder } from '../../virtual/VirtualFolder'
 
 // ****************************** Actions ****************************** //
@@ -56,9 +57,9 @@ export function moveTo(callback : ResourceTesterTestCallback)
         vf1.addChild(r1, (e) => {
             callback(e, !e, 'addChild error of VirtualFolder', undefined, () => {
                 r1.moveTo(vf2, 'newName', false, (e) => {
-                    callback(e, !e, 'moveTo must fail', undefined, () => {
+                    callback(e, !e, 'moveTo must not fail'/*, undefined, () => {
                         callback(null, r1.parent === vf2, 'The parent property of the resource must be changed')
-                    })
+                    }*/)
                 })
             })
         })
