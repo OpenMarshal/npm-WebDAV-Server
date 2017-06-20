@@ -1,5 +1,33 @@
 # Changelog
 
+# 1.9.1
+
+### New features
+* Implemented the physical gateway and its FSManager *[d0aa8c8](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d0aa8c8)*
+* Implemented the static methods 'standardMoveWithoutCopy', 'standardMoveByCopy', 'standardFindChildByName', 'standardFindChildren' and 'standardAddToParent' in the 'StandardResource' class *[2bb7a4b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2bb7a4b)*
+
+### Changes
+* Compiled the TypeScript code with comments :
+  * *[e3fbf7a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e3fbf7a)*
+  * *[94077ae](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/94077ae)*
+* Use the 'standardMoveByCopy' in 'standardMoveTo' static method as a default behavior *[2bb7a4b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2bb7a4b)*
+* Implemented a default method for 'moveTo' in the 'StandardResource' class *[2bb7a4b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2bb7a4b)*
+* Removed the 'moveTo' method in the 'VirtualResource' class to use the default implementation in 'StandardResource' *[1a38d52](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/1a38d52)*
+
+### Documentation
+* Added an example of a physical gateway *[9123bf6](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/9123bf6)*
+
+### Tests
+* Fixed a wrong test when a move is made by copy in the 'ResourceTester' class *[1b5e3a1](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/1b5e3a1)*
+* Fixed the 'movePhysical' test *[48723ee](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/48723ee)*
+
+### Other
+* Fixed the package.json of the FTP gateway example *[d17ac14](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d17ac14)*
+
+### Bug fix
+* Fixed the FSManager uid in the FTP Gateway example *[00aed8c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/00aed8c)*
+* Fixed the 'moveTo' method of the 'PhysicalResource' *[500eca5](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/500eca5)*
+
 # 1.9.0
 
 ### New features
