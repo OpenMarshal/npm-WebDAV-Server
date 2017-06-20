@@ -21,6 +21,7 @@ export abstract class PhysicalResource extends StandardResource
 
         super(parent, fsManager);
 
+        this.deleteOnMoved = false;
         this.realPath = path.resolve(realPath);
         this.name = path.basename(this.realPath);
     }
@@ -30,7 +31,34 @@ export abstract class PhysicalResource extends StandardResource
     abstract delete(callback : SimpleCallback)
     moveTo(parent : IResource, newName : string, overwrite : boolean, callback : SimpleCallback)
     {
-        StandardResource.standardMoveTo(this, parent, newName, overwrite, callback);
+        const pRealPath = (parent as any).realPath;
+        if(!(parent.fsManager && this.fsManager && parent.fsManager.uid === this.fsManager.uid && pRealPath))
+        {
+            StandardResource.standardMoveByCopy(this, parent, newName, overwrite, this.deleteOnMoved, callback);
+            return;
+        }
+        
+        const newRealPath = path.join(pRealPath, newName);
+        fs.rename(this.realPath, newRealPath, (e) => {
+            if(e)
+            {
+                callback(e);
+                return;
+            }
+
+            this.realPath = newRealPath;
+            this.name = path.basename(this.realPath);
+
+            this.removeFromParent((e) => {
+                if(e)
+                {
+                    callback(e);
+                    return;
+                }
+
+                this.addToParent(parent, callback);
+            })
+        })
     }
     rename(newName : string, callback : Return2Callback<string, string>)
     {
