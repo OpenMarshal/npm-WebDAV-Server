@@ -8,7 +8,7 @@ module.exports.FTPFSManager = function(config)
 {
     const fsManager = {
         config,
-        uid: 'WebDAVFSManager_1.0.0' + config.host
+        uid: 'FTPFSManager_1.0.0' + config.host
     };
     fsManager.constructor = module.exports.FTPFSManager;
 

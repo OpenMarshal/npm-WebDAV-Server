@@ -16,7 +16,7 @@ export class FTPFSManager implements FSManager
 
     constructor(public config : FTPClient.Options)
     {
-        this.uid = 'WebDAVFSManager_1.0.0' + config.host;
+        this.uid = 'FTPFSManager_1.0.0' + config.host;
     }
     
     serialize(resource : any, obj : SerializedObject) : object
