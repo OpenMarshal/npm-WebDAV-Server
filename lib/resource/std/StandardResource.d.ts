@@ -54,5 +54,8 @@ export declare abstract class StandardResource implements IResource {
      * @deprecated Prefer calling 'standardMoveByCopy(...)' instead to avoid compatibility issue between file systems.
      */
     static standardMoveWithoutCopy(resource: IResource, parent: IResource, newName: string, overwrite: boolean, callback: SimpleCallback): void;
-    static standardMimeType(resource: IResource, targetSource: boolean, callback: ReturnCallback<string>): void;
+    static standardMimeType(resource: IResource, targetSource: boolean, callback: ReturnCallback<string>): any;
+    static standardMimeType(resource: IResource, targetSource: boolean, useWebName: boolean, callback: ReturnCallback<string>): any;
+    static standardMimeType(resource: IResource, targetSource: boolean, defaultMimeType: string, callback: ReturnCallback<string>): any;
+    static standardMimeType(resource: IResource, targetSource: boolean, defaultMimeType: string, useWebName: boolean, callback: ReturnCallback<string>): any;
 }

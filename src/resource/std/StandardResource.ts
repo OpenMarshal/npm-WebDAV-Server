@@ -423,14 +423,43 @@ export abstract class StandardResource implements IResource
             })
         }
     }
+
     public static standardMimeType(resource : IResource, targetSource : boolean, callback : ReturnCallback<string>)
+    public static standardMimeType(resource : IResource, targetSource : boolean, useWebName : boolean, callback : ReturnCallback<string>)
+    public static standardMimeType(resource : IResource, targetSource : boolean, defaultMimeType : string, callback : ReturnCallback<string>)
+    public static standardMimeType(resource : IResource, targetSource : boolean, defaultMimeType : string, useWebName : boolean, callback : ReturnCallback<string>)
+    public static standardMimeType(resource : IResource, targetSource : boolean, _defaultMimeType : boolean | string | ReturnCallback<string>, _useWebName ?: boolean | ReturnCallback<string>, _callback ?: ReturnCallback<string>)
     {
+        let callback;
+        let useWebName = false;
+        let defaultMimeType = 'application/octet-stream';
+
+        if(_defaultMimeType.constructor === Function)
+        {
+            callback = _defaultMimeType as ReturnCallback<string>;
+        }
+        else if(_defaultMimeType.constructor === Boolean)
+        {
+            callback = _useWebName as ReturnCallback<string>;
+            if(_defaultMimeType !== undefined && _defaultMimeType !== null)
+                useWebName = _defaultMimeType as boolean;
+        }
+        else
+        {
+            callback = _callback as ReturnCallback<string>;
+            if(_useWebName !== undefined && _useWebName !== null)
+                useWebName = _useWebName as boolean;
+            if(_defaultMimeType !== undefined && _defaultMimeType !== null)
+                defaultMimeType = _defaultMimeType as string;
+        }
+
         resource.type((e, type) => {
             if(e)
                 callback(e, null);
             else if(type.isFile)
             {
-                resource.webName((e, name) => {
+                const fn = !useWebName && resource.displayName ? resource.displayName : resource.webName;
+                fn((e, name) => {
                     if(e)
                         callback(e, null);
                     else
