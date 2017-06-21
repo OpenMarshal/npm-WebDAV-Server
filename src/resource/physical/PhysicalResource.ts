@@ -3,11 +3,13 @@ import { Readable, Writable } from 'stream'
 import { PhysicalFSManager } from '../../manager/PhysicalFSManager'
 import { StandardResource } from '../std/StandardResource'
 import { FSManager } from '../../manager/FSManager'
+import { Errors } from '../../Errors'
 import * as path from 'path'
 import * as fs from 'fs'
 
 export abstract class PhysicalResource extends StandardResource
 {
+    removeOnUnavailableSource : boolean
     realPath : string
     name : string
     
@@ -21,9 +23,24 @@ export abstract class PhysicalResource extends StandardResource
 
         super(parent, fsManager);
 
+        this.removeOnUnavailableSource = false;
         this.deleteOnMoved = false;
         this.realPath = path.resolve(realPath);
         this.name = path.basename(this.realPath);
+    }
+
+    protected manageError(error : Error) : Error
+    {
+        if(!this.removeOnUnavailableSource || !error)
+            return error;
+        
+        this.removeFromParent((e) => { });
+
+        return Errors.MustIgnore;
+    }
+    protected wrapCallback<T extends Function>(callback : T) : T
+    {
+        return (((e, arg1, arg2) => callback(this.manageError(e), arg1, arg2)) as any) as T;
     }
     
     // ****************************** Actions ****************************** //
@@ -31,6 +48,8 @@ export abstract class PhysicalResource extends StandardResource
     abstract delete(callback : SimpleCallback)
     moveTo(parent : IResource, newName : string, overwrite : boolean, callback : SimpleCallback)
     {
+        callback = this.wrapCallback(callback);
+
         const pRealPath = (parent as any).realPath;
         if(!(parent.fsManager && this.fsManager && parent.fsManager.uid === this.fsManager.uid && pRealPath))
         {
@@ -62,13 +81,16 @@ export abstract class PhysicalResource extends StandardResource
     }
     rename(newName : string, callback : Return2Callback<string, string>)
     {
+        callback = this.wrapCallback(callback);
+
         const newPath = path.join(this.realPath, '..', newName);
         fs.rename(this.realPath, newPath, (e) => {
             if(e)
             {
-                callback(e, null, null);
+                callback(this.manageError(e), null, null);
                 return;
             }
+            
             const oldName = path.basename(this.realPath);
             this.realPath = newPath;
             this.name = newName;
@@ -80,6 +102,8 @@ export abstract class PhysicalResource extends StandardResource
     // ****************************** Std meta-data ****************************** //
     webName(callback : ReturnCallback<string>)
     {
+        callback = this.wrapCallback(callback);
+
         callback(null, path.basename(this.name));
     }
     abstract type(callback : ReturnCallback<ResourceType>)

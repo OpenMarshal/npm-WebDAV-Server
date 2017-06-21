@@ -22,6 +22,8 @@ export class PhysicalFile extends PhysicalResource
     // ****************************** Actions ****************************** //
     create(callback : SimpleCallback)
     {
+        callback = this.wrapCallback(callback);
+
         if(!fs.constants || !fs.constants.O_CREAT)
         { // node v5.* and lower
             fs.writeFile(this.realPath, '', callback);
@@ -40,6 +42,8 @@ export class PhysicalFile extends PhysicalResource
     }
     delete(callback : SimpleCallback)
     {
+        callback = this.wrapCallback(callback);
+
         fs.unlink(this.realPath, (e) => {
             if(e)
                 callback(e);
@@ -51,6 +55,8 @@ export class PhysicalFile extends PhysicalResource
     // ****************************** Content ****************************** //
     write(targetSource : boolean, callback : ReturnCallback<Writable>)
     {
+        callback = this.wrapCallback(callback);
+
         fs.open(this.realPath, 'w', (e, fd) => {
             if(e)
             {
@@ -64,6 +70,8 @@ export class PhysicalFile extends PhysicalResource
     }
     read(targetSource : boolean, callback : ReturnCallback<Readable>)
     {
+        callback = this.wrapCallback(callback);
+
         fs.open(this.realPath, 'r', (e, fd) => {
             if(e)
             {
@@ -77,11 +85,15 @@ export class PhysicalFile extends PhysicalResource
     }
     mimeType(targetSource : boolean, callback : ReturnCallback<string>)
     {
+        callback = this.wrapCallback(callback);
+
         const mt = mimeTypes.contentType(this.realPath);
         callback(null, mt ? mt as string : 'application/octet-stream');
     }
     size(targetSource : boolean, callback : ReturnCallback<number>)
     {
+        callback = this.wrapCallback(callback);
+
         fs.stat(this.realPath, (e, s) => callback(e, s ? s.size : null))
     }
     

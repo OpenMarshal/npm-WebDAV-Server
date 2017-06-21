@@ -4,9 +4,12 @@ import { Readable, Writable } from 'stream';
 import { StandardResource } from '../std/StandardResource';
 import { FSManager } from '../../manager/FSManager';
 export declare abstract class PhysicalResource extends StandardResource {
+    removeOnUnavailableSource: boolean;
     realPath: string;
     name: string;
     constructor(realPath: string, parent?: IResource, fsManager?: FSManager);
+    protected manageError(error: Error): Error;
+    protected wrapCallback<T extends Function>(callback: T): T;
     abstract create(callback: SimpleCallback): any;
     abstract delete(callback: SimpleCallback): any;
     moveTo(parent: IResource, newName: string, overwrite: boolean, callback: SimpleCallback): void;
