@@ -1,9 +1,12 @@
 import { Readable, Writable } from 'stream'
 import { FSManager, FSPath } from '../manager/FSManager'
-import { MethodCallArgs } from '../server/MethodCallArgs'
+import { StandardResource } from './std/StandardResource'
+import { RequestContext } from '../server/MethodCallArgs'
+import { WorkflowUnique } from '../helper/Workflow'
 import { XMLElement } from '../helper/XML'
 import { LockKind } from './lock/LockKind'
 import { LockType } from './lock/LockType'
+import { Errors } from '../Errors'
 import { Lock } from './lock/Lock'
 import * as crypto from 'crypto'
 
@@ -39,42 +42,42 @@ export interface IResource
     fsManager : FSManager
 
     // ****************************** Actions ****************************** //
-    create(callback : SimpleCallback)
-    delete(callback : SimpleCallback)
-    moveTo(parent : IResource, newName : string, overwrite : boolean, callback : SimpleCallback)
-    rename(newName : string, callback : Return2Callback<string, string>)
+    create(callback : SimpleCallback, arg ?: RequestContext)
+    delete(callback : SimpleCallback, arg ?: RequestContext)
+    moveTo(parent : IResource, newName : string, overwrite : boolean, callback : SimpleCallback, arg ?: RequestContext)
+    rename(newName : string, callback : Return2Callback<string, string>, arg ?: RequestContext)
     
     // ****************************** Content ****************************** //
-    write(targetSource : boolean, callback : ReturnCallback<Writable>, finalSize ?: number)
-    read(targetSource : boolean, callback : ReturnCallback<Readable>)
-    mimeType(targetSource : boolean, callback : ReturnCallback<string>)
-    size(targetSource : boolean, callback : ReturnCallback<number>)
+    write(targetSource : boolean, callback : ReturnCallback<Writable>, finalSize ?: number, arg ?: RequestContext)
+    read(targetSource : boolean, callback : ReturnCallback<Readable>, arg ?: RequestContext)
+    mimeType(targetSource : boolean, callback : ReturnCallback<string>, arg ?: RequestContext)
+    size(targetSource : boolean, callback : ReturnCallback<number>, arg ?: RequestContext)
     
     // ****************************** Locks ****************************** //
-    getLocks(callback : ReturnCallback<Lock[]>)
-    setLock(lock : Lock, callback : SimpleCallback)
-    removeLock(uuid : string, callback : ReturnCallback<boolean>)
-    getAvailableLocks(callback : ReturnCallback<LockKind[]>)
-    getLock(uuid : string, callback : ReturnCallback<Lock>)
+    getLocks(callback : ReturnCallback<Lock[]>, arg ?: RequestContext)
+    setLock(lock : Lock, callback : SimpleCallback, arg ?: RequestContext)
+    removeLock(uuid : string, callback : ReturnCallback<boolean>, arg ?: RequestContext)
+    getAvailableLocks(callback : ReturnCallback<LockKind[]>, arg ?: RequestContext)
+    getLock(uuid : string, callback : ReturnCallback<Lock>, arg ?: RequestContext)
 
     // ****************************** Children ****************************** //
-    addChild(resource : IResource, callback : SimpleCallback)
-    removeChild(resource : IResource, callback : SimpleCallback)
-    getChildren(callback : ReturnCallback<IResource[]>)
+    addChild(resource : IResource, callback : SimpleCallback, arg ?: RequestContext)
+    removeChild(resource : IResource, callback : SimpleCallback, arg ?: RequestContext)
+    getChildren(callback : ReturnCallback<IResource[]>, arg ?: RequestContext)
 
     // ****************************** Properties ****************************** //
-    setProperty(name : string, value : ResourcePropertyValue, callback : SimpleCallback)
-    getProperty(name : string, callback : ReturnCallback<ResourcePropertyValue>)
-    removeProperty(name : string, callback : SimpleCallback)
-    getProperties(callback : ReturnCallback<object>)
+    setProperty(name : string, value : ResourcePropertyValue, callback : SimpleCallback, arg ?: RequestContext)
+    getProperty(name : string, callback : ReturnCallback<ResourcePropertyValue>, arg ?: RequestContext)
+    removeProperty(name : string, callback : SimpleCallback, arg ?: RequestContext)
+    getProperties(callback : ReturnCallback<object>, arg ?: RequestContext)
     
     // ****************************** Std meta-data ****************************** //
-    creationDate(callback : ReturnCallback<number>)
-    lastModifiedDate(callback : ReturnCallback<number>)
-    webName(callback : ReturnCallback<string>)
-    displayName?(callback : ReturnCallback<string>)
-    type(callback : ReturnCallback<ResourceType>)
+    creationDate(callback : ReturnCallback<number>, arg ?: RequestContext)
+    lastModifiedDate(callback : ReturnCallback<number>, arg ?: RequestContext)
+    webName(callback : ReturnCallback<string>, arg ?: RequestContext)
+    displayName?(callback : ReturnCallback<string>, arg ?: RequestContext)
+    type(callback : ReturnCallback<ResourceType>, arg ?: RequestContext)
     
     // ****************************** Gateway ****************************** //
-    gateway?(arg : MethodCallArgs, path : FSPath, callback : (error : Error, resource ?: IResource) => void)
+    gateway?(arg : RequestContext, path : FSPath, callback : (error : Error, resource ?: IResource) => void)
 }
