@@ -465,7 +465,7 @@ export abstract class StandardResource implements IResource
                     else
                     {
                         const mt = mimeTypes.contentType(name);
-                        callback(null, mt ? mt as string : 'application/octet-stream');
+                        callback(null, mt ? mt as string : defaultMimeType);
                     }
                 })
             }
