@@ -325,3 +325,4 @@ export class MethodCallArgs
     }
 }
 export default MethodCallArgs;
+export type RequestContext = MethodCallArgs;

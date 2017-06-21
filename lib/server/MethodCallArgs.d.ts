@@ -45,3 +45,4 @@ export declare class MethodCallArgs {
     setCode(code: number, message?: string): void;
 }
 export default MethodCallArgs;
+export declare type RequestContext = MethodCallArgs;
