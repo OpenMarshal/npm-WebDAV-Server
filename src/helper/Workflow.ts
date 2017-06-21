@@ -9,7 +9,10 @@ export class Workflow
     data : any[];
     errorFn : (error ?: any) => void;
     doneFn : (data ?: any[]) => void;
+    firstFn : (data ?: any[]) => void;
+    notFound : () => void;
     intermediateFn : (subject : any, e ?: any, data ?: any) => void;
+    started : boolean;
 
     exitOnError : boolean;
 
@@ -21,6 +24,7 @@ export class Workflow
         this.data = [];
         this.errorFn = null;
         this.doneFn = null;
+        this.started = false;
     }
 
     protected _done(subject : any, e ?: any, data ?: any)
@@ -43,8 +47,18 @@ export class Workflow
 
         --this.counter;
         this.data.push(data);
+
         if(this.counter === 0 && this.doneFn)
             this.doneFn(this.data);
+        
+        if(data && this.firstFn)
+        {
+            this.counter = -1;
+            this.firstFn(data);
+        }
+
+        if(this.counter === 0 && this.notFound)
+            this.notFound();
     }
 
     each<T>(subjects : T[], fn : (subject : T, done : (error ?: any, data ?: any) => void) => void)
@@ -75,6 +89,41 @@ export class Workflow
     {
         this.errorFn = fn;
         return this;
+    }
+
+    first(fn : (data ?: any) => void, notFound : () => void)
+    {
+        this.firstFn = fn;
+
+        if(this.counter === 0)
+            process.nextTick(() => this.notFound());
+
+        return this;
+    }
+
+    done(fn : (data ?: any[]) => void)
+    {
+        this.doneFn = fn;
+
+        if(this.counter === 0)
+            process.nextTick(() => this.doneFn(this.data));
+
+        return this;
+    }
+}
+
+export class WorkflowUnique extends Workflow
+{
+    protected _done(subject : any, e ?: any, data ?: any)
+    {
+        super._done(subject, e, data);
+        const filtered = this.data.filter((d) => !!d);
+        if(this.counter !== 0 && filtered.length === 1)
+        {
+            const _doneFs = this.doneFn;
+            this.doneFn = () => {};
+            _doneFs.bind(this)(filtered[0]);
+        }
     }
 
     done(fn : (data ?: any[]) => void)
