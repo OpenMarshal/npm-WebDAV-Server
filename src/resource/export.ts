@@ -20,6 +20,7 @@ export * from './std/StandardResource'
 export * from './std/ResourceChildren'
 export * from './std/RootResource'
 export * from './std/resourceTester/ResourceTester'
+export * from './std/ResourceWrapper'
 export * from './IResource'
 
 // Locks
