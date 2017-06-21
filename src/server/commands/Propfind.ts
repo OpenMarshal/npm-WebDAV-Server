@@ -191,11 +191,19 @@ export function method(arg : MethodCallArgs, callback)
                 })
             }))
             
-            function addXMLInfo(resource : IResource, multistatus, callback)
+            function addXMLInfo(resource : IResource, multistatus, _callback)
             {
                 const reqBody = parseRequestBody(arg);
 
-                const response = multistatus.ele('D:response')
+                const response = XML.createElement('D:response');
+                const callback = (e ?: Error) => {
+                    if(e === Errors.MustIgnore)
+                        e = null;
+                    else if(!e)
+                        multistatus.add(response);
+
+                    _callback(e);
+                }
 
                 const propstat = response.ele('D:propstat')
 
