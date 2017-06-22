@@ -138,8 +138,8 @@ export function start(port ?: number | WebDAVServerStartCallback, callback ?: We
             MethodCallArgs.create(this, req, res, (e, base) => {
                 if(e)
                 {
-                    if(e === Errors.AuenticationPropertyMissing)
-                        base.setCode(HTTPCodes.Forbidden);
+                    if(e === Errors.AuenticationPropertyMissing || e === Errors.MissingAuthorisationHeader || e === Errors.BadAuthentication || e === Errors.WrongHeaderFormat)
+                        base.setCode(HTTPCodes.Unauthorized);
                     else
                         base.setCode(HTTPCodes.InternalServerError);
                     res.end();

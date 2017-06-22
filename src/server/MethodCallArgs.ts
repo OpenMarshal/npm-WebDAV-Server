@@ -60,13 +60,19 @@ export class MethodCallArgs
 
             server.httpAuthentication.getUser(mca, server.userManager, (e, user) => {
                 mca.user = user;
-                if(e)
+                if(e && e !== Errors.UserNotFound)
                 {
-                    if(e !== Errors.MissingAuthorisationHeader)
+                    if(server.options.requireAuthentification || e !== Errors.MissingAuthorisationHeader)
                     {
                         callback(e, mca);
                         return;
                     }
+                }
+
+                if(server.options.requireAuthentification && (!user || user.isDefaultUser || e === Errors.UserNotFound))
+                {
+                    callback(Errors.MissingAuthorisationHeader, mca);
+                    return;
                 }
 
                 server.getResourceFromPath(mca, mca.uri, (e, r) => {
