@@ -21,9 +21,9 @@
     "virtual"
   ],
   "scripts": {
-    "dev": "cd src && tsc --declaration -w --removeComments false",
-    "build": "cd src && tsc --declaration --removeComments false",
-    "test": "node test/root.js"
+    "dev": "cd src && tsc --declaration -w",
+    "build": "cd src && tsc --declaration",
+    "test": "cd test/v2/tests.ts && tsc && cd ../../.. && node test/v2/root.js && node test/v1/root.js"
   },
   "name": "webdav-server",
   "version": "1.9.4",
@@ -35,12 +35,15 @@
   },
   "description": "WebDAV Server",
   "dependencies": {
+    "ftp": "^0.3.10",
     "mime-types": "^2.1.15",
     "xml-js": "^1.2.2"
   },
   "devDependencies": {
+    "@types/ftp": "^0.3.29",
     "@types/mime-types": "^2.1.0",
     "@types/node": "^7.0.18",
+    "@types/request": "0.0.44",
     "request": "^2.81.0",
     "webdav-fs": "^1.0.0"
   },
