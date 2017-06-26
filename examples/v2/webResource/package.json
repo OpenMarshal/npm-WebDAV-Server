@@ -1,0 +1,11 @@
+{
+  "name": "web-resource",
+  "version": "1.0.0",
+  "description": "Example to show how to make a simple custom resource base on the web. It gets a web content as its own content.",
+  "main": "index.js",
+  "author": "Adrien Castex <adrien.castex@protonmail.com>",
+  "license": "Unlicense",
+  "dependencies": {
+    "webdav-server": "^2.0.0"
+  }
+}
