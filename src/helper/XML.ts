@@ -60,7 +60,7 @@ function mutateNodeNS(node : any, parentNS = { _default: 'DAV:' })
         for(const element of node.elements)
             if(element && element.name && element.name === name)
                 return element;
-        throw Errors.XMLNotFound;
+        throw new Error(Errors.XMLNotFound.message + name);
     }
     node.findMany = function(name : string) : XMLElement[]
     {
