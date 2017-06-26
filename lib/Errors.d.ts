@@ -10,6 +10,7 @@ export declare class HTTPError extends Error {
 export declare const Errors: {
     BadAuthentication: Error;
     AuenticationPropertyMissing: Error;
+    AuthenticationPropertyMissing: Error;
     WrongHeaderFormat: Error;
     MissingAuthorisationHeader: Error;
     UnrecognizedResource: Error;
@@ -27,6 +28,11 @@ export declare const Errors: {
     NoSizeForAFolder: Error;
     IllegalArguments: Error;
     MustIgnore: Error;
+    SerializerNotFound: Error;
+    Locked: Error;
+    InsufficientStorage: Error;
+    IntermediateResourceMissing: Error;
+    WrongParentTypeForCreation: Error;
     None: any;
 };
 export default Errors;

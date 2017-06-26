@@ -15,9 +15,12 @@ export class HTTPError extends Error
     }
 }
 
+const AuthenticationPropertyMissing = new Error('Properties are missing.');
+
 export const Errors = {
     BadAuthentication: new Error('Bad authentication.'),
-    AuenticationPropertyMissing: new Error('Properties are missing.'),
+    AuenticationPropertyMissing: AuthenticationPropertyMissing, // Bad synthax
+    AuthenticationPropertyMissing,
     WrongHeaderFormat: new Error('Wrong header format.'),
     MissingAuthorisationHeader: new Error('Missing Authorization header.'),
     UnrecognizedResource: new Error('Unrecognized resource.'),
@@ -29,12 +32,17 @@ export const Errors = {
     PropertyNotFound: new Error('No property with such name.'),
     AlreadyAuthenticated: new Error('Already authenticated.'),
     UserNotFound: new Error('User not found.'),
-    XMLNotFound: new Error('Can\'t find the XML element.'),
+    XMLNotFound: new Error('Can\'t find the XML element : '),
     ExpectedAFileResourceType: new Error('Expected a file resource type.'),
     NoMimeTypeForAFolder: new Error('Cannot get the mime type of a folder type resource.'),
     NoSizeForAFolder: new Error('Cannot get the size of a folder type resource.'),
     IllegalArguments: new Error('Illegal arguments.'),
     MustIgnore: new Error('There was an error but it must not stop the processing.'),
+    SerializerNotFound: new Error('One serializer could not be found.'),
+    Locked: new Error('The resource is locked, operation forbidden.'),
+    InsufficientStorage: new Error('Insufficient storage space.'),
+    IntermediateResourceMissing: new Error('One or more intermediate resources are missing for this operation.'),
+    WrongParentTypeForCreation: new Error('Cannot create a child resource to a non directory resource.'),
 
     None: null
 };
