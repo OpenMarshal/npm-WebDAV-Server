@@ -55,11 +55,11 @@ module.exports = (callback, options) => {
                             else
                                 cb(arg1, arg2, arg3);
                         },
-                        startServer: (options, autoStart = true) => {
+                        startServer: (options, autoStart) => {
                             options = options ? options : {};
                             options.port = info.port + info.servers.length;
                             const startServer = new webdav.WebDAVServer(options);
-                            if(autoStart)
+                            if(autoStart || autoStart === undefined || autoStart === null)
                                 startServer.start();
                             info.servers.push(startServer);
                             return startServer;
