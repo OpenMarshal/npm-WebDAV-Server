@@ -138,7 +138,7 @@ module.exports = (callback, options) => {
                             }
                             else
                                 info.startServer();
-                            info.ctx = webdav.RequestContext.createFake(info.servers[0]);
+                            info.ctx = webdav.RequestContext.createExternal(info.servers[0]);
                             info.expect(nbExpected);
                             return info.servers[0];
                         },

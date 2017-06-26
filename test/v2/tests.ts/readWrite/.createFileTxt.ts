@@ -7,7 +7,7 @@ export function starter(server : v2.WebDAVServer, info : TestInfo, isValid : Tes
     const type = _callback ? _type as v2.ResourceType : v2.ResourceType.File;
 
     const name = 'file.txt';
-    server.rootFileSystem.addSubTree(info.ctx, {
+    server.rootFileSystem().addSubTree(info.ctx, {
         [name]: type
     }, (e) => {
         if(e) return isValid(false, 'Cannot call "addSubTree(...)".', e);

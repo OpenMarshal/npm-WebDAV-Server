@@ -125,7 +125,7 @@ export function starter(
     const expectedResponseCode = _callback ? _expectedResponseCode as number : v2.HTTPCodes.OK;
     const callback = _callback ? _callback : _expectedResponseCode as (lock : Lock) => void;
 
-    server.rootFileSystem.addSubTree(info.ctx, {
+    server.rootFileSystem().addSubTree(info.ctx, {
         'folder': {
             'folder2': {
                 'folder3': {

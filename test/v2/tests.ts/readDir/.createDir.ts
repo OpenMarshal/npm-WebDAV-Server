@@ -10,7 +10,7 @@ export function starter(server : v2.WebDAVServer, info : TestInfo, isValid : Tes
         'subFile2'
     ];
     const name = 'folder';
-    server.rootFileSystem.addSubTree(info.ctx, {
+    server.rootFileSystem().addSubTree(info.ctx, {
         [name]: {
             'subFolder1': v2.ResourceType.Directory,
             'subFolder2': v2.ResourceType.Directory,
