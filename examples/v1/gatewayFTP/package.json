@@ -1,0 +1,15 @@
+{
+  "name": "customftpgateway",
+  "version": "1.0.0",
+  "description": "Example to show how to use a gateway to manage the content of a remote folder stored on a FTP server.",
+  "main": "index.js",
+  "author": "Adrien Castex <adrien.castex@protonmail.com>",
+  "license": "Unlicense",
+  "dependencies": {
+    "ftp": "^0.3.10",
+    "webdav-server": "^1.9.0"
+  },
+  "devDependencies": {
+    "@types/ftp": "^0.3.29"
+  }
+}
