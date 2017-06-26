@@ -1,0 +1,63 @@
+/// <reference types="node" />
+import { ReturnCallback, SimpleCallback, Return2Callback, OpenWriteStreamMode, SubTree, ResourceType } from './CommonTypes';
+import { FileSystem } from './FileSystem';
+import { Readable, Writable } from 'stream';
+import { RequestContext } from '../../../server/v2/RequestContext';
+import { LockKind } from '../../../resource/lock/LockKind';
+import { Lock } from '../../../resource/lock/Lock';
+import { Path } from '../Path';
+import { IPropertyManager } from './PropertyManager';
+import { ILockManager } from './LockManager';
+export declare class Resource {
+    path: Path;
+    fs: FileSystem;
+    context: RequestContext;
+    constructor(path: Path, fs: FileSystem, context: RequestContext);
+    delete(callback: SimpleCallback): void;
+    delete(depth: number, callback: SimpleCallback): void;
+    openWriteStream(callback: Return2Callback<Writable, boolean>): void;
+    openWriteStream(estimatedSize: number, callback: Return2Callback<Writable, boolean>): void;
+    openWriteStream(targetSource: boolean, callback: Return2Callback<Writable, boolean>): void;
+    openWriteStream(targetSource: boolean, estimatedSize: number, callback: Return2Callback<Writable, boolean>): void;
+    openWriteStream(mode: OpenWriteStreamMode, callback: Return2Callback<Writable, boolean>): void;
+    openWriteStream(mode: OpenWriteStreamMode, estimatedSize: number, callback: Return2Callback<Writable, boolean>): void;
+    openWriteStream(mode: OpenWriteStreamMode, targetSource: boolean, callback: Return2Callback<Writable, boolean>): void;
+    openWriteStream(mode: OpenWriteStreamMode, targetSource: boolean, estimatedSize: number, callback: Return2Callback<Writable, boolean>): void;
+    openReadStream(callback: ReturnCallback<Readable>): void;
+    openReadStream(estimatedSize: number, callback: ReturnCallback<Readable>): void;
+    openReadStream(targetSource: boolean, callback: ReturnCallback<Readable>): void;
+    openReadStream(targetSource: boolean, estimatedSize: number, callback: ReturnCallback<Readable>): void;
+    copy(pathTo: Path, callback: ReturnCallback<boolean>): void;
+    copy(pathTo: Path, depth: number, callback: ReturnCallback<boolean>): void;
+    copy(pathTo: Path, overwrite: boolean, callback: ReturnCallback<boolean>): void;
+    copy(pathTo: Path, overwrite: boolean, depth: number, callback: ReturnCallback<boolean>): void;
+    mimeType(callback: ReturnCallback<string>): void;
+    mimeType(targetSource: boolean, callback: ReturnCallback<string>): void;
+    size(callback: ReturnCallback<number>): void;
+    size(targetSource: boolean, callback: ReturnCallback<number>): void;
+    addSubTree(subTree: SubTree, callback: SimpleCallback): any;
+    addSubTree(resourceType: ResourceType, callback: SimpleCallback): any;
+    create(type: ResourceType, callback: SimpleCallback): void;
+    create(type: ResourceType, createIntermediates: boolean, callback: SimpleCallback): void;
+    etag(callback: ReturnCallback<string>): void;
+    move(pathTo: Path, callback: ReturnCallback<boolean>): void;
+    move(pathTo: Path, overwrite: boolean, callback: ReturnCallback<boolean>): void;
+    rename(newName: string, callback: ReturnCallback<boolean>): void;
+    rename(newName: string, overwrite: boolean, callback: ReturnCallback<boolean>): void;
+    availableLocks(callback: ReturnCallback<LockKind[]>): void;
+    lockManager(callback: ReturnCallback<ILockManager>): void;
+    propertyManager(callback: ReturnCallback<IPropertyManager>): void;
+    readDir(callback: ReturnCallback<string[]>): void;
+    readDir(retrieveExternalFiles: boolean, callback: ReturnCallback<string[]>): void;
+    creationDate(callback: ReturnCallback<number>): void;
+    lastModifiedDate(callback: ReturnCallback<number>): void;
+    webName(callback: ReturnCallback<string>): void;
+    displayName(callback: ReturnCallback<string>): void;
+    type(callback: ReturnCallback<ResourceType>): void;
+    listDeepLocks(callback: ReturnCallback<{
+        [path: string]: Lock[];
+    }>): any;
+    listDeepLocks(depth: number, callback: ReturnCallback<{
+        [path: string]: Lock[];
+    }>): any;
+}

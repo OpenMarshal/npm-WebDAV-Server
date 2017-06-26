@@ -1,0 +1,67 @@
+/// <reference types="node" />
+import { Readable, Writable } from 'stream';
+import { RequestContext } from '../../../server/v2/RequestContext';
+import { LockKind } from '../../../resource/lock/LockKind';
+import { Lock } from '../../../resource/lock/Lock';
+import { Path } from '../Path';
+import { ReturnCallback, SimpleCallback, Return2Callback, OpenWriteStreamMode, SubTree, ResourceType } from './CommonTypes';
+import { FileSystemSerializer, ISerializableFileSystem } from './Serialization';
+import { FileSystem } from './FileSystem';
+import { Resource } from './Resource';
+import { IPropertyManager } from './PropertyManager';
+import { ILockManager } from './LockManager';
+export declare class ContextualFileSystem implements ISerializableFileSystem {
+    fs: FileSystem;
+    context: RequestContext;
+    constructor(fs: FileSystem, context: RequestContext);
+    resource(path: Path): Resource;
+    delete(path: Path, callback: SimpleCallback): void;
+    delete(path: Path, depth: number, callback: SimpleCallback): void;
+    openWriteStream(path: Path, callback: Return2Callback<Writable, boolean>): void;
+    openWriteStream(path: Path, estimatedSize: number, callback: Return2Callback<Writable, boolean>): void;
+    openWriteStream(path: Path, targetSource: boolean, callback: Return2Callback<Writable, boolean>): void;
+    openWriteStream(path: Path, targetSource: boolean, estimatedSize: number, callback: Return2Callback<Writable, boolean>): void;
+    openWriteStream(path: Path, mode: OpenWriteStreamMode, callback: Return2Callback<Writable, boolean>): void;
+    openWriteStream(path: Path, mode: OpenWriteStreamMode, estimatedSize: number, callback: Return2Callback<Writable, boolean>): void;
+    openWriteStream(path: Path, mode: OpenWriteStreamMode, targetSource: boolean, callback: Return2Callback<Writable, boolean>): void;
+    openWriteStream(path: Path, mode: OpenWriteStreamMode, targetSource: boolean, estimatedSize: number, callback: Return2Callback<Writable, boolean>): void;
+    openReadStream(path: Path, callback: ReturnCallback<Readable>): void;
+    openReadStream(path: Path, estimatedSize: number, callback: ReturnCallback<Readable>): void;
+    openReadStream(path: Path, targetSource: boolean, callback: ReturnCallback<Readable>): void;
+    openReadStream(path: Path, targetSource: boolean, estimatedSize: number, callback: ReturnCallback<Readable>): void;
+    copy(pathFrom: Path, pathTo: Path, callback: ReturnCallback<boolean>): void;
+    copy(pathFrom: Path, pathTo: Path, depth: number, callback: ReturnCallback<boolean>): void;
+    copy(pathFrom: Path, pathTo: Path, overwrite: boolean, callback: ReturnCallback<boolean>): void;
+    copy(pathFrom: Path, pathTo: Path, overwrite: boolean, depth: number, callback: ReturnCallback<boolean>): void;
+    mimeType(path: Path, callback: ReturnCallback<string>): void;
+    mimeType(path: Path, targetSource: boolean, callback: ReturnCallback<string>): void;
+    size(path: Path, callback: ReturnCallback<number>): void;
+    size(path: Path, targetSource: boolean, callback: ReturnCallback<number>): void;
+    addSubTree(rootPath: Path, subTree: SubTree, callback: SimpleCallback): any;
+    addSubTree(rootPath: Path, resourceType: ResourceType, callback: SimpleCallback): any;
+    create(path: Path, type: ResourceType, callback: SimpleCallback): void;
+    create(path: Path, type: ResourceType, createIntermediates: boolean, callback: SimpleCallback): void;
+    etag(path: Path, callback: ReturnCallback<string>): void;
+    move(pathFrom: Path, pathTo: Path, callback: ReturnCallback<boolean>): void;
+    move(pathFrom: Path, pathTo: Path, overwrite: boolean, callback: ReturnCallback<boolean>): void;
+    rename(pathFrom: Path, newName: string, callback: ReturnCallback<boolean>): void;
+    rename(pathFrom: Path, newName: string, overwrite: boolean, callback: ReturnCallback<boolean>): void;
+    availableLocks(path: Path, callback: ReturnCallback<LockKind[]>): void;
+    lockManager(path: Path, callback: ReturnCallback<ILockManager>): void;
+    propertyManager(path: Path, callback: ReturnCallback<IPropertyManager>): void;
+    readDir(path: Path, callback: ReturnCallback<string[]>): void;
+    readDir(path: Path, retrieveExternalFiles: boolean, callback: ReturnCallback<string[]>): void;
+    creationDate(path: Path, callback: ReturnCallback<number>): void;
+    lastModifiedDate(path: Path, callback: ReturnCallback<number>): void;
+    webName(path: Path, callback: ReturnCallback<string>): void;
+    displayName(path: Path, callback: ReturnCallback<string>): void;
+    type(path: Path, callback: ReturnCallback<ResourceType>): void;
+    listDeepLocks(startPath: Path, callback: ReturnCallback<{
+        [path: string]: Lock[];
+    }>): any;
+    listDeepLocks(startPath: Path, depth: number, callback: ReturnCallback<{
+        [path: string]: Lock[];
+    }>): any;
+    serializer(): FileSystemSerializer;
+    serialize(callback: (serializedData: any) => void): void;
+}

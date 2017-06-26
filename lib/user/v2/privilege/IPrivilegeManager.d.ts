@@ -1,0 +1,35 @@
+import { RequestContext } from '../../../server/v2/RequestContext';
+import { Resource } from '../../../manager/v2/export';
+export declare type PrivilegeManagerCallback = (error: Error, hasAccess: boolean) => void;
+export declare type PrivilegeManagerMethod = (ctx: RequestContext, resource: Resource, callback: PrivilegeManagerCallback) => void;
+export declare type BasicPrivilege = 'all' | 'canReadLocks' | 'canWriteLocks' | 'canWrite' | 'canRead' | 'canSee' | 'canReadProperties' | 'canWriteProperties';
+export declare function requirePrivilege(privilege: string | BasicPrivilege | string[] | BasicPrivilege[], ctx: RequestContext, resource: Resource, callback: PrivilegeManagerCallback): void;
+export interface IPrivilegeManager {
+    canCreate: PrivilegeManagerMethod;
+    canDelete: PrivilegeManagerMethod;
+    canMove: PrivilegeManagerMethod;
+    canRename: PrivilegeManagerMethod;
+    canAppend: PrivilegeManagerMethod;
+    canWrite: PrivilegeManagerMethod;
+    canRead: PrivilegeManagerMethod;
+    canSource: PrivilegeManagerMethod;
+    canGetMimeType: PrivilegeManagerMethod;
+    canGetSize: PrivilegeManagerMethod;
+    canListLocks: PrivilegeManagerMethod;
+    canSetLock: PrivilegeManagerMethod;
+    canRemoveLock: PrivilegeManagerMethod;
+    canGetAvailableLocks: PrivilegeManagerMethod;
+    canGetLock: PrivilegeManagerMethod;
+    canAddChild: PrivilegeManagerMethod;
+    canRemoveChild: PrivilegeManagerMethod;
+    canGetChildren: PrivilegeManagerMethod;
+    canSetProperty: PrivilegeManagerMethod;
+    canGetProperty: PrivilegeManagerMethod;
+    canGetProperties: PrivilegeManagerMethod;
+    canRemoveProperty: PrivilegeManagerMethod;
+    canGetCreationDate: PrivilegeManagerMethod;
+    canGetLastModifiedDate: PrivilegeManagerMethod;
+    canGetWebName: PrivilegeManagerMethod;
+    canGetType: PrivilegeManagerMethod;
+}
+export declare function hasNoWriteLock(ctx: RequestContext, resource: Resource, callback: PrivilegeManagerCallback): void;
