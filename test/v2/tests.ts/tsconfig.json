@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitAny": false,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "outDir": "../tests",
+    "typeRoots": [
+      "../../../node_modules/@types"
+    ],
+    "target": "ES5"
+  }
+}
