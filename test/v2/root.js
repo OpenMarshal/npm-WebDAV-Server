@@ -156,6 +156,10 @@ module.exports = (callback, options) => {
                                 callCallback();
                             }
 
+                            info.exit = (msg) => {
+                                callback(false, msg);
+                            }
+
                             var allGood = true;
                             var allMsg;
                             info.isValid = function(good, msg, error)
@@ -182,7 +186,7 @@ module.exports = (callback, options) => {
                     
                     try
                     {
-                        setTimeout(() => info.isValid(false, 'Timeout'), options.timeout);
+                        setTimeout(() => info.exit('Timeout'), options.timeout);
                         process.nextTick(() => require(fx).default(info, (good, msg, e) => info.isValid(good, msg, e)));
                     }
                     catch(ex)

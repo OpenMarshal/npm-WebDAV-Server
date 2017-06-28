@@ -10,7 +10,8 @@ export function starter(server : v2.WebDAVServer, info : TestInfo, isValid : Tes
         'subFile2'
     ];
     const name = 'folder';
-    server.rootFileSystem().addSubTree(info.ctx, {
+    const ctx = v2.RequestContext.createExternal(server);
+    server.rootFileSystem().addSubTree(ctx, {
         [name]: {
             'subFolder1': v2.ResourceType.Directory,
             'subFolder2': v2.ResourceType.Directory,
@@ -20,7 +21,7 @@ export function starter(server : v2.WebDAVServer, info : TestInfo, isValid : Tes
     }, (e) => {
         if(e) return isValid(false, 'Cannot call "addSubTree(...)".', e);
 
-        server.getResource(info.ctx, '/' + name, (e, r) => {
+        server.getResource(ctx, '/' + name, (e, r) => {
             if(e) return isValid(false, 'Could not find /' + name, e);
 
             callback(r, subFiles);
