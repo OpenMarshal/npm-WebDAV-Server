@@ -158,7 +158,11 @@ export class VirtualFileSystem extends FileSystem
 
     protected _delete(path : Path, ctx : DeleteInfo, callback : SimpleCallback) : void
     {
-        delete this.resources[path.toString()];
+        const sPath = path.toString();
+        for(const path in this.resources)
+            if(path.indexOf(sPath) === 0)
+                delete this.resources[path];
+        
         callback();
     }
 
