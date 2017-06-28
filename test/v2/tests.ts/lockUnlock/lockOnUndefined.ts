@@ -6,8 +6,8 @@ export default ((info, isValid) =>
 {
     const server = info.init(3);
     
-    starter(server, info, isValid, 'fileUndefined', 0, true, v2.HTTPCodes.Created, (lock) => {
-        lockResource(server, info, isValid, 'fileUndefined', 0, true, v2.HTTPCodes.Locked, (lock) => {
+    starter(server, info, isValid, 'fileUndefined', 0, true, v2.HTTPCodes.Created, (lock, user1) => {
+        lockResource(server, info, isValid, user1, 'fileUndefined', 0, true, v2.HTTPCodes.Locked, (lock) => {
             isValid(true);
         })
     })

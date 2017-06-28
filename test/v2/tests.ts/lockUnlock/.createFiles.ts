@@ -12,10 +12,123 @@ export interface Lock
     root : string
 }
 
+export function methodTesterNotBlocking(info : TestInfo, isValid : TestCallback, callbackLocked : (port : number, user2 : string, cb : () => void) => void) : void
+{
+    const server1 = info.init(3);
+
+    starter(server1, info, isValid, 'folder/folder2/folder3/folder4/file', 0, true, (lock, user1, user2) => {
+        callbackLocked(server1.options.port, user2, () => {
+            isValid(true);
+        })
+    })
+    
+    const server2 = info.startServer();
+    starter(server2, info, isValid, 'folder', -1, true, (lock, user1, user2) => {
+        callbackLocked(server2.options.port, user2, () => {
+            isValid(true);
+        })
+    })
+    
+    const server3 = info.startServer();
+    starter(server3, info, isValid, 'folder/folder2/folder3/folder4', 1, true, (lock, user1, user2) => {
+        callbackLocked(server3.options.port, user2, () => {
+            isValid(true);
+        })
+    })
+}
+
+export function methodTesterBlocking(info : TestInfo, isValid : TestCallback, callbackLocked : (port : number, user1 : string, user2 : string, cb : () => void) => void, callbackUnlocked ?: (port : number, user2 : string) => void, isFolder ?: boolean) : void
+{
+    isFolder = isFolder === undefined ? false : isFolder;
+
+    const server1 = info.init(2 + (isFolder ? 0 : 1));
+
+    if(!isFolder)
+    {
+        starter(server1, info, isValid, 'folder/folder2/folder3/folder4/file', 0, true, (lock, user1, user2) => {
+            callbackLocked(server1.options.port, user1, user2, () => {
+                if(!callbackUnlocked)
+                    return isValid(true);
+
+                unlockResource(server1, info, isValid, user1, 'folder/folder2/folder3/folder4/file', lock.uuid, () => {
+                    callbackUnlocked(server1.options.port, user2);
+                })
+            })
+        })
+    }
+    
+    const server2 = info.startServer();
+    starter(server2, info, isValid, 'folder', -1, true, (lock, user1, user2) => {
+        callbackLocked(server2.options.port, user1, user2, () => {
+            if(!callbackUnlocked)
+                return isValid(true);
+                
+            unlockResource(server2, info, isValid, user1, 'folder', lock.uuid, () => {
+                callbackUnlocked(server2.options.port, user2);
+            })
+        })
+    })
+    
+    const server3 = info.startServer();
+    starter(server3, info, isValid, 'folder/folder2/folder3/folder4', 1, true, (lock, user1, user2) => {
+        callbackLocked(server3.options.port, user1, user2, () => {
+            if(!callbackUnlocked)
+                return isValid(true);
+                
+            unlockResource(server3, info, isValid, user1, 'folder/folder2/folder3/folder4', lock.uuid, () => {
+                callbackUnlocked(server3.options.port, user2);
+            })
+        })
+    })
+}
+
+export function unlockResource(
+    server : v2.WebDAVServer,
+    info : TestInfo,
+    isValid : TestCallback,
+    user : string,
+    pathNameToUnlock : string,
+    lockToken : string,
+    callback : () => void) : void
+export function unlockResource(
+    server : v2.WebDAVServer,
+    info : TestInfo,
+    isValid : TestCallback,
+    user : string,
+    pathNameToUnlock : string,
+    lockToken : string,
+    expectedResponseCode : number,
+    callback : () => void) : void
+export function unlockResource(
+    server : v2.WebDAVServer,
+    info : TestInfo,
+    isValid : TestCallback,
+    user : string,
+    pathNameToUnlock : string,
+    lockToken : string,
+    _expectedResponseCode : number | (() => void),
+    _callback ?: () => void) : void
+{
+    const expectedResponseCode = _callback ? _expectedResponseCode as number : v2.HTTPCodes.NoContent;
+    const callback = _callback ? _callback : _expectedResponseCode as () => void;
+
+    info.req({
+        url: 'http://localhost:' + server.options.port + '/' + pathNameToUnlock,
+        method: 'UNLOCK',
+        headers: {
+            'Lock-Token': '<' + lockToken + '>',
+            Authorization: 'Basic ' + user
+        }
+    }, expectedResponseCode, () => {
+        callback();
+    })
+}
+
 export function lockResource(
     server : v2.WebDAVServer,
     info : TestInfo,
     isValid : TestCallback,
+    user : string,
     pathNameToLock : string,
     depth : number,
     isExclusive : boolean,
@@ -24,6 +137,7 @@ export function lockResource(
     server : v2.WebDAVServer,
     info : TestInfo,
     isValid : TestCallback,
+    user : string,
     pathNameToLock : string,
     depth : number,
     isExclusive : boolean,
@@ -33,6 +147,7 @@ export function lockResource(
     server : v2.WebDAVServer,
     info : TestInfo,
     isValid : TestCallback,
+    user : string,
     pathNameToLock : string,
     depth : number,
     isExclusive : boolean,
@@ -46,7 +161,8 @@ export function lockResource(
         url: 'http://localhost:' + server.options.port + '/' + pathNameToLock,
         method: 'LOCK',
         headers: {
-            depth: depth === -1 ? 'Infinity' : depth.toString()
+            Depth: depth === -1 ? 'Infinity' : depth.toString(),
+            Authorization: 'Basic ' + user
         },
         body: '<?xml version="1.0" encoding="utf-8" ?><D:lockinfo xmlns:D="DAV:"><D:lockscope><D:' + (isExclusive ? 'exclusive' : 'shared') + '/></D:lockscope><D:locktype><D:write/></D:locktype><D:owner><D:href>http://example.org/~ejw/contact.html</D:href></D:owner></D:lockinfo>'
     }, expectedResponseCode, (res, xml) => {
@@ -102,7 +218,7 @@ export function starter(
     pathNameToLock : string,
     depth : number,
     isExclusive : boolean,
-    callback : (lock : Lock) => void) : void
+    callback : (lock : Lock, user1 : string, user2 : string) => void) : void
 export function starter(
     server : v2.WebDAVServer,
     info : TestInfo,
@@ -111,7 +227,7 @@ export function starter(
     depth : number,
     isExclusive : boolean,
     expectedResponseCode : number,
-    callback : (lock : Lock) => void) : void
+    callback : (lock : Lock, user1 : string, user2 : string) => void) : void
 export function starter(
     server : v2.WebDAVServer,
     info : TestInfo,
@@ -119,13 +235,18 @@ export function starter(
     pathNameToLock : string,
     depth : number,
     isExclusive : boolean,
-    _expectedResponseCode : number | ((lock : Lock) => void),
-    _callback ?: (lock : Lock) => void) : void
+    _expectedResponseCode : number | ((lock : Lock, user1 : string, user2 : string) => void),
+    _callback ?: (lock : Lock, user1 : string, user2 : string) => void) : void
 {
     const expectedResponseCode = _callback ? _expectedResponseCode as number : v2.HTTPCodes.OK;
-    const callback = _callback ? _callback : _expectedResponseCode as (lock : Lock) => void;
+    const callback = _callback ? _callback : _expectedResponseCode as (lock : Lock, user1 : string, user2 : string) => void;
 
-    server.rootFileSystem().addSubTree(info.ctx, {
+    const um = new v2.SimpleUserManager();
+    um.addUser('user1', 'password1'); // dXNlcjE6cGFzc3dvcmQx
+    um.addUser('user2', 'password2'); // dXNlcjI6cGFzc3dvcmQy
+    server.httpAuthentication = new v2.HTTPBasicAuthentication(um, 'Test realm');
+    server.options.httpAuthentication = server.httpAuthentication;
+    server.rootFileSystem().addSubTree(v2.RequestContext.createExternal(server), {
         'folder': {
             'folder2': {
                 'folder3': {
@@ -141,6 +262,8 @@ export function starter(
     }, (e) => {
         if(e) return isValid(false, 'Cannot call "addSubTree(...)".', e);
 
-        lockResource(server, info, isValid, pathNameToLock, depth, isExclusive, expectedResponseCode, callback);
+        lockResource(server, info, isValid, 'dXNlcjE6cGFzc3dvcmQx', pathNameToLock, depth, isExclusive, expectedResponseCode, (lock) => {
+            callback(lock, 'dXNlcjE6cGFzc3dvcmQx', 'dXNlcjI6cGFzc3dvcmQy');
+        });
     })
 }
