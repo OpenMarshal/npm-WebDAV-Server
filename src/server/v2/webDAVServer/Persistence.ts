@@ -3,6 +3,7 @@ import { FileSystem } from '../../../manager/v2/fileSystem/FileSystem'
 import { SimpleCallback } from '../../../manager/v2/fileSystem/CommonTypes'
 import { FileSystemSerializer, serialize, unserialize, SerializedData } from '../../../manager/v2/fileSystem/Serialization'
 import { VirtualSerializer } from '../../../manager/v2/instances/VirtualFileSystem'
+import { PhysicalSerializer } from '../../../manager/v2/instances/PhysicalFileSystem'
 import { RequestContext } from '../RequestContext'
 import { IAutoSave, IAutoLoad } from '../WebDAVServerOptions'
 import { Readable } from 'stream'
@@ -12,22 +13,33 @@ import * as fs from 'fs'
 function defaultSerializers()
 {
     return [
-        new VirtualSerializer()
+        new VirtualSerializer(),
+        new PhysicalSerializer()
     ];
 }
 
 export function load(data : SerializedData, serializers : FileSystemSerializer[], callback: (error : Error) => void)
 {
-    serializers = serializers ? serializers : defaultSerializers();
+    const fSerializers = serializers ? serializers.concat(defaultSerializers()) : defaultSerializers();
     
-    unserialize(data, serializers, (e, udata) => {
-        this.fileSystems = udata;
+    unserialize(data, fSerializers, (e, udata) => {
+        if(!e)
+            this.fileSystems = udata;
+        callback(e);
     })
 }
 
 export function autoLoad(callback : SimpleCallback)
 {
-    const options : IAutoLoad = this.options.autoLoad;
+    let options : IAutoLoad = this.options.autoLoad;
+    if(!options)
+        options = { } as IAutoLoad;
+    if(!options.treeFilePath)
+        if(!this.options.autoSave.treeFilePath)
+            return callback(new Error('The "treeFilePath" of the "autoLoad" option is not found.'));
+        else
+            options.treeFilePath = this.options.autoSave.treeFilePath;
+
     const oStream = fs.createReadStream(options.treeFilePath);
     const stream = oStream.pipe(zlib.createGunzip());
     
@@ -66,6 +78,8 @@ export function autoSave(options : IAutoSave)
         options.streamProvider = (s, cb) => cb(s);
     if(!options.onSaveError)
         options.onSaveError = () => {};
+    if(!options.tempTreeFilePath)
+        options.tempTreeFilePath = options.treeFilePath + '.tmp';
 
     let saving = false;
     let saveRequested = false;
