@@ -1,9 +1,8 @@
 import { HTTPBasicAuthentication } from '../../user/v2/authentication/HTTPBasicAuthentication'
 import { HTTPDigestAuthentication } from '../../user/v2/authentication/HTTPDigestAuthentication'
-import { FakePrivilegeManager } from '../../user/v2/privilege/FakePrivilegeManager'
 import { HTTPAuthentication } from '../../user/v2/authentication/HTTPAuthentication'
 import { Writable, Readable } from 'stream'
-import { IPrivilegeManager } from '../../user/v2/privilege/IPrivilegeManager'
+import { PrivilegeManager } from '../../user/v2/privilege/PrivilegeManager'
 import { SimpleUserManager } from '../../user/v2/simple/SimpleUserManager'
 import { RootResource } from '../../resource/std/RootResource'
 import { IUserManager } from '../../user/v2/IUserManager'
@@ -15,14 +14,14 @@ import * as https from 'https'
 export interface IAutoSave
 {
     treeFilePath : string,
-    tempTreeFilePath : string,
+    tempTreeFilePath ?: string,
     onSaveError ?: (error : Error) => void,
     streamProvider ?: (inputStream : Writable, callback : (outputStream ?: Writable) => void) => void
 }
 
 export interface IAutoLoad
 {
-    treeFilePath : string,
+    treeFilePath ?: string,
     serializers ?: FileSystemSerializer[],
     streamProvider ?: (inputStream : Readable, callback : (outputStream ?: Readable) => void) => void
 }
@@ -31,7 +30,7 @@ export class WebDAVServerOptions
 {
     requireAuthentification ?: boolean = false
     httpAuthentication ?: HTTPAuthentication = new HTTPDigestAuthentication(new SimpleUserManager(), 'default realm')
-    privilegeManager ?: IPrivilegeManager = new FakePrivilegeManager()
+    privilegeManager ?: PrivilegeManager = new PrivilegeManager()
     rootFileSystem ?: FileSystem = new VirtualFileSystem()
     lockTimeout ?: number = 3600
     strictMode ?: boolean = false
