@@ -1,7 +1,8 @@
 import { WebDAVServerOptions, setDefaultServerOptions } from '../WebDAVServerOptions'
-import { HTTPCodes, RequestContext, HTTPMethod } from '../WebDAVRequest'
+import { RequestContext, RequestContextExternalOptions } from '../RequestContext'
+import { HTTPCodes, HTTPMethod } from '../WebDAVRequest'
 import { HTTPAuthentication } from '../../../user/v2/authentication/HTTPAuthentication'
-import { IPrivilegeManager } from '../../../user/v2/privilege/IPrivilegeManager'
+import { PrivilegeManager } from '../../../user/v2/privilege/PrivilegeManager'
 import { FileSystem } from '../../../manager/v2/fileSystem/FileSystem'
 import { ReturnCallback } from '../../../manager/v2/fileSystem/CommonTypes'
 import { Resource } from '../../../manager/v2/fileSystem/Resource'
@@ -21,7 +22,7 @@ export type WebDAVServerStartCallback = (server ?: http.Server) => void;
 export class WebDAVServer
 {
     public httpAuthentication : HTTPAuthentication
-    public privilegeManager : IPrivilegeManager
+    public privilegeManager : PrivilegeManager
     public options : WebDAVServerOptions
     public methods : { [methodName : string]: HTTPMethod }
 
@@ -56,6 +57,14 @@ export class WebDAVServer
                 this.method(k, new commands[k]());
     }
 
+    createExternalContext() : RequestContext
+    createExternalContext(callback : (error : Error, ctx : RequestContext) => void) : RequestContext
+    createExternalContext(options : RequestContextExternalOptions) : RequestContext
+    createExternalContext(options : RequestContextExternalOptions, callback : (error : Error, ctx : RequestContext) => void) : RequestContext
+    createExternalContext(_options ?: RequestContextExternalOptions | ((error : Error, ctx : RequestContext) => void), _callback ?: (error : Error, ctx : RequestContext) => void) : RequestContext
+    {
+        return RequestContext.createExternal(this, _options, _callback);
+    }
 
     rootFileSystem() : FileSystem
     {
