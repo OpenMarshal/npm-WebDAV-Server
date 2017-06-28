@@ -5,7 +5,7 @@ import { LockScope } from '../../../resource/lock/LockScope'
 import { LockType } from '../../../resource/lock/LockType'
 import { LockKind } from '../../../resource/lock/LockKind'
 import { Workflow } from '../../../helper/Workflow'
-import { Errors } from '../../../Errors'
+import { SerializerNotFound } from '../../../Errors'
 import { Lock } from '../../../resource/lock/Lock'
 import { Path } from '../Path'
 import { ReturnCallback, SimpleCallback } from './CommonTypes'
@@ -60,6 +60,7 @@ export function serialize(fileSystems : UnserializedData, callback : ReturnCallb
 export function unserialize(serializedData : SerializedData, serializers : FileSystemSerializer[], callback : ReturnCallback<UnserializedData>)
 {
     const result : UnserializedData = {};
+
     new Workflow()
         .each(Object.keys(serializedData), (path, cb) => {
             const sd = serializedData[path];
@@ -72,12 +73,12 @@ export function unserialize(serializedData : SerializedData, serializers : FileS
                 }
             
             if(!serializer)
-                return cb(Errors.SerializerNotFound)
+                return cb(new SerializerNotFound(sd.serializer));
             
             serializer.unserialize(sd.data, (e, fs) => {
                 if(!e)
                     result[path] = fs;
-                callback(e);
+                cb(e);
             })
         })
         .error(callback)
