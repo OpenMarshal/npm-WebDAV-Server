@@ -26,23 +26,22 @@ export default class implements HTTPMethod
                         }
                         else if(e)
                         {
-                            ctx.setCode(HTTPCodes.InternalServerError);
-                            callback();
-                            return;
+                            if(!ctx.setCodeFromError(e))
+                                ctx.setCode(HTTPCodes.InternalServerError);
+                            return callback();
                         }
                         else if(!type.isFile)
                         {
                             ctx.setCode(HTTPCodes.MethodNotAllowed);
-                            callback();
-                            return;
+                            return callback();
                         }
 
                         r.openWriteStream(mode, targetSource, ctx.headers.contentLength, (e, wStream, created) => {
                             if(e)
                             {
-                                ctx.setCode(e === Errors.IntermediateResourceMissing || e === Errors.WrongParentTypeForCreation ? HTTPCodes.Conflict : HTTPCodes.InternalServerError);
-                                callback();
-                                return;
+                                if(!ctx.setCodeFromError(e))
+                                    ctx.setCode(e === Errors.IntermediateResourceMissing || e === Errors.WrongParentTypeForCreation ? HTTPCodes.Conflict : HTTPCodes.InternalServerError);
+                                return callback();
                             }
 
                             inputStream.pipe(wStream);
@@ -55,7 +54,8 @@ export default class implements HTTPMethod
                                 callback();
                             });
                             wStream.on('error', (e) => {
-                                ctx.setCode(HTTPCodes.InternalServerError)
+                                if(!ctx.setCodeFromError(e))
+                                    ctx.setCode(HTTPCodes.InternalServerError)
                                 callback();
                             });
                         })

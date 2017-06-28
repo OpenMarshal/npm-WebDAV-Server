@@ -47,6 +47,7 @@ function createLock(ctx : RequestContext, data : Buffer, callback)
             r.listDeepLocks((e, locks) => {
                 if(e)
                     return callback(e);
+                
                 if(Object.keys(locks).length > 0)
                 {
                     if(LockScope.Exclusive.isSame(type))
@@ -77,12 +78,8 @@ function createLock(ctx : RequestContext, data : Buffer, callback)
         callback = (e) => {
             if(e)
             {
-                if(e === Errors.Locked)
-                    ctx.setCode(HTTPCodes.Locked);
-                else if(e === Errors.IntermediateResourceMissing || e === Errors.WrongParentTypeForCreation)
-                    ctx.setCode(HTTPCodes.Conflict);
-                else
-                    ctx.setCode(HTTPCodes.InternalServerError);
+                if(!ctx.setCodeFromError(e))
+                    ctx.setCode(HTTPCodes.InternalServerError)
             }
             else
                 ctx.writeBody(createResponse(ctx, lock));
@@ -117,18 +114,12 @@ function createLock(ctx : RequestContext, data : Buffer, callback)
 function refreshLock(ctx : RequestContext, lockUUID : string, callback)
 {
     ctx.getResource((e, r) => {
-        if(e)
-        {
-            ctx.setCode(e === Errors.ResourceNotFound ? HTTPCodes.NotFound : HTTPCodes.InternalServerError)
-            callback()
-            return;
-        }
-
         //ctx.requirePrivilege([ 'canSetLock', 'canGetLock' ], r, () => {
             r.lockManager((e, lm) => {
                 if(e)
                 {
-                    ctx.setCode(e === Errors.ResourceNotFound ? HTTPCodes.NotFound : HTTPCodes.InternalServerError);
+                    if(!ctx.setCodeFromError(e))
+                        ctx.setCode(HTTPCodes.InternalServerError)
                     return callback();
                 }
                 
@@ -157,8 +148,7 @@ export default class implements HTTPMethod
         if(!ctx.user)
         {
             ctx.setCode(HTTPCodes.Forbidden);
-            callback();
-            return;
+            return callback();
         }
 
         if(ctx.headers.contentLength > 0)
@@ -171,8 +161,7 @@ export default class implements HTTPMethod
         if(!ifHeader)
         {
             ctx.setCode(HTTPCodes.PreconditionRequired);
-            callback();
-            return;
+            return callback();
         }
 
         refreshLock(ctx, extractOneToken(ifHeader), callback);

@@ -15,7 +15,8 @@ export default class implements HTTPMethod
                         r.type((e, type) => {
                             if(e)
                             {
-                                ctx.setCode(e === Errors.ResourceNotFound ? HTTPCodes.NotFound : HTTPCodes.InternalServerError);
+                                if(!ctx.setCodeFromError(e))
+                                    ctx.setCode(HTTPCodes.InternalServerError)
                                 return callback();
                             }
                             if(!type.isFile)
@@ -27,13 +28,17 @@ export default class implements HTTPMethod
                             r.mimeType(targetSource, (e, mimeType) => process.nextTick(() => {
                                 if(e)
                                 {
-                                    ctx.setCode(e === Errors.ResourceNotFound ? HTTPCodes.NotFound : HTTPCodes.InternalServerError);
+                                    if(!ctx.setCodeFromError(e))
+                                        ctx.setCode(HTTPCodes.InternalServerError)
                                     return callback();
                                 }
 
                                 r.size(targetSource, (e, size) => {
                                     if(e)
-                                        ctx.setCode(e === Errors.ResourceNotFound ? HTTPCodes.NotFound : HTTPCodes.InternalServerError);
+                                    {
+                                        if(!ctx.setCodeFromError(e))
+                                            ctx.setCode(HTTPCodes.InternalServerError)
+                                    }
                                     else
                                     {
                                         ctx.setCode(HTTPCodes.OK);

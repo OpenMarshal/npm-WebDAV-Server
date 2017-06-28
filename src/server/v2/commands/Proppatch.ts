@@ -35,7 +35,7 @@ export default class implements HTTPMethod
 
                         const notify = function(el : any, error : any)
                         {
-                            const code = error ? HTTPCodes.Conflict : HTTPCodes.OK;
+                            const code = error ? HTTPCodes.Forbidden : HTTPCodes.OK;
                             const propstat = response.ele('D:propstat');
                             propstat.ele('D:prop').ele(el.name);
                             propstat.ele('D:status').add('HTTP/1.1 ' + code + ' ' + STATUS_CODES[code]);
@@ -64,18 +64,33 @@ export default class implements HTTPMethod
                             })
                         }
 
-                        r.propertyManager((e, pm) => {
-                            if(e)
+                        r.fs.isLocked(ctx, r.path, (e, locked) => {
+                            if(e || locked)
                             {
-                                ctx.setCode(e === Errors.ResourceNotFound ? HTTPCodes.NotFound : HTTPCodes.InternalServerError);
+                                if(e)
+                                {
+                                    if(!ctx.setCodeFromError(e))
+                                        ctx.setCode(HTTPCodes.InternalServerError)
+                                }
+                                else if(locked)
+                                    ctx.setCode(HTTPCodes.Locked);
                                 return callback();
                             }
+                            
+                            r.propertyManager((e, pm) => {
+                                if(e)
+                                {
+                                    if(!ctx.setCodeFromError(e))
+                                        ctx.setCode(HTTPCodes.InternalServerError)
+                                    return callback();
+                                }
 
-                            execute('DAV:set', 'setProperty', (el, callback) => {
-                                pm.setProperty(el.name, el.elements, callback)
-                            })
-                            execute('DAV:remove', 'removeProperty', (el, callback) => {
-                                pm.removeProperty(el.name, callback)
+                                execute('DAV:set', 'setProperty', (el, callback) => {
+                                    pm.setProperty(el.name, el.elements, callback)
+                                })
+                                execute('DAV:remove', 'removeProperty', (el, callback) => {
+                                    pm.removeProperty(el.name, callback)
+                                })
                             })
                         })
                     }

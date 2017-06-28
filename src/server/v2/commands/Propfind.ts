@@ -1,6 +1,5 @@
 import { HTTPCodes, RequestContext, HTTPMethod } from '../WebDAVRequest'
 import { XML, XMLElement } from '../../../helper/XML'
-import { BasicPrivilege } from '../../../user/v2/privilege/IPrivilegeManager'
 import { Workflow } from '../../../helper/Workflow'
 import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
 import { Resource } from '../../../manager/v2/fileSystem/Resource'
@@ -180,12 +179,8 @@ export default class implements HTTPMethod
                                 done(multistatus);
                             else
                             {
-                                if(e === Errors.ResourceNotFound)
-                                    ctx.setCode(HTTPCodes.NotFound);
-                                else if(e === Errors.BadAuthentication)
-                                    ctx.setCode(HTTPCodes.Unauthorized);
-                                else
-                                    ctx.setCode(HTTPCodes.InternalServerError);
+                                if(!ctx.setCodeFromError(e))
+                                    ctx.setCode(HTTPCodes.InternalServerError)
                                 callback();
                             }
                         })
@@ -196,12 +191,8 @@ export default class implements HTTPMethod
                         resource.readDir(true, (e, children) => process.nextTick(() => {
                             function err(e)
                             {
-                                if(e === Errors.ResourceNotFound)
-                                    ctx.setCode(HTTPCodes.NotFound);
-                                else if(e === Errors.BadAuthentication)
-                                    ctx.setCode(HTTPCodes.Unauthorized);
-                                else
-                                    ctx.setCode(HTTPCodes.InternalServerError);
+                                if(!ctx.setCodeFromError(e))
+                                    ctx.setCode(HTTPCodes.InternalServerError)
                                 callback();
                             }
 

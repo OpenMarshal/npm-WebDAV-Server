@@ -7,18 +7,14 @@ export default class implements HTTPMethod
     {
         ctx.noBodyExpected(() => {
             ctx.getResource((e, r) => {
-                if(e)
-                {
-                    ctx.setCode(HTTPCodes.NotFound)
-                    callback()
-                    return;
-                }
-
                 ctx.checkIfHeader(r, () => {
                     //ctx.requirePrivilege([ 'canDelete' ], r, () => {
                         r.delete((e) => process.nextTick(() => {
                             if(e)
-                                ctx.setCode(HTTPCodes.InternalServerError);
+                            {
+                                if(!ctx.setCodeFromError(e))
+                                    ctx.setCode(HTTPCodes.InternalServerError);
+                            }
                             else
                             {
                                 ctx.setCode(HTTPCodes.OK);

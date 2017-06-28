@@ -16,8 +16,7 @@ export function execute(ctx : RequestContext, methodName : string, privilegeName
                     if(!destination)
                     {
                         ctx.setCode(HTTPCodes.BadRequest);
-                        callback();
-                        return;
+                        return callback();
                     }
                     
                     const startIndex = destination.indexOf('://');
@@ -36,16 +35,11 @@ export function execute(ctx : RequestContext, methodName : string, privilegeName
 
                     const cb = (e ?: Error, overwritten ?: boolean) =>
                     {
-                        if(e === Errors.ResourceNotFound)
-                            ctx.setCode(HTTPCodes.NotFound);
-                        else if(e === Errors.InsufficientStorage)
-                            ctx.setCode(HTTPCodes.InsufficientStorage);
-                        else if(e === Errors.Locked)
-                            ctx.setCode(HTTPCodes.Locked);
-                        else if(e === Errors.ResourceAlreadyExists)
-                            ctx.setCode(HTTPCodes.Conflict);
-                        else if(e)
-                            ctx.setCode(HTTPCodes.InternalServerError);
+                        if(e)
+                        {
+                            if(!ctx.setCodeFromError(e))
+                                ctx.setCode(HTTPCodes.InternalServerError)
+                        }
                         else if(overwritten)
                             ctx.setCode(HTTPCodes.NoContent);
                         else

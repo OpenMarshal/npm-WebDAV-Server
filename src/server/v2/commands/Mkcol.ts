@@ -15,26 +15,23 @@ export default class implements HTTPMethod
                         rParent.type((e, parentType) => {
                             if(e)
                             {
-                                ctx.setCode(e === Errors.ResourceNotFound ? HTTPCodes.Conflict : HTTPCodes.InternalServerError);
-                                callback();
-                                return;
+                                if(!ctx.setCodeFromError(e))
+                                    ctx.setCode(HTTPCodes.InternalServerError)
+                                return callback();
                             }
                             if(!parentType.isDirectory)
                             {
                                 ctx.setCode(HTTPCodes.Forbidden);
-                                callback();
-                                return;
+                                return callback();
                             }
                             
                             r.create(ResourceType.Directory, (e) => {
                                 if(e)
                                 {
-                                    if(e === Errors.WrongParentTypeForCreation)
-                                        ctx.setCode(HTTPCodes.Conflict);
-                                    else if(e === Errors.ResourceAlreadyExists)
+                                    if(e === Errors.ResourceAlreadyExists)
                                         ctx.setCode(HTTPCodes.MethodNotAllowed);
-                                    else
-                                        ctx.setCode(HTTPCodes.InternalServerError);
+                                    else if(!ctx.setCodeFromError(e))
+                                        ctx.setCode(HTTPCodes.InternalServerError)
                                 }
                                 else
                                     ctx.setCode(HTTPCodes.Created)

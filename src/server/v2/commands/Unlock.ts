@@ -50,14 +50,18 @@ export default class implements HTTPMethod
                         r.lockManager((e, lm) => {
                             if(e)
                             {
-                                ctx.setCode(e === Errors.ResourceNotFound ? HTTPCodes.NotFound : HTTPCodes.InternalServerError);
+                                if(!ctx.setCodeFromError(e))
+                                    ctx.setCode(HTTPCodes.InternalServerError)
                                 return callback();
                             }
                             
                             lm.getLock(token, (e, lock) => {
                                 if(e || !lock)
                                 {
-                                    ctx.setCode(HTTPCodes.Conflict);
+                                    if(!lock)
+                                        ctx.setCode(HTTPCodes.Conflict)
+                                    else if(!ctx.setCodeFromError(e))
+                                        ctx.setCode(HTTPCodes.InternalServerError)
                                     return callback();
                                 }
 
@@ -69,7 +73,12 @@ export default class implements HTTPMethod
 
                                 lm.removeLock(lock.uuid, (e, done) => {
                                     if(e || !done)
-                                        ctx.setCode(HTTPCodes.Forbidden);
+                                    {
+                                        if(!done)
+                                            ctx.setCode(HTTPCodes.Forbidden);
+                                        else if(!ctx.setCodeFromError(e))
+                                            ctx.setCode(HTTPCodes.InternalServerError)
+                                    }
                                     else
                                     {
                                         //ctx.invokeEvent('unlock', r, lock);

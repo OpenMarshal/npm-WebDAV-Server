@@ -55,7 +55,8 @@ export default class implements HTTPMethod
                         r.type((e, type) => {
                             if(e)
                             {
-                                ctx.setCode(e === Errors.ResourceNotFound ? HTTPCodes.NotFound : HTTPCodes.InternalServerError)
+                                if(!ctx.setCodeFromError(e))
+                                    ctx.setCode(HTTPCodes.InternalServerError)
                                 return callback();
                             }
                             if(!type.isFile)
@@ -67,14 +68,16 @@ export default class implements HTTPMethod
                             r.mimeType(targetSource, (e, mimeType) => process.nextTick(() => {
                                 if(e)
                                 {
-                                    ctx.setCode(e === Errors.ResourceNotFound ? HTTPCodes.NotFound : HTTPCodes.InternalServerError)
+                                    if(!ctx.setCodeFromError(e))
+                                        ctx.setCode(HTTPCodes.InternalServerError)
                                     return callback();
                                 }
 
                                 r.openReadStream(targetSource, (e, rstream) => process.nextTick(() => {
                                     if(e)
                                     {
-                                        ctx.setCode(HTTPCodes.MethodNotAllowed);
+                                        if(!ctx.setCodeFromError(e))
+                                            ctx.setCode(HTTPCodes.MethodNotAllowed)
                                         return callback();
                                     }
                                     //ctx.invokeEvent('read', r);
