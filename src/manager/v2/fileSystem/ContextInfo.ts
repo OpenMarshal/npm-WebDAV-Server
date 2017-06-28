@@ -53,8 +53,12 @@ export interface MoveInfo extends IContextInfo
 {
     overwrite : boolean
 }
+export interface RenameInfo extends IContextInfo
+{
+    destinationPath : Path
+}
+export interface PrivilegeManagerInfo extends IContextInfo { }
 export interface ETagInfo extends IContextInfo { }
-export interface RenameInfo extends IContextInfo { }
 export interface AvailableLocksInfo extends IContextInfo { }
 export interface LockManagerInfo extends IContextInfo { }
 export interface PropertyManagerInfo extends IContextInfo { }

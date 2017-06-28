@@ -1,4 +1,5 @@
 import { RequestContext } from '../../../server/v2/RequestContext';
+import { Path } from '../Path';
 import { ResourceType, OpenWriteStreamMode } from './CommonTypes';
 export interface IContextInfo {
     context: RequestContext;
@@ -31,9 +32,12 @@ export interface DeleteInfo extends IContextInfo {
 export interface MoveInfo extends IContextInfo {
     overwrite: boolean;
 }
-export interface ETagInfo extends IContextInfo {
-}
 export interface RenameInfo extends IContextInfo {
+    destinationPath: Path;
+}
+export interface PrivilegeManagerInfo extends IContextInfo {
+}
+export interface ETagInfo extends IContextInfo {
 }
 export interface AvailableLocksInfo extends IContextInfo {
 }
