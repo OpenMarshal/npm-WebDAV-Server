@@ -1,7 +1,6 @@
-import { SimplePrivilegeManager, SimpleBasicPrivilege } from './SimplePrivilegeManager'
+import { BasicPrivilege, PrivilegeManager, PrivilegeManagerCallback } from './PrivilegeManager'
 import { RequestContext } from '../../../server/v2/RequestContext'
-import { hasNoWriteLock } from './IPrivilegeManager'
-import { Resource } from '../../../manager/v2/export'
+import { Resource, Path } from '../../../manager/v2/export'
 import { IUser } from '../IUser'
 
 function standarizePath(path : string)
@@ -28,21 +27,7 @@ function standarizePath(path : string)
     return path;
 }
 
-function checker(sppm : SimplePathPrivilegeManager, right : SimpleBasicPrivilege)
-{
-    return (ctx : RequestContext, resource : Resource, callback) => callback(null, sppm.can(ctx.user, ctx.requested.uri, right));
-}
-function checkerNoLock(sppm : SimplePathPrivilegeManager, right : SimpleBasicPrivilege)
-{
-    return (ctx : RequestContext, resource : Resource, callback) => {
-        if(!sppm.can(ctx.user, ctx.requested.uri, right))
-            callback(null, false);
-        else
-            hasNoWriteLock(ctx, resource, callback);
-    };
-}
-
-export class SimplePathPrivilegeManager extends SimplePrivilegeManager
+export class SimplePathPrivilegeManager extends PrivilegeManager
 {
     rights : any;
 
@@ -53,38 +38,24 @@ export class SimplePathPrivilegeManager extends SimplePrivilegeManager
         this.rights = {};
     }
 
-    setRights(user : IUser, path : string, rights : SimpleBasicPrivilege[])
+    setRights(user : IUser, path : string, rights : BasicPrivilege[] | string[])
     {
         if(!this.rights[user.uid])
             this.rights[user.uid] = {};
 
         this.rights[user.uid][standarizePath(path)] = rights;
     }
-    getRights(user : IUser, path : string) : SimpleBasicPrivilege[]
+    getRights(user : IUser, path : string) : string[]
     {
         if(!this.rights[user.uid])
             return [];
 
         return this.rights[user.uid][standarizePath(path)];
     }
-    can(user : IUser, path : string, right : SimpleBasicPrivilege) : boolean
+
+    _can(fuullPath : Path, resource : Resource, privilege : BasicPrivilege | string, callback : PrivilegeManagerCallback) : void
     {
-        const rights = this.getRights(user, path);
-        const r = rights && (rights.indexOf('all') !== -1 || rights.indexOf(right) !== -1);
-        return r;
+        const rights = this.getRights(resource.context.user, Path.toString());
+        callback(null, rights && (rights.indexOf('all') !== -1 || rights.some((r) => r === 'all' || r === privilege)));
     }
-    
-    canCreate = checker(this, 'canCreate')
-    canDelete = checkerNoLock(this, 'canDelete')
-    canWrite = checkerNoLock(this, 'canWrite')
-    canSource = checker(this, 'canSource')
-    canRead = checker(this, 'canRead')
-    canListLocks = checker(this, 'canListLocks')
-    canSetLock = checkerNoLock(this, 'canSetLock')
-    canGetAvailableLocks = checker(this, 'canGetAvailableLocks')
-    canAddChild = checkerNoLock(this, 'canAddChild')
-    canRemoveChild = checkerNoLock(this, 'canRemoveChild')
-    canGetChildren = checker(this, 'canGetChildren')
-    canSetProperty = checkerNoLock(this, 'canSetProperty')
-    canGetProperty = checker(this, 'canGetProperty')
 }
