@@ -9,10 +9,10 @@ import { Path } from '../Path';
 import { IPropertyManager } from './PropertyManager';
 import { ILockManager } from './LockManager';
 export declare class Resource {
-    path: Path;
     fs: FileSystem;
     context: RequestContext;
-    constructor(path: Path, fs: FileSystem, context: RequestContext);
+    path: Path;
+    constructor(path: Path | string, fs: FileSystem, context: RequestContext);
     delete(callback: SimpleCallback): void;
     delete(depth: number, callback: SimpleCallback): void;
     openWriteStream(callback: Return2Callback<Writable, boolean>): void;
@@ -27,10 +27,10 @@ export declare class Resource {
     openReadStream(estimatedSize: number, callback: ReturnCallback<Readable>): void;
     openReadStream(targetSource: boolean, callback: ReturnCallback<Readable>): void;
     openReadStream(targetSource: boolean, estimatedSize: number, callback: ReturnCallback<Readable>): void;
-    copy(pathTo: Path, callback: ReturnCallback<boolean>): void;
-    copy(pathTo: Path, depth: number, callback: ReturnCallback<boolean>): void;
-    copy(pathTo: Path, overwrite: boolean, callback: ReturnCallback<boolean>): void;
-    copy(pathTo: Path, overwrite: boolean, depth: number, callback: ReturnCallback<boolean>): void;
+    copy(pathTo: Path | string, callback: ReturnCallback<boolean>): void;
+    copy(pathTo: Path | string, depth: number, callback: ReturnCallback<boolean>): void;
+    copy(pathTo: Path | string, overwrite: boolean, callback: ReturnCallback<boolean>): void;
+    copy(pathTo: Path | string, overwrite: boolean, depth: number, callback: ReturnCallback<boolean>): void;
     mimeType(callback: ReturnCallback<string>): void;
     mimeType(targetSource: boolean, callback: ReturnCallback<string>): void;
     size(callback: ReturnCallback<number>): void;
@@ -40,8 +40,8 @@ export declare class Resource {
     create(type: ResourceType, callback: SimpleCallback): void;
     create(type: ResourceType, createIntermediates: boolean, callback: SimpleCallback): void;
     etag(callback: ReturnCallback<string>): void;
-    move(pathTo: Path, callback: ReturnCallback<boolean>): void;
-    move(pathTo: Path, overwrite: boolean, callback: ReturnCallback<boolean>): void;
+    move(pathTo: Path | string, callback: ReturnCallback<boolean>): void;
+    move(pathTo: Path | string, overwrite: boolean, callback: ReturnCallback<boolean>): void;
     rename(newName: string, callback: ReturnCallback<boolean>): void;
     rename(newName: string, overwrite: boolean, callback: ReturnCallback<boolean>): void;
     availableLocks(callback: ReturnCallback<LockKind[]>): void;

@@ -19,8 +19,12 @@ import * as crypto from 'crypto'
 
 export class Resource
 {
-    constructor(public path : Path, public fs : FileSystem, public context : RequestContext)
-    { }
+    path : Path
+
+    constructor(path : Path | string, public fs : FileSystem, public context : RequestContext)
+    {
+        this.path = new Path(path);
+    }
 
     delete(callback : SimpleCallback) : void
     delete(depth : number, callback : SimpleCallback) : void
@@ -51,11 +55,11 @@ export class Resource
         this.fs.openReadStream(this.context, this.path, _targetSource, _estimatedSize, _callback);
     }
     
-    copy(pathTo : Path, callback : ReturnCallback<boolean>) : void
-    copy(pathTo : Path, depth : number, callback : ReturnCallback<boolean>) : void
-    copy(pathTo : Path, overwrite : boolean, callback : ReturnCallback<boolean>) : void
-    copy(pathTo : Path, overwrite : boolean, depth : number, callback : ReturnCallback<boolean>) : void
-    copy(pathTo : Path, _overwrite : any, _depth ?: any, _callback ?: ReturnCallback<boolean>) : void
+    copy(pathTo : Path | string, callback : ReturnCallback<boolean>) : void
+    copy(pathTo : Path | string, depth : number, callback : ReturnCallback<boolean>) : void
+    copy(pathTo : Path | string, overwrite : boolean, callback : ReturnCallback<boolean>) : void
+    copy(pathTo : Path | string, overwrite : boolean, depth : number, callback : ReturnCallback<boolean>) : void
+    copy(pathTo : Path | string, _overwrite : any, _depth ?: any, _callback ?: ReturnCallback<boolean>) : void
     {
         this.fs.copy(this.context, this.path, pathTo, _overwrite, _depth, _callback);
     }
@@ -91,9 +95,9 @@ export class Resource
     {
         this.fs.etag(this.context, this.path, callback);
     }
-    move(pathTo : Path, callback : ReturnCallback<boolean>) : void
-    move(pathTo : Path, overwrite : boolean, callback : ReturnCallback<boolean>) : void
-    move(pathTo : Path, _overwrite : any, _callback ?: ReturnCallback<boolean>) : void
+    move(pathTo : Path | string, callback : ReturnCallback<boolean>) : void
+    move(pathTo : Path | string, overwrite : boolean, callback : ReturnCallback<boolean>) : void
+    move(pathTo : Path | string, _overwrite : any, _callback ?: ReturnCallback<boolean>) : void
     {
         this.fs.move(this.context, this.path, pathTo, _overwrite, _callback);
     }
