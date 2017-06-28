@@ -37,9 +37,12 @@ export class Workflow
             if(this.exitOnError)
                 this.counter = -1000;
             if(this.errorFn)
-                this.errorFn(e);
+                process.nextTick(() => this.errorFn(e));
             if(this.exitOnError)
+            {
+                this.started = false;
                 return;
+            }
         }
 
         if(this.intermediateFn)
@@ -49,16 +52,23 @@ export class Workflow
         this.data.push(data);
 
         if(this.counter === 0 && this.doneFn)
-            this.doneFn(this.data);
+        {
+            this.started = false;
+            process.nextTick(() => this.doneFn(this.data));
+        }
         
         if(data && this.firstFn)
         {
             this.counter = -1;
-            this.firstFn(data);
+            this.started = false;
+            process.nextTick(() => this.firstFn(data));
         }
 
         if(this.counter === 0 && this.notFound)
-            this.notFound();
+        {
+            this.started = false;
+            process.nextTick(() => this.notFound());
+        }
     }
 
     each<T>(subjects : T[], fn : (subject : T, done : (error ?: any, data ?: any) => void) => void)
@@ -73,8 +83,13 @@ export class Workflow
         this.counter = Object.keys(object).length;
         process.nextTick(() =>
         {
+            this.started = true;
             for(const name in object)
-                fn(name, object[name], (e, d) => this._done({ [name]: object[name] }, e, d));
+                process.nextTick(() => {
+                    if(!this.started)
+                        return;
+                    fn(name, object[name], (e, d) => this._done({ [name]: object[name] }, e, d));
+                });
         })
         return this;
     }
