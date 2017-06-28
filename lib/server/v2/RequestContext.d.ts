@@ -1,5 +1,4 @@
 /// <reference types="node" />
-import { BasicPrivilege } from '../../user/v2/privilege/IPrivilegeManager';
 import { XMLElement } from '../../helper/XML';
 import { WebDAVServer } from './webDAVServer/WebDAVServer';
 import { FileSystem } from '../../manager/v2/fileSystem/FileSystem';
@@ -52,10 +51,6 @@ export declare class RequestContext {
     noBodyExpected(callback: () => void): void;
     checkIfHeader(resource: Resource, callback: () => void): any;
     checkIfHeader(fs: FileSystem, path: Path, callback: () => void): any;
-    requirePrivilegeEx(privileges: BasicPrivilege | BasicPrivilege[], callback: () => void): any;
-    requirePrivilegeEx(privileges: string | string[], callback: () => void): any;
-    requirePrivilege(privileges: BasicPrivilege | BasicPrivilege[], callback: (error: Error, can: boolean) => void): any;
-    requirePrivilege(privileges: string | string[], callback: (error: Error, can: boolean) => void): any;
     askForAuthentication(checkForUser: boolean, callback: (error: Error) => void): void;
     getResource(callback: ReturnCallback<Resource>): any;
     getResource(path: Path | string, callback: ReturnCallback<Resource>): any;
@@ -63,5 +58,7 @@ export declare class RequestContext {
     prefixUri(): string;
     writeBody(xmlObject: XMLElement | object): void;
     setCode(code: number, message?: string): void;
+    defaultStatusCode(error: Error): number;
+    setCodeFromError(error: Error): boolean;
 }
 export default RequestContext;

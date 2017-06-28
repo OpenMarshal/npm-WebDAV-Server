@@ -1,5 +1,3 @@
-//import { IResource, ReturnCallback, ResourceType } from '../../resource/IResource'
-import { requirePrivilege, BasicPrivilege } from '../../user/v2/privilege/IPrivilegeManager'
 import { EventsName, DetailsType } from './webDAVServer/Events'
 import { XML, XMLElement } from '../../helper/XML'
 import { parseIfHeader } from '../../helper/v2/IfParser'
@@ -255,38 +253,6 @@ export class RequestContext
         });
     }
 
-    requirePrivilegeEx(privileges : BasicPrivilege | BasicPrivilege[], callback : () => void)
-    requirePrivilegeEx(privileges : string | string[], callback : () => void)
-    requirePrivilegeEx(privileges : BasicPrivilege | BasicPrivilege[] | BasicPrivilege | BasicPrivilege[], callback : () => void)
-    {/*
-        requirePrivilege(privileges, this, resource, (e, can) => {
-            if(e)
-            {
-                this.setCode(HTTPCodes.InternalServerError);
-                this.exit();
-                return;
-            }
-
-            if(!can)
-            {
-                this.setCode(HTTPCodes.Unauthorized);
-                this.exit();
-                return;
-            }
-            
-            callback();
-        });*/
-        callback();
-    }
-
-    requirePrivilege(privileges : BasicPrivilege | BasicPrivilege[], callback : (error : Error, can : boolean) => void)
-    requirePrivilege(privileges : string | string[], callback : (error : Error, can : boolean) => void)
-    requirePrivilege(privileges : BasicPrivilege | BasicPrivilege[] | BasicPrivilege | BasicPrivilege[], callback : (error : Error, can : boolean) => void)
-    {
-        //requirePrivilege(privileges, this, resource, callback);
-        callback(null, true);
-    }
-
     askForAuthentication(checkForUser : boolean, callback : (error : Error) => void)
     {
         if(checkForUser && this.user !== null && !this.user.isDefaultUser)
@@ -405,6 +371,39 @@ export class RequestContext
             this.response.statusCode = code;
             this.response.statusMessage = message;
         }
+    }
+    defaultStatusCode(error : Error) : number
+    {
+        let code = null;
+
+        if(error === Errors.ResourceNotFound)
+            code = HTTPCodes.NotFound;
+        else if(error === Errors.Locked)
+            code = HTTPCodes.Locked;
+        else if(error === Errors.BadAuthentication)
+            code = HTTPCodes.Unauthorized;
+        else if(error === Errors.NotEnoughPrivilege)
+            code = HTTPCodes.Unauthorized;
+        else if(error === Errors.ResourceAlreadyExists)
+            code = HTTPCodes.Conflict;
+        else if(error === Errors.IntermediateResourceMissing)
+            code = HTTPCodes.Conflict;
+        else if(error === Errors.WrongParentTypeForCreation)
+            code = HTTPCodes.Conflict;
+        else if(error === Errors.InsufficientStorage)
+            code = HTTPCodes.InsufficientStorage;
+        
+        return code;
+    }
+    setCodeFromError(error : Error) : boolean
+    {
+        const code = this.defaultStatusCode(error);
+
+        if(!code)
+            return false;
+        
+        this.setCode(code);
+        return true;
     }
 }
 export default RequestContext;
