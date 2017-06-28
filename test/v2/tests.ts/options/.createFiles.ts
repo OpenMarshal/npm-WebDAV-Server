@@ -12,7 +12,7 @@ export function starter(server : v2.WebDAVServer, info : TestInfo, isValid : Tes
         if(e) return isValid(false, 'Cannot call "addSubTree(...)".', e);
 
         info.req({
-            url: 'http://localhost:' + info.port + '/' + name,
+            url: 'http://localhost:' + server.options.port + '/' + name,
             method: 'OPTIONS'
         }, v2.HTTPCodes.OK, (req) => {
             if(!req.headers.allow)
