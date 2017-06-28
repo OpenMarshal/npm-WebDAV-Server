@@ -7,6 +7,14 @@ export class ManagerNotFound extends Error
     }
 }
 
+export class SerializerNotFound extends Error
+{
+    constructor(public serializerUID : string)
+    {
+        super('Cannot find the serializer : ' + serializerUID);
+    }
+}
+
 export class HTTPError extends Error
 {
     constructor(public HTTPCode : number, public inheritedError ?: Error)
@@ -38,11 +46,11 @@ export const Errors = {
     NoSizeForAFolder: new Error('Cannot get the size of a folder type resource.'),
     IllegalArguments: new Error('Illegal arguments.'),
     MustIgnore: new Error('There was an error but it must not stop the processing.'),
-    SerializerNotFound: new Error('One serializer could not be found.'),
     Locked: new Error('The resource is locked, operation forbidden.'),
     InsufficientStorage: new Error('Insufficient storage space.'),
     IntermediateResourceMissing: new Error('One or more intermediate resources are missing for this operation.'),
     WrongParentTypeForCreation: new Error('Cannot create a child resource to a non directory resource.'),
+    NotEnoughPrivilege: new Error('Not enough privilege.'),
 
     None: null
 };
