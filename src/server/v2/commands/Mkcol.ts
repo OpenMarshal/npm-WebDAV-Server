@@ -15,7 +15,9 @@ export default class implements HTTPMethod
                         rParent.type((e, parentType) => {
                             if(e)
                             {
-                                if(!ctx.setCodeFromError(e))
+                                if(e === Errors.ResourceNotFound)
+                                    ctx.setCode(HTTPCodes.Conflict);
+                                else if(!ctx.setCodeFromError(e))
                                     ctx.setCode(HTTPCodes.InternalServerError)
                                 return callback();
                             }
