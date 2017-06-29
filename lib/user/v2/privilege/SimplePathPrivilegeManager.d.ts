@@ -6,5 +6,5 @@ export declare class SimplePathPrivilegeManager extends PrivilegeManager {
     constructor();
     setRights(user: IUser, path: string, rights: BasicPrivilege[] | string[]): void;
     getRights(user: IUser, path: string): string[];
-    _can(fuullPath: Path, resource: Resource, privilege: BasicPrivilege | string, callback: PrivilegeManagerCallback): void;
+    _can(fullPath: Path, resource: Resource, privilege: BasicPrivilege | string, callback: PrivilegeManagerCallback): void;
 }

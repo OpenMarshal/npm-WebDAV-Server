@@ -2,6 +2,7 @@ import { BasicPrivilege, PrivilegeManager, PrivilegeManagerCallback } from './Pr
 import { RequestContext } from '../../../server/v2/RequestContext'
 import { Resource, Path } from '../../../manager/v2/export'
 import { IUser } from '../IUser'
+import { Errors } from '../../../Errors'
 
 function standarizePath(path : string)
 {
@@ -40,6 +41,9 @@ export class SimplePathPrivilegeManager extends PrivilegeManager
 
     setRights(user : IUser, path : string, rights : BasicPrivilege[] | string[])
     {
+        if(!user)
+            throw Errors.IllegalArguments;
+        
         if(!this.rights[user.uid])
             this.rights[user.uid] = {};
 
@@ -47,15 +51,34 @@ export class SimplePathPrivilegeManager extends PrivilegeManager
     }
     getRights(user : IUser, path : string) : string[]
     {
-        if(!this.rights[user.uid])
+        if(!user)
             return [];
+        
+        const allRights = this.rights[user.uid];
+        if(!allRights)
+            return [];
+            
+        path = standarizePath(path.toString());
 
-        return this.rights[user.uid][standarizePath(path)];
+        const rights = {};
+        for(const superPath in allRights)
+            if(path.indexOf(superPath) === 0)
+                for(const right of allRights[superPath])
+                    rights[right] = true;
+
+        return Object.keys(rights);
     }
 
-    _can(fuullPath : Path, resource : Resource, privilege : BasicPrivilege | string, callback : PrivilegeManagerCallback) : void
+    _can(fullPath : Path, resource : Resource, privilege : BasicPrivilege | string, callback : PrivilegeManagerCallback) : void
     {
-        const rights = this.getRights(resource.context.user, Path.toString());
-        callback(null, rights && (rights.indexOf('all') !== -1 || rights.some((r) => r === 'all' || r === privilege)));
+        const user = resource.context.user;
+        if(!user)
+            return callback(null, false);
+        if(user.isAdministrator)
+            return callback(null, true);
+        
+        const rights = this.getRights(user, Path.toString());
+        const can = !!rights && rights.some((r) => r === 'all' || r === privilege);
+        callback(null, can);
     }
 }
