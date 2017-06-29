@@ -98,6 +98,13 @@ export class DefaultRequestContextExternalOptions implements RequestContextExter
         host: 'localhost'
     }
     url : string = '/'
+    user : IUser = {
+        isAdministrator: true,
+        isDefaultUser: false,
+        password: null,
+        uid: '-1',
+        username: '_default_super_admin_'
+    }
 }
 
 export class RequestContext
@@ -144,7 +151,9 @@ export class RequestContext
             url: options.url
         } as any, null, null);
 
-        if(!options.user)
+        if(options.user)
+            ctx.user = options.user;
+        else
             server.httpAuthentication.getUser(ctx, (e, user) => {
                 ctx.user = options.user;
                 callback(e, ctx);

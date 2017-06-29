@@ -33,6 +33,7 @@ export declare class DefaultRequestContextExternalOptions implements RequestCont
         [name: string]: string;
     };
     url: string;
+    user: IUser;
 }
 export declare class RequestContext {
     server: WebDAVServer;
