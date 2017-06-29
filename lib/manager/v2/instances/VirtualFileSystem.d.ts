@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { LocalPropertyManager, LastModifiedDateInfo, FileSystemSerializer, OpenWriteStreamInfo, PropertyManagerInfo, OpenReadStreamInfo, IPropertyManager, LocalLockManager, CreationDateInfo, LockManagerInfo, SimpleCallback, ReturnCallback, ResourceType, ILockManager, ReadDirInfo, CreateInfo, DeleteInfo, FileSystem, SizeInfo, MoveInfo, TypeInfo } from '../fileSystem/export';
+import { LocalPropertyManager, LastModifiedDateInfo, FileSystemSerializer, OpenWriteStreamInfo, PropertyManagerInfo, OpenReadStreamInfo, IPropertyManager, LocalLockManager, CreationDateInfo, LockManagerInfo, SimpleCallback, ReturnCallback, ResourceType, ILockManager, ReadDirInfo, CreateInfo, DeleteInfo, FileSystem, SizeInfo, TypeInfo } from '../fileSystem/export';
 import { Readable, Writable } from 'stream';
 import { RequestContext } from '../../../server/v2/RequestContext';
 import { Path } from '../Path';
@@ -40,7 +40,6 @@ export declare class VirtualFileSystem extends FileSystem {
     protected _delete(path: Path, ctx: DeleteInfo, callback: SimpleCallback): void;
     protected _openWriteStream(path: Path, ctx: OpenWriteStreamInfo, callback: ReturnCallback<Writable>): void;
     protected _openReadStream(path: Path, ctx: OpenReadStreamInfo, callback: ReturnCallback<Readable>): void;
-    protected _move(pathFrom: Path, pathTo: Path, ctx: MoveInfo, callback: ReturnCallback<boolean>): void;
     protected _size(path: Path, ctx: SizeInfo, callback: ReturnCallback<number>): void;
     protected _lockManager(path: Path, ctx: LockManagerInfo, callback: ReturnCallback<ILockManager>): void;
     protected _propertyManager(path: Path, ctx: PropertyManagerInfo, callback: ReturnCallback<IPropertyManager>): void;

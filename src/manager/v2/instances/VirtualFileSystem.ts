@@ -158,10 +158,11 @@ export class VirtualFileSystem extends FileSystem
 
     protected _delete(path : Path, ctx : DeleteInfo, callback : SimpleCallback) : void
     {
-        const sPath = path.toString();
+        const sPath = path.toString(true);
         for(const path in this.resources)
             if(path.indexOf(sPath) === 0)
                 delete this.resources[path];
+        delete this.resources[path.toString()];
         
         callback();
     }
@@ -189,24 +190,6 @@ export class VirtualFileSystem extends FileSystem
             return callback(Errors.ResourceNotFound);
         
         callback(null, new VirtualFileReadable(resource.content));
-    }
-
-    protected _move(pathFrom : Path, pathTo : Path, ctx : MoveInfo, callback : ReturnCallback<boolean>) : void
-    {
-        const from = pathFrom.toString();
-        const to = pathTo.toString();
-        const existed = !!this.resources[to];
-        const fromExists = !!this.resources[from];
-
-        if(!fromExists)
-            return callback(Errors.ResourceNotFound);
-        if(existed && !ctx.overwrite)
-            return callback(Errors.ResourceAlreadyExists);
-
-        this.resources[to] = this.resources[from];
-        delete this.resources[from];
-
-        callback(null, existed);
     }
 
     protected _size(path : Path, ctx : SizeInfo, callback : ReturnCallback<number>) : void
