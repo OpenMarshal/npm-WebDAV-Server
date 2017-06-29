@@ -24,7 +24,7 @@ function seekForNS(node : any, parentNS : any) : any
     return ns;
 }
 
-function mutateNodeNS(node : any, parentNS = { _default: 'DAV:' })
+function mutateNodeNS(node : any, parentNS = { })
 {
     if(!node)
         return;
