@@ -2,11 +2,9 @@
 export * from './authentication/HTTPDigestAuthentication'
 export * from './authentication/HTTPBasicAuthentication'
 export * from './authentication/HTTPAuthentication'
-/*
+
 export * from './privilege/SimplePathPrivilegeManager'
-export * from './privilege/SimplePrivilegeManager'
-export * from './privilege/FakePrivilegeManager'
-export * from './privilege/IPrivilegeManager'*/
+export * from './privilege/PrivilegeManager'
 
 export * from './userManager/ITestableUserManager'
 export * from './userManager/IListUserManager'
