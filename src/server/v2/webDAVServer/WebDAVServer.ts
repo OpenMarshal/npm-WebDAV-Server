@@ -13,7 +13,6 @@ import { Path } from '../../../manager/v2/Path'
 import * as persistence from './Persistence'
 import * as beforeAfter from './BeforeAfter'
 import * as startStop from './StartStop'
-//import * as events from './Events'
 import * as https from 'https'
 import * as http from 'http'
 
@@ -239,28 +238,6 @@ export class WebDAVServer
 
 
 
-
-
-
-
-
-
-
-/*
-    getResourceFromPath(arg : MethodCallArgs, path : FSPath | string[] | string, callback : ReturnCallback<IResource>)
-    getResourceFromPath(arg : MethodCallArgs, path : FSPath | string[] | string, rootResource : IResource, callback : ReturnCallback<IResource>)
-    getResourceFromPath(arg : MethodCallArgs, path : FSPath | string[] | string, callbackOrRootResource : ReturnCallback<IResource> | IResource, callback ?: ReturnCallback<IResource>)
-    {
-        resource.getResourceFromPath.bind(this)(arg, path, callbackOrRootResource, callback);
-    }
-
-    addResourceTree(resoureceTree : ResourceTreeNode, callback : (e : Error) => void)
-    addResourceTree(rootResource : IResource, resoureceTree : ResourceTreeNode, callback : (e : Error) => void)
-    addResourceTree(_rootResource : IResource | ResourceTreeNode, _resoureceTree : ResourceTreeNode | (() => void), _callback ?: (e : Error) => void)
-    {
-        resource.addResourceTree.bind(this)(_rootResource, _resoureceTree, _callback);
-    }
-*/
     onUnknownMethod(unknownMethod : HTTPMethod)
     {
         this.unknownMethod = unknownMethod;
@@ -308,38 +285,4 @@ export class WebDAVServer
     {
         this.afterManagers.push(manager);
     }
-
-    // Events
-    /*
-    emit(event : events.EventsName, arg : MethodCallArgs, subjectResource ?: IResource | FSPath, details ?: events.DetailsType)
-    {
-        events.invoke.bind(this)(event, subjectResource, details);
-    }
-
-    on(event : events.EventsName, listener : events.Listener)
-    on(event : events.EventsName, eventName : string, listener : events.Listener)
-    on(event : events.EventsName, eName_listener : string | (events.Listener), listener ?: events.Listener)
-    {
-        if(eName_listener.constructor === Function)
-            events.register.bind(this)(event, eName_listener);
-        else
-            events.registerWithName.bind(this)(event, eName_listener, listener);
-    }
-    clearEvent(event : events.EventsName)
-    {
-        events.clear.bind(this)(event);
-    }
-    clearEvents(event : events.EventsName)
-    {
-        events.clearAll.bind(this)();
-    }
-    removeEvent(event : events.EventsName, listener : events.Listener)
-    removeEvent(event : events.EventsName, eventName : string)
-    removeEvent(event : events.EventsName, eName_listener : string | (events.Listener))
-    {
-        if(eName_listener.constructor === Function)
-            events.remove.bind(this)(event, eName_listener);
-        else
-            events.removeByName.bind(this)(event, eName_listener);
-    }*/
 }

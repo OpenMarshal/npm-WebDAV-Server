@@ -1,4 +1,3 @@
-import { EventsName, DetailsType } from './webDAVServer/Events'
 import { XML, XMLElement } from '../../helper/XML'
 import { parseIfHeader } from '../../helper/v2/IfParser'
 import { WebDAVServer } from './webDAVServer/WebDAVServer'
@@ -277,40 +276,6 @@ export class RequestContext
         this.server.getResource(this, path, callback);
     }
 
-/*
-    findHeader(name : string, defaultValue : string = null) : string
-    {
-        name = name.replace(/(-| )/g, '').toLowerCase();
-
-        for(const k in this.request.headers)
-            if(k.replace(/(-| )/g, '').toLowerCase() === name)
-                return this.request.headers[k];
-        
-        return defaultValue;
-    }
-
-    getResource(callback : ReturnCallback<IResource>)
-    {
-        callback(!this.resource ? Errors.ResourceNotFound : null, this.resource);
-    }*/
-
-/*
-    invokeEvent(event : EventsName, subjectResource ?: IResource, details ?: DetailsType)
-    {
-        this.server.invoke(event, this, subjectResource, details);
-    }
-    wrapEvent(event : EventsName, subjectResource ?: IResource, details ?: DetailsType)
-    {
-        const oldExit = this.exit;
-        this.exit = () => {
-            if(Math.floor(this.response.statusCode / 100) === 2)
-                this.invokeEvent(event, subjectResource, details);
-
-            oldExit();
-        }
-        return this.exit;
-    }
-*/
     fullUri(uri : string = null)
     {
         if(!uri)
@@ -323,18 +288,6 @@ export class RequestContext
     {
         return 'http://' + this.headers.host.replace('/', '');
     }
-/*
-    getResourcePath(resource : IResource, callback : ReturnCallback<string>)
-    {
-        if(!resource.parent)
-            callback(null, '/');
-        else
-            resource.webName((e, name) => process.nextTick(() => {
-                this.getResourcePath(resource.parent, (e, parentName) => {
-                    callback(e, parentName.replace(/\/$/, '') + '/' + name);
-                })
-            }))
-    }*/
 
     writeBody(xmlObject : XMLElement | object)
     {
@@ -372,7 +325,7 @@ export class RequestContext
             this.response.statusMessage = message;
         }
     }
-    defaultStatusCode(error : Error) : number
+    static defaultStatusCode(error : Error) : number
     {
         let code = null;
 
@@ -399,7 +352,7 @@ export class RequestContext
     }
     setCodeFromError(error : Error) : boolean
     {
-        const code = this.defaultStatusCode(error);
+        const code = RequestContext.defaultStatusCode(error);
 
         if(!code)
             return false;

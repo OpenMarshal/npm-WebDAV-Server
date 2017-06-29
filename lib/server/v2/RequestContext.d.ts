@@ -58,7 +58,7 @@ export declare class RequestContext {
     prefixUri(): string;
     writeBody(xmlObject: XMLElement | object): void;
     setCode(code: number, message?: string): void;
-    defaultStatusCode(error: Error): number;
+    static defaultStatusCode(error: Error): number;
     setCodeFromError(error: Error): boolean;
 }
 export default RequestContext;
