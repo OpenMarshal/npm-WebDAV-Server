@@ -10,7 +10,7 @@ import { Workflow } from '../../../helper/Workflow'
 import { Errors } from '../../../Errors'
 import { Lock } from '../../../resource/lock/Lock'
 import { Path } from '../Path'
-import { ResourceType, SimpleCallback, Return2Callback, ReturnCallback, SubTree, OpenWriteStreamMode, ResourcePropertyValue } from './CommonTypes'
+import { ResourceType, SimpleCallback, Return2Callback, ReturnCallback, SubTree, OpenWriteStreamMode, ResourcePropertyValue, PropertyAttributes } from './CommonTypes'
 import { ContextualFileSystem } from './ContextualFileSystem'
 import { ILockManager } from './LockManager'
 import { IPropertyManager, PropertyBag } from './PropertyManager'
@@ -359,7 +359,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                             return;
                         }
 
-                        StandardMethods.standardMove(ctx, pathFrom, this, pathTo, this, callback);
+                        StandardMethods.standardMove(ctx, pathFrom, this, pathTo, this, overwrite, callback);
                     }
 
                     this.fastExistCheckEx(ctx, pathFrom, callback, () => {
@@ -393,26 +393,27 @@ export abstract class FileSystem implements ISerializableFileSystem
                 if(e || isLocked)
                     return callback(e ? e : Errors.Locked);
                 
-                if(this._copy)
+                const go = () =>
                 {
-                    const go = () =>
+                    if(this._copy)
                     {
                         this._copy(pathFrom, pathTo, {
                             context: ctx,
                             depth,
                             overwrite
                         }, callback);
+                        return;
                     }
                     
-                    this.fastExistCheckEx(ctx, pathFrom, callback, () => {
-                        if(!overwrite)
-                            this.fastExistCheckExReverse(ctx, pathTo, callback, go);
-                        else
-                            go();
-                    })
-                }
-                else
                     StandardMethods.standardCopy(ctx, pathFrom, this, pathTo, this, overwrite, depth, callback);
+                }
+                
+                this.fastExistCheckEx(ctx, pathFrom, callback, () => {
+                    if(!overwrite)
+                        this.fastExistCheckExReverse(ctx, pathTo, callback, go);
+                    else
+                        go();
+                })
             })
         })
         })
@@ -641,18 +642,18 @@ export abstract class FileSystem implements ISerializableFileSystem
                 const fs = this;
                 
                 callback(null, {
-                    setProperty(name : string, value : ResourcePropertyValue, callback : SimpleCallback) : void
+                    setProperty(name : string, value : ResourcePropertyValue, attributes : PropertyAttributes, callback : SimpleCallback) : void
                     {
                         issuePrivilegeCheck(fs, ctx, pPath, 'canWriteProperties', callback, () => {
                             buffIsLocked.isLocked((e, isLocked) => {
                                 if(e || isLocked)
                                     return callback(e ? e : Errors.Locked);
                                 
-                                pm.setProperty(name, value, callback);
+                                pm.setProperty(name, value, attributes, callback);
                             })
                         })
                     },
-                    getProperty(name : string, callback : ReturnCallback<ResourcePropertyValue>) : void
+                    getProperty(name : string, callback : Return2Callback<ResourcePropertyValue, PropertyAttributes>) : void
                     {
                         issuePrivilegeCheck(fs, ctx, pPath, 'canReadProperties', callback, () => {
                             pm.getProperty(name, callback);
@@ -848,9 +849,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
         if(tree.constructor === ResourceType)
         {
-            issuePrivilegeCheck(this, ctx, rootPath, 'canWrite', callback, () => {
-                this.create(ctx, rootPath, tree as ResourceType, callback);
-            })
+            this.create(ctx, rootPath, tree as ResourceType, callback);
         }
         else
         {
@@ -859,7 +858,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                     const value = tree[name];
                     const childPath = rootPath.getChildPath(name);
                     if(value.constructor === ResourceType)
-                        this.addSubTree(ctx, childPath, value, cb)
+                        this.addSubTree(ctx, childPath, value as ResourceType, cb)
                     else
                         this.addSubTree(ctx, childPath, ResourceType.Directory, (e) => {
                             if(e)

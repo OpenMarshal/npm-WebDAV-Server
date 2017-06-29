@@ -27,9 +27,16 @@ export function execute(ctx : RequestContext, methodName : string, privilegeName
                     }
                     destination = new Path(destination);
 
-                    if(destination.toString() === ctx.requested.path.toString())
+                    const sDest = destination.toString(true);
+                    const sSource = ctx.requested.path.toString(true);
+                    if(sDest === sSource)
                     {
                         ctx.setCode(HTTPCodes.Forbidden);
+                        return callback();
+                    }
+                    if(sDest.indexOf(sSource) === 0)
+                    {
+                        ctx.setCode(HTTPCodes.BadGateway);
                         return callback();
                     }
 
@@ -37,7 +44,9 @@ export function execute(ctx : RequestContext, methodName : string, privilegeName
                     {
                         if(e)
                         {
-                            if(!ctx.setCodeFromError(e))
+                            if(e === Errors.ResourceAlreadyExists)
+                                ctx.setCode(HTTPCodes.PreconditionFailed);
+                            else if(!ctx.setCodeFromError(e))
                                 ctx.setCode(HTTPCodes.InternalServerError)
                         }
                         else if(overwritten)
@@ -49,7 +58,7 @@ export function execute(ctx : RequestContext, methodName : string, privilegeName
 
                     ctx.server.getFileSystem(destination, (destFs, destRootPath, destSubPath) => {
                         if(destFs !== r.fs)
-                        { // Copy
+                        { // Standard method
                             if(methodName === 'move')
                                 StandardMethods.standardMove(ctx, r.path, r.fs, destSubPath, destFs, overwrite, cb);
                             else

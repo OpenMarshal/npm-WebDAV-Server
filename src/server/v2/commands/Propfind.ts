@@ -168,7 +168,8 @@ export default class implements HTTPMethod
                 resource.type((e, type) => process.nextTick(() => {
                     if(e)
                     {
-                        ctx.setCode(e === Errors.ResourceNotFound ? HTTPCodes.NotFound : HTTPCodes.InternalServerError);
+                        if(!ctx.setCodeFromError(e))
+                            ctx.setCode(HTTPCodes.InternalServerError)
                         return callback();
                     }
 
@@ -496,7 +497,11 @@ export default class implements HTTPMethod
                                         {
                                             const tag = prop.ele(name);
                                             if(reqBody.mustDisplayValue(name))
-                                                tag.add(properties[name]);
+                                            {
+                                                const property = properties[name];
+                                                tag.attributes = property.attributes;
+                                                tag.add(property.value);
+                                            }
                                         }
                                     }
                                     nbOut();
