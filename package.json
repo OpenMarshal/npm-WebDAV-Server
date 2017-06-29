@@ -42,7 +42,7 @@
   "devDependencies": {
     "@types/ftp": "^0.3.29",
     "@types/mime-types": "^2.1.0",
-    "@types/node": "^7.0.18",
+    "@types/node": "^7.0.33",
     "@types/request": "0.0.44",
     "request": "^2.81.0",
     "webdav-fs": "^1.0.0"
