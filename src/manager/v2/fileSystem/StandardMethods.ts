@@ -104,7 +104,10 @@ export abstract class StandardMethods
                                 return callback(e);
 
                             new Workflow()
-                                .each(Object.keys(props), (name, cb) => pmTo.setProperty(name, props[name], cb))
+                                .each(Object.keys(props), (name, cb) => {
+                                    const prop = props[name];
+                                    pmTo.setProperty(name, prop.value, prop.attributes, cb)
+                                })
                                 .error(callback)
                                 .done(() => callback())
                         })
@@ -146,7 +149,7 @@ export abstract class StandardMethods
             {
                 fsFrom.readDir(ctx, subPathFrom, false, (e, files) => {
                     if(e)
-                        callback(e);
+                        return callback(e);
                     
                     const subDepth = depth === -1 ? -1 : Math.max(0, depth - 1);
                     

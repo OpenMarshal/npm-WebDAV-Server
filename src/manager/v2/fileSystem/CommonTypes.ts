@@ -18,6 +18,11 @@ export type Return2Callback<T1, T2> = (error ?: Error, data1 ?: T1, data2 ?: T2)
 
 export type ResourcePropertyValue = string | XMLElement | XMLElement[]
 
+export interface PropertyAttributes
+{
+    [name : string] : string
+}
+
 export class ResourceType
 {
     static File = new ResourceType(true, false)

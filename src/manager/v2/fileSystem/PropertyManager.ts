@@ -8,37 +8,42 @@ import { Workflow } from '../../../helper/Workflow'
 import { Errors } from '../../../Errors'
 import { Lock } from '../../../resource/lock/Lock'
 import { Path } from '../Path'
-import { ReturnCallback, SimpleCallback, ResourcePropertyValue } from './CommonTypes'
+import { ReturnCallback, Return2Callback, SimpleCallback, ResourcePropertyValue, PropertyAttributes } from './CommonTypes'
 import * as mimeTypes from 'mime-types'
 import * as crypto from 'crypto'
 
 export interface PropertyBag
 {
-    [name : string] : ResourcePropertyValue
+    [name : string] : {
+        value : ResourcePropertyValue
+        attributes ?: PropertyAttributes
+    }
 }
+
 export interface IPropertyManager
 {
-    setProperty(name : string, value : ResourcePropertyValue, callback : SimpleCallback) : void
-    getProperty(name : string, callback : ReturnCallback<ResourcePropertyValue>) : void
+    setProperty(name : string, value : ResourcePropertyValue, attributes : PropertyAttributes, callback : SimpleCallback) : void
+    getProperty(name : string, callback : Return2Callback<ResourcePropertyValue, PropertyAttributes>) : void
     removeProperty(name : string, callback : SimpleCallback) : void
     getProperties(callback : ReturnCallback<PropertyBag>, byCopy ?: boolean) : void
 }
 export class LocalPropertyManager implements IPropertyManager
 {
-    properties : {
-        [name : string] : ResourcePropertyValue
-    } = { };
+    properties : PropertyBag = { };
 
-    setProperty(name : string, value : ResourcePropertyValue, callback : SimpleCallback) : void
+    setProperty(name : string, value : ResourcePropertyValue, attributes : PropertyAttributes, callback : SimpleCallback) : void
     {
-        this.properties[name] = value;
+        this.properties[name] = {
+            value,
+            attributes
+        };
         callback(null);
     }
 
-    getProperty(name : string, callback : ReturnCallback<ResourcePropertyValue>) : void
+    getProperty(name : string, callback : Return2Callback<ResourcePropertyValue, PropertyAttributes>) : void
     {
         const property = this.properties[name];
-        callback(property ? null : Errors.PropertyNotFound, property);
+        callback(property ? null : Errors.PropertyNotFound, property.value, property.attributes);
     }
 
     removeProperty(name : string, callback : SimpleCallback) : void
