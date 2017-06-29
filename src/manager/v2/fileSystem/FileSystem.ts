@@ -843,9 +843,10 @@ export abstract class FileSystem implements ISerializableFileSystem
     addSubTree(ctx : RequestContext, rootPath : Path | string, resourceType : ResourceType, callback : SimpleCallback)
     addSubTree(ctx : RequestContext, _rootPath : Path | string | SubTree | ResourceType | SimpleCallback, _tree : SubTree | ResourceType | SimpleCallback, _callback ?: SimpleCallback)
     {
-        const callback = _callback ? _callback : _tree as SimpleCallback;
         const tree = _callback ? _tree as SubTree | ResourceType : _rootPath as SubTree | ResourceType;
         const rootPath = _callback ? new Path(_rootPath as Path | string) : new Path('/');
+        let callback = _callback ? _callback : _tree as SimpleCallback;
+        callback = callback ? callback : () => {};
 
         if(tree.constructor === ResourceType)
         {
