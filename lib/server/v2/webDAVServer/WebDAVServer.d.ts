@@ -14,6 +14,9 @@ import * as startStop from './StartStop';
 import * as https from 'https';
 import * as http from 'http';
 export declare type WebDAVServerStartCallback = (server?: http.Server) => void;
+/**
+ * @deprecated This is a class of the versoin 1 of webdav-server, prefer using the version 2. This class and all v1 classes will be removed in a future release.
+ */
 export declare class WebDAVServer {
     httpAuthentication: HTTPAuthentication;
     privilegeManager: PrivilegeManager;
