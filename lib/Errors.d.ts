@@ -37,6 +37,7 @@ export declare const Errors: {
     IntermediateResourceMissing: Error;
     WrongParentTypeForCreation: Error;
     NotEnoughPrivilege: Error;
+    Forbidden: Error;
     None: any;
 };
 export default Errors;

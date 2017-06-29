@@ -51,6 +51,7 @@ export const Errors = {
     IntermediateResourceMissing: new Error('One or more intermediate resources are missing for this operation.'),
     WrongParentTypeForCreation: new Error('Cannot create a child resource to a non directory resource.'),
     NotEnoughPrivilege: new Error('Not enough privilege.'),
+    Forbidden: new Error('Forbidden operation.'),
 
     None: null
 };

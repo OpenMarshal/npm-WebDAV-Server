@@ -392,6 +392,8 @@ export class RequestContext
             code = HTTPCodes.Conflict;
         else if(error === Errors.InsufficientStorage)
             code = HTTPCodes.InsufficientStorage;
+        else if(error === Errors.Forbidden)
+            code = HTTPCodes.Forbidden;
         
         return code;
     }
