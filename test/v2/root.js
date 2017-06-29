@@ -48,7 +48,7 @@ module.exports = (callback, options) => {
                     const info = {
                         name: undefined,
                         options,
-                        port: options.port + gindex * 10,
+                        port: options.port + gindex * options.nbReservedSocketPerTest,
                         easyError: (e, cb) => (e, arg1, arg2, arg3) => {
                             if(e)
                                 info.isValid(false, e);
@@ -236,5 +236,6 @@ if(!module.parent)
     }, {
         port: 1900,
         showExceptions : true,
-        timeout: 6000
+        timeout: 6000,
+        nbReservedSocketPerTest: 15
     })
