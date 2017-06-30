@@ -34,7 +34,7 @@ export function autoLoad(callback : SimpleCallback)
     if(!options)
         options = { } as IAutoLoad;
     if(!options.treeFilePath)
-        if(!this.options.autoSave.treeFilePath)
+        if(!this.options.autoSave || !this.options.autoSave.treeFilePath)
             return callback(new Error('The "treeFilePath" of the "autoLoad" option is not found.'));
         else
             options.treeFilePath = this.options.autoSave.treeFilePath;
