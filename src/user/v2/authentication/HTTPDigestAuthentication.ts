@@ -31,7 +31,7 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
         }
     }
 
-    getUser(arg : HTTPRequestContext, callback : (error : Error, user : IUser) => void)
+    getUser(ctx : HTTPRequestContext, callback : (error : Error, user : IUser) => void)
     {
         const onError = (error : Error) =>
         {
@@ -40,7 +40,7 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
             })
         }
 
-        let authHeader = arg.headers.find('Authorization')
+        let authHeader = ctx.headers.find('Authorization')
         if(!authHeader)
             return onError(Errors.MissingAuthorisationHeader);
         if(!/^Digest (\s*[a-zA-Z]+\s*=\s*(("(\\"|[^"])+")|([^,\s]+))?\s*(,|$))+$/.test(authHeader))
@@ -73,9 +73,9 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
 
             let ha2;
             if(authProps.qop === 'auth-int')
-                return onError(Errors.WrongHeaderFormat); // ha2 = md5(arg.request.method.toString().toUpperCase() + ':' + arg.requested.uri + ':' + md5(...));
+                return onError(Errors.WrongHeaderFormat); // ha2 = md5(ctx.request.method.toString().toUpperCase() + ':' + ctx.requested.uri + ':' + md5(...));
             else
-                ha2 = md5(arg.request.method.toString().toUpperCase() + ':' + arg.requested.uri);
+                ha2 = md5(ctx.request.method.toString().toUpperCase() + ':' + ctx.requested.uri);
 
             let result;
             if(authProps.qop === 'auth-int' || authProps.qop === 'auth')

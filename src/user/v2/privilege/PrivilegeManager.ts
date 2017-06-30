@@ -1,8 +1,9 @@
 import { Resource, Path } from '../../../manager/v2/export'
 import { Workflow } from '../../../helper/Workflow'
+import { IUser } from '../IUser'
 
 export type PrivilegeManagerCallback = (error : Error, hasAccess : boolean) => void;
-export type PrivilegeManagerMethod = (fullPath : Path, resource : Resource, callback : PrivilegeManagerCallback) => void
+export type PrivilegeManagerMethod = (fullPath : Path, user : IUser, resource : Resource, callback : PrivilegeManagerCallback) => void
 
 export type BasicPrivilege = 
       'canWrite'
@@ -18,10 +19,10 @@ export type BasicPrivilege =
             | 'canReadContentSource'
         | 'canReadProperties'
 
-function checkAll(pm : PrivilegeManager, fns : PrivilegeManagerMethod[], fullPath : Path, resource : Resource, callback : PrivilegeManagerCallback)
+function checkAll(pm : PrivilegeManager, fns : PrivilegeManagerMethod[], fullPath : Path, user : IUser, resource : Resource, callback : PrivilegeManagerCallback)
 {
     new Workflow()
-        .each(fns, (fn, cb) => fn.bind(pm)(fullPath, resource, cb))
+        .each(fns, (fn, cb) => fn.bind(pm)(fullPath, user, resource, cb))
         .error((e) => callback(e, false))
         .done((successes) => callback(null, successes.every((b) => !!b)))
 }
@@ -34,6 +35,10 @@ export class PrivilegeManager
     can(fullPath : Path | string, resource : Resource, privilege : string[], callback : PrivilegeManagerCallback) : void
     can(_fullPath : Path | string, resource : Resource, _privilege : BasicPrivilege | string | BasicPrivilege[] | string[], callback : PrivilegeManagerCallback) : void
     {
+        const user = resource.context.user;
+        if(user && user.isAdministrator)
+            return callback(null, true);
+        
         if(_privilege.constructor !== String)
         {
             new Workflow()
@@ -47,86 +52,86 @@ export class PrivilegeManager
         const privilege = _privilege as string;
 
         if(this._can)
-            return this._can(fullPath, resource, privilege, callback);
+            return this._can(fullPath, user, resource, privilege, callback);
         
         const method : PrivilegeManagerMethod = this[privilege];
         if(method)
-            method.bind(this)(fullPath, resource, callback);
+            method.bind(this)(fullPath, user, resource, callback);
         else
             callback(null, true);
     }
-    protected _can?(fullPath : Path, resource : Resource, privilege : string, callback : PrivilegeManagerCallback) : void
+    protected _can?(fullPath : Path, user : IUser, resource : Resource, privilege : string, callback : PrivilegeManagerCallback) : void
 
-    protected canWrite(fullPath : Path, resource : Resource, callback : PrivilegeManagerCallback) : void
+    protected canWrite(fullPath : Path, user : IUser, resource : Resource, callback : PrivilegeManagerCallback) : void
     {
         checkAll(this, [
             this.canWriteLocks,
             this.canWriteContent,
             this.canWriteProperties
-        ], fullPath, resource, callback);
+        ], fullPath, user, resource, callback);
     }
     
-    protected canWriteLocks(fullPath : Path, resource : Resource, callback : PrivilegeManagerCallback) : void
+    protected canWriteLocks(fullPath : Path, user : IUser, resource : Resource, callback : PrivilegeManagerCallback) : void
     {
         callback(null, true);
     }
     
-    protected canWriteContent(fullPath : Path, resource : Resource, callback : PrivilegeManagerCallback) : void
+    protected canWriteContent(fullPath : Path, user : IUser, resource : Resource, callback : PrivilegeManagerCallback) : void
     {
         checkAll(this, [
             this.canWriteContentSource,
             this.canWriteContentTranslated
-        ], fullPath, resource, callback);
+        ], fullPath, user, resource, callback);
     }
     
-    protected canWriteContentTranslated(fullPath : Path, resource : Resource, callback : PrivilegeManagerCallback) : void
+    protected canWriteContentTranslated(fullPath : Path, user : IUser, resource : Resource, callback : PrivilegeManagerCallback) : void
     {
         callback(null, true);
     }
     
-    protected canWriteContentSource(fullPath : Path, resource : Resource, callback : PrivilegeManagerCallback) : void
+    protected canWriteContentSource(fullPath : Path, user : IUser, resource : Resource, callback : PrivilegeManagerCallback) : void
     {
         callback(null, true);
     }
     
-    protected canWriteProperties(fullPath : Path, resource : Resource, callback : PrivilegeManagerCallback) : void
+    protected canWriteProperties(fullPath : Path, user : IUser, resource : Resource, callback : PrivilegeManagerCallback) : void
     {
         callback(null, true);
     }
     
-    protected canRead(fullPath : Path, resource : Resource, callback : PrivilegeManagerCallback) : void
+    protected canRead(fullPath : Path, user : IUser, resource : Resource, callback : PrivilegeManagerCallback) : void
     {
         checkAll(this, [
             this.canReadLocks,
             this.canReadContent,
             this.canReadProperties
-        ], fullPath, resource, callback);
+        ], fullPath, user, resource, callback);
     }
     
-    protected canReadLocks(fullPath : Path, resource : Resource, callback : PrivilegeManagerCallback) : void
+    protected canReadLocks(fullPath : Path, user : IUser, resource : Resource, callback : PrivilegeManagerCallback) : void
     {
         callback(null, true);
     }
     
-    protected canReadContent(fullPath : Path, resource : Resource, callback : PrivilegeManagerCallback) : void
+    protected canReadContent(fullPath : Path, user : IUser, resource : Resource, callback : PrivilegeManagerCallback) : void
     {
         checkAll(this, [
             this.canReadContentSource,
             this.canReadContentTranslated
-        ], fullPath, resource, callback);
+        ], fullPath, user, resource, callback);
     }
     
-    protected canReadContentTranslated(fullPath : Path, resource : Resource, callback : PrivilegeManagerCallback) : void
+    protected canReadContentTranslated(fullPath : Path, user : IUser, resource : Resource, callback : PrivilegeManagerCallback) : void
     {
         callback(null, true);
     }
     
-    protected canReadContentSource(fullPath : Path, resource : Resource, callback : PrivilegeManagerCallback) : void
+    protected canReadContentSource(fullPath : Path, user : IUser, resource : Resource, callback : PrivilegeManagerCallback) : void
     {
         callback(null, true);
     }
     
-    protected canReadProperties(fullPath : Path, resource : Resource, callback : PrivilegeManagerCallback) : void
+    protected canReadProperties(fullPath : Path, user : IUser, resource : Resource, callback : PrivilegeManagerCallback) : void
     {
         callback(null, true);
     }

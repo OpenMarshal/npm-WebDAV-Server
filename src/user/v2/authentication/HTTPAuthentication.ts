@@ -7,5 +7,5 @@ export interface HTTPAuthentication
     askForAuthentication() : {
         [headeName : string] : string
     }
-    getUser(arg : HTTPRequestContext, callback : (error : Error, user ?: IUser) => void) : void
+    getUser(ctx : HTTPRequestContext, callback : (error : Error, user ?: IUser) => void) : void
 }

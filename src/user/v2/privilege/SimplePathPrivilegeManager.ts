@@ -68,13 +68,10 @@ export class SimplePathPrivilegeManager extends PrivilegeManager
         return Object.keys(rights);
     }
 
-    _can(fullPath : Path, resource : Resource, privilege : BasicPrivilege | string, callback : PrivilegeManagerCallback) : void
+    _can(fullPath : Path, user : IUser, resource : Resource, privilege : BasicPrivilege | string, callback : PrivilegeManagerCallback) : void
     {
-        const user = resource.context.user;
         if(!user)
             return callback(null, false);
-        if(user.isAdministrator)
-            return callback(null, true);
         
         const rights = this.getRights(user, Path.toString());
         const can = !!rights && rights.some((r) => r === 'all' || r === privilege);

@@ -16,7 +16,7 @@ export class HTTPBasicAuthentication implements HTTPAuthentication
         }
     }
 
-    getUser(arg : HTTPRequestContext, callback : (error : Error, user : IUser) => void)
+    getUser(ctx : HTTPRequestContext, callback : (error : Error, user : IUser) => void)
     {
         const onError = (error : Error) =>
         {
@@ -25,7 +25,7 @@ export class HTTPBasicAuthentication implements HTTPAuthentication
             })
         }
 
-        const authHeader = arg.headers.find('Authorization')
+        const authHeader = ctx.headers.find('Authorization')
         if(!authHeader)
         {
             onError(Errors.MissingAuthorisationHeader)

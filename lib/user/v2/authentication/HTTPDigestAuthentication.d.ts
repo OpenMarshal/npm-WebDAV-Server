@@ -11,5 +11,5 @@ export declare class HTTPDigestAuthentication implements HTTPAuthentication {
     askForAuthentication(): {
         'WWW-Authenticate': string;
     };
-    getUser(arg: HTTPRequestContext, callback: (error: Error, user: IUser) => void): void;
+    getUser(ctx: HTTPRequestContext, callback: (error: Error, user: IUser) => void): void;
 }
