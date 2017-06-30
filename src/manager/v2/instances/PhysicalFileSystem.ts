@@ -42,8 +42,8 @@ export class _PhysicalFileSystemResource
         else
         {
             const rs = data as _PhysicalFileSystemResource;
-            this.props = rs.props;
-            this.locks = rs.locks;
+            this.props = new LocalPropertyManager(rs.props);
+            this.locks = new LocalLockManager();
         }
     }
 }
