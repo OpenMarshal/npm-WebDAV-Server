@@ -35,12 +35,10 @@
   },
   "description": "WebDAV Server",
   "dependencies": {
-    "ftp": "^0.3.10",
     "mime-types": "^2.1.15",
     "xml-js": "^1.2.2"
   },
   "devDependencies": {
-    "@types/ftp": "^0.3.29",
     "@types/mime-types": "^2.1.0",
     "@types/node": "^7.0.33",
     "@types/request": "0.0.44",
