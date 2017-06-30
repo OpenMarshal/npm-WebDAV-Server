@@ -325,36 +325,7 @@ export default class implements HTTPMethod
                         })
 
                         displayValue('lockdiscovery', () =>
-                        {/*
-                            ++nb;
-                            lockDiscovery(lockDiscoveryCache, ctx, resource.path, resource, (e, l) => {
-                                if(e)
-                                {
-                                    nbOut(e);
-                                    return;
-                                }
-
-                                for(const path in l)
-                                {
-                                    for(const _lock of l[path])
-                                    {
-                                        const lock : Lock = _lock;
-                                        const activelock = tags.lockdiscovery.el.ele('D:activelock');
-                                        
-                                        activelock.ele('D:lockscope').ele('D:' + lock.lockKind.scope.value.toLowerCase())
-                                        activelock.ele('D:locktype').ele('D:' + lock.lockKind.type.value.toLowerCase())
-                                        activelock.ele('D:depth').add('Infinity')
-                                        if(lock.owner)
-                                            activelock.ele('D:owner').add(lock.owner)
-                                        activelock.ele('D:timeout').add('Second-' + (lock.expirationDate - Date.now()))
-                                        activelock.ele('D:locktoken').ele('D:href', undefined, true).add(lock.uuid)
-                                        activelock.ele('D:lockroot').ele('D:href', undefined, true).add(ctx.fullUri(path).replace(' ', '%20'))
-                                    }
-                                }
-                                
-                                nbOut(null);
-                            })*/
-
+                        {
                             resource.listDeepLocks((e, locks) => {
                                 if(e)
                                     return nbOut(e);
@@ -373,7 +344,7 @@ export default class implements HTTPMethod
                                             activelock.ele('D:owner').add(lock.owner)
                                         activelock.ele('D:timeout').add('Second-' + (lock.expirationDate - Date.now()))
                                         activelock.ele('D:locktoken').ele('D:href', undefined, true).add(lock.uuid)
-                                        activelock.ele('D:lockroot').ele('D:href', undefined, true).add(ctx.fullUri(path).replace(' ', '%20'))
+                                        activelock.ele('D:lockroot').ele('D:href', undefined, true).add(encodeURI(ctx.fullUri(path)))
                                     }
                                 }
                                 
@@ -390,7 +361,7 @@ export default class implements HTTPMethod
                                 if(e)
                                     return nbOut(e);
                                 
-                                const p = ctx.fullUri(path.toString()).replace(' ', '%20');
+                                const p = encodeURI(ctx.fullUri(path.toString()));
                                 const href = p.lastIndexOf('/') !== p.length - 1 && type.isDirectory ? p + '/' : p;
                                 response.ele('D:href', undefined, true).add(href);
                                 response.ele('D:location').ele('D:href', undefined, true).add(p);
@@ -436,7 +407,7 @@ export default class implements HTTPMethod
                             
                             methodDisplayName.bind(resource)((e, name) => process.nextTick(() => {
                                 if(!e)
-                                    tags.displayname.el.add(name ? name : '');
+                                    tags.displayname.el.add(name ? encodeURI(name) : '');
                                 nbOut(e);
                             }))
                         })
