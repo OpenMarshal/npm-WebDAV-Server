@@ -109,8 +109,9 @@ export class DefaultRequestContextExternalOptions implements RequestContextExter
 
 export class RequestContext
 {
-    headers : RequestContextHeaders
+    responseBody : string
     requested : RequestedResource
+    headers : RequestContextHeaders
     user : IUser
 
     protected constructor(
@@ -119,6 +120,7 @@ export class RequestContext
         public response : http.ServerResponse,
         public exit : () => void
     ) {
+        this.responseBody = undefined;
         this.headers = new RequestContextHeaders(request);
         
         const uri = url.parse(request.url).pathname;
@@ -318,6 +320,8 @@ export class RequestContext
                 this.response.write(content);
                 break;
         }
+
+        this.responseBody = content;
     }
     
     setCode(code : number, message ?: string)

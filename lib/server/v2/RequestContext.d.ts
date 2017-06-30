@@ -40,8 +40,9 @@ export declare class RequestContext {
     request: http.IncomingMessage;
     response: http.ServerResponse;
     exit: () => void;
-    headers: RequestContextHeaders;
+    responseBody: string;
     requested: RequestedResource;
+    headers: RequestContextHeaders;
     user: IUser;
     protected constructor(server: WebDAVServer, request: http.IncomingMessage, response: http.ServerResponse, exit: () => void);
     static createExternal(server: WebDAVServer): RequestContext;
