@@ -1,13 +1,16 @@
 # WebDAV Server for npm
 
-[![Join the chat at https://gitter.im/npm-WebDAV-Server/Lobby](https://badges.gitter.im/npm-WebDAV-Server/Lobby.svg)](https://gitter.im/npm-WebDAV-Server/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 [![Build Status](https://travis-ci.org/OpenMarshal/npm-WebDAV-Server.svg?branch=master)](https://travis-ci.org/OpenMarshal/npm-WebDAV-Server)
 [![Code Climate Rate](https://codeclimate.com/github/OpenMarshal/npm-WebDAV-Server/badges/gpa.svg)](https://codeclimate.com/github/OpenMarshal/npm-WebDAV-Server)
 [![bitHound Overall Score](https://www.bithound.io/github/OpenMarshal/npm-WebDAV-Server/badges/score.svg)](https://www.bithound.io/github/OpenMarshal/npm-WebDAV-Server)
 [![Dependencies Status](https://img.shields.io/david/OpenMarshal/npm-WebDAV-Server.svg)](https://david-dm.org/OpenMarshal/npm-WebDAV-Server.svg)
 [![License](https://img.shields.io/npm/l/webdav-server.svg)](http://unlicense.org/)
 [![npm Version](https://img.shields.io/npm/v/webdav-server.svg)](https://www.npmjs.com/package/webdav-server)
+
+[![Join the chat at https://gitter.im/npm-WebDAV-Server/Lobby](https://badges.gitter.im/npm-WebDAV-Server/Lobby.svg)](https://gitter.im/npm-WebDAV-Server/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/npm-WebDAV-Server/help-v2](https://img.shields.io/badge/chat-help%20v2-blue.svg)](https://gitter.im/npm-WebDAV-Server/help-v2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/npm-WebDAV-Server/help-v1](https://img.shields.io/badge/chat-help%20v1-blue.svg)](https://gitter.im/npm-WebDAV-Server/help-v1?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/npm-WebDAV-Server/file-systems](https://img.shields.io/badge/chat-%40webdav--server-blue.svg)](https://gitter.im/npm-WebDAV-Server/file-systems?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # Description
 
@@ -27,10 +30,15 @@ Here are some project related links :
 * [Issues](https://github.com/OpenMarshal/npm-WebDAV-Server/issues)
 * [GitHub](https://github.com/OpenMarshal/npm-WebDAV-Server)
 * [Gitter (chat)](https://gitter.im/npm-WebDAV-Server/Lobby)
+  * [Gitter for version 1](https://gitter.im/npm-WebDAV-Server/help-v1)
+  * [Gitter for version 2](https://gitter.im/npm-WebDAV-Server/help-v2)
+  * [Gitter for @webdav-server/...](https://gitter.im/npm-WebDAV-Server/file-systems)
 
 This project rely upon the [RFC4918](http://www.webdav.org/specs/rfc4918.html).
 
 This is an active project. Do not hesitate to post an issue if you have an idea or if you encounter a problem.
+
+The project comes with two versions : the obselete version 1 and the version 2. Prefer using the version 2. At the moment, for compatibility issues, to access the version you must use the `v2` namespace.
 
 # Install
 
@@ -40,25 +48,62 @@ npm install webdav-server
 
 # Quick usage
 
+Very simple usage :
+
 ```javascript
 // TypeScript
-import * as webdav from 'webdav-server'
+import { v2 as webdav } from 'webdav-server'
 // Javascript
-const webdav = require('webdav-server');
-
-const um = new webdav.SimpleUserManager();
-const user = um.addUser('myUsername', 'myPassword', false);
-
-const pm = new webdav.SimplePathPrivilegeManager();
-pm.setRights(user, '/', [ 'all' ]);
+const webdav = require('webdav-server').v2;
 
 const server = new webdav.WebDAVServer({
-    privilegeManager: pm,
-    userManager: um,
-    isVerbose: true,
     port: 1900
 });
+
 server.start(() => console.log('READY'));
+```
+
+With a user manager :
+
+```javascript
+// TypeScript
+import { v2 as webdav } from 'webdav-server'
+// Javascript
+const webdav = require('webdav-server').v2;
+
+// User manager (tells who are the users)
+const userManager = new webdav.SimpleUserManager();
+const user = userManager.addUser('username', 'password', false);
+
+// Privilege manager (tells which users can access which files/folders)
+const privilegeManager = new webdav.SimplePathPrivilegeManager();
+privilegeManager.setRights(user, '/', [ 'all' ]);
+
+const server = new webdav.WebDAVServer({
+    // HTTP Digest authentication with the realm 'Default realm'
+    httpAuthentication: new webdav.HTTPDigestAuthentication(userManager, 'Default realm'),
+    privilegeManager: privilegeManager,
+    port: 2000, // Load the server on the port 2000 (if not specified, default is 1900)
+    autoSave: { // Will automatically save the changes in the 'data.json' file
+        treeFilePath: 'data.json'
+    }
+});
+
+// Try to load the 'data.json' file
+server.autoLoad((e) => {
+    if(e)
+    { // Couldn't load the 'data.json' (file is not accessible or it has invalid content)
+        server.rootFileSystem().addSubTree(server.createExternalContext(), {
+            'folder1': {                                // /folder1
+                'file1.txt': webdav.ResourceType.File,  // /folder1/file1.txt
+                'file2.txt': webdav.ResourceType.File   // /folder1/file2.txt
+            },
+            'file0.txt': webdav.ResourceType.File       // /file0.txt
+        })
+    }
+    
+    server.start(() => console.log('READY'));
+})
 ```
 
 More examples at the [example page of the wiki](https://github.com/OpenMarshal/npm-WebDAV-Server/wiki/Examples).

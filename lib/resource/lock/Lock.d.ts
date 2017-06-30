@@ -7,9 +7,10 @@ export declare class Lock {
     lockKind: LockKind;
     expirationDate: number;
     owner: LockOwner;
+    depth: number;
     uuid: string;
     userUid: string;
-    constructor(lockKind: LockKind, user: IUser | string, owner: LockOwner);
+    constructor(lockKind: LockKind, user: IUser | string, owner: LockOwner, depth?: number);
     isSame(lock: Lock): boolean;
     expired(): boolean;
     refresh(timeout?: number): void;

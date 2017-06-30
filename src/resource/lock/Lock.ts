@@ -42,14 +42,16 @@ export class Lock
     lockKind : LockKind
     expirationDate : number
     owner : LockOwner
+    depth : number
     uuid : string
     userUid : string
 
-    constructor(lockKind : LockKind, user : IUser | string, owner : LockOwner)
+    constructor(lockKind : LockKind, user : IUser | string, owner : LockOwner, depth ?: number)
     {
         this.expirationDate = Date.now() + lockKind.timeout * 1000;
         this.lockKind = lockKind;
         this.owner = owner;
+        this.depth = depth === undefined || depth === null ? -1 : depth;
         this.uuid = Lock.generateUUID(this.expirationDate);
         this.userUid = user ? user.constructor === String ? user as string : (user as IUser).uid : null;
     }

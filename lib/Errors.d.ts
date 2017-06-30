@@ -2,6 +2,10 @@ export declare class ManagerNotFound extends Error {
     managerUID: string;
     constructor(managerUID: string);
 }
+export declare class SerializerNotFound extends Error {
+    serializerUID: string;
+    constructor(serializerUID: string);
+}
 export declare class HTTPError extends Error {
     HTTPCode: number;
     inheritedError: Error;
@@ -10,6 +14,7 @@ export declare class HTTPError extends Error {
 export declare const Errors: {
     BadAuthentication: Error;
     AuenticationPropertyMissing: Error;
+    AuthenticationPropertyMissing: Error;
     WrongHeaderFormat: Error;
     MissingAuthorisationHeader: Error;
     UnrecognizedResource: Error;
@@ -27,6 +32,12 @@ export declare const Errors: {
     NoSizeForAFolder: Error;
     IllegalArguments: Error;
     MustIgnore: Error;
+    Locked: Error;
+    InsufficientStorage: Error;
+    IntermediateResourceMissing: Error;
+    WrongParentTypeForCreation: Error;
+    NotEnoughPrivilege: Error;
+    Forbidden: Error;
     None: any;
 };
 export default Errors;
