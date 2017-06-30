@@ -40,7 +40,7 @@ function createLock(ctx : HTTPRequestContext, data : Buffer, callback)
         const ownerElement = root.find('DAV:owner');
         const owner = ownerElement ? ownerElement.elements : null;
 
-        const lock = new Lock(new LockKind(scope, type, ctx.server.options.lockTimeout), ctx.user, owner, ctx.headers.depth === undefined ? -1 : ctx.headers.depth);
+        const lock = new Lock(new LockKind(scope, type, ctx.server.options.lockTimeout), ctx.user ? ctx.user.uid : undefined, owner, ctx.headers.depth === undefined ? -1 : ctx.headers.depth);
 
         const go = (r : Resource, callback : SimpleCallback) =>
         {

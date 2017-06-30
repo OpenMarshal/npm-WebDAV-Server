@@ -1,7 +1,7 @@
 import { HTTPCodes, HTTPRequestContext, HTTPMethod } from '../WebDAVRequest'
 import { WebDAVServerStartCallback } from './WebDAVServer'
 import { Writable, Readable } from 'stream'
-import { Errors, HTTPError } from '../../../Errors'
+import { Errors } from '../../../Errors'
 import { WebDAVServer } from './WebDAVServer'
 import { autoSave } from './Persistence'
 import { IAutoSave } from '../WebDAVServerOptions'

@@ -52,7 +52,7 @@ export class PhysicalSerializer implements FileSystemSerializer
 {
     uid() : string
     {
-        return 'PhysicalFSSerializer_1.0.0';
+        return 'PhysicalFSSerializer-1.0.0';
     }
 
     serialize(fs : PhysicalFileSystem, callback : ReturnCallback<any>) : void

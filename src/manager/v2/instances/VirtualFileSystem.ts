@@ -112,7 +112,7 @@ export class VirtualSerializer implements FileSystemSerializer
 {
     uid() : string
     {
-        return 'VirtualFSSerializer_1.0.0';
+        return 'VirtualFSSerializer-1.0.0';
     }
 
     serialize(fs : VirtualFileSystem, callback : ReturnCallback<any>) : void
