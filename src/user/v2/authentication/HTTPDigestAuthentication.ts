@@ -1,5 +1,5 @@
 import { HTTPAuthentication } from './HTTPAuthentication'
-import { RequestContext } from '../../../server/v2/RequestContext'
+import { HTTPRequestContext } from '../../../server/v2/RequestContext'
 import { IListUserManager } from '../userManager/IListUserManager'
 import { Errors } from '../../../Errors'
 import { IUser } from '../IUser'
@@ -31,7 +31,7 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
         }
     }
 
-    getUser(arg : RequestContext, callback : (error : Error, user : IUser) => void)
+    getUser(arg : HTTPRequestContext, callback : (error : Error, user : IUser) => void)
     {
         const onError = (error : Error) =>
         {

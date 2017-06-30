@@ -1,6 +1,6 @@
-import { RequestContext } from '../WebDAVRequest';
+import { HTTPRequestContext } from '../WebDAVRequest';
 export interface RequestListener {
-    (ctx: RequestContext, next: () => void): void;
+    (ctx: HTTPRequestContext, next: () => void): void;
 }
-export declare function invokeBeforeRequest(base: RequestContext, callback: any): void;
-export declare function invokeAfterRequest(base: RequestContext, callback: any): void;
+export declare function invokeBeforeRequest(base: HTTPRequestContext, callback: any): void;
+export declare function invokeAfterRequest(base: HTTPRequestContext, callback: any): void;

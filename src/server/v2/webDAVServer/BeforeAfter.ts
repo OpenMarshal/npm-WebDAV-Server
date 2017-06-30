@@ -1,11 +1,11 @@
-import { RequestContext, HTTPMethod } from '../WebDAVRequest'
+import { HTTPRequestContext, HTTPMethod } from '../WebDAVRequest'
 
 export interface RequestListener
 {
-    (ctx : RequestContext, next : () => void) : void
+    (ctx : HTTPRequestContext, next : () => void) : void
 }
 
-function invokeBARequest(collection : RequestListener[], base : RequestContext, callback)
+function invokeBARequest(collection : RequestListener[], base : HTTPRequestContext, callback)
 {
     function callCallback()
     {
@@ -33,11 +33,11 @@ function invokeBARequest(collection : RequestListener[], base : RequestContext, 
     next();
 }
 
-export function invokeBeforeRequest(base : RequestContext, callback)
+export function invokeBeforeRequest(base : HTTPRequestContext, callback)
 {
     invokeBARequest(this.beforeManagers, base, callback);
 }
-export function invokeAfterRequest(base : RequestContext, callback)
+export function invokeAfterRequest(base : HTTPRequestContext, callback)
 {
     invokeBARequest(this.afterManagers, base, callback);
 }

@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { HTTPMethod, RequestContext } from '../WebDAVRequest';
+import { HTTPMethod, HTTPRequestContext } from '../WebDAVRequest';
 export default class  implements HTTPMethod {
-    unchunked(ctx: RequestContext, data: Buffer, callback: () => void): void;
+    unchunked(ctx: HTTPRequestContext, data: Buffer, callback: () => void): void;
 }

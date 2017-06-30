@@ -1,4 +1,4 @@
-import { HTTPCodes, HTTPMethod, RequestContext } from '../WebDAVRequest'
+import { HTTPCodes, HTTPMethod, HTTPRequestContext } from '../WebDAVRequest'
 import { ResourceType, OpenWriteStreamMode } from '../../../manager/v2/fileSystem/CommonTypes'
 import { Errors, HTTPError } from '../../../Errors'
 import { Readable } from 'stream'
@@ -6,12 +6,12 @@ import * as path from 'path'
 
 export default class implements HTTPMethod
 {
-    isValidFor(type : ResourceType)
+    isValidFor(ctx : HTTPRequestContext, type : ResourceType)
     {
         return !type || type.isFile;
     }
 
-    chunked(ctx : RequestContext, inputStream : Readable, callback : () => void)
+    chunked(ctx : HTTPRequestContext, inputStream : Readable, callback : () => void)
     {
         const targetSource = ctx.headers.isSource;
 

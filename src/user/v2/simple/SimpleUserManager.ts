@@ -1,5 +1,5 @@
-import { IListUserManager } from '../userManager/IListUserManager'
 import { ITestableUserManager } from '../userManager/ITestableUserManager'
+import { IListUserManager } from '../userManager/IListUserManager'
 import { SimpleUser } from './SimpleUser'
 import { Errors } from '../../../Errors'
 import { IUser } from '../IUser'

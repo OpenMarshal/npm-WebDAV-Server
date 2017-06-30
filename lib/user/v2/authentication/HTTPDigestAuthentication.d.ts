@@ -1,5 +1,5 @@
 import { HTTPAuthentication } from './HTTPAuthentication';
-import { RequestContext } from '../../../server/v2/RequestContext';
+import { HTTPRequestContext } from '../../../server/v2/RequestContext';
 import { IListUserManager } from '../userManager/IListUserManager';
 import { IUser } from '../IUser';
 export declare class HTTPDigestAuthentication implements HTTPAuthentication {
@@ -11,5 +11,5 @@ export declare class HTTPDigestAuthentication implements HTTPAuthentication {
     askForAuthentication(): {
         'WWW-Authenticate': string;
     };
-    getUser(arg: RequestContext, callback: (error: Error, user: IUser) => void): void;
+    getUser(arg: HTTPRequestContext, callback: (error: Error, user: IUser) => void): void;
 }

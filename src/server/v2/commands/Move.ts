@@ -1,10 +1,10 @@
-import { HTTPCodes, HTTPMethod, RequestContext } from '../WebDAVRequest'
+import { HTTPCodes, HTTPMethod, HTTPRequestContext } from '../WebDAVRequest'
 import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
 import { StandardMethods } from '../../../manager/v2/fileSystem/StandardMethods'
 import { Path } from '../../../manager/v2/Path'
 import { Errors } from '../../../Errors'
 
-export function execute(ctx : RequestContext, methodName : string, privilegeName : string, callback : () => void)
+export function execute(ctx : HTTPRequestContext, methodName : string, privilegeName : string, callback : () => void)
 {
     ctx.noBodyExpected(() => {
         ctx.getResource((e, r) => {
@@ -77,12 +77,12 @@ export function execute(ctx : RequestContext, methodName : string, privilegeName
 
 export default class implements HTTPMethod
 {
-    unchunked(ctx : RequestContext, data : Buffer, callback : () => void) : void
+    unchunked(ctx : HTTPRequestContext, data : Buffer, callback : () => void) : void
     {
         execute(ctx, 'move', 'canMove', callback);
     }
 
-    isValidFor(type : ResourceType)
+    isValidFor(ctx : HTTPRequestContext, type : ResourceType)
     {
         return !!type;
     }

@@ -1,4 +1,4 @@
-import { HTTPCodes, HTTPMethod, RequestContext } from '../WebDAVRequest'
+import { HTTPCodes, HTTPMethod, HTTPRequestContext } from '../WebDAVRequest'
 import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
 import { STATUS_CODES } from 'http'
 import { LockScope } from '../../../resource/lock/LockScope'
@@ -10,7 +10,7 @@ import { XML } from '../../../helper/XML'
 
 export default class implements HTTPMethod
 {
-    unchunked(ctx : RequestContext, data : Buffer, callback : () => void) : void
+    unchunked(ctx : HTTPRequestContext, data : Buffer, callback : () => void) : void
     {
         if(!ctx.user)
         {
@@ -94,7 +94,7 @@ export default class implements HTTPMethod
         })
     }
 
-    isValidFor(type : ResourceType)
+    isValidFor(ctx : HTTPRequestContext, type : ResourceType)
     {
         return !!type;
     }

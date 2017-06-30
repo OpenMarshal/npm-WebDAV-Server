@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { WebDAVServerOptions } from '../WebDAVServerOptions';
-import { RequestContext, RequestContextExternalOptions } from '../RequestContext';
+import { ExternalRequestContext, RequestContextExternalOptions, RequestContext } from '../RequestContext';
 import { HTTPMethod } from '../WebDAVRequest';
 import { HTTPAuthentication } from '../../../user/v2/authentication/HTTPAuthentication';
 import { PrivilegeManager } from '../../../user/v2/privilege/PrivilegeManager';
@@ -32,12 +32,13 @@ export declare class WebDAVServer {
         [path: string]: FileSystem;
     };
     constructor(options?: WebDAVServerOptions);
-    createExternalContext(): RequestContext;
-    createExternalContext(callback: (error: Error, ctx: RequestContext) => void): RequestContext;
-    createExternalContext(options: RequestContextExternalOptions): RequestContext;
-    createExternalContext(options: RequestContextExternalOptions, callback: (error: Error, ctx: RequestContext) => void): RequestContext;
+    createExternalContext(): ExternalRequestContext;
+    createExternalContext(callback: (error: Error, ctx: ExternalRequestContext) => void): ExternalRequestContext;
+    createExternalContext(options: RequestContextExternalOptions): ExternalRequestContext;
+    createExternalContext(options: RequestContextExternalOptions, callback: (error: Error, ctx: ExternalRequestContext) => void): ExternalRequestContext;
     rootFileSystem(): FileSystem;
     getResource(ctx: RequestContext, path: Path | string, callback: ReturnCallback<Resource>): void;
+    getResourceSync(ctx: RequestContext, path: Path | string): Resource;
     setFileSystem(path: Path | string, fs: FileSystem, callback: (successed?: boolean) => void): void;
     setFileSystem(path: Path | string, fs: FileSystem, override: boolean, callback: (successed?: boolean) => void): void;
     setFileSystemSync(path: Path | string, fs: FileSystem, override?: boolean): boolean;

@@ -18,7 +18,7 @@ export class RequestContextHeaders
     depth : number
     host : string
 
-    constructor(protected request : http.IncomingMessage)
+    constructor(protected headers : { [name : string] : string })
     {
         this.isSource = this.find('source', 'F').toUpperCase() === 'T' || this.find('translate', 'T').toUpperCase() === 'F';
         this.host = this.find('Host', 'localhost');
@@ -50,10 +50,10 @@ export class RequestContextHeaders
     {
         name = name.replace(/(-| )/g, '').toLowerCase();
 
-        for(const k in this.request.headers)
+        for(const k in this.headers)
             if(k.replace(/(-| )/g, '').toLowerCase() === name)
             {
-                const value = this.request.headers[k].trim();
+                const value = this.headers[k].trim();
                 if(value.length !== 0)
                     return value;
             }
@@ -109,37 +109,65 @@ export class DefaultRequestContextExternalOptions implements RequestContextExter
 
 export class RequestContext
 {
-    responseBody : string
     requested : RequestedResource
     headers : RequestContextHeaders
+    server : WebDAVServer
     user : IUser
-
-    protected constructor(
-        public server : WebDAVServer,
-        public request : http.IncomingMessage,
-        public response : http.ServerResponse,
-        public exit : () => void
-    ) {
-        this.responseBody = undefined;
-        this.headers = new RequestContextHeaders(request);
+    
+    protected constructor(server : WebDAVServer, uri : string, headers : { [name : string] : string })
+    {
+        this.headers = new RequestContextHeaders(headers);
+        this.server = server;
         
-        const uri = url.parse(request.url).pathname;
+        uri = url.parse(uri).pathname;
         this.requested = {
             uri,
             path: new Path(uri)
         };
     }
+    
+    getResource(callback : ReturnCallback<Resource>)
+    getResource(path : Path | string, callback : ReturnCallback<Resource>)
+    getResource(_path : Path | string | ReturnCallback<Resource>, _callback ?: ReturnCallback<Resource>)
+    {
+        const path = _callback ? new Path(_path as Path | string) : this.requested.path;
+        const callback = _callback ? _callback : _path as ReturnCallback<Resource>;
 
-    static createExternal(server : WebDAVServer) : RequestContext
-    static createExternal(server : WebDAVServer, callback : (error : Error, ctx : RequestContext) => void) : RequestContext
-    static createExternal(server : WebDAVServer, options : RequestContextExternalOptions) : RequestContext
-    static createExternal(server : WebDAVServer, options : RequestContextExternalOptions, callback : (error : Error, ctx : RequestContext) => void) : RequestContext
-    static createExternal(server : WebDAVServer, _options ?: RequestContextExternalOptions | ((error : Error, ctx : RequestContext) => void), _callback ?: (error : Error, ctx : RequestContext) => void) : RequestContext
+        this.server.getResource(this, path, callback);
+    }
+
+    getResourceSync(path ?: Path | string) : Resource
+    {
+        path = path ? path : this.requested.path;
+        return this.server.getResourceSync(this, path);
+    }
+
+    fullUri(uri : string = null)
+    {
+        if(!uri)
+            uri = this.requested.uri;
+        
+        return (this.prefixUri() + uri).replace(/([^:])\/\//g, '$1/');
+    }
+
+    prefixUri()
+    {
+        return 'http://' + this.headers.host.replace('/', '');
+    }
+}
+
+export class ExternalRequestContext extends RequestContext
+{
+    static create(server : WebDAVServer) : ExternalRequestContext
+    static create(server : WebDAVServer, callback : (error : Error, ctx : ExternalRequestContext) => void) : ExternalRequestContext
+    static create(server : WebDAVServer, options : RequestContextExternalOptions) : ExternalRequestContext
+    static create(server : WebDAVServer, options : RequestContextExternalOptions, callback : (error : Error, ctx : ExternalRequestContext) => void) : ExternalRequestContext
+    static create(server : WebDAVServer, _options ?: RequestContextExternalOptions | ((error : Error, ctx : ExternalRequestContext) => void), _callback ?: (error : Error, ctx : ExternalRequestContext) => void) : ExternalRequestContext
     {
         const defaultValues = new DefaultRequestContextExternalOptions();
 
         const options = _options && _options.constructor !== Function ? _options as RequestContextExternalOptions : defaultValues;
-        const callback = _callback ? _callback : _options && _options.constructor === Function ? _options as ((error : Error, ctx : RequestContext) => void) : () => {};
+        const callback = _callback ? _callback : _options && _options.constructor === Function ? _options as ((error : Error, ctx : ExternalRequestContext) => void) : () => {};
 
         if(defaultValues !== options)
         {
@@ -148,25 +176,42 @@ export class RequestContext
                     options[name] = defaultValues[name];
         }
 
-        const ctx = new RequestContext(server, {
-            headers: options.headers,
-            url: options.url
-        } as any, null, null);
+        const ctx = new ExternalRequestContext(server, options.url, options.headers);
 
         if(options.user)
+        {
             ctx.user = options.user;
-        else
-            server.httpAuthentication.getUser(ctx, (e, user) => {
-                ctx.user = options.user;
-                callback(e, ctx);
-            })
+            process.nextTick(() => callback(null, ctx));
+        }
 
         return ctx;
     }
+}
 
-    static create(server : WebDAVServer, request : http.IncomingMessage, response : http.ServerResponse, callback : (error : Error, ctx : RequestContext) => void)
+export class HTTPRequestContext extends RequestContext
+{
+    responseBody : string
+    request : http.IncomingMessage
+    response : http.ServerResponse
+    exit : () => void
+
+    protected constructor(
+        server : WebDAVServer,
+        request : http.IncomingMessage,
+        response : http.ServerResponse,
+        exit : () => void
+    ) {
+        super(server, request.url, request.headers);
+
+        this.responseBody = undefined;
+        this.response = response;
+        this.request = request;
+        this.exit = exit;
+    }
+
+    static create(server : WebDAVServer, request : http.IncomingMessage, response : http.ServerResponse, callback : (error : Error, ctx : HTTPRequestContext) => void)
     {
-        const ctx = new RequestContext(server, request, response, null);
+        const ctx = new HTTPRequestContext(server, request, response, null);
         response.setHeader('DAV', '1,2');
         response.setHeader('Server', server.options.serverName + '/' + server.options.version);
 
@@ -205,7 +250,7 @@ export class RequestContext
             for(const name in server.methods)
             {
                 const method = server.methods[name];
-                if(!method.isValidFor || method.isValidFor(type))
+                if(!method.isValidFor || method.isValidFor(ctx, type))
                     allowedMethods.push(name.toUpperCase());
             }
 
@@ -277,29 +322,6 @@ export class RequestContext
         callback(null);
     }
 
-    getResource(callback : ReturnCallback<Resource>)
-    getResource(path : Path | string, callback : ReturnCallback<Resource>)
-    getResource(_path : Path | string | ReturnCallback<Resource>, _callback ?: ReturnCallback<Resource>)
-    {
-        const path = _callback ? new Path(_path as Path | string) : this.requested.path;
-        const callback = _callback ? _callback : _path as ReturnCallback<Resource>;
-
-        this.server.getResource(this, path, callback);
-    }
-
-    fullUri(uri : string = null)
-    {
-        if(!uri)
-            uri = this.requested.uri;
-        
-        return (this.prefixUri() + uri).replace(/([^:])\/\//g, '$1/');
-    }
-
-    prefixUri()
-    {
-        return 'http://' + this.headers.host.replace('/', '');
-    }
-
     writeBody(xmlObject : XMLElement | object)
     {
         let content = XML.toXML(xmlObject);
@@ -365,7 +387,7 @@ export class RequestContext
     }
     setCodeFromError(error : Error) : boolean
     {
-        const code = RequestContext.defaultStatusCode(error);
+        const code = HTTPRequestContext.defaultStatusCode(error);
 
         if(!code)
             return false;
@@ -374,4 +396,3 @@ export class RequestContext
         return true;
     }
 }
-export default RequestContext;

@@ -1,10 +1,10 @@
-import { HTTPCodes, HTTPMethod, RequestContext } from '../WebDAVRequest'
+import { HTTPCodes, HTTPMethod, HTTPRequestContext } from '../WebDAVRequest'
 import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
 import { Errors } from '../../../Errors'
 
 export default class implements HTTPMethod
 {
-    unchunked(ctx : RequestContext, data : Buffer, callback : () => void) : void
+    unchunked(ctx : HTTPRequestContext, data : Buffer, callback : () => void) : void
     {
         ctx.noBodyExpected(() => {
             ctx.getResource((e, r) => {
@@ -56,7 +56,7 @@ export default class implements HTTPMethod
         })
     }
     
-    isValidFor(type : ResourceType)
+    isValidFor(ctx : HTTPRequestContext, type : ResourceType)
     {
         return type && type.isFile;
     }

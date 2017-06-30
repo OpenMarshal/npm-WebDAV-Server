@@ -1,5 +1,5 @@
-import { IListUserManager } from '../userManager/IListUserManager';
 import { ITestableUserManager } from '../userManager/ITestableUserManager';
+import { IListUserManager } from '../userManager/IListUserManager';
 import { IUser } from '../IUser';
 export declare class SimpleUserManager implements ITestableUserManager, IListUserManager {
     protected users: any;

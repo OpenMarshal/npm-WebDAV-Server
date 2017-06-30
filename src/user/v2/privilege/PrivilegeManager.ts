@@ -1,8 +1,4 @@
-import { RequestContext } from '../../../server/v2/RequestContext'
 import { Resource, Path } from '../../../manager/v2/export'
-import { Lock } from '../../../resource/lock/Lock'
-import { LockType } from '../../../resource/lock/LockType'
-import { LockScope } from '../../../resource/lock/LockScope'
 import { Workflow } from '../../../helper/Workflow'
 
 export type PrivilegeManagerCallback = (error : Error, hasAccess : boolean) => void;

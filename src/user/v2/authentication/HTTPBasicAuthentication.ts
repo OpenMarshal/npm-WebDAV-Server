@@ -1,6 +1,6 @@
-import { HTTPAuthentication } from './HTTPAuthentication'
-import { RequestContext } from '../../../server/v2/RequestContext'
 import { ITestableUserManager } from '../userManager/ITestableUserManager'
+import { HTTPAuthentication } from './HTTPAuthentication'
+import { HTTPRequestContext } from '../../../server/v2/RequestContext'
 import { Errors } from '../../../Errors'
 import { IUser } from '../IUser'
 
@@ -16,7 +16,7 @@ export class HTTPBasicAuthentication implements HTTPAuthentication
         }
     }
 
-    getUser(arg : RequestContext, callback : (error : Error, user : IUser) => void)
+    getUser(arg : HTTPRequestContext, callback : (error : Error, user : IUser) => void)
     {
         const onError = (error : Error) =>
         {

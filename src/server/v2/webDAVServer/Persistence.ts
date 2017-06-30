@@ -1,10 +1,9 @@
-//import { RootFSManager, VirtualFSManager, PhysicalFSManager } from '../../manager/export'
 import { FileSystem } from '../../../manager/v2/fileSystem/FileSystem'
 import { SimpleCallback } from '../../../manager/v2/fileSystem/CommonTypes'
 import { FileSystemSerializer, serialize, unserialize, SerializedData } from '../../../manager/v2/fileSystem/Serialization'
 import { VirtualSerializer } from '../../../manager/v2/instances/VirtualFileSystem'
 import { PhysicalSerializer } from '../../../manager/v2/instances/PhysicalFileSystem'
-import { RequestContext } from '../RequestContext'
+import { HTTPRequestContext } from '../RequestContext'
 import { IAutoSave, IAutoLoad } from '../WebDAVServerOptions'
 import { Readable } from 'stream'
 import * as zlib from 'zlib'
@@ -83,7 +82,7 @@ export function autoSave(options : IAutoSave)
 
     let saving = false;
     let saveRequested = false;
-    this.afterRequest((ctx : RequestContext, next) => {
+    this.afterRequest((ctx : HTTPRequestContext, next) => {
         switch(ctx.request.method.toUpperCase())
         {
             case 'PROPPATCH':

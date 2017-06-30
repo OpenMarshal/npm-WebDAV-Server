@@ -1,4 +1,4 @@
-import { HTTPCodes, HTTPMethod, RequestContext } from '../WebDAVRequest'
+import { HTTPCodes, HTTPMethod, HTTPRequestContext } from '../WebDAVRequest'
 import { ResourceType, SimpleCallback } from '../../../manager/v2/fileSystem/CommonTypes'
 import { Resource } from '../../../manager/v2/fileSystem/Resource'
 import { extractOneToken } from '../../../helper/IfParser'
@@ -10,7 +10,7 @@ import { Lock } from '../../../resource/lock/Lock'
 import { XML } from '../../../helper/XML'
 import * as path from 'path'
 
-function createResponse(ctx : RequestContext, lock : Lock)
+function createResponse(ctx : HTTPRequestContext, lock : Lock)
 {
     const prop = XML.createElement('D:prop', {
         'xmlns:D': 'DAV:'
@@ -28,7 +28,7 @@ function createResponse(ctx : RequestContext, lock : Lock)
     return prop;
 }
 
-function createLock(ctx : RequestContext, data : Buffer, callback)
+function createLock(ctx : HTTPRequestContext, data : Buffer, callback)
 {
     try
     {
@@ -111,7 +111,7 @@ function createLock(ctx : RequestContext, data : Buffer, callback)
     }
 }
 
-function refreshLock(ctx : RequestContext, lockUUID : string, callback)
+function refreshLock(ctx : HTTPRequestContext, lockUUID : string, callback)
 {
     ctx.getResource((e, r) => {
         //ctx.requirePrivilege([ 'canSetLock', 'canGetLock' ], r, () => {
@@ -143,7 +143,7 @@ function refreshLock(ctx : RequestContext, lockUUID : string, callback)
 
 export default class implements HTTPMethod
 {
-    unchunked(ctx : RequestContext, data : Buffer, callback : () => void) : void
+    unchunked(ctx : HTTPRequestContext, data : Buffer, callback : () => void) : void
     {
         if(!ctx.user)
         {

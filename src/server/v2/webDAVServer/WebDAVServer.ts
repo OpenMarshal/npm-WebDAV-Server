@@ -1,5 +1,5 @@
 import { WebDAVServerOptions, setDefaultServerOptions } from '../WebDAVServerOptions'
-import { RequestContext, RequestContextExternalOptions } from '../RequestContext'
+import { HTTPRequestContext, ExternalRequestContext, RequestContextExternalOptions, RequestContext } from '../RequestContext'
 import { HTTPCodes, HTTPMethod } from '../WebDAVRequest'
 import { HTTPAuthentication } from '../../../user/v2/authentication/HTTPAuthentication'
 import { PrivilegeManager } from '../../../user/v2/privilege/PrivilegeManager'
@@ -59,13 +59,13 @@ export class WebDAVServer
                 this.method(k, new commands[k]());
     }
 
-    createExternalContext() : RequestContext
-    createExternalContext(callback : (error : Error, ctx : RequestContext) => void) : RequestContext
-    createExternalContext(options : RequestContextExternalOptions) : RequestContext
-    createExternalContext(options : RequestContextExternalOptions, callback : (error : Error, ctx : RequestContext) => void) : RequestContext
-    createExternalContext(_options ?: RequestContextExternalOptions | ((error : Error, ctx : RequestContext) => void), _callback ?: (error : Error, ctx : RequestContext) => void) : RequestContext
+    createExternalContext() : ExternalRequestContext
+    createExternalContext(callback : (error : Error, ctx : ExternalRequestContext) => void) : ExternalRequestContext
+    createExternalContext(options : RequestContextExternalOptions) : ExternalRequestContext
+    createExternalContext(options : RequestContextExternalOptions, callback : (error : Error, ctx : ExternalRequestContext) => void) : ExternalRequestContext
+    createExternalContext(_options ?: RequestContextExternalOptions | ((error : Error, ctx : ExternalRequestContext) => void), _callback ?: (error : Error, ctx : ExternalRequestContext) => void) : ExternalRequestContext
     {
-        return RequestContext.createExternal(this, _options, _callback);
+        return ExternalRequestContext.create(this, _options, _callback);
     }
 
     rootFileSystem() : FileSystem
@@ -80,6 +80,13 @@ export class WebDAVServer
         this.getFileSystem(path, (fs, _, subPath) => {
             callback(null, fs.resource(ctx, subPath));
         })
+    }
+    getResourceSync(ctx : RequestContext, path : Path | string) : Resource
+    {
+        path = new Path(path);
+
+        const info = this.getFileSystemSync(path);
+        return info.fs.resource(ctx, info.subPath);
     }
 
     setFileSystem(path : Path | string, fs : FileSystem, callback : (successed ?: boolean) => void) : void

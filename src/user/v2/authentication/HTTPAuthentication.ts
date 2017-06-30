@@ -1,4 +1,4 @@
-import { RequestContext } from '../../../server/v2/RequestContext'
+import { HTTPRequestContext } from '../../../server/v2/RequestContext'
 import { IUserManager } from '../IUserManager'
 import { IUser } from '../IUser'
 
@@ -7,5 +7,5 @@ export interface HTTPAuthentication
     askForAuthentication() : {
         [headeName : string] : string
     }
-    getUser(arg : RequestContext, callback : (error : Error, user ?: IUser) => void) : void
+    getUser(arg : HTTPRequestContext, callback : (error : Error, user ?: IUser) => void) : void
 }

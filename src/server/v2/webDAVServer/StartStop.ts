@@ -1,4 +1,4 @@
-import { HTTPCodes, RequestContext, HTTPMethod } from '../WebDAVRequest'
+import { HTTPCodes, HTTPRequestContext, HTTPMethod } from '../WebDAVRequest'
 import { WebDAVServerStartCallback } from './WebDAVServer'
 import { Writable, Readable } from 'stream'
 import { Errors, HTTPError } from '../../../Errors'
@@ -43,7 +43,7 @@ export function start(port ?: number | WebDAVServerStartCallback, callback ?: We
             if(!method)
                 method = this.unknownMethod;
 
-            RequestContext.create(this, req, res, (e, base) => {
+            HTTPRequestContext.create(this, req, res, (e, base) => {
                 if(e)
                 {
                     if(e === Errors.AuenticationPropertyMissing || e === Errors.MissingAuthorisationHeader || e === Errors.BadAuthentication || e === Errors.WrongHeaderFormat)

@@ -1,6 +1,6 @@
-import { HTTPAuthentication } from './HTTPAuthentication';
-import { RequestContext } from '../../../server/v2/RequestContext';
 import { ITestableUserManager } from '../userManager/ITestableUserManager';
+import { HTTPAuthentication } from './HTTPAuthentication';
+import { HTTPRequestContext } from '../../../server/v2/RequestContext';
 import { IUser } from '../IUser';
 export declare class HTTPBasicAuthentication implements HTTPAuthentication {
     userManager: ITestableUserManager;
@@ -9,5 +9,5 @@ export declare class HTTPBasicAuthentication implements HTTPAuthentication {
     askForAuthentication(): {
         'WWW-Authenticate': string;
     };
-    getUser(arg: RequestContext, callback: (error: Error, user: IUser) => void): void;
+    getUser(arg: HTTPRequestContext, callback: (error: Error, user: IUser) => void): void;
 }

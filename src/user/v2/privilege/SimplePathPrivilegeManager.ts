@@ -1,8 +1,7 @@
 import { BasicPrivilege, PrivilegeManager, PrivilegeManagerCallback } from './PrivilegeManager'
-import { RequestContext } from '../../../server/v2/RequestContext'
 import { Resource, Path } from '../../../manager/v2/export'
-import { IUser } from '../IUser'
 import { Errors } from '../../../Errors'
+import { IUser } from '../IUser'
 
 function standarizePath(path : string)
 {

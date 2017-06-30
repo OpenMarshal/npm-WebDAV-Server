@@ -1,11 +1,11 @@
 /// <reference types="node" />
 import { ResourceType } from '../../manager/v2/fileSystem/CommonTypes';
-import { RequestContext } from './RequestContext';
+import { HTTPRequestContext } from './RequestContext';
 import { Readable } from 'stream';
-export { RequestContext } from './RequestContext';
+export { HTTPRequestContext } from './RequestContext';
 export { HTTPCodes } from '../HTTPCodes';
 export interface HTTPMethod {
-    unchunked?(ctx: RequestContext, data: Buffer, callback: () => void): void;
-    chunked?(ctx: RequestContext, inputStream: Readable, callback: () => void): void;
-    isValidFor?(type?: ResourceType): boolean;
+    unchunked?(ctx: HTTPRequestContext, data: Buffer, callback: () => void): void;
+    chunked?(ctx: HTTPRequestContext, inputStream: Readable, callback: () => void): void;
+    isValidFor?(ctx: HTTPRequestContext, type?: ResourceType): boolean;
 }

@@ -1,4 +1,4 @@
-import { HTTPCodes, RequestContext, HTTPMethod } from '../WebDAVRequest'
+import { HTTPCodes, HTTPRequestContext, HTTPMethod } from '../WebDAVRequest'
 import { XML, XMLElement } from '../../../helper/XML'
 import { Workflow } from '../../../helper/Workflow'
 import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
@@ -34,7 +34,7 @@ function dateISO8601(ticks : number) : string
 }
 
 /*
-function lockDiscovery(lockDiscoveryCache : any, ctx : RequestContext, path : Path, resource : IResource, callback : ReturnCallback<any>)
+function lockDiscovery(lockDiscoveryCache : any, ctx : HTTPRequestContext, path : Path, resource : IResource, callback : ReturnCallback<any>)
 {
     const cached = lockDiscoveryCache[path.toString()];
     if(cached)
@@ -97,7 +97,7 @@ interface PropertyRule
     mustDisplayValue : (propertyName : string) => boolean
 }
 
-function parseRequestBody(ctx : RequestContext, data : Buffer) : PropertyRule
+function parseRequestBody(ctx : HTTPRequestContext, data : Buffer) : PropertyRule
 {
     const allTrue : PropertyRule = {
         leftElements: [],
@@ -153,7 +153,7 @@ function propstatStatus(status : number)
 
 export default class implements HTTPMethod
 {
-    unchunked(ctx : RequestContext, data : Buffer, callback : () => void) : void
+    unchunked(ctx : HTTPRequestContext, data : Buffer, callback : () => void) : void
     {
         ctx.getResource((e, resource) => {
             const lockDiscoveryCache = {};
@@ -494,7 +494,7 @@ export default class implements HTTPMethod
         })
     }
 
-    isValidFor(type : ResourceType)
+    isValidFor(ctx : HTTPRequestContext, type : ResourceType)
     {
         return !!type;
     }
