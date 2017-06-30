@@ -329,7 +329,7 @@ export function method(arg : MethodCallArgs, callback)
                                             activelock.ele('D:owner').add(lock.owner)
                                         activelock.ele('D:timeout').add('Second-' + (lock.expirationDate - Date.now()))
                                         activelock.ele('D:locktoken').ele('D:href', undefined, true).add(lock.uuid)
-                                        activelock.ele('D:lockroot').ele('D:href', undefined, true).add(arg.fullUri(path).replace(' ', '%20'))
+                                        activelock.ele('D:lockroot').ele('D:href', undefined, true).add(encodeURI(arg.fullUri(path)))
                                     }
                                 }
                                 
@@ -344,7 +344,7 @@ export function method(arg : MethodCallArgs, callback)
                                 return;
                             }
                             
-                            const p = arg.fullUri(path).replace(' ', '%20');
+                            const p = encodeURI(arg.fullUri(path));
                             const href = p.lastIndexOf('/') !== p.length - 1 && type.isDirectory ? p + '/' : p;
                             response.ele('D:href', undefined, true).add(href);
                             response.ele('D:location').ele('D:href', undefined, true).add(p);
@@ -390,7 +390,7 @@ export function method(arg : MethodCallArgs, callback)
                         
                         methodDisplayName.bind(resource)((e, name) => process.nextTick(() => {
                             if(!e)
-                                tags.displayname.el.add(name ? name : '');
+                                tags.displayname.el.add(name ? encodeURI(name) : '');
                             nbOut(e);
                         }))
                     })
