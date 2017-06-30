@@ -18,9 +18,6 @@ import * as http from 'http'
 
 export type WebDAVServerStartCallback = (server ?: http.Server) => void;
 
-/**
- * @deprecated This is a class of the versoin 1 of webdav-server, prefer using the version 2. This class and all v1 classes will be removed in a future release.
- */
 export class WebDAVServer
 {
     public httpAuthentication : HTTPAuthentication
