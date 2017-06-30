@@ -19,7 +19,7 @@ export default ((info, isValid) =>
         })
     }
 
-    server.rootFileSystem().addSubTree(v2.RequestContext.createExternal(server), {
+    server.rootFileSystem().addSubTree(v2.ExternalRequestContext.create(server), {
         'emptyFolder1': v2.ResourceType.Directory,
         'folder1': {
             'emptyFolder2': v2.ResourceType.Directory,

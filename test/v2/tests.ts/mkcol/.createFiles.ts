@@ -3,7 +3,7 @@ import { v2 } from '../../../../lib/index.js'
 
 export function starter(server : v2.WebDAVServer, info : TestInfo, isValid : TestCallback, name : string, expectedStatusCode : number, callback ?: (server : v2.WebDAVServer) => void) : void
 {
-    server.rootFileSystem().addSubTree(v2.RequestContext.createExternal(server), {
+    server.rootFileSystem().addSubTree(v2.ExternalRequestContext.create(server), {
         'emptyFolder1': v2.ResourceType.Directory,
         'folder1': {
             'emptyFolder2': v2.ResourceType.Directory,

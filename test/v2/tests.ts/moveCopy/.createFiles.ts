@@ -16,7 +16,7 @@ export function check(server : v2.WebDAVServer, info : TestInfo, isValid : TestC
 
 export function starter(server : v2.WebDAVServer, info : TestInfo, isValid : TestCallback, method : string, from : string, to : string, overwrite : boolean, expectedStatusCode : number, callback ?: (server : v2.WebDAVServer) => void) : void
 {
-    server.rootFileSystem().addSubTree(v2.RequestContext.createExternal(server), {
+    server.rootFileSystem().addSubTree(v2.ExternalRequestContext.create(server), {
         'emptyFolder1': v2.ResourceType.Directory,
         'folder1': {
             'emptyFolder2': v2.ResourceType.Directory,

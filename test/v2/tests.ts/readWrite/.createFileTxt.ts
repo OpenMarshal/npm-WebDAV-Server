@@ -7,7 +7,7 @@ export function starter(server : v2.WebDAVServer, info : TestInfo, isValid : Tes
     const type = _callback ? _type as v2.ResourceType : v2.ResourceType.File;
 
     const name = 'file.txt';
-    const ctx = v2.RequestContext.createExternal(server);
+    const ctx = v2.ExternalRequestContext.create(server);
     server.rootFileSystem().addSubTree(ctx, {
         [name]: type
     }, (e) => {

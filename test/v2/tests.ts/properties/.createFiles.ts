@@ -36,7 +36,7 @@ export function propfind(server : v2.WebDAVServer, info : TestInfo, path : strin
 export function starter(info : TestInfo, isValid : TestCallback, callback : (server : v2.WebDAVServer) => void) : void
 {
     const server = info.startServer();
-    server.rootFileSystem().addSubTree(v2.RequestContext.createExternal(server), {
+    server.rootFileSystem().addSubTree(v2.ExternalRequestContext.create(server), {
         'folder': v2.ResourceType.Directory,
         'file': v2.ResourceType.File
     }, (e) => {

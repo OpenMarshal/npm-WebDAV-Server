@@ -3,7 +3,7 @@ import { v2 } from '../../../../lib/index.js'
 
 export function starter(server : v2.WebDAVServer, info : TestInfo, isValid : TestCallback, name : string, expect : string[], reject : string[], callback : (allowHeader ?: string[]) => void) : void
 {
-    server.rootFileSystem().addSubTree(v2.RequestContext.createExternal(server), {
+    server.rootFileSystem().addSubTree(v2.ExternalRequestContext.create(server), {
         'folder': v2.ResourceType.Directory,
         'file': v2.ResourceType.File,
         'hybrid': v2.ResourceType.Hybrid,

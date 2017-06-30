@@ -246,7 +246,7 @@ export function starter(
     um.addUser('user2', 'password2'); // dXNlcjI6cGFzc3dvcmQy
     server.httpAuthentication = new v2.HTTPBasicAuthentication(um, 'Test realm');
     server.options.httpAuthentication = server.httpAuthentication;
-    server.rootFileSystem().addSubTree(v2.RequestContext.createExternal(server), {
+    server.rootFileSystem().addSubTree(v2.ExternalRequestContext.create(server), {
         'folder': {
             'folder2': {
                 'folder3': {
