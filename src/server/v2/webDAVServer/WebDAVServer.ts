@@ -116,7 +116,7 @@ export class WebDAVServer
     removeFileSystem(fs : FileSystem, checkByReference : boolean, callback : (nbRemoved ?: number) => void) : void
     removeFileSystem(fs_path : Path | string | FileSystem, _checkByReference : boolean | ((nbRemoved ?: number) => void), _callback ?: (nbRemoved ?: number) => void) : void
     {
-        const checkByReference = _callback ? _checkByReference as boolean : false;
+        const checkByReference = _callback ? _checkByReference as boolean : true;
         const callback = _callback ? _callback : _checkByReference as ((nbRemoved ?: number) => void);
 
         const result = this.removeFileSystemSync(fs_path as any, checkByReference);
@@ -126,7 +126,7 @@ export class WebDAVServer
 
     removeFileSystemSync(path : Path | string) : number
     removeFileSystemSync(fs : FileSystem, checkByReference ?: boolean) : number
-    removeFileSystemSync(fs_path : Path | string | FileSystem, checkByReference : boolean = false) : number
+    removeFileSystemSync(fs_path : Path | string | FileSystem, checkByReference : boolean = true) : number
     {
         if(fs_path.constructor === Path || fs_path.constructor === String)
         {
