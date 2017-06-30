@@ -21,7 +21,7 @@ class WebFileSystemSerializer implements v2.FileSystemSerializer
     unserialize(serializedData : any, callback : v2.ReturnCallback<WebFileSystem>) : void
     {
         const fs = new WebFileSystem(serializedData.url);
-        fs.props = serializedData.props;
+        fs.props = new v2.LocalPropertyManager(serializedData.props);
         callback(null, fs);
     }
 }
