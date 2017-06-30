@@ -1,5 +1,107 @@
 # Changelog
 
+# 2.0.0
+
+### New features
+* Version 2!
+* Added the body written through the 'writeBody(...)' method as property of the 'RequestContext' class *[266e900](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/266e900)*
+* Added the attributes to the stored properties affected by PROPPATCH *[f8f6e00](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/f8f6e00)*
+* Added the reverse operation in the PROPPATCH method to fit the RFC (1 error => reverse changes) *[f14cde3](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/f14cde3)*
+* Added an error in the 'Errors' bundle to say that the user has not enough privilege *[f488ecc](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/f488ecc)*
+* Modified the 'Workflow' class to stop some executions when possible if the workflow ended *[e0e4232](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e0e4232)*
+* Implemented the 'SimplePathPrivilegeManager' class to manage privileges based on the path *[6656596](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6656596)*
+* Implemented the PrivilegeManager [v2] *[4c526b8](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/4c526b8)*
+* Implemented the v2 *[6e58ac6](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6e58ac6)*
+* The XML helper will now throw a more meaningful error message when the 'find(...)' method doesn't find the XMLElement, helping for debugging *[b49c35a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b49c35a)*
+* Added the depth to the 'Lock' class *[fbeeb71](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/fbeeb71)*
+
+### Changes
+* Changed to check by reference by default when seeking for a file system *[e39fd71](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e39fd71)*
+* Added the user as argument in the privilege managers *[8908c87](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/8908c87)*
+* Splitted the 'RequestContext' class into 'RequestContext', 'ExternalRequestContext' and 'HTTPRequestContext' *[faf8581](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/faf8581)*
+* Added a constructor to help unserialization in the 'LocalPropertyManager' class and the 'LocalLockManager' class0e78d10 Fixed the 'PhysicalFileSystem' class *[f8b3b46](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/f8b3b46)*
+* The user used by the 'createExternal(...)' static method of the 'RequestContext' class is now a super-admin user unreferenced by the user manager *[50e1194](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/50e1194)*
+* Made the callback optional in the 'addSubTree' of the 'FileSystem' class *[d81a883](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d81a883)*
+* Removed the event system from the server *[882ca71](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/882ca71)*
+* Made the 'treeFilePath' server option of 'autoLoad' optional (default value is the 'treeFilePath' of 'autoSave') *[386f04a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/386f04a)*
+* Changed the type of the 'privilegeManager' server option from the old 'IPrivilegeManager' to the new 'PrivilegeManager' *[386f04a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/386f04a)*
+* Added the 'CreateExternalContext' method to the server class to ease the creation of external contexts *[358e2ee](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/358e2ee)*
+* Changed the type of the 'path' argument of the methods in 'FileSystem', 'ContextualFileSystem' and 'Resource' from 'Path' to 'Path | string' to be more easy to use *[5c987c6](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5c987c6)*
+* Added the 'PrivilegeManagerInfo' interface *[4d29192](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/4d29192)*
+* Added the 'destinationPath' to the 'RenameInfo' interface *[4d29192](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/4d29192)*
+* Added the 'setCodeFromError' method and the 'defaultStatusCode' method to the 'RequestContext' class *[8cf9a53](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/8cf9a53)*
+* Added an error class for unserialization error (when the serializer is not found) *[f488ecc](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/f488ecc)*
+* Added some standard errors to the 'Errors' bundle *[37afaaa](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/37afaaa)*
+
+### Documentation
+* Upgraded the README *[29086af](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/29086af)*
+* Fixed the README example *[77c44cd](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/77c44cd)*
+* Fixed the example 'Web Resource' *[75ff834](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/75ff834)*
+* Deprecated the v1 'WebDAVServer' class *[2c609e7](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2c609e7)*
+* Added the 'webResource' example for the v2 *[d406d81](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d406d81)*
+* Splitted the 'examples' folder into 'v1' and 'v2' :
+  * *[24718da](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/24718da)*
+  * *[7518929](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7518929)*
+
+### Tests
+* Fixed the tests to use the new 'RequestContext' implementation *[6d41b1b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6d41b1b)*
+* Added a 'nbReservedSocketPerTest' in the test framework of the v2 *[72696ad](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/72696ad)*
+* Added tests for the PROPPATCH method [v2] *[2be8b93](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2be8b93)*
+* Added test for the MOVE and COPY methods [v2] *[0c5e114](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0c5e114)*
+* Added tests for the 'addSubTree' method of the server/file systems [v2] *[5d5d3a2](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5d5d3a2)*
+* Added tests for the HEAD method *[651f797](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/651f797)*
+* Added tests for the MKCOL method *[d895732](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d895732)*
+* Added tests for the DELETE method *[59e4201](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/59e4201)*
+* Upgraded the test framework of the v2 *[a9edc7e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a9edc7e)*
+* Added test for the persistence [v2] *[deb443b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/deb443b)*
+* Added test for the LOCK and UNLOCK methods [v2] *[37f17a0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/37f17a0)*
+* Fixed the tests for node.js:5 and node.js:4 *[b43ba41](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b43ba41)*
+* Modified the tests to use 'server.rootFileSystem()' method instead of the removed 'server.rootFileSystem' property *[7c7874c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7c7874c)*
+* Updated the test commands to compile the TypeScript, run the tests for the v2, then run the tests for the v2 *[3f6c274](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3f6c274)*
+* Added tests for the lock/unlock methods (v2) *[70717b2](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/70717b2)*
+* Added tests for the OPTIONS method (v2) *[6e5981a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6e5981a)*
+* Added tests for the readDir/propfind on a directory (v2) *[9ce23d1](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/9ce23d1)*
+* Added tests for the read/write get/put methods (v2) *[b801535](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b801535)*
+* Added tests for the server management (v2) *[735e2ed](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/735e2ed)*
+* Added TypeScript tests for better test developments *[f5b48a7](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/f5b48a7)*
+* Upgraded the test framework to be more clean and ease the making of new tests *[74c381c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/74c381c)*
+* Splitted the 'test' folder into 'v1' and 'v2' *[ac88f11](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/ac88f11)*
+
+### Other
+* Cleaned the code *[1a46154](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/1a46154)*
+* Updated the '@types/node' dev dependency *[6491270](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6491270)*
+* Exported the 'PrivilegeManager' class and the 'SimplePathPrivilegeManager' class *[f258c99](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/f258c99)*
+* Added the 'Forbidden' standard error *[a209249](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a209249)*
+* Implemented the lock check *[0b41e28](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0b41e28)*
+* Implemented the privilege checks *[0b41e28](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0b41e28)*
+* Removed the FTP packages in the npm dependencies *[3733df7](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3733df7)*
+* Removed the old files from when the v2 was contained in one file *[04762e9](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/04762e9)*
+* Removed the empty 'requirePrivilege' methods in the 'RequestContext' class *[8cf9a53](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/8cf9a53)*
+* Moved the 'FTPFileSystem' class to the '@webdav-server/ftp' package *[5c04125](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5c04125)*
+* Exported the v1 within the v1 scope too *[1cc4a03](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/1cc4a03)*
+* Exported the v2 *[90a6556](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/90a6556)*
+* Fixed Travis CI missing 'tsc' *[d4850b7](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d4850b7)*
+* Modified the 'tsconfig.json' file to make TypeScript compile with comments by default *[6e7acd8](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6e7acd8)*
+* Added the TS types for the 'request' package *[3f6c274](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3f6c274)*
+* Added the 'ftp' package in the dependencies *[3f6c274](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3f6c274)*
+* Updated the .gitignore to ignore the transcripted code folder in the tests *[e83b463](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e83b463)*
+
+### Bug fix
+* Fixed the 'VirtualFileSystem' unserialization *[d43f5c9](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d43f5c9)*
+* Fixed the urls in PROPFIND, PROPPATCH and LOCK responses not being encoded *[7bc8928](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7bc8928)*
+* Added encoding for the url in the PROPPATCH and PROPFIND responses [v1] *[30d5bcc](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/30d5bcc)*
+* Fixed the 'SimplePathPrivilegeManager' implementation *[489cf28](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/489cf28)*
+* Fixed the 'HTTPDigestAuthentication' implementation *[008af5c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/008af5c)*
+* Changed the default namespace from 'DAV:' to nothing, allowing to keep out-of-namespace tags in the properties *[635ce3f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/635ce3f)*
+* Fixed the 'VirtualFileSystem' *[9d3b03e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/9d3b03e)*
+* Fixed the MOVE method *[2c7a84c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2c7a84c)*
+* Fixed the PROPFIND method *[2c7a84c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2c7a84c)*
+* Fixed the response status when the parent was missing *[056df31](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/056df31)*
+* Fixed the 'starter' method of the OPTIONS method tests to be more robust if some more tests are added in the future *[6fe546a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6fe546a)*
+* Fixed the '_delete' method in the 'VirtualFileSystem' class which was not deleting the children of deleted folders *[e529f71](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e529f71)*
+* Fixed an unserialization bug (returning undefined as the unserialized data) *[467e91c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/467e91c)*
+* Fixed the serialization [v2] *[14b6e4c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/14b6e4c)*
+
 # 1.9.1
 
 ### New features
