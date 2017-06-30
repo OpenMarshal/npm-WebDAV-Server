@@ -53,8 +53,8 @@ export class _VirtualFileSystemResource
         this.lastModifiedDate = rs.lastModifiedDate ? rs.lastModifiedDate : Date.now();
         this.creationDate = rs.creationDate ? rs.creationDate : Date.now();
         this.content = rs.content ? rs.content.map((o) => new Buffer(o)) : [];
-        this.props = rs.props ? Object.defineProperties(new LocalPropertyManager(), rs.props as any) : new LocalPropertyManager();
-        this.locks = rs.locks ? Object.defineProperties(new LocalLockManager(), rs.locks as any) : new LocalLockManager();
+        this.props = new LocalPropertyManager(rs.props);
+        this.locks = new LocalLockManager();
         this.size = rs.size ? rs.size : 0;
         this.type = rs.type ? rs.type : ResourceType.File;
     }

@@ -13,6 +13,7 @@ export interface IPropertyManager {
 }
 export declare class LocalPropertyManager implements IPropertyManager {
     properties: PropertyBag;
+    constructor(serializedData?: any);
     setProperty(name: string, value: ResourcePropertyValue, attributes: PropertyAttributes, callback: SimpleCallback): void;
     getProperty(name: string, callback: Return2Callback<ResourcePropertyValue, PropertyAttributes>): void;
     removeProperty(name: string, callback: SimpleCallback): void;

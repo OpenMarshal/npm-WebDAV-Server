@@ -9,6 +9,7 @@ export interface ILockManager {
 }
 export declare class LocalLockManager implements ILockManager {
     locks: Lock[];
+    constructor(serializedData?: any);
     getLocks(callback: ReturnCallback<Lock[]>): void;
     setLock(lock: Lock, callback: SimpleCallback): void;
     removeLock(uuid: string, callback: ReturnCallback<boolean>): void;

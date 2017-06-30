@@ -23,6 +23,12 @@ export interface ILockManager
 export class LocalLockManager implements ILockManager
 {
     locks : Lock[] = [];
+    
+    constructor(serializedData ?: any)
+    {
+        if(serializedData)
+            Object.defineProperties(this, serializedData as any);
+    }
 
     getLocks(callback : ReturnCallback<Lock[]>) : void
     {

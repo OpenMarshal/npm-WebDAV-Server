@@ -30,6 +30,12 @@ export interface IPropertyManager
 export class LocalPropertyManager implements IPropertyManager
 {
     properties : PropertyBag = { };
+    
+    constructor(serializedData ?: any)
+    {
+        if(serializedData)
+            Object.defineProperties(this, serializedData as any);
+    }
 
     setProperty(name : string, value : ResourcePropertyValue, attributes : PropertyAttributes, callback : SimpleCallback) : void
     {
