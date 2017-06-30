@@ -38,27 +38,25 @@ export class _VirtualFileSystemResource
 
     constructor(data : _VirtualFileSystemResource | ResourceType)
     {
+        let rs : _VirtualFileSystemResource;
         if(data.constructor === ResourceType)
         {
-            this.lastModifiedDate = Date.now();
-            this.creationDate = Date.now();
-            this.content = [];
-            this.props = new LocalPropertyManager();
-            this.locks = new LocalLockManager();
-            this.type = data as ResourceType;
-            this.size = 0;
+            rs = {
+                type: data as ResourceType
+            } as _VirtualFileSystemResource;
         }
         else
         {
-            const rs = data as _VirtualFileSystemResource;
-            this.lastModifiedDate = rs.lastModifiedDate;
-            this.creationDate = rs.creationDate;
-            this.content = rs.content;
-            this.props = rs.props;
-            this.locks = rs.locks;
-            this.size = rs.size;
-            this.type = rs.type;
+            rs = data as _VirtualFileSystemResource;
         }
+
+        this.lastModifiedDate = rs.lastModifiedDate ? rs.lastModifiedDate : Date.now();
+        this.creationDate = rs.creationDate ? rs.creationDate : Date.now();
+        this.content = rs.content ? rs.content.map((o) => new Buffer(o)) : [];
+        this.props = rs.props ? Object.defineProperties(new LocalPropertyManager(), rs.props as any) : new LocalPropertyManager();
+        this.locks = rs.locks ? Object.defineProperties(new LocalLockManager(), rs.locks as any) : new LocalLockManager();
+        this.size = rs.size ? rs.size : 0;
+        this.type = rs.type ? rs.type : ResourceType.File;
     }
 
     static updateLastModified(r : _VirtualFileSystemResource)
@@ -125,7 +123,8 @@ export class VirtualSerializer implements FileSystemSerializer
     unserialize(serializedData : any, callback : ReturnCallback<FileSystem>) : void
     {
         const fs = new VirtualFileSystem();
-        fs.resources = serializedData;
+        for(const path in serializedData)
+            fs.resources[path] = new _VirtualFileSystemResource(serializedData[path]);
         callback(null, fs);
     }
 }
