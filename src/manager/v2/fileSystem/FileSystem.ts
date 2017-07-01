@@ -530,7 +530,7 @@ export abstract class FileSystem implements ISerializableFileSystem
         issuePrivilegeCheck(this, ctx, pPath, targetSource ? 'canReadContentSource' : 'canReadContentTranslated', callback, () => {
             this.fastExistCheckEx(ctx, pPath, callback, () => {
                 if(!this._size)
-                    return callback(null, 0);
+                    return callback(null, undefined);
 
                 this._size(pPath, {
                     context: ctx,
