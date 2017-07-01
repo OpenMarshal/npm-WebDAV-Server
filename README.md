@@ -33,6 +33,10 @@ Here are some project related links :
   * [Gitter for version 1](https://gitter.im/npm-WebDAV-Server/help-v1)
   * [Gitter for version 2](https://gitter.im/npm-WebDAV-Server/help-v2)
   * [Gitter for @webdav-server/...](https://gitter.im/npm-WebDAV-Server/file-systems)
+  
+You can find a list of file systems here :
+* [Repositories on GitHub](https://github.com/OpenMarshal/npm-WebDAV-Server-Types/tree/master/repositories)
+* [Repositories on npm](https://www.npmjs.com/search?q=%40webdav-server)
 
 This project rely upon the [RFC4918](http://www.webdav.org/specs/rfc4918.html).
 
