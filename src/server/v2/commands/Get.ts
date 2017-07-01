@@ -65,58 +65,58 @@ export default class implements HTTPMethod
                                 return callback();
                             }
                             
-                            r.mimeType(targetSource, (e, mimeType) => process.nextTick(() => {
-                                if(e)
+                            const range = ctx.headers.find('Range');
+                            r.size(targetSource, (e, size) => process.nextTick(() => {
+                                if(e && !range)
                                 {
                                     if(!ctx.setCodeFromError(e))
                                         ctx.setCode(HTTPCodes.InternalServerError)
                                     return callback();
                                 }
 
-                                r.openReadStream(targetSource, (e, rstream) => process.nextTick(() => {
+                                r.mimeType(targetSource, (e, mimeType) => process.nextTick(() => {
                                     if(e)
                                     {
                                         if(!ctx.setCodeFromError(e))
-                                            ctx.setCode(HTTPCodes.MethodNotAllowed)
+                                            ctx.setCode(HTTPCodes.InternalServerError)
                                         return callback();
                                     }
-                                    //ctx.invokeEvent('read', r);
 
-                                    const range = ctx.headers.find('Range');
-                                    if(range)
-                                    {
-                                        const rex = /([0-9]+)/g;
-                                        const min = parseInt(rex.exec(range)[1], 10);
-                                        const max = parseInt(rex.exec(range)[1], 10);
+                                    r.openReadStream(targetSource, (e, rstream) => {
+                                        if(e)
+                                        {
+                                            if(!ctx.setCodeFromError(e))
+                                                ctx.setCode(HTTPCodes.MethodNotAllowed)
+                                            return callback();
+                                        }
+                                        //ctx.invokeEvent('read', r);
 
-                                        ctx.setCode(HTTPCodes.PartialContent);
-                                        ctx.response.setHeader('Accept-Ranges', 'bytes')
-                                        ctx.response.setHeader('Content-Type', mimeType)
-                                        ctx.response.setHeader('Content-Length', (max - min).toString())
-                                        ctx.response.setHeader('Content-Range', 'bytes ' + min + '-' + max + '/*')
+                                        if(range)
+                                        {
+                                            const rex = /([0-9]+)/g;
+                                            const min = parseInt(rex.exec(range)[1], 10);
+                                            const max = parseInt(rex.exec(range)[1], 10);
 
-                                        rstream.on('end', callback);
-                                        rstream.pipe(new RangedStream(min, max)).pipe(ctx.response);
-                                    }
-                                    else
-                                    {
-                                        r.size(targetSource, (e, size) => {
-                                            if(e)
-                                            {
-                                                ctx.setCode(e === Errors.ResourceNotFound ? HTTPCodes.NotFound : HTTPCodes.InternalServerError)
-                                                callback();
-                                            }
-                                            else
-                                            {
-                                                ctx.setCode(HTTPCodes.OK);
-                                                ctx.response.setHeader('Accept-Ranges', 'bytes')
-                                                ctx.response.setHeader('Content-Type', mimeType);
+                                            ctx.setCode(HTTPCodes.PartialContent);
+                                            ctx.response.setHeader('Accept-Ranges', 'bytes')
+                                            ctx.response.setHeader('Content-Type', mimeType)
+                                            ctx.response.setHeader('Content-Length', (max - min).toString())
+                                            ctx.response.setHeader('Content-Range', 'bytes ' + min + '-' + max + '/*')
+
+                                            rstream.on('end', callback);
+                                            rstream.pipe(new RangedStream(min, max)).pipe(ctx.response);
+                                        }
+                                        else
+                                        {
+                                            ctx.setCode(HTTPCodes.OK);
+                                            ctx.response.setHeader('Accept-Ranges', 'bytes')
+                                            ctx.response.setHeader('Content-Type', mimeType);
+                                            if(size !== null && size !== undefined && size > -1)
                                                 ctx.response.setHeader('Content-Length', size.toString());
-                                                rstream.on('end', callback);
-                                                rstream.pipe(ctx.response);
-                                            }
-                                        })
-                                    }
+                                            rstream.on('end', callback);
+                                            rstream.pipe(ctx.response);
+                                        }
+                                    })
                                 }))
                             }))
                         })
