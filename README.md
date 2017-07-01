@@ -67,7 +67,7 @@ const server = new webdav.WebDAVServer({
 server.start(() => console.log('READY'));
 ```
 
-With a user manager :
+With a user manager, privilege manager and serialization (save/load the state of the server) :
 
 ```javascript
 // TypeScript
