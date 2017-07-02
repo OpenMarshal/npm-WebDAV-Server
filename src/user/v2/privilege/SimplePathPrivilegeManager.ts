@@ -73,7 +73,7 @@ export class SimplePathPrivilegeManager extends PrivilegeManager
         if(!user)
             return callback(null, false);
         
-        const rights = this.getRights(user, Path.toString());
+        const rights = this.getRights(user, fullPath.toString());
         const can = !!rights && rights.some((r) => r === 'all' || r === privilege);
         callback(null, can);
     }
