@@ -590,7 +590,8 @@ export declare abstract class FileSystem implements ISerializableFileSystem {
      * @param path Path of the resource.
      * @param callback Returns if the resource is locked or not (true = locked, cannot write to it ; false = not locked) or returns an error.
      */
-    isLocked(ctx: RequestContext, path: Path | string, callback: ReturnCallback<boolean>): void;
+    isLocked(ctx: RequestContext, path: Path | string, callback: ReturnCallback<boolean>): any;
+    isLocked(ctx: RequestContext, path: Path | string, depth: number, callback: ReturnCallback<boolean>): any;
     /**
      * Serialize the file system based on the 'this.serializer()' value.
      *

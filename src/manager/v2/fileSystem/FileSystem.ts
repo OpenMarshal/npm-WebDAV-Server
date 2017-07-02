@@ -1329,7 +1329,12 @@ export abstract class FileSystem implements ISerializableFileSystem
         const callback = _callback ? _callback : _depth as ReturnCallback<{ [path : string] : Lock[] }>;
         const pStartPath = new Path(startPath);
         
-        issuePrivilegeCheck(this, ctx, startPath, 'canReadLocks', callback, () => {
+        this.checkPrivilege(ctx, startPath, 'canReadLocks', (e, can) => {
+            if(e)
+                return callback(e);
+            if(!can)
+                return [];
+
             this.lockManager(ctx, pStartPath, (e, lm) => {
                 if(e === Errors.ResourceNotFound)
                 {
@@ -1505,34 +1510,66 @@ export abstract class FileSystem implements ISerializableFileSystem
      * @param callback Returns if the resource is locked or not (true = locked, cannot write to it ; false = not locked) or returns an error.
      */
     isLocked(ctx : RequestContext, path : Path | string, callback : ReturnCallback<boolean>)
+    isLocked(ctx : RequestContext, path : Path | string, depth : number, callback : ReturnCallback<boolean>)
+    isLocked(ctx : RequestContext, path : Path | string, _depth : number | ReturnCallback<boolean>, _callback ?: ReturnCallback<boolean>)
     {
+        const callback = _callback ? _callback : _depth as ReturnCallback<boolean>;
+        const depth = _callback ? _depth as number : 0;
+
         if(ctx.user && ctx.user.isAdministrator)
             return callback(null, false);
         
-        this.listDeepLocks(ctx, path, (e, locks) => {
-            if(e)
-                return callback(e);
-            
-            if(!ctx.user)
-                return callback(null, Object.keys(locks).length > 0);
+        const pPath = new Path(path);
 
-            for(const path in locks)
-                if(locks[path].some((l) => ctx.user.uid !== l.userUid && l.lockKind.scope.isSame(LockScope.Exclusive)))
-                    return callback(null, true);
+        const checkThis = () => {
+            this._lockManager(pPath, { context: ctx }, (e, lm) => {
+                if(e === Errors.ResourceNotFound)
+                    return callback(null, false);
+                if(e)
+                    return callback(e);
+
+                lm.getLocks((e, locks) => {
+                    if(e === Errors.ResourceNotFound)
+                        return callback(null, false);
+                    if(e)
+                        return callback(e);
                     
-            let isShared = false;
-            for(const path in locks)
-                for(const lock of locks[path])
-                {
-                    if(lock.lockKind.scope.isSame(LockScope.Shared))
+                    locks = locks.filter((l) => l.depth === -1 || l.depth >= depth);
+                    
+                    if(!ctx.user)
+                        return callback(null, locks.length > 0);
+
+                    if(locks.some((l) => ctx.user.uid !== l.userUid && l.lockKind.scope.isSame(LockScope.Exclusive)))
+                        return callback(null, true);
+                            
+                    let isShared = false;
+                    for(const lock of locks)
                     {
-                        isShared = true;
-                        if(lock.userUid === ctx.user.uid)
-                            return callback(null, false);
+                        if(lock.lockKind.scope.isSame(LockScope.Shared))
+                        {
+                            isShared = true;
+                            if(lock.userUid === ctx.user.uid)
+                                return callback(null, false);
+                        }
                     }
-                }
-            
-            callback(null, isShared);
+
+                    callback(null, isShared);
+                })
+            })
+        }
+        
+        this.getFullPath(ctx, pPath, (e, fullPath) => {
+            if(fullPath.isRoot())
+                return checkThis();
+
+            ctx.server.getFileSystem(pPath.getParent(), (fs, rootPath, subPath) => {
+                fs.isLocked(ctx, subPath, depth + 1, (e, locked) => {
+                    if(e || locked)
+                        return callback(e, locked);
+                    
+                    checkThis();
+                })
+            })
         })
     }
 
