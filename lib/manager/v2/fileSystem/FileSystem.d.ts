@@ -16,6 +16,8 @@ export declare abstract class FileSystem implements ISerializableFileSystem {
     private __serializer;
     constructor(serializer: FileSystemSerializer);
     serializer(): FileSystemSerializer;
+    setSerializer(serializer: FileSystemSerializer): void;
+    doNotSerialize(): void;
     contextualize(ctx: RequestContext): ContextualFileSystem;
     resource(ctx: RequestContext, path: Path): Resource;
     fastExistCheckEx(ctx: RequestContext, _path: Path | string, errorCallback: SimpleCallback, callback: () => void): void;

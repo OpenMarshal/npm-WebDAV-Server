@@ -44,6 +44,9 @@ export function serialize(fileSystems : UnserializedData, callback : ReturnCallb
         .each(Object.keys(fileSystems), (path, cb) => {
             const fs = fileSystems[path];
             const serializer = fs.serializer();
+            if(!serializer)
+                return cb(); // Skip serialization
+            
             serializer.serialize(fs, (e, data) => {
                 if(!e)
                     result[path] = {

@@ -57,6 +57,14 @@ export abstract class FileSystem implements ISerializableFileSystem
     {
         return this.__serializer;
     }
+    setSerializer(serializer : FileSystemSerializer)
+    {
+        this.__serializer = serializer;
+    }
+    doNotSerialize()
+    {
+        this.__serializer = null;
+    }
 
     contextualize(ctx : RequestContext) : ContextualFileSystem
     {
@@ -1036,7 +1044,11 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     serialize(callback : ReturnCallback<any>) : void
     {
-        this.serializer().serialize(this, callback);
+        const serializer = this.serializer();
+        if(!serializer)
+            return callback();
+        
+        serializer.serialize(this, callback);
     }
 }
 
