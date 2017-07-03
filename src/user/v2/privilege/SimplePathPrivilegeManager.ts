@@ -45,6 +45,31 @@ export class SimplePathPrivilegeManager extends PrivilegeManager
         
         if(!this.rights[user.uid])
             this.rights[user.uid] = {};
+        
+        const rs = rights as string[];
+        if(rs.indexOf('canRead') !== -1)
+        {
+            rs.push('canReadLocks');
+            rs.push('canReadContent');
+            rs.push('canReadProperties');
+        }
+        if(rs.indexOf('canReadContent') !== -1)
+        {
+            rs.push('canReadContentTranslated');
+            rs.push('canReadContentSource');
+        }
+        
+        if(rs.indexOf('canWrite') !== -1)
+        {
+            rs.push('canWriteLocks');
+            rs.push('canWriteContent');
+            rs.push('canWriteProperties');
+        }
+        if(rs.indexOf('canWriteContent') !== -1)
+        {
+            rs.push('canWriteContentTranslated');
+            rs.push('canWriteContentSource');
+        }
 
         this.rights[user.uid][standarizePath(path)] = rights;
     }
