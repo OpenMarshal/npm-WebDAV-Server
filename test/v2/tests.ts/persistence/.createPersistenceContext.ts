@@ -25,7 +25,10 @@ export function starter(info : TestInfo, isValid : TestCallback, callback : (ser
     const server = info.startServer({
         autoSave: {
             treeFilePath: file,
-            tempTreeFilePath: fileTemp
+            tempTreeFilePath: fileTemp,
+            onSaveError: (e) => {
+                isValid(false, e);
+            }
         }
     })
     server.rootFileSystem().addSubTree(v2.ExternalRequestContext.create(server), {
