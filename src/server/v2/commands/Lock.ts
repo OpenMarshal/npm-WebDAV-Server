@@ -8,6 +8,7 @@ import { LockType } from '../../../resource/lock/LockType'
 import { Errors } from '../../../Errors'
 import { Lock } from '../../../resource/lock/Lock'
 import { XML } from '../../../helper/XML'
+import { IUser } from '../../../user/v2/IUser'
 import * as path from 'path'
 
 function createResponse(ctx : HTTPRequestContext, lock : Lock)
@@ -44,7 +45,9 @@ function createLock(ctx : HTTPRequestContext, data : Buffer, callback)
 
         const go = (r : Resource, callback : SimpleCallback) =>
         {
+            ctx.overridePrivileges = true;
             r.listDeepLocks((e, locks) => {
+                ctx.overridePrivileges = false;
                 if(e)
                     return callback(e);
                 
@@ -105,6 +108,7 @@ function createLock(ctx : HTTPRequestContext, data : Buffer, callback)
     }
     catch(ex)
     {
+        console.log(ex);
         ctx.setCode(HTTPCodes.BadRequest);
         callback();
         return;

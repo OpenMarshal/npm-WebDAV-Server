@@ -36,7 +36,7 @@ export class PrivilegeManager
     can(_fullPath : Path | string, resource : Resource, _privilege : BasicPrivilege | string | BasicPrivilege[] | string[], callback : PrivilegeManagerCallback) : void
     {
         const user = resource.context.user;
-        if(user && user.isAdministrator)
+        if(resource.context.overridePrivileges || user && user.isAdministrator)
             return callback(null, true);
         
         if(_privilege.constructor !== String)

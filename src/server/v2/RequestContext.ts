@@ -109,6 +109,7 @@ export class DefaultRequestContextExternalOptions implements RequestContextExter
 
 export class RequestContext
 {
+    overridePrivileges : boolean
     requested : RequestedResource
     headers : RequestContextHeaders
     server : WebDAVServer
@@ -116,6 +117,7 @@ export class RequestContext
     
     protected constructor(server : WebDAVServer, uri : string, headers : { [name : string] : string })
     {
+        this.overridePrivileges = false;
         this.headers = new RequestContextHeaders(headers);
         this.server = server;
         

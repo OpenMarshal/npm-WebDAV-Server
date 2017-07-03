@@ -40,6 +40,7 @@ export declare class DefaultRequestContextExternalOptions implements RequestCont
     user: IUser;
 }
 export declare class RequestContext {
+    overridePrivileges: boolean;
     requested: RequestedResource;
     headers: RequestContextHeaders;
     server: WebDAVServer;
