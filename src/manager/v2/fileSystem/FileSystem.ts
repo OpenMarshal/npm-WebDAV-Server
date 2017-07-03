@@ -1329,63 +1329,58 @@ export abstract class FileSystem implements ISerializableFileSystem
         const callback = _callback ? _callback : _depth as ReturnCallback<{ [path : string] : Lock[] }>;
         const pStartPath = new Path(startPath);
         
-        this.checkPrivilege(ctx, startPath, 'canReadLocks', (e, can) => {
-            if(e)
+        this.lockManager(ctx, pStartPath, (e, lm) => {
+            if(e === Errors.ResourceNotFound)
+            {
+                lm = {
+                    getLocks(callback : ReturnCallback<Lock[]>) : void
+                    {
+                        callback(null, []);
+                    }
+                } as ILockManager;
+            }
+            else if(e)
                 return callback(e);
-            if(!can)
-                return [];
-
-            this.lockManager(ctx, pStartPath, (e, lm) => {
-                if(e === Errors.ResourceNotFound)
-                {
-                    lm = {
-                        getLocks(callback : ReturnCallback<Lock[]>) : void
-                        {
-                            callback(null, []);
-                        }
-                    } as ILockManager;
-                }
+            
+            lm.getLocks((e, locks) => {
+                if(e === Errors.NotEnoughPrivilege)
+                    locks = [];
                 else if(e)
                     return callback(e);
                 
-                lm.getLocks((e, locks) => {
-                    if(e)
-                        return callback(e);
-                    
-                    if(depth !== -1)
-                        locks = locks.filter((f) => f.depth === -1 || f.depth >= depth);
-                    
-                    const go = (fs : FileSystem, parentPath : Path) =>
-                    {
-                        const destDepth = depth === -1 ? -1 : depth + 1;
-                        fs.listDeepLocks(ctx, parentPath, destDepth, (e, pLocks) => {
-                            if(e)
-                                return callback(e);
-                            
-                            if(locks && locks.length > 0)
-                                pLocks[pStartPath.toString()] = locks;
-                            callback(null, pLocks);
-                        })
-                    }
-
-                    if(!pStartPath.isRoot())
-                        return go(this, pStartPath.getParent());
-                    
-                    this.getFullPath(ctx, (e, fsPath) => {
+                if(depth !== -1)
+                    locks = locks.filter((f) => f.depth === -1 || f.depth >= depth);
+                
+                const go = (fs : FileSystem, parentPath : Path) =>
+                {
+                    const destDepth = depth === -1 ? -1 : depth + 1;
+                    fs.listDeepLocks(ctx, parentPath, destDepth, (e, pLocks) => {
                         if(e)
                             return callback(e);
                         
-                        if(fsPath.isRoot())
-                        {
-                            const result = {};
-                            if(locks && locks.length > 0)
-                                result[pStartPath.toString()] = locks;
-                            return callback(null, result);
-                        }
-                        
-                        ctx.server.getFileSystem(fsPath.getParent(), (fs, _, subPath) => {
-                            go(fs, subPath);
-                        })
+                        if(locks && locks.length > 0)
+                            pLocks[pStartPath.toString()] = locks;
+                        callback(null, pLocks);
+                    })
+                }
+
+                if(!pStartPath.isRoot())
+                    return go(this, pStartPath.getParent());
+                
+                this.getFullPath(ctx, (e, fsPath) => {
+                    if(e)
+                        return callback(e);
+                    
+                    if(fsPath.isRoot())
+                    {
+                        const result = {};
+                        if(locks && locks.length > 0)
+                            result[pStartPath.toString()] = locks;
+                        return callback(null, result);
+                    }
+                    
+                    ctx.server.getFileSystem(fsPath.getParent(), (fs, _, subPath) => {
+                        go(fs, subPath);
                     })
                 })
             })
