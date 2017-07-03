@@ -871,7 +871,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     {
         const pPath = new Path(path);
 
-        issuePrivilegeCheck(this, ctx, pPath, 'canWriteLocks', callback, () => {
+        issuePrivilegeCheck(this, ctx, pPath, 'canReadLocks', callback, () => {
             this.fastExistCheckEx(ctx, pPath, callback, () => {
                 if(!this._availableLocks)
                     return callback(null, [
