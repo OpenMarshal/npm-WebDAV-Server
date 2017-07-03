@@ -38,8 +38,8 @@ function createLock(ctx : HTTPRequestContext, data : Buffer, callback)
         
         const scope = new LockScope(root.find('DAV:lockscope').elements[0].name.substr(4).toLowerCase());
         const type = new LockType(root.find('DAV:locktype').elements[0].name.substr(4).toLowerCase());
-        const ownerElement = root.find('DAV:owner');
-        const owner = ownerElement ? ownerElement.elements : null;
+        const ownerElementIndex = root.findIndex('DAV:owner');
+        const owner = ownerElementIndex !== -1 ? root.elements[ownerElementIndex].elements : null;
 
         const lock = new Lock(new LockKind(scope, type, ctx.server.options.lockTimeout), ctx.user ? ctx.user.uid : undefined, owner, ctx.headers.depth === undefined ? -1 : ctx.headers.depth);
 
