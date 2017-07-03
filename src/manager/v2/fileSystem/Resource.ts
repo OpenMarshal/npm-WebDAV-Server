@@ -152,4 +152,11 @@ export class Resource
     {
         this.fs.listDeepLocks(this.context, this.path, _depth, _callback);
     }
+    
+    isLocked(callback : ReturnCallback<boolean>)
+    isLocked(depth : number, callback : ReturnCallback<boolean>)
+    isLocked(_depth : any, _callback ?: ReturnCallback<boolean>)
+    {
+        this.fs.isLocked(this.context, this.path, _depth, _callback);
+    }
 }

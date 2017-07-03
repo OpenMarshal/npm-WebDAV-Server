@@ -155,6 +155,13 @@ export class ContextualFileSystem implements ISerializableFileSystem
         this.fs.listDeepLocks(this.context, startPath, _depth, _callback);
     }
     
+    isLocked(path : Path | string, callback : ReturnCallback<boolean>)
+    isLocked(path : Path | string, depth : number, callback : ReturnCallback<boolean>)
+    isLocked(path : Path | string, _depth : any, _callback ?: ReturnCallback<boolean>)
+    {
+        this.fs.isLocked(this.context, path, _depth, _callback);
+    }
+
     serializer() : FileSystemSerializer
     {
         return this.fs.serializer();

@@ -62,6 +62,8 @@ export declare class ContextualFileSystem implements ISerializableFileSystem {
     listDeepLocks(startPath: Path | string, depth: number, callback: ReturnCallback<{
         [path: string]: Lock[];
     }>): any;
+    isLocked(path: Path | string, callback: ReturnCallback<boolean>): any;
+    isLocked(path: Path | string, depth: number, callback: ReturnCallback<boolean>): any;
     serializer(): FileSystemSerializer;
     serialize(callback: (serializedData: any) => void): void;
 }

@@ -60,4 +60,6 @@ export declare class Resource {
     listDeepLocks(depth: number, callback: ReturnCallback<{
         [path: string]: Lock[];
     }>): any;
+    isLocked(callback: ReturnCallback<boolean>): any;
+    isLocked(depth: number, callback: ReturnCallback<boolean>): any;
 }
