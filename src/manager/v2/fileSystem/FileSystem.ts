@@ -233,7 +233,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                                     if(e)
                                         return callback(e);
                                     
-                                    r.create(ResourceType.Directory, (e) => {
+                                    r.create(ResourceType.Directory, true, (e) => {
                                         if(e && e !== Errors.ResourceAlreadyExists)
                                             return callback(e);
                                         
