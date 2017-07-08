@@ -9,7 +9,7 @@ export interface IAutoSave {
     treeFilePath: string;
     tempTreeFilePath?: string;
     onSaveError?: (error: Error) => void;
-    streamProvider?: (inputStream: Writable, callback: (outputStream?: Writable) => void) => void;
+    streamProvider?: (callback: (inputStream?: Writable, outputStream?: Writable) => void) => void;
 }
 export interface IAutoLoad {
     treeFilePath?: string;

@@ -39,16 +39,14 @@ export function autoLoad(callback : SimpleCallback)
         else
             options.treeFilePath = this.options.autoSave.treeFilePath;
 
-    const oStream = fs.createReadStream(options.treeFilePath);
-    const stream = oStream.pipe(zlib.createGunzip());
+    const stream = fs.createReadStream(options.treeFilePath);
     
-    oStream.on('error', callback)
     stream.on('error', callback)
 
     let streamProvider = options.streamProvider;
 
     if(!streamProvider)
-        streamProvider = (s, cb) => cb(s);
+        streamProvider = (s, cb) => cb(s.pipe(zlib.createGunzip()));
     
     streamProvider(stream, (s : Readable) => {
         if(!s)
@@ -74,7 +72,7 @@ export function save(callback : (error : Error, obj : SerializedData) => void)
 export function autoSave(options : IAutoSave)
 {
     if(!options.streamProvider)
-        options.streamProvider = (s, cb) => cb(s);
+        options.streamProvider = (cb) => cb();
     if(!options.onSaveError)
         options.onSaveError = () => {};
     if(!options.tempTreeFilePath)
@@ -110,13 +108,14 @@ export function autoSave(options : IAutoSave)
                         }
                         else
                         {
-                            const stream = zlib.createGzip();
-                            options.streamProvider(stream, (outputStream) => {
+                            options.streamProvider((inputStream, outputStream) => {
+                                if(!inputStream)
+                                    inputStream = zlib.createGzip();
                                 if(!outputStream)
-                                    outputStream = stream;
+                                    outputStream = inputStream;
                                 outputStream.pipe(fs.createWriteStream(options.tempTreeFilePath));
 
-                                stream.end(JSON.stringify(data), (e) => {
+                                inputStream.end(JSON.stringify(data), (e) => {
                                     if(e)
                                     {
                                         options.onSaveError(e);
@@ -125,7 +124,7 @@ export function autoSave(options : IAutoSave)
                                     }
                                 });
 
-                                stream.on('close', () => {
+                                inputStream.on('close', () => {
                                     fs.unlink(options.treeFilePath, (e) => {
                                         if(e && e.code !== 'ENOENT') // An error other than ENOENT (no file/folder found)
                                         {
