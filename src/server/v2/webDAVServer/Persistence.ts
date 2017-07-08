@@ -113,7 +113,8 @@ export function autoSave(options : IAutoSave)
                                     inputStream = zlib.createGzip();
                                 if(!outputStream)
                                     outputStream = inputStream;
-                                outputStream.pipe(fs.createWriteStream(options.tempTreeFilePath));
+                                const fileStream = fs.createWriteStream(options.tempTreeFilePath);
+                                outputStream.pipe(fileStream);
 
                                 inputStream.end(JSON.stringify(data), (e) => {
                                     if(e)
@@ -124,7 +125,7 @@ export function autoSave(options : IAutoSave)
                                     }
                                 });
 
-                                inputStream.on('close', () => {
+                                fileStream.on('close', () => {
                                     fs.unlink(options.treeFilePath, (e) => {
                                         if(e && e.code !== 'ENOENT') // An error other than ENOENT (no file/folder found)
                                         {
