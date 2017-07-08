@@ -1,4 +1,5 @@
 import { v2 as webdav } from 'webdav-server'
+import * as request from 'request'
 
 // Server instantiation
 const server = new webdav.WebDAVServer();
@@ -40,4 +41,30 @@ server.method('TRACE', {
     }
 })
 
-server.start((s) => console.log('Ready on port', s.address().port));
+server.start((s) => {
+    const port = s.address().port;
+    console.log('Ready on port', port);
+    
+    let buffer = '';
+    const stream = request({
+        url: 'http://localhost:' + port + '/',
+        method: 'TRACE'
+    })
+    stream.on('data', (data : string | Buffer) => {
+        buffer += data.toString();
+
+        while(true)
+        {
+            const index = buffer.indexOf('\r\n');
+            if(index === -1)
+                break;
+            
+            const json = JSON.parse(buffer.substring(0, index));
+            buffer = buffer.substring(index + 2);
+            
+            const prefix = json.response.status.code < 300 ? 'o' : 'x';
+            console.log(' [' + prefix + '] ' + json.request.method + ' ' + json.request.path + ' |> ' + json.response.status.code + ' ' + json.response.status.message);
+        }
+    })
+    stream.end();
+});
