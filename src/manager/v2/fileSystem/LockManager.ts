@@ -27,7 +27,8 @@ export class LocalLockManager implements ILockManager
     constructor(serializedData ?: any)
     {
         if(serializedData)
-            Object.defineProperties(this, serializedData as any);
+            for(const name in serializedData)
+                this[name] = serializedData[name];
     }
 
     getLocks(callback : ReturnCallback<Lock[]>) : void

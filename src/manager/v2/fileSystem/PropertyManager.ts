@@ -34,7 +34,8 @@ export class LocalPropertyManager implements IPropertyManager
     constructor(serializedData ?: any)
     {
         if(serializedData)
-            Object.defineProperties(this, serializedData as any);
+            for(const name in serializedData)
+                this[name] = serializedData[name];
     }
 
     setProperty(name : string, value : ResourcePropertyValue, attributes : PropertyAttributes, callback : SimpleCallback) : void
