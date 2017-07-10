@@ -7,7 +7,7 @@ class WebFileSystemSerializer implements v2.FileSystemSerializer
 {
     uid() : string
     {
-        return "WebFileSystemSerializer_1.0.0";
+        return 'WebFileSystemSerializer_1.0.0';
     }
 
     serialize(fs : WebFileSystem, callback : v2.ReturnCallback<any>) : void

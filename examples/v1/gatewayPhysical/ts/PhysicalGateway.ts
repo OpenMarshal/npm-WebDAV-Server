@@ -1,5 +1,5 @@
 import { PhysicalGFSManager } from './PhysicalGFSManager'
-import * as webdav from '../../../lib/index.js'
+import * as webdav from 'webdav-server'
 import * as path from 'path'
 import * as fs from 'fs'
 

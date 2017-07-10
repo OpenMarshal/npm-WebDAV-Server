@@ -1061,7 +1061,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                                 cb(null, can ? path : null);
                         });
                     })
-                    .error((e) => __callback(e))
+                    .error(__callback)
                     .done(() => __callback(null, data.filter((p) => !!p).map((p) => p.fileName())));
             })
         }
@@ -1302,7 +1302,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                         })
                 })
                 .error(callback)
-                .done(() => callback());
+                .done((_) => callback());
         }
     }
 
@@ -1438,8 +1438,7 @@ export abstract class FileSystem implements ISerializableFileSystem
             callback(null, paths
                 .map((p) => new Path(p))
                 .map((p) => {
-                    for(let i = 0; i < fsFullPath.paths.length; ++i)
-                        p.removeRoot();
+                    fsFullPath.paths.forEach(() => p.removeRoot());
                     return p;
                 })
             );

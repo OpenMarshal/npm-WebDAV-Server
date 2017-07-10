@@ -4,7 +4,7 @@ import * as request from 'request'
 // Server instantiation
 const server = new webdav.WebDAVServer();
 
-let folderNotify = { };
+const folderNotify = { };
 server.method('TRACE', {
     unchunked(ctx : webdav.HTTPRequestContext, data : Buffer, cb : () => void)
     {

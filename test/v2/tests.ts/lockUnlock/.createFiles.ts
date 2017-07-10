@@ -178,9 +178,9 @@ export function lockResource(
             const lock = {
                 scope: activeLock.find('DAV:lockscope').elements[0].name.replace('DAV:', '').toLowerCase(),
                 type: activeLock.find('DAV:locktype').elements[0].name.replace('DAV:', '').toLowerCase(),
-                depth: sDepth === 'infinity' ? -1 : parseInt(sDepth),
+                depth: sDepth === 'infinity' ? -1 : parseInt(sDepth, 10),
                 owner: activeLock.find('DAV:owner').elements,
-                timeoutSec: parseInt(sTimeout.substring(sTimeout.indexOf(':') + 1)),
+                timeoutSec: parseInt(sTimeout.substring(sTimeout.indexOf(':') + 1), 10),
                 uuid: activeLock.find('DAV:locktoken').find('DAV:href').findText(),
                 root: activeLock.find('DAV:lockroot').find('DAV:href').findText()
             };

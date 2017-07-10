@@ -109,7 +109,7 @@ export abstract class StandardMethods
                                     pmTo.setProperty(name, prop.value, prop.attributes, cb)
                                 })
                                 .error(callback)
-                                .done(() => callback())
+                                .done((_) => callback())
                         })
                     })
                 })
@@ -154,9 +154,9 @@ export abstract class StandardMethods
                     const subDepth = depth === -1 ? -1 : Math.max(0, depth - 1);
                     
                     new Workflow()
-                        .each(files, (file, cb) => StandardMethods.standardCopy(ctx, subPathFrom.getChildPath(file), fsFrom, subPathTo.getChildPath(file), fsTo, overwrite, subDepth, (e) => cb(e)))
+                        .each(files, (file, cb) => StandardMethods.standardCopy(ctx, subPathFrom.getChildPath(file), fsFrom, subPathTo.getChildPath(file), fsTo, overwrite, subDepth, cb))
                         .error(callback)
-                        .done(() => callback());
+                        .done((_) => callback());
                 })
             }
 

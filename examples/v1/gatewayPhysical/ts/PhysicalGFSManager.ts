@@ -1,9 +1,9 @@
-import { SerializedObject, FSManager, Errors, IResource, ResourceType, PhysicalFSManager, PhysicalFile, PhysicalFolder, PhysicalResource } from '../../../lib/index.js'
+import { SerializedObject, FSManager, Errors, IResource, ResourceType, PhysicalFSManager, PhysicalFile, PhysicalFolder, PhysicalResource } from 'webdav-server'
 import { PhysicalGateway } from './PhysicalGateway'
 
 export class PhysicalGFSManager extends PhysicalFSManager
 {
-    uid : string = "PhysicalGFSManager_1.0.0";
+    uid : string = 'PhysicalGFSManager_1.0.0';
     
     serialize(resource : any, obj : SerializedObject) : object
     {

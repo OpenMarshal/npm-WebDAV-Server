@@ -145,7 +145,7 @@ export function parseIfHeader(ifHeader : string)
         match = rex.exec(ifHeader);
     }
 
-    if(orArray.length == 0)
+    if(orArray.length === 0)
         return (ctx : RequestContext, resource : Resource, callback : ReturnCallback<boolean>) => callback(null, true);
 
     return function(ctx : RequestContext, resource : Resource, callback : ReturnCallback<boolean>) {
