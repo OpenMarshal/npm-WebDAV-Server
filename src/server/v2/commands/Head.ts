@@ -44,7 +44,8 @@ export default class implements HTTPMethod
                                         ctx.setCode(HTTPCodes.OK);
                                         ctx.response.setHeader('Accept-Ranges', 'bytes')
                                         ctx.response.setHeader('Content-Type', mimeType);
-                                        ctx.response.setHeader('Content-Length', size.toString());
+                                        if(size !== null && size !== undefined && size > -1)
+                                            ctx.response.setHeader('Content-Length', size.toString());
                                     }
                                     callback();
                                 })
