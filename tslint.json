@@ -22,7 +22,7 @@
         "typedef": false,
         "typedef-whitespace": false,
         "no-arg": true,
-        "no-conditional-assignment": true,
+        "no-conditional-assignment": false,
         "no-debugger": true,
         "no-invalid-template-strings": true,
         "no-invalid-this": false,
