@@ -26,7 +26,7 @@ import { RequestContext } from '../../../server/v2/RequestContext'
 import { Errors } from '../../../Errors'
 import { Path } from '../Path'
 
-export class _VirtualFileSystemResource
+export class VirtualFileSystemResource
 {
     props : LocalPropertyManager
     locks : LocalLockManager
@@ -36,18 +36,18 @@ export class _VirtualFileSystemResource
     creationDate : number
     type : ResourceType
 
-    constructor(data : _VirtualFileSystemResource | ResourceType)
+    constructor(data : VirtualFileSystemResource | ResourceType)
     {
-        let rs : _VirtualFileSystemResource;
+        let rs : VirtualFileSystemResource;
         if(data.constructor === ResourceType)
         {
             rs = {
                 type: data as ResourceType
-            } as _VirtualFileSystemResource;
+            } as VirtualFileSystemResource;
         }
         else
         {
-            rs = data as _VirtualFileSystemResource;
+            rs = data as VirtualFileSystemResource;
         }
 
         this.lastModifiedDate = rs.lastModifiedDate ? rs.lastModifiedDate : Date.now();
@@ -59,7 +59,7 @@ export class _VirtualFileSystemResource
         this.type = rs.type ? rs.type : ResourceType.File;
     }
 
-    static updateLastModified(r : _VirtualFileSystemResource)
+    static updateLastModified(r : VirtualFileSystemResource)
     {
         r.lastModifiedDate = Date.now();
     }
@@ -124,7 +124,7 @@ export class VirtualSerializer implements FileSystemSerializer
     {
         const fs = new VirtualFileSystem();
         for(const path in serializedData)
-            fs.resources[path] = new _VirtualFileSystemResource(serializedData[path]);
+            fs.resources[path] = new VirtualFileSystemResource(serializedData[path]);
         callback(null, fs);
     }
 }
@@ -132,7 +132,7 @@ export class VirtualSerializer implements FileSystemSerializer
 export class VirtualFileSystem extends FileSystem
 {
     resources : {
-        [path : string] : _VirtualFileSystemResource
+        [path : string] : VirtualFileSystemResource
     }
 
     constructor(serializer ?: FileSystemSerializer)
@@ -140,7 +140,7 @@ export class VirtualFileSystem extends FileSystem
         super(serializer ? serializer : new VirtualSerializer());
 
         this.resources = {
-            '/': new _VirtualFileSystemResource(ResourceType.Directory)
+            '/': new VirtualFileSystemResource(ResourceType.Directory)
         };
     }
     
@@ -151,7 +151,7 @@ export class VirtualFileSystem extends FileSystem
 
     protected _create(path : Path, ctx : CreateInfo, callback : SimpleCallback) : void
     {
-        this.resources[path.toString()] = new _VirtualFileSystemResource(ctx.type);
+        this.resources[path.toString()] = new VirtualFileSystemResource(ctx.type);
         callback();
     }
 
@@ -177,7 +177,7 @@ export class VirtualFileSystem extends FileSystem
         stream.on('finish', () => {
             resource.content = content;
             resource.size = content.map((c) => c.length).reduce((s, n) => s + n, 0);
-            _VirtualFileSystemResource.updateLastModified(resource);
+            VirtualFileSystemResource.updateLastModified(resource);
         })
         callback(null, stream);
     }

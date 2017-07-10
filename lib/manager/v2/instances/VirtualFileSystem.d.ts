@@ -3,7 +3,7 @@ import { LocalPropertyManager, LastModifiedDateInfo, FileSystemSerializer, OpenW
 import { Readable, Writable } from 'stream';
 import { RequestContext } from '../../../server/v2/RequestContext';
 import { Path } from '../Path';
-export declare class _VirtualFileSystemResource {
+export declare class VirtualFileSystemResource {
     props: LocalPropertyManager;
     locks: LocalLockManager;
     content: Buffer[];
@@ -11,8 +11,8 @@ export declare class _VirtualFileSystemResource {
     lastModifiedDate: number;
     creationDate: number;
     type: ResourceType;
-    constructor(data: _VirtualFileSystemResource | ResourceType);
-    static updateLastModified(r: _VirtualFileSystemResource): void;
+    constructor(data: VirtualFileSystemResource | ResourceType);
+    static updateLastModified(r: VirtualFileSystemResource): void;
 }
 export declare class VirtualFileReadable extends Readable {
     contents: Int8Array[];
@@ -32,7 +32,7 @@ export declare class VirtualSerializer implements FileSystemSerializer {
 }
 export declare class VirtualFileSystem extends FileSystem {
     resources: {
-        [path: string]: _VirtualFileSystemResource;
+        [path: string]: VirtualFileSystemResource;
     };
     constructor(serializer?: FileSystemSerializer);
     protected _fastExistCheck(ctx: RequestContext, path: Path, callback: (exists: boolean) => void): void;
