@@ -27,12 +27,12 @@ import { Errors } from '../../../Errors'
 import { Path } from '../Path'
 import * as fs from 'fs'
 
-export class _PhysicalFileSystemResource
+export class PhysicalFileSystemResource
 {
     props : LocalPropertyManager
     locks : LocalLockManager
 
-    constructor(data ?: _PhysicalFileSystemResource)
+    constructor(data ?: PhysicalFileSystemResource)
     {
         if(!data)
         {
@@ -41,7 +41,7 @@ export class _PhysicalFileSystemResource
         }
         else
         {
-            const rs = data as _PhysicalFileSystemResource;
+            const rs = data as PhysicalFileSystemResource;
             this.props = new LocalPropertyManager(rs.props);
             this.locks = new LocalLockManager();
         }
@@ -74,7 +74,7 @@ export class PhysicalSerializer implements FileSystemSerializer
 export class PhysicalFileSystem extends FileSystem
 {
     resources : {
-        [path : string] : _PhysicalFileSystemResource
+        [path : string] : PhysicalFileSystemResource
     }
 
     constructor(public rootPath : string)
@@ -82,7 +82,7 @@ export class PhysicalFileSystem extends FileSystem
         super(new PhysicalSerializer());
 
         this.resources = {
-            '/': new _PhysicalFileSystemResource()
+            '/': new PhysicalFileSystemResource()
         };
     }
 
@@ -102,7 +102,7 @@ export class PhysicalFileSystem extends FileSystem
 
         const callback = (e) => {
             if(!e)
-                this.resources[path.toString()] = new _PhysicalFileSystemResource();
+                this.resources[path.toString()] = new PhysicalFileSystemResource();
             else if(e)
                 e = Errors.ResourceAlreadyExists;
             
@@ -158,7 +158,7 @@ export class PhysicalFileSystem extends FileSystem
                 return callback(Errors.ResourceNotFound);
             
             if(!resource)
-                this.resources[path.toString()] = new _PhysicalFileSystemResource();
+                this.resources[path.toString()] = new PhysicalFileSystemResource();
             
             callback(null, fs.createWriteStream(null, { fd }));
         })
@@ -218,7 +218,7 @@ export class PhysicalFileSystem extends FileSystem
         let resource = this.resources[path.toString()];
         if(!resource)
         {
-            resource = new _PhysicalFileSystemResource();
+            resource = new PhysicalFileSystemResource();
             this.resources[path.toString()] = resource;
         }
 
@@ -230,7 +230,7 @@ export class PhysicalFileSystem extends FileSystem
         let resource = this.resources[path.toString()];
         if(!resource)
         {
-            resource = new _PhysicalFileSystemResource();
+            resource = new PhysicalFileSystemResource();
             this.resources[path.toString()] = resource;
         }
 

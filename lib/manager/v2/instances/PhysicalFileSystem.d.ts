@@ -2,10 +2,10 @@
 import { LocalPropertyManager, LastModifiedDateInfo, FileSystemSerializer, OpenWriteStreamInfo, PropertyManagerInfo, OpenReadStreamInfo, IPropertyManager, LocalLockManager, CreationDateInfo, LockManagerInfo, SimpleCallback, ReturnCallback, ResourceType, ILockManager, ReadDirInfo, CreateInfo, DeleteInfo, FileSystem, SizeInfo, MoveInfo, TypeInfo } from '../fileSystem/export';
 import { Readable, Writable } from 'stream';
 import { Path } from '../Path';
-export declare class _PhysicalFileSystemResource {
+export declare class PhysicalFileSystemResource {
     props: LocalPropertyManager;
     locks: LocalLockManager;
-    constructor(data?: _PhysicalFileSystemResource);
+    constructor(data?: PhysicalFileSystemResource);
 }
 export declare class PhysicalSerializer implements FileSystemSerializer {
     uid(): string;
@@ -15,12 +15,12 @@ export declare class PhysicalSerializer implements FileSystemSerializer {
 export declare class PhysicalFileSystem extends FileSystem {
     rootPath: string;
     resources: {
-        [path: string]: _PhysicalFileSystemResource;
+        [path: string]: PhysicalFileSystemResource;
     };
     constructor(rootPath: string);
     protected getRealPath(path: Path): {
         realPath: string;
-        resource: _PhysicalFileSystemResource;
+        resource: PhysicalFileSystemResource;
     };
     protected _create(path: Path, ctx: CreateInfo, _callback: SimpleCallback): void;
     protected _delete(path: Path, ctx: DeleteInfo, _callback: SimpleCallback): void;

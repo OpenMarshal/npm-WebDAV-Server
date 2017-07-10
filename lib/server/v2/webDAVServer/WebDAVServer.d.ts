@@ -1,6 +1,6 @@
 /// <reference types="node" />
-import { WebDAVServerOptions } from '../WebDAVServerOptions';
 import { ExternalRequestContext, RequestContextExternalOptions, RequestContext } from '../RequestContext';
+import { WebDAVServerOptions } from '../WebDAVServerOptions';
 import { HTTPMethod } from '../WebDAVRequest';
 import { HTTPAuthentication } from '../../../user/v2/authentication/HTTPAuthentication';
 import { PrivilegeManager } from '../../../user/v2/privilege/PrivilegeManager';
