@@ -121,28 +121,30 @@ export abstract class StandardMethods
 
             const copyContent = (callback : SimpleCallback) =>
             {
-                fsFrom.openReadStream(ctx, subPathFrom, (e, rStream) => {
-                    if(e)
-                        return reverse1(e);
-                    
-                    fsTo.openWriteStream(ctx, subPathTo, (e, wStream) => {
+                fsFrom.size(ctx, subPathFrom, true, (e, size) => {
+                    fsFrom.openReadStream(ctx, subPathFrom, true, (e, rStream) => {
                         if(e)
                             return reverse1(e);
                         
-                        let _callback = (e) =>
-                        {
-                            _callback = () => {};
-                            callback(e);
-                        }
+                        fsTo.openWriteStream(ctx, subPathTo, true, size, (e, wStream) => {
+                            if(e)
+                                return reverse1(e);
+                            
+                            let _callback = (e) =>
+                            {
+                                _callback = () => {};
+                                callback(e);
+                            }
 
-                        rStream.pipe(wStream);
-                        rStream.on('error', _callback)
-                        wStream.on('error', _callback)
-                        wStream.on('finish', () => {
-                            _callback(null);
+                            rStream.pipe(wStream);
+                            rStream.on('error', _callback)
+                            wStream.on('error', _callback)
+                            wStream.on('finish', () => {
+                                _callback(null);
+                            })
                         })
                     })
-                })
+                });
             }
 
             const copyChildren = (callback : SimpleCallback) =>
