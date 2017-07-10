@@ -1,5 +1,5 @@
-import { WebDAVServerOptions, setDefaultServerOptions } from '../WebDAVServerOptions'
 import { HTTPRequestContext, ExternalRequestContext, RequestContextExternalOptions, RequestContext } from '../RequestContext'
+import { WebDAVServerOptions, setDefaultServerOptions } from '../WebDAVServerOptions'
 import { HTTPCodes, HTTPMethod } from '../WebDAVRequest'
 import { HTTPAuthentication } from '../../../user/v2/authentication/HTTPAuthentication'
 import { PrivilegeManager } from '../../../user/v2/privilege/PrivilegeManager'
@@ -240,10 +240,6 @@ export class WebDAVServer
             subPath
         };
     }
-
-
-
-
 
     onUnknownMethod(unknownMethod : HTTPMethod)
     {

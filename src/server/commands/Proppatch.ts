@@ -65,7 +65,7 @@ export function method(arg : MethodCallArgs, callback)
                                         arg.invokeEvent(eventName, r, el)
                                     notify(el, e)
                                 })
-                                .done(() => finalize())
+                                .done((_) => finalize())
                         })
                     }
 

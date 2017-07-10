@@ -100,7 +100,7 @@ export default class implements HTTPMethod
                                         if(el.type === 'element')
                                             notify(el, e)
                                     })
-                                    .done(() => finalize())
+                                    .done((_) => finalize())
                             })
                         }
 

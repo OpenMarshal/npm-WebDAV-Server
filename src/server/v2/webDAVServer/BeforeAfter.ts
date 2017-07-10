@@ -1,9 +1,6 @@
 import { HTTPRequestContext, HTTPMethod } from '../WebDAVRequest'
 
-export interface RequestListener
-{
-    (ctx : HTTPRequestContext, next : () => void) : void
-}
+export type RequestListener = (ctx : HTTPRequestContext, next : () => void) => void;
 
 function invokeBARequest(collection : RequestListener[], base : HTTPRequestContext, callback)
 {

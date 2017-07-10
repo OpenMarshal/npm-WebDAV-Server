@@ -11,7 +11,7 @@ server.method('TRACE', {
         const nbPaths = wctx.requested.path.paths.length;
         const method = wctx.headers.find('trace-method', '*').toLowerCase();
         const separator = wctx.headers.find('trace-separator', '\r\n');
-        const iDepth = parseInt(wctx.headers.find('trace-depth', 'infinity').toLowerCase());
+        const iDepth = parseInt(wctx.headers.find('trace-depth', 'infinity').toLowerCase(), 10);
         const depth = isNaN(iDepth) ? -1 : iDepth;
         wctx.setCode(webdav.HTTPCodes.OK);
 

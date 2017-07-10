@@ -274,9 +274,9 @@ export default class implements HTTPMethod
                                     const prop = propstatError.ele('D:prop');
                                     propstatError.ele('D:status').add(propstatStatus(HTTPCodes.NotFound));
 
-                                    for(let i = 0; i < reqBody.leftElements.length; ++i)
-                                        if(reqBody.leftElements[i])
-                                            prop.ele(reqBody.leftElements[i].name);
+                                    for(const el of reqBody.leftElements)
+                                        if(el)
+                                            prop.ele(el.name);
                                 }
                                 callback();
                             }
