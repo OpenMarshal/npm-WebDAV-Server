@@ -1,0 +1,11 @@
+{
+  "name": "custom-method",
+  "version": "1.0.0",
+  "description": "Example to show how to make a custom method.",
+  "main": "index.js",
+  "author": "Adrien Castex <adrien.castex@protonmail.com>",
+  "license": "Unlicense",
+  "dependencies": {
+    "webdav-server": "^2.0.0"
+  }
+}
