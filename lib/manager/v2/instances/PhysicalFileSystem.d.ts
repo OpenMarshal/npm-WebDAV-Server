@@ -12,6 +12,12 @@ export declare class PhysicalSerializer implements FileSystemSerializer {
     serialize(fs: PhysicalFileSystem, callback: ReturnCallback<any>): void;
     unserialize(serializedData: any, callback: ReturnCallback<FileSystem>): void;
 }
+export declare const PhysicalSerializerVersions: {
+    versions: {
+        '1.0.0': typeof PhysicalSerializer;
+    };
+    instances: FileSystemSerializer[];
+};
 export declare class PhysicalFileSystem extends FileSystem {
     rootPath: string;
     resources: {

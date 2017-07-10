@@ -30,6 +30,12 @@ export declare class VirtualSerializer implements FileSystemSerializer {
     serialize(fs: VirtualFileSystem, callback: ReturnCallback<any>): void;
     unserialize(serializedData: any, callback: ReturnCallback<FileSystem>): void;
 }
+export declare const VirtualSerializerVersions: {
+    versions: {
+        '1.0.0': typeof VirtualSerializer;
+    };
+    instances: FileSystemSerializer[];
+};
 export declare class VirtualFileSystem extends FileSystem {
     resources: {
         [path: string]: VirtualFileSystemResource;

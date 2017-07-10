@@ -117,16 +117,37 @@ export class VirtualSerializer implements FileSystemSerializer
 
     serialize(fs : VirtualFileSystem, callback : ReturnCallback<any>) : void
     {
-        callback(null, fs.resources);
+        callback(null, {
+            resources: fs.resources
+        });
     }
 
     unserialize(serializedData : any, callback : ReturnCallback<FileSystem>) : void
     {
         const fs = new VirtualFileSystem();
-        for(const path in serializedData)
-            fs.resources[path] = new VirtualFileSystemResource(serializedData[path]);
+
+        if(serializedData.resources)
+        {
+            for(const path in serializedData.resources)
+                fs.resources[path] = new VirtualFileSystemResource(serializedData.resources[path]);
+        }
+        else
+        {
+            for(const path in serializedData)
+                fs.resources[path] = new VirtualFileSystemResource(serializedData[path]);
+        }
+
         callback(null, fs);
     }
+}
+
+export const VirtualSerializerVersions = {
+    versions: {
+        '1.0.0': VirtualSerializer
+    },
+    instances: [
+        new VirtualSerializer()
+    ] as FileSystemSerializer[]
 }
 
 export class VirtualFileSystem extends FileSystem

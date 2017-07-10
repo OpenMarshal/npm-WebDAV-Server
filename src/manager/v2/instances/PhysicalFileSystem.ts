@@ -71,6 +71,15 @@ export class PhysicalSerializer implements FileSystemSerializer
     }
 }
 
+export const PhysicalSerializerVersions = {
+    versions: {
+        '1.0.0': PhysicalSerializer,
+    },
+    instances: [
+        new PhysicalSerializer()
+    ] as FileSystemSerializer[]
+}
+
 export class PhysicalFileSystem extends FileSystem
 {
     resources : {

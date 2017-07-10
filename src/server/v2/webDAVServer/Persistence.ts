@@ -1,8 +1,8 @@
 import { FileSystem } from '../../../manager/v2/fileSystem/FileSystem'
 import { SimpleCallback } from '../../../manager/v2/fileSystem/CommonTypes'
 import { FileSystemSerializer, serialize, unserialize, SerializedData } from '../../../manager/v2/fileSystem/Serialization'
-import { VirtualSerializer } from '../../../manager/v2/instances/VirtualFileSystem'
-import { PhysicalSerializer } from '../../../manager/v2/instances/PhysicalFileSystem'
+import { VirtualSerializerVersions } from '../../../manager/v2/instances/VirtualFileSystem'
+import { PhysicalSerializerVersions } from '../../../manager/v2/instances/PhysicalFileSystem'
 import { HTTPRequestContext } from '../RequestContext'
 import { IAutoSave, IAutoLoad } from '../WebDAVServerOptions'
 import { Readable } from 'stream'
@@ -11,10 +11,7 @@ import * as fs from 'fs'
 
 function defaultSerializers()
 {
-    return [
-        new VirtualSerializer(),
-        new PhysicalSerializer()
-    ];
+    return VirtualSerializerVersions.instances.concat(PhysicalSerializerVersions.instances);
 }
 
 export function load(data : SerializedData, serializers : FileSystemSerializer[], callback: (error : Error) => void)
