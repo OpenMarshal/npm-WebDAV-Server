@@ -1047,7 +1047,7 @@ export abstract class FileSystem implements ISerializableFileSystem
         const pPath = new Path(path);
         const callback = (e ?: Error, data ?: Path[]) => {
             if(e)
-                return _callback(e);
+                return __callback(e);
             if(!data)
                 data = [];
             
