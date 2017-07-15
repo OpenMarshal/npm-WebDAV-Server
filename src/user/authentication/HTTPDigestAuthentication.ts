@@ -42,15 +42,9 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
 
         let authHeader = arg.findHeader('Authorization')
         if(!authHeader)
-        {
-            onError(Errors.MissingAuthorisationHeader)
-            return;
-        }
-        if(!/^Digest (\s*[a-zA-Z]+\s*=\s*(("(\\"|[^"])+")|([^,\s]+))\s*(,|$))+$/.test(authHeader))
-        {
-            onError(Errors.WrongHeaderFormat);
-            return;
-        }
+            return onError(Errors.MissingAuthorisationHeader);
+        if(!/^Digest (\s*[a-zA-Z]+\s*=\s*(("(\\"|[^"])+")|([^,\s]+))?\s*(,|$))+$/.test(authHeader))
+            return onError(Errors.WrongHeaderFormat);
 
         authHeader = authHeader.substring(authHeader.indexOf(' ') + 1); // remove the authentication type from the string
 
@@ -64,22 +58,30 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
             match = rex.exec(authHeader);
         }
         
-        if(!(authProps.username && authProps.nonce && authProps.nc && authProps.cnonce && authProps.qop && authProps.response))
-        {
-            onError(Errors.AuenticationPropertyMissing);
-            return;
-        }
+        if(!(authProps.username && authProps.nonce && authProps.response))
+            return onError(Errors.AuenticationPropertyMissing);
+        if(!authProps.algorithm)
+            authProps.algorithm = 'MD5';
         
         userManager.getUserByName(authProps.username, (e, user) => {
             if(e)
-            {
-                onError(e);
-                return;
-            }
+                return onError(e);
         
-            const ha1 = md5(authProps.username + ':' + this.realm + ':' + (user.password ? user.password : ''));
-            const ha2 = md5(arg.request.method.toString().toUpperCase() + ':' + arg.uri);
-            const result = md5(ha1 + ':' + authProps.nonce + ':' + authProps.nc + ':' + authProps.cnonce + ':' + authProps.qop + ':' + ha2);
+            let ha1 = md5(authProps.username + ':' + this.realm + ':' + (user.password ? user.password : ''));
+            if(authProps.algorithm === 'MD5-sess')
+                ha1 = md5(ha1 + ':' + authProps.nonce + ':' + authProps.cnonce);
+
+            let ha2;
+            if(authProps.qop === 'auth-int')
+                return onError(Errors.WrongHeaderFormat); // ha2 = md5(ctx.request.method.toString().toUpperCase() + ':' + ctx.requested.uri + ':' + md5(...));
+            else
+                ha2 = md5(arg.request.method.toString().toUpperCase() + ':' + arg.uri);
+
+            let result;
+            if(authProps.qop === 'auth-int' || authProps.qop === 'auth')
+                result = md5(ha1 + ':' + authProps.nonce + ':' + authProps.nc + ':' + authProps.cnonce + ':' + authProps.qop + ':' + ha2);
+            else
+                result = md5(ha1 + ':' + authProps.nonce + ':' + ha2);
 
             if(result.toLowerCase() === authProps.response.toLowerCase())
                 callback(Errors.None, user);

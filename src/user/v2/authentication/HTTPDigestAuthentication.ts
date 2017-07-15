@@ -58,7 +58,7 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
             match = rex.exec(authHeader);
         }
         
-        if(!(authProps.username && authProps.nonce && authProps.nc && authProps.cnonce && authProps.response))
+        if(!(authProps.username && authProps.nonce && authProps.response))
             return onError(Errors.AuenticationPropertyMissing);
         if(!authProps.algorithm)
             authProps.algorithm = 'MD5';
