@@ -2,7 +2,6 @@ import { PrivilegeManagerInfo, AvailableLocksInfo, CopyInfo, CreateInfo, Creatio
 import { Readable, Writable } from 'stream'
 import { RequestContext } from '../../../server/v2/RequestContext'
 import { BasicPrivilege, PrivilegeManager } from '../../../user/v2/privilege/PrivilegeManager'
-import { XMLElement } from '../../../helper/XML'
 import { LockScope } from '../../../resource/lock/LockScope'
 import { LockType } from '../../../resource/lock/LockType'
 import { LockKind } from '../../../resource/lock/LockKind'

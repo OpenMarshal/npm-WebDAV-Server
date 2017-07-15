@@ -1,10 +1,11 @@
 import { Test } from '../Type'
 import { v2 } from '../../../../lib/index.js'
 import { methodTesterNotBlocking } from './.createFiles'
+import { XMLElementUtil } from 'xml-js-builder'
 
 export default ((info, isValid) =>
 {
-    function testStatus(xml : v2.XMLElement, expectedCode : number, callback : () => void)
+    function testStatus(xml : XMLElementUtil, expectedCode : number, callback : () => void)
     {
         try
         {

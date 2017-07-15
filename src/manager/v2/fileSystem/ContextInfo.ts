@@ -1,6 +1,5 @@
 import { Readable, Writable } from 'stream'
 import { RequestContext } from '../../../server/v2/RequestContext'
-import { XMLElement } from '../../../helper/XML'
 import { LockScope } from '../../../resource/lock/LockScope'
 import { LockType } from '../../../resource/lock/LockType'
 import { LockKind } from '../../../resource/lock/LockKind'

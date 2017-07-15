@@ -1,4 +1,4 @@
-import { XMLElement } from '../../helper/XML';
+import { XMLElement } from 'xml-js-builder';
 import { LockKind } from './LockKind';
 import { IUser } from '../../user/IUser';
 export declare type LockOwner = string | XMLElement | XMLElement[];

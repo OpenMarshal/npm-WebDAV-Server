@@ -2,7 +2,8 @@
 var webdav = require('../../lib/index.js').v2,
     request = require('request'),
     path = require('path'),
-    fs = require('fs')
+    fs = require('fs'),
+    xmljs = require('xml-js-builder')
 
 module.exports = (callback, options) => {
     var successes = [];
@@ -111,7 +112,7 @@ module.exports = (callback, options) => {
                                 {
                                     try
                                     {
-                                        body = webdav.XML.parse(body);
+                                        body = xmljs.XML.parse(body);
                                     }
                                     catch(ex)
                                     {

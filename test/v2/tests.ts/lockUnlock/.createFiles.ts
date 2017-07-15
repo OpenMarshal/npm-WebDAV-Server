@@ -1,12 +1,13 @@
 import { TestCallback, TestInfo } from '../Type'
 import { v2 } from '../../../../lib/index.js'
+import { XMLElementUtil } from 'xml-js-builder'
 
 export interface Lock
 {
     scope : string
     type : string
     depth : number
-    owner : string | v2.XMLElement | v2.XMLElement[]
+    owner : string | XMLElementUtil | XMLElementUtil[]
     timeoutSec : number
     uuid : string
     root : string

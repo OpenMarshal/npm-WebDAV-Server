@@ -1,5 +1,5 @@
 import { ResourceTesterTestCallback } from './Types'
-import { XML } from '../../../helper/XML'
+import { XML } from 'xml-js-builder'
 
 // ****************************** Properties ****************************** //
 export function setProperty(callback : ResourceTesterTestCallback)

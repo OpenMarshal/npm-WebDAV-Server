@@ -3,7 +3,7 @@ import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
 import { IPropertyManager } from '../../../manager/v2/fileSystem/PropertyManager'
 import { STATUS_CODES } from 'http'
 import { Workflow } from '../../../helper/Workflow'
-import { XML, XMLElement } from '../../../helper/XML'
+import { XML, XMLElementBuilder, XMLElement } from 'xml-js-builder'
 import { Errors } from '../../../Errors'
 
 export default class implements HTTPMethod
@@ -13,7 +13,7 @@ export default class implements HTTPMethod
         ctx.getResource((e, r) => {
             ctx.checkIfHeader(r, () => {
                 //ctx.requirePrivilege([ 'canSetProperty', 'canRemoveProperty' ], r, () => {
-                    const multistatus = XML.createElement('D:multistatus', {
+                    const multistatus = new XMLElementBuilder('D:multistatus', {
                         'xmlns:D': 'DAV:'
                     });
                     const response = multistatus.ele('D:response');

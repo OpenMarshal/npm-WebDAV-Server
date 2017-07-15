@@ -2,7 +2,7 @@
 import { Readable, Writable } from 'stream';
 import { FSManager, FSPath } from '../manager/FSManager';
 import { RequestContext } from '../server/MethodCallArgs';
-import { XMLElement } from '../helper/XML';
+import { XMLElement } from 'xml-js-builder';
 import { LockKind } from './lock/LockKind';
 import { Lock } from './lock/Lock';
 export declare type SimpleCallback = (error: Error) => void;

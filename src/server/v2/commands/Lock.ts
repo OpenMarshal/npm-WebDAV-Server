@@ -7,13 +7,13 @@ import { LockKind } from '../../../resource/lock/LockKind'
 import { LockType } from '../../../resource/lock/LockType'
 import { Errors } from '../../../Errors'
 import { Lock } from '../../../resource/lock/Lock'
-import { XML } from '../../../helper/XML'
+import { XML, XMLElementBuilder } from 'xml-js-builder'
 import { IUser } from '../../../user/v2/IUser'
 import * as path from 'path'
 
 function createResponse(ctx : HTTPRequestContext, lock : Lock)
 {
-    const prop = XML.createElement('D:prop', {
+    const prop = new XMLElementBuilder('D:prop', {
         'xmlns:D': 'DAV:'
     });
     const activelock = prop.ele('D:lockdiscovery').ele('D:activelock');

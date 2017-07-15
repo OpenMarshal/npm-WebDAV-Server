@@ -1,4 +1,4 @@
-import { XMLElement } from '../../../helper/XML';
+import { XMLElement } from 'xml-js-builder';
 export declare type SimpleCallback = (error?: Error) => void;
 export declare type ReturnCallback<T> = (error?: Error, data?: T) => void;
 export declare type Return2Callback<T1, T2> = (error?: Error, data1?: T1, data2?: T2) => void;

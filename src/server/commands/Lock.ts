@@ -6,12 +6,12 @@ import { LockKind } from '../../resource/lock/LockKind'
 import { LockType } from '../../resource/lock/LockType'
 import { Errors } from '../../Errors'
 import { Lock } from '../../resource/lock/Lock'
-import { XML } from '../../helper/XML'
+import { XML, XMLElementBuilder } from 'xml-js-builder'
 import * as path from 'path'
 
 function createResponse(arg : MethodCallArgs, lock : Lock)
 {
-    const prop = XML.createElement('D:prop', {
+    const prop = new XMLElementBuilder('D:prop', {
         'xmlns:D': 'DAV:'
     });
     const activelock = prop.ele('D:lockdiscovery').ele('D:activelock');

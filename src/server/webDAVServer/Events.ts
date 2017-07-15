@@ -1,5 +1,5 @@
 import { MethodCallArgs } from '../WebDAVRequest'
-import { XMLElement } from '../../helper/XML'
+import { XMLElement } from 'xml-js-builder'
 import { IResource } from '../../resource/IResource'
 import { FSPath } from '../../manager/FSPath'
 import { Lock } from '../../resource/lock/Lock'

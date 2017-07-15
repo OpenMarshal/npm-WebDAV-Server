@@ -1,6 +1,6 @@
 import { IResource, ETag, ReturnCallback, ResourceType } from '../../resource/IResource'
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
-import { XML, XMLElement } from '../../helper/XML'
+import { XMLElementBuilder, XML, XMLElement } from 'xml-js-builder'
 import { BasicPrivilege } from '../../user/privilege/IPrivilegeManager'
 import { Workflow } from '../../helper/Workflow'
 import { FSPath } from '../../manager/FSPath'
@@ -139,7 +139,7 @@ export function method(arg : MethodCallArgs, callback)
         arg.checkIfHeader(resource, () => {
             const targetSource = arg.isSource;
 
-            const multistatus = XML.createElement('D:multistatus', {
+            const multistatus = new XMLElementBuilder('D:multistatus', {
                 'xmlns:D': 'DAV:'
             })
 
@@ -195,7 +195,7 @@ export function method(arg : MethodCallArgs, callback)
             {
                 const reqBody = parseRequestBody(arg);
 
-                const response = XML.createElement('D:response');
+                const response = new XMLElementBuilder('D:response');
                 const callback = (e ?: Error) => {
                     if(e === Errors.MustIgnore)
                         e = null;

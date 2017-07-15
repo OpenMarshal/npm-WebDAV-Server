@@ -2,7 +2,7 @@
 import { IResource, ReturnCallback, ResourceType } from '../resource/IResource';
 import { BasicPrivilege } from '../user/privilege/IPrivilegeManager';
 import { EventsName, DetailsType } from './webDAVServer/Events';
-import { XMLElement } from '../helper/XML';
+import { XMLElement } from 'xml-js-builder';
 import { WebDAVServer } from './webDAVServer/WebDAVServer';
 import { FSPath } from '../manager/FSManager';
 import { IUser } from '../user/IUser';

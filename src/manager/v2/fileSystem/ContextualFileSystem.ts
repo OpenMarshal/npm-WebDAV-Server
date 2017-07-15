@@ -1,7 +1,6 @@
 import { AvailableLocksInfo, CopyInfo, CreateInfo, CreationDateInfo, DeleteInfo, DisplayNameInfo, ETagInfo, IContextInfo, LastModifiedDateInfo, LockManagerInfo, MimeTypeInfo, MoveInfo, OpenReadStreamInfo, OpenWriteStreamInfo, PropertyManagerInfo, ReadDirInfo, RenameInfo, SizeInfo, TypeInfo, WebNameInfo } from './ContextInfo'
 import { Readable, Writable } from 'stream'
 import { RequestContext } from '../../../server/v2/RequestContext'
-import { XMLElement } from '../../../helper/XML'
 import { LockScope } from '../../../resource/lock/LockScope'
 import { LockType } from '../../../resource/lock/LockType'
 import { LockKind } from '../../../resource/lock/LockKind'

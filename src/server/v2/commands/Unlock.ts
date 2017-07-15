@@ -6,7 +6,7 @@ import { LockKind } from '../../../resource/lock/LockKind'
 import { LockType } from '../../../resource/lock/LockType'
 import { Errors } from '../../../Errors'
 import { Lock } from '../../../resource/lock/Lock'
-import { XML } from '../../../helper/XML'
+import { XML } from 'xml-js-builder'
 
 export default class implements HTTPMethod
 {

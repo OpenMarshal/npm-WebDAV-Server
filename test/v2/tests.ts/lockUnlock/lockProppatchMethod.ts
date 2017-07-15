@@ -1,12 +1,13 @@
 import { Test } from '../Type'
 import { v2 } from '../../../../lib/index.js'
 import { methodTesterBlocking } from './.createFiles'
+import { XMLElementUtil } from 'xml-js-builder'
 
 export default ((info, isValid) =>
 {
     const proppatch = '<?xml version="1.0" encoding="utf-8" ?><D:propertyupdate xmlns:D="DAV:" xmlns:Z="http://ns.example.com/standards/z39.50/"><D:set><D:prop><Z:Authors><Z:Author>Jim Whitehead</Z:Author><Z:Author>Roy Fielding</Z:Author></Z:Authors></D:prop></D:set></D:propertyupdate>';
 
-    function testStatus(xml : v2.XMLElement, expectedCode : number, callback : () => void)
+    function testStatus(xml : XMLElementUtil, expectedCode : number, callback : () => void)
     {
         try
         {

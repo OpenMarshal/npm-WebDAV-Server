@@ -1,5 +1,6 @@
 import { v2 } from '../../../lib/index.js'
 import { RequestResponse, Options, Request } from 'request'
+import { XMLElementUtil } from 'xml-js-builder'
 
 export interface TestInfo
 {
@@ -13,8 +14,8 @@ export interface TestInfo
         (config : Options, codeStatusExpected : number, callback : (res : RequestResponse, body ?: string) => void) : void
     }
     reqXML : {
-        (config : Options, callback : (res : RequestResponse, body ?: v2.XMLElement) => void) : void
-        (config : Options, codeStatusExpected : number, callback : (res : RequestResponse, body ?: v2.XMLElement) => void) : void
+        (config : Options, callback : (res : RequestResponse, body ?: XMLElementUtil) => void) : void
+        (config : Options, codeStatusExpected : number, callback : (res : RequestResponse, body ?: XMLElementUtil) => void) : void
     }
     reqStream : (config : Options, callback : () => void) => Request
 }

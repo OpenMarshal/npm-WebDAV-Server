@@ -1,7 +1,7 @@
 import { IResource, ReturnCallback, ResourceType } from '../resource/IResource'
 import { requirePrivilege, BasicPrivilege } from '../user/privilege/IPrivilegeManager'
 import { EventsName, DetailsType } from './webDAVServer/Events'
-import { XML, XMLElement } from '../helper/XML'
+import { XML, XMLElement } from 'xml-js-builder'
 import { parseIfHeader } from '../helper/IfParser'
 import { WebDAVServer } from './webDAVServer/WebDAVServer'
 import { HTTPCodes } from './HTTPCodes'

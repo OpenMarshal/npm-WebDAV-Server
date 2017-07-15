@@ -1,4 +1,4 @@
-import { XML, XMLElement } from '../../helper/XML'
+import { XML, XMLElement } from 'xml-js-builder'
 import { parseIfHeader } from '../../helper/v2/IfParser'
 import { WebDAVServer } from './webDAVServer/WebDAVServer'
 import { HTTPCodes } from '../HTTPCodes'

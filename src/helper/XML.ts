@@ -1,4 +1,4 @@
-import { Errors } from '../Errors'
+/*import { Errors } from '../Errors'
 import * as xmljs from 'xml-js'
 
 function seekForNS(node : any, parentNS : any) : any
@@ -273,3 +273,4 @@ export abstract class XML
     }
 }
 
+*/

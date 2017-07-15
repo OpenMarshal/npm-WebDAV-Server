@@ -1,7 +1,8 @@
 import { TestCallback, TestInfo } from '../Type'
 import { v2 } from '../../../../lib/index.js'
+import { XMLElementUtil } from 'xml-js-builder'
 
-export function proppatch(server : v2.WebDAVServer, info : TestInfo, path : string, expectedStatusCode : number, bodySet : string[], bodyRemove : string[], callback : (xml : v2.XMLElement) => void)
+export function proppatch(server : v2.WebDAVServer, info : TestInfo, path : string, expectedStatusCode : number, bodySet : string[], bodyRemove : string[], callback : (xml : XMLElementUtil) => void)
 {
     let body = '<D:propertyupdate xmlns:D="DAV:" xmlns:Z="http://ns.example.com/standards/z39.50/">';
     if(bodySet && bodySet.length > 0)
@@ -19,7 +20,7 @@ export function proppatch(server : v2.WebDAVServer, info : TestInfo, path : stri
     })
 }
 
-export function propfind(server : v2.WebDAVServer, info : TestInfo, path : string, expectedStatusCode : number, depth : number, body : string, callback : (xml : v2.XMLElement) => void)
+export function propfind(server : v2.WebDAVServer, info : TestInfo, path : string, expectedStatusCode : number, depth : number, body : string, callback : (xml : XMLElementUtil) => void)
 {
     info.reqXML({
         url: 'http://localhost:' + server.options.port + '/' + path,

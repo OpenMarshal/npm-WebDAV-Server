@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { XMLElement } from '../../helper/XML';
+import { XMLElement } from 'xml-js-builder';
 import { WebDAVServer } from './webDAVServer/WebDAVServer';
 import { FileSystem } from '../../manager/v2/fileSystem/FileSystem';
 import { ReturnCallback } from '../../manager/v2/fileSystem/CommonTypes';

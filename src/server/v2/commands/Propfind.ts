@@ -1,5 +1,5 @@
 import { HTTPCodes, HTTPRequestContext, HTTPMethod } from '../WebDAVRequest'
-import { XML, XMLElement } from '../../../helper/XML'
+import { XML, XMLElementBuilder, XMLElement } from 'xml-js-builder'
 import { Workflow } from '../../../helper/Workflow'
 import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
 import { Resource } from '../../../manager/v2/fileSystem/Resource'
@@ -161,7 +161,7 @@ export default class implements HTTPMethod
             ctx.checkIfHeader(resource, () => {
                 const targetSource = ctx.headers.isSource;
 
-                const multistatus = XML.createElement('D:multistatus', {
+                const multistatus = new XMLElementBuilder('D:multistatus', {
                     'xmlns:D': 'DAV:'
                 })
 
@@ -222,7 +222,7 @@ export default class implements HTTPMethod
                 {
                     const reqBody = parseRequestBody(ctx, data);
 
-                    const response = XML.createElement('D:response');
+                    const response = new XMLElementBuilder('D:response');
                     const callback = (e ?: Error) => {
                         if(e === Errors.MustIgnore)
                             e = null;

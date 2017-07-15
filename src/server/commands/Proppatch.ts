@@ -3,7 +3,7 @@ import { IResource, ResourceType } from '../../resource/IResource'
 import { STATUS_CODES } from 'http'
 import { EventsName } from '../../server/webDAVServer/events'
 import { Workflow } from '../../helper/Workflow'
-import { XML } from '../../helper/XML'
+import { XML, XMLElementBuilder } from 'xml-js-builder'
 
 export function method(arg : MethodCallArgs, callback)
 {
@@ -17,7 +17,7 @@ export function method(arg : MethodCallArgs, callback)
         
         arg.checkIfHeader(r, () => {
             arg.requirePrivilege([ 'canSetProperty', 'canRemoveProperty' ], r, () => {
-                const multistatus = XML.createElement('D:multistatus', {
+                const multistatus = new XMLElementBuilder('D:multistatus', {
                     'xmlns:D': 'DAV:'
                 });
                 const response = multistatus.ele('D:response');
