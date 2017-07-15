@@ -23,7 +23,8 @@ function createResponse(ctx : HTTPRequestContext, lock : Lock)
     activelock.ele('D:locktoken').ele('D:href', undefined, true).add(lock.uuid);
     activelock.ele('D:lockroot').ele('D:href', undefined, true).add(encodeURI(ctx.fullUri()));
     activelock.ele('D:depth').add(lock.depth === -1 ? 'infinity' : lock.depth.toString());
-    activelock.ele('D:owner').add(lock.owner);
+    if(lock.owner)
+        activelock.ele('D:owner').add(lock.owner);
     activelock.ele('D:timeout').add('Second-' + lock.lockKind.timeout);
 
     return prop;

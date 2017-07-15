@@ -21,7 +21,8 @@ function createResponse(arg : MethodCallArgs, lock : Lock)
     activelock.ele('D:locktoken').ele('D:href', undefined, true).add(lock.uuid);
     activelock.ele('D:lockroot').add(arg.fullUri());
     activelock.ele('D:depth').add('infinity');
-    activelock.ele('D:owner').add(lock.owner);
+    if(lock.owner)
+        activelock.ele('D:owner').add(lock.owner);
     activelock.ele('D:timeout').add('Second-' + lock.lockKind.timeout);
 
     return prop;
