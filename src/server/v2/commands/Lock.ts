@@ -21,7 +21,7 @@ function createResponse(ctx : HTTPRequestContext, lock : Lock)
     activelock.ele('D:locktype').ele(lock.lockKind.type.value);
     activelock.ele('D:lockscope').ele(lock.lockKind.scope.value);
     activelock.ele('D:locktoken').ele('D:href', undefined, true).add(lock.uuid);
-    activelock.ele('D:lockroot').ele('D:href', undefined, true).add(encodeURI(ctx.fullUri()));
+    activelock.ele('D:lockroot').ele('D:href', undefined, true).add(ctx.fullUri());
     activelock.ele('D:depth').add(lock.depth === -1 ? 'infinity' : lock.depth.toString());
     if(lock.owner)
         activelock.ele('D:owner').add(lock.owner);

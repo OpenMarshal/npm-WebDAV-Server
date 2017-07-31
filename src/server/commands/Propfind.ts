@@ -119,6 +119,11 @@ function parseRequestBody(arg : MethodCallArgs) : PropertyRule
     }
 }
 
+function encode(url : string)
+{
+    return url;
+}
+
 function propstatStatus(status : number)
 {
     return 'HTTP/1.1 ' + status + ' ' + http.STATUS_CODES[status];
@@ -329,7 +334,7 @@ export function method(arg : MethodCallArgs, callback)
                                             activelock.ele('D:owner').add(lock.owner)
                                         activelock.ele('D:timeout').add('Second-' + (lock.expirationDate - Date.now()))
                                         activelock.ele('D:locktoken').ele('D:href', undefined, true).add(lock.uuid)
-                                        activelock.ele('D:lockroot').ele('D:href', undefined, true).add(encodeURI(arg.fullUri(path)))
+                                        activelock.ele('D:lockroot').ele('D:href', undefined, true).add(encode(arg.fullUri(path)))
                                     }
                                 }
                                 
@@ -344,7 +349,7 @@ export function method(arg : MethodCallArgs, callback)
                                 return;
                             }
                             
-                            const p = encodeURI(arg.fullUri(path));
+                            const p = encode(arg.fullUri(path));
                             const href = p.lastIndexOf('/') !== p.length - 1 && type.isDirectory ? p + '/' : p;
                             response.ele('D:href', undefined, true).add(href);
                             response.ele('D:location').ele('D:href', undefined, true).add(p);
@@ -390,7 +395,7 @@ export function method(arg : MethodCallArgs, callback)
                         
                         methodDisplayName.bind(resource)((e, name) => process.nextTick(() => {
                             if(!e)
-                                tags.displayname.el.add(name ? encodeURI(name) : '');
+                                tags.displayname.el.add(name ? encode(name) : '');
                             nbOut(e);
                         }))
                     })

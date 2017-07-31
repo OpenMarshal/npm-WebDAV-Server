@@ -21,7 +21,7 @@ export function method(arg : MethodCallArgs, callback)
                     'xmlns:D': 'DAV:'
                 });
                 const response = multistatus.ele('D:response');
-                response.ele('D:href', undefined, true).add(encodeURI(arg.fullUri()));
+                response.ele('D:href', undefined, true).add(arg.fullUri());
 
                 try
                 {
