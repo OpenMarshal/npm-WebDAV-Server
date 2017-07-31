@@ -7,7 +7,7 @@ export class Path
     {
         if(path.constructor === String)
         {
-            let sPath = decodeURI((path as string));
+            let sPath = path as string;
             let doubleIndex;
             while((doubleIndex = sPath.indexOf('//')) !== -1)
                 sPath = sPath.substr(0, doubleIndex) + sPath.substr(doubleIndex + 1);
