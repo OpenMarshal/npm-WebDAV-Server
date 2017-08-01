@@ -215,6 +215,9 @@ export class HTTPRequestContext extends RequestContext
     {
         const ctx = new HTTPRequestContext(server, request, response, null);
         response.setHeader('DAV', '1,2');
+        response.setHeader('Access-Control-Allow-Origin', '*');
+        response.setHeader('Access-Control-Allow-Credentials', 'true');
+        response.setHeader('Access-Control-Expose-Headers', 'DAV, content-length, Allow');
         response.setHeader('Server', server.options.serverName + '/' + server.options.version);
 
         ctx.askForAuthentication(false, (e) => {
