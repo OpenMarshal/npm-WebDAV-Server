@@ -14,14 +14,16 @@ class RangedStream extends Transform
         this.nb = 0;
     }
 
-    _transform(chunk: any, encoding: string, callback: Function)
+    _transform(chunk : string | Buffer, encoding : string, callback : Function)
     {
         if(this.nb < this.min)
         {
+            const lastNb = this.nb;
             this.nb += chunk.length;
             if(this.nb > this.min)
             {
-                chunk = chunk.slice(this.nb - this.min);
+                const start = this.min - lastNb;
+                chunk = chunk.slice(start, this.nb > this.max ? this.max - this.min + 1 + start : undefined);
                 callback(null, chunk);
             }
             else
@@ -36,7 +38,7 @@ class RangedStream extends Transform
         {
             this.nb += chunk.length;
             if(this.nb > this.max)
-                chunk = chunk.slice(0, this.max - (this.nb - chunk.length));
+                chunk = chunk.slice(0, this.max - (this.nb - chunk.length) + 1);
             callback(null, chunk);
         }
     }
@@ -100,7 +102,7 @@ export default class implements HTTPMethod
                                             ctx.setCode(HTTPCodes.PartialContent);
                                             ctx.response.setHeader('Accept-Ranges', 'bytes')
                                             ctx.response.setHeader('Content-Type', mimeType)
-                                            ctx.response.setHeader('Content-Length', (max - min).toString())
+                                            ctx.response.setHeader('Content-Length', Math.min(size, max - min + 1).toString())
                                             ctx.response.setHeader('Content-Range', 'bytes ' + min + '-' + max + '/*')
 
                                             rstream.on('end', callback);
