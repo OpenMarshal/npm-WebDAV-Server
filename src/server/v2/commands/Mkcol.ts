@@ -11,7 +11,7 @@ export default class implements HTTPMethod
         ctx.noBodyExpected(() => {
             ctx.checkIfHeader(undefined, () => {
                 ctx.getResource((e, r) => {
-                    ctx.getResource(r.path.getParent(), (e, rParent) => {
+                    ctx.getResource(ctx.requested.path.getParent(), (e, rParent) => {
                         rParent.type((e, parentType) => {
                             if(e)
                             {
