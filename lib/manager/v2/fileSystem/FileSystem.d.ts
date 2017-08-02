@@ -2,6 +2,7 @@
 import { PrivilegeManagerInfo, AvailableLocksInfo, CopyInfo, CreateInfo, CreationDateInfo, DeleteInfo, DisplayNameInfo, ETagInfo, LastModifiedDateInfo, LockManagerInfo, MimeTypeInfo, MoveInfo, OpenReadStreamInfo, OpenWriteStreamInfo, PropertyManagerInfo, ReadDirInfo, RenameInfo, SizeInfo, TypeInfo } from './ContextInfo';
 import { Readable, Writable } from 'stream';
 import { RequestContext } from '../../../server/v2/RequestContext';
+import { FileSystemEvent, WebDAVServer } from '../../../server/v2/webDAVServer/WebDAVServer';
 import { BasicPrivilege, PrivilegeManager } from '../../../user/v2/privilege/PrivilegeManager';
 import { LockKind } from '../../../resource/lock/LockKind';
 import { Lock } from '../../../resource/lock/Lock';
@@ -598,4 +599,44 @@ export declare abstract class FileSystem implements ISerializableFileSystem {
      * @param callback Returns the serialized data or an error.
      */
     serialize(callback: ReturnCallback<any>): void;
+    /**
+     * Attach a listener to an event.
+     *
+     * @param server Server in which the event can happen.
+     * @param event Name of the event.
+     * @param listener Listener of the event.
+     */
+    on(server: WebDAVServer, event: FileSystemEvent, listener: (ctx: RequestContext, path: Path, data?: any) => void): this;
+    /**
+     * Attach a listener to an event.
+     *
+     * @param server Server in which the event can happen.
+     * @param event Name of the event.
+     * @param listener Listener of the event.
+     */
+    on(server: WebDAVServer, event: string, listener: (ctx: RequestContext, path: Path, data?: any) => void): this;
+    /**
+     * Attach a listener to an event.
+     *
+     * @param ctx Context containing the server in which the event can happen.
+     * @param event Name of the event.
+     * @param listener Listener of the event.
+     */
+    on(ctx: RequestContext, event: FileSystemEvent, listener: (ctx: RequestContext, path: Path, data?: any) => void): this;
+    /**
+     * Attach a listener to an event.
+     *
+     * @param ctx Context containing the server in which the event can happen.
+     * @param event Name of the event.
+     * @param listener Listener of the event.
+     */
+    on(ctx: RequestContext, event: string, listener: (ctx: RequestContext, path: Path, data?: any) => void): this;
+    /**
+     * Trigger an event.
+     *
+     * @param event Name of the event.
+     * @param ctx Context of the event.
+     * @param path Path of the resource on which the event happened.
+     */
+    emit(event: string, ctx: RequestContext, path: Path | string, data?: any): void;
 }

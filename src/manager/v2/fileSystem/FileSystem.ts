@@ -1,6 +1,7 @@
 import { PrivilegeManagerInfo, AvailableLocksInfo, CopyInfo, CreateInfo, CreationDateInfo, DeleteInfo, DisplayNameInfo, ETagInfo, IContextInfo, LastModifiedDateInfo, LockManagerInfo, MimeTypeInfo, MoveInfo, OpenReadStreamInfo, OpenWriteStreamInfo, PropertyManagerInfo, ReadDirInfo, RenameInfo, SizeInfo, TypeInfo, WebNameInfo } from './ContextInfo'
 import { Readable, Writable } from 'stream'
 import { RequestContext } from '../../../server/v2/RequestContext'
+import { FileSystemEvent, WebDAVServer } from '../../../server/v2/webDAVServer/WebDAVServer'
 import { BasicPrivilege, PrivilegeManager } from '../../../user/v2/privilege/PrivilegeManager'
 import { LockScope } from '../../../resource/lock/LockScope'
 import { LockType } from '../../../resource/lock/LockType'
@@ -198,8 +199,14 @@ export abstract class FileSystem implements ISerializableFileSystem
     create(ctx : RequestContext, _path : Path | string, type : ResourceType, _createIntermediates : boolean | SimpleCallback, _callback ?: SimpleCallback) : void
     {
         const createIntermediates = _callback ? _createIntermediates as boolean : false;
-        const callback = _callback ? _callback : _createIntermediates as SimpleCallback;
+        const callbackFinal = _callback ? _callback : _createIntermediates as SimpleCallback;
         const path = new Path(_path);
+
+        const callback : SimpleCallback = (e) => {
+            if(!e)
+                this.emit('create', ctx, path, { type, createIntermediates })
+            callbackFinal(e);
+        }
 
         if(!this._create)
             return callback(Errors.InvalidOperation);
@@ -305,8 +312,14 @@ export abstract class FileSystem implements ISerializableFileSystem
     delete(ctx : RequestContext, _path : Path | string, _depth : number | SimpleCallback, _callback ?: SimpleCallback) : void
     {
         const depth = _callback ? _depth as number : -1;
-        const callback = _callback ? _callback : _depth as SimpleCallback;
+        const callbackFinal = _callback ? _callback : _depth as SimpleCallback;
         const path = new Path(_path);
+
+        const callback : SimpleCallback = (e) => {
+            if(!e)
+                this.emit('delete', ctx, path, { depth })
+            callbackFinal(e);
+        }
 
         if(!this._delete)
             return callback(Errors.InvalidOperation);
@@ -415,14 +428,20 @@ export abstract class FileSystem implements ISerializableFileSystem
             if(obj && obj.constructor === Number)
                 estimatedSize = obj as number;
 
-        let callback;
+        let callbackFinal;
         for(const obj of [ _mode, _targetSource, _estimatedSize, _callback ])
             if(obj && obj.constructor === Function)
-                callback = obj as Return2Callback<Writable, boolean>;
+                callbackFinal = obj as Return2Callback<Writable, boolean>;
         
         const mode = _mode && _mode.constructor === String ? _mode as OpenWriteStreamMode : 'mustExist';
         const path = new Path(_path);
         let created = false;
+
+        const callback : Return2Callback<Writable, boolean> = (e, stream, created) => {
+            if(!e)
+                this.emit('openWriteStream', ctx, path, { targetSource, mode, estimatedSize, created })
+            callbackFinal(e, stream, created);
+        }
         
         if(!this._openWriteStream)
             return callback(Errors.InvalidOperation);
@@ -523,8 +542,14 @@ export abstract class FileSystem implements ISerializableFileSystem
     {
         const targetSource = _targetSource.constructor === Boolean ? _targetSource as boolean : false;
         const estimatedSize = _callback ? _estimatedSize as number : _estimatedSize ? _targetSource as number : -1;
-        const callback = _callback ? _callback : _estimatedSize ? _estimatedSize as ReturnCallback<Readable> : _targetSource as ReturnCallback<Readable>;
+        const callbackFinal = _callback ? _callback : _estimatedSize ? _estimatedSize as ReturnCallback<Readable> : _targetSource as ReturnCallback<Readable>;
         const path = new Path(_path);
+
+        const callback : ReturnCallback<Readable> = (e, stream) => {
+            if(!e)
+                this.emit('openReadStream', ctx, path, { targetSource, estimatedSize })
+            callbackFinal(e, stream);
+        }
         
         issuePrivilegeCheck(this, ctx, path, targetSource ? 'canReadContentSource' : 'canReadContentTranslated', callback, () => {
             this.fastExistCheckEx(ctx, path, callback, () => {
@@ -562,10 +587,16 @@ export abstract class FileSystem implements ISerializableFileSystem
     move(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string, overwrite : boolean, callback : ReturnCallback<boolean>) : void
     move(ctx : RequestContext, _pathFrom : Path | string, _pathTo : Path | string, _overwrite : boolean | ReturnCallback<boolean>, _callback ?: ReturnCallback<boolean>) : void
     {
-        const callback = _callback ? _callback : _overwrite as ReturnCallback<boolean>;
+        const callbackFinal = _callback ? _callback : _overwrite as ReturnCallback<boolean>;
         const overwrite = _callback ? _overwrite as boolean : false;
         const pathFrom = new Path(_pathFrom);
         const pathTo = new Path(_pathTo);
+
+        const callback : ReturnCallback<boolean> = (e, overrided) => {
+            if(!e)
+                this.emit('move', ctx, pathFrom, { pathFrom, pathTo, overwrite, overrided })
+            callbackFinal(e, overrided);
+        }
 
         issuePrivilegeCheck(this, ctx, pathFrom, 'canRead', callback, () => {
         issuePrivilegeCheck(this, ctx, pathTo, 'canWrite', callback, () => {
@@ -648,9 +679,15 @@ export abstract class FileSystem implements ISerializableFileSystem
     {
         const overwrite = _overwrite.constructor === Boolean ? _overwrite as boolean : false;
         const depth = _callback ? _depth as number : !_depth ? -1 : _overwrite.constructor === Number ? _overwrite as number : -1;
-        const callback = _callback ? _callback : _depth ? _depth as ReturnCallback<boolean> : _overwrite as ReturnCallback<boolean>;
+        const callbackFinal = _callback ? _callback : _depth ? _depth as ReturnCallback<boolean> : _overwrite as ReturnCallback<boolean>;
         const pathFrom = new Path(_pathFrom);
         const pathTo = new Path(_pathTo);
+
+        const callback : ReturnCallback<boolean> = (e, overrided) => {
+            if(!e)
+                this.emit('copy', ctx, pathFrom, { pathTo, overwrite, overrided, depth })
+            callbackFinal(e, overrided);
+        }
 
         issuePrivilegeCheck(this, ctx, pathFrom, 'canRead', callback, () => {
         issuePrivilegeCheck(this, ctx, pathTo, 'canWrite', callback, () => {
@@ -709,8 +746,17 @@ export abstract class FileSystem implements ISerializableFileSystem
     rename(ctx : RequestContext, _pathFrom : Path | string, newName : string, _overwrite : boolean | ReturnCallback<boolean>, _callback ?: ReturnCallback<boolean>) : void
     {
         const overwrite = _callback ? _overwrite as boolean : false;
-        const callback = _callback ? _callback : _overwrite as ReturnCallback<boolean>;
+        const callbackFinal = _callback ? _callback : _overwrite as ReturnCallback<boolean>;
         const pathFrom = new Path(_pathFrom);
+
+        const callback : ReturnCallback<boolean> = (e, overrided) => {
+            if(!e)
+                this.emit('rename', ctx, pathFrom, {
+                    newName,
+                    overrided
+                })
+            callbackFinal(e, overrided);
+        }
 
         issuePrivilegeCheck(this, ctx, pathFrom, [ 'canRead', 'canWrite' ], callback, () => {
             this.isLocked(ctx, pathFrom, (e, isLocked) => {
@@ -921,7 +967,11 @@ export abstract class FileSystem implements ISerializableFileSystem
                                 if(e || isLocked)
                                     return callback(e ? e : Errors.Locked);
                                 
-                                lm.setLock(lock, callback);
+                                lm.setLock(lock, (e) => {
+                                    if(!e)
+                                        fs.emit('lock-set', ctx, pPath, { lock });
+                                    callback(e);
+                                });
                             })
                         })
                     },
@@ -932,7 +982,11 @@ export abstract class FileSystem implements ISerializableFileSystem
                                 if(e || isLocked)
                                     return callback(e ? e : Errors.Locked);
                                 
-                                lm.removeLock(uuid, callback);
+                                lm.removeLock(uuid, (e, removed) => {
+                                    if(!e)
+                                        fs.emit('lock-remove', ctx, pPath, { uuid, removed });
+                                    callback(e, removed);
+                                });
                             })
                         })
                     },
@@ -949,7 +1003,11 @@ export abstract class FileSystem implements ISerializableFileSystem
                                 if(e || isLocked)
                                     return callback(e ? e : Errors.Locked);
                                 
-                                lm.refresh(uuid, timeout, callback);
+                                lm.refresh(uuid, timeout, (e, lock) => {
+                                    if(!e)
+                                        fs.emit('lock-refresh', ctx, pPath, { uuid, timeout, lock });
+                                    callback(e);
+                                });
                             })
                         })
                     }
@@ -988,7 +1046,11 @@ export abstract class FileSystem implements ISerializableFileSystem
                                 if(e || isLocked)
                                     return callback(e ? e : Errors.Locked);
                                 
-                                pm.setProperty(name, value, attributes, callback);
+                                pm.setProperty(name, value, attributes, (e) => {
+                                    if(!e)
+                                        fs.emit('property-set', ctx, pPath, { name, value, attributes });
+                                    callback(e);
+                                });
                             })
                         })
                     },
@@ -1005,7 +1067,11 @@ export abstract class FileSystem implements ISerializableFileSystem
                                 if(e || isLocked)
                                     return callback(e ? e : Errors.Locked);
                                 
-                                pm.removeProperty(name, callback);
+                                pm.removeProperty(name, (e) => {
+                                    if(!e)
+                                        fs.emit('property-remove', ctx, pPath, { name });
+                                    callback(e);
+                                });
                             })
                         })
                     },
@@ -1578,6 +1644,60 @@ export abstract class FileSystem implements ISerializableFileSystem
             return callback();
         
         serializer.serialize(this, callback);
+    }
+
+    /**
+     * Attach a listener to an event.
+     * 
+     * @param server Server in which the event can happen.
+     * @param event Name of the event.
+     * @param listener Listener of the event.
+     */
+    on(server : WebDAVServer, event : FileSystemEvent, listener : (ctx : RequestContext, path : Path, data ?: any) => void) : this
+    /**
+     * Attach a listener to an event.
+     * 
+     * @param server Server in which the event can happen.
+     * @param event Name of the event.
+     * @param listener Listener of the event.
+     */
+    on(server : WebDAVServer, event : string, listener : (ctx : RequestContext, path : Path, data ?: any) => void) : this
+    /**
+     * Attach a listener to an event.
+     * 
+     * @param ctx Context containing the server in which the event can happen.
+     * @param event Name of the event.
+     * @param listener Listener of the event.
+     */
+    on(ctx : RequestContext, event : FileSystemEvent, listener : (ctx : RequestContext, path : Path, data ?: any) => void) : this
+    /**
+     * Attach a listener to an event.
+     * 
+     * @param ctx Context containing the server in which the event can happen.
+     * @param event Name of the event.
+     * @param listener Listener of the event.
+     */
+    on(ctx : RequestContext, event : string, listener : (ctx : RequestContext, path : Path, data ?: any) => void) : this
+    on(ctx : RequestContext | WebDAVServer, event : FileSystemEvent, listener : (ctx : RequestContext, path : Path, data ?: any) => void) : this
+    {
+        const server = (ctx as any).events ? ctx as WebDAVServer : (ctx as RequestContext).server;
+        server.on(event, (ctx, fs, path) => {
+            if(fs === this)
+                listener(ctx, path);
+        })
+        return this;
+    }
+
+    /**
+     * Trigger an event.
+     * 
+     * @param event Name of the event.
+     * @param ctx Context of the event.
+     * @param path Path of the resource on which the event happened.
+     */
+    emit(event : string, ctx : RequestContext, path : Path | string, data ?: any) : void
+    {
+        ctx.server.emit(event, ctx, this, path, data);
     }
 }
 
