@@ -14,12 +14,18 @@ import * as startStop from './StartStop';
 import * as https from 'https';
 import * as http from 'http';
 export declare type WebDAVServerStartCallback = (server?: http.Server) => void;
+export declare type FileSystemEvent = 'create' | 'delete' | 'openReadStream' | 'openWriteStream' | 'move' | 'copy' | 'rename';
+export declare type ServerEvent = FileSystemEvent;
+export declare type EventCallback = (ctx: RequestContext, fs: FileSystem, path: Path, data?: any) => void;
 export declare class WebDAVServer {
     httpAuthentication: HTTPAuthentication;
     privilegeManager: PrivilegeManager;
     options: WebDAVServerOptions;
     methods: {
         [methodName: string]: HTTPMethod;
+    };
+    events: {
+        [event: string]: EventCallback[];
     };
     protected beforeManagers: beforeAfter.RequestListener[];
     protected afterManagers: beforeAfter.RequestListener[];
@@ -70,6 +76,29 @@ export declare class WebDAVServer {
     load: typeof persistence.load;
     save: typeof persistence.save;
     method(name: string, manager: HTTPMethod): void;
+    /**
+     * Attach a listener to an event.
+     *
+     * @param event Name of the event.
+     * @param listener Listener of the event.
+     */
+    on(event: ServerEvent, listener: EventCallback): this;
+    /**
+     * Attach a listener to an event.
+     *
+     * @param event Name of the event.
+     * @param listener Listener of the event.
+     */
+    on(event: string, listener: EventCallback): this;
+    /**
+     * Trigger an event.
+     *
+     * @param event Name of the event.
+     * @param ctx Context of the event.
+     * @param fs File system on which the event happened.
+     * @param path Path of the resource on which the event happened.
+     */
+    emit(event: string, ctx: RequestContext, fs: FileSystem, path: Path | string, data?: any): void;
     protected normalizeMethodName(method: string): string;
     invokeBeforeRequest(base: RequestContext, callback: any): void;
     invokeAfterRequest(base: RequestContext, callback: any): void;

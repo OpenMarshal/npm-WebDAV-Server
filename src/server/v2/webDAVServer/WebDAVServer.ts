@@ -18,12 +18,17 @@ import * as http from 'http'
 
 export type WebDAVServerStartCallback = (server ?: http.Server) => void;
 
+export type FileSystemEvent = 'create' | 'delete' | 'openReadStream' | 'openWriteStream' | 'move' | 'copy' | 'rename';
+export type ServerEvent = FileSystemEvent;
+export type EventCallback = (ctx : RequestContext, fs : FileSystem, path : Path, data ?: any) => void;
+
 export class WebDAVServer
 {
     public httpAuthentication : HTTPAuthentication
     public privilegeManager : PrivilegeManager
     public options : WebDAVServerOptions
     public methods : { [methodName : string]: HTTPMethod }
+    public events : { [event : string] : EventCallback[] }
 
     protected beforeManagers : beforeAfter.RequestListener[]
     protected afterManagers : beforeAfter.RequestListener[]
@@ -40,6 +45,7 @@ export class WebDAVServer
         this.afterManagers = [];
         this.methods = {};
         this.options = setDefaultServerOptions(options);
+        this.events = {};
 
         this.httpAuthentication = this.options.httpAuthentication;
         this.privilegeManager = this.options.privilegeManager;
@@ -264,6 +270,45 @@ export class WebDAVServer
     method(name : string, manager : HTTPMethod)
     {
         this.methods[this.normalizeMethodName(name)] = manager;
+    }
+
+    /**
+     * Attach a listener to an event.
+     * 
+     * @param event Name of the event.
+     * @param listener Listener of the event.
+     */
+    on(event : ServerEvent, listener : EventCallback) : this
+    /**
+     * Attach a listener to an event.
+     * 
+     * @param event Name of the event.
+     * @param listener Listener of the event.
+     */
+    on(event : string, listener : EventCallback) : this
+    on(event : ServerEvent | string, listener : EventCallback) : this
+    {
+        if(!this.events[event])
+            this.events[event] = [];
+        this.events[event].push(listener);
+
+        return this;
+    }
+    
+    /**
+     * Trigger an event.
+     * 
+     * @param event Name of the event.
+     * @param ctx Context of the event.
+     * @param fs File system on which the event happened.
+     * @param path Path of the resource on which the event happened.
+     */
+    emit(event : string, ctx : RequestContext, fs : FileSystem, path : Path | string, data ?: any) : void
+    {
+        if(!this.events[event])
+            return;
+
+        this.events[event].forEach((l) => process.nextTick(() => l(ctx, fs, path.constructor === String ? new Path(path as string) : path as Path, data)));
     }
 
     protected normalizeMethodName(method : string) : string
