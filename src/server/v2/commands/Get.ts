@@ -3,6 +3,39 @@ import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
 import { Errors } from '../../../Errors'
 import { Transform } from 'stream'
 
+class MultipleRangedStream extends Transform
+{
+    streams : { stream : RangedStream, range : IRange }[]
+    onEnded : () => void
+
+    constructor(public ranges : IRange[])
+    {
+        super();
+
+        this.streams = ranges.map((r) => {
+            return {
+                stream: new RangedStream(r.min, r.max),
+                range: r
+            }
+        });
+    }
+
+    _transform(chunk : string | Buffer, encoding : string, callback : Function)
+    {
+        this.streams.forEach((streamRange) => {
+            streamRange.stream.write(chunk, encoding);
+        });
+
+        callback(null, new Buffer(0));
+    }
+
+    end(chunk ?: any, encoding?: any, cb?: Function): void
+    {
+        if(this.onEnded)
+            process.nextTick(() => this.onEnded());
+        super.end(chunk, encoding, cb);
+    }
+}
 class RangedStream extends Transform
 {
     nb : number;
@@ -42,6 +75,43 @@ class RangedStream extends Transform
             callback(null, chunk);
         }
     }
+}
+
+interface IRange
+{
+    min : number
+    max : number
+}
+
+function parseRangeBlock(size : number, block : string) : IRange
+{
+    size -= 1;
+
+    const rRange = /([0-9]+)-([0-9]+)/;
+    let match = rRange.exec(block);
+    if(match)
+        return {
+            min: Math.min(size, parseInt(match[1], 10)),
+            max: Math.min(size, parseInt(match[2], 10))
+        };
+    
+    const rStart = /([0-9]+)-/;
+    match = rStart.exec(block);
+    if(match)
+        return {
+            min: Math.min(size + 1, parseInt(match[1], 10)),
+            max: size
+        };
+    
+    const rEnd = /-([0-9]+)/;
+    match = rEnd.exec(block);
+    if(match)
+        return {
+            min: Math.max(0, size - parseInt(match[1], 10) + 1),
+            max: size
+        };
+    
+    throw new Error('Cannot parse the range block');
 }
 
 export default class implements HTTPMethod
@@ -95,18 +165,78 @@ export default class implements HTTPMethod
 
                                         if(range)
                                         {
-                                            const rex = /([0-9]+)/g;
-                                            const min = parseInt(rex.exec(range)[1], 10);
-                                            const max = parseInt(rex.exec(range)[1], 10);
+                                            try
+                                            {
+                                                const createMultipart = (range : IRange) => {
+                                                    return '--' + separator + '\r\nContent-Type: ' + mimeType + '\r\nContent-Range: bytes ' + range.min + '-' + range.max + '/*\r\n\r\n';
+                                                };
+                                                const endMultipart = () => {
+                                                    return '\r\n--' + separator + '--';
+                                                };
 
-                                            ctx.setCode(HTTPCodes.PartialContent);
-                                            ctx.response.setHeader('Accept-Ranges', 'bytes')
-                                            ctx.response.setHeader('Content-Type', mimeType)
-                                            ctx.response.setHeader('Content-Length', Math.min(size, max - min + 1).toString())
-                                            ctx.response.setHeader('Content-Range', 'bytes ' + min + '-' + max + '/*')
+                                                const ranges = range.split(',').map((block) => parseRangeBlock(size, block));
+                                                const separator = Array.apply(null, {length: 20}).map(() => String.fromCharCode('a'.charCodeAt(0) + Math.floor(Math.random() * 26))).join('');
+                                                const len = ranges.reduce((previous, mm) => mm.max - mm.min + 1 + previous, 0) + (ranges.length > 1 ? ranges.reduce((previous, mm) => createMultipart(mm).length + previous, endMultipart().length + '\r\n'.length * (ranges.length - 1)) : 0);
 
-                                            rstream.on('end', callback);
-                                            rstream.pipe(new RangedStream(min, max)).pipe(ctx.response);
+                                                ctx.setCode(HTTPCodes.PartialContent);
+                                                ctx.response.setHeader('Accept-Ranges', 'bytes')
+                                                ctx.response.setHeader('Content-Length', len.toString())
+                                                if(ranges.length <= 1)
+                                                {
+                                                    ctx.response.setHeader('Content-Type', mimeType)
+                                                    ctx.response.setHeader('Content-Range', 'bytes ' + ranges[0].min + '-' + ranges[0].max + '/*')
+                                                    rstream.on('end', callback);
+                                                    return rstream.pipe(new RangedStream(ranges[0].min, ranges[0].max)).pipe(ctx.response);
+                                                }
+                                                
+                                                ctx.response.setHeader('Content-Type', 'multipart/byteranges; boundary=' + separator)
+
+                                                const multi = new MultipleRangedStream(ranges);
+                                                rstream.pipe(multi);
+
+                                                let current = 0;
+                                                const dones = {};
+                                                const evalNext = () => {
+                                                    if(current === ranges.length)
+                                                    {
+                                                        return ctx.response.end(endMultipart(), () => {
+                                                            callback();
+                                                        });
+                                                    }
+
+                                                    const sr = dones[current];
+                                                    if(sr)
+                                                    {
+                                                        if(current > 0)
+                                                            ctx.response.write('\r\n');
+                                                        ctx.response.write(createMultipart(sr.range));
+                                                        
+                                                        sr.stream.on('end', () => {
+                                                            ++current;
+                                                            evalNext();
+                                                        });
+                                                        sr.stream.on('data', (chunk, encoding) => {
+                                                            ctx.response.write(chunk, encoding);
+                                                        })
+                                                        //sr.stream.pipe(ctx.response);
+                                                    }
+                                                }
+                                                multi.streams.forEach((sr, index) => {
+                                                    dones[index] = sr;
+                                                })
+
+                                                multi.onEnded = () => {
+                                                    multi.streams.forEach((sr, index) => {
+                                                        sr.stream.end();
+                                                    });
+                                                    evalNext();
+                                                }
+                                            }
+                                            catch(ex)
+                                            {
+                                                ctx.setCode(HTTPCodes.BadRequest);
+                                                callback();
+                                            }
                                         }
                                         else
                                         {
