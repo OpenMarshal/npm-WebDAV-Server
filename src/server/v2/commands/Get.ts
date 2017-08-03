@@ -83,6 +83,29 @@ interface IRange
     max : number
 }
 
+export function parseRangeHeader(mimeType : string, size : number, range : string)
+{
+    const createMultipart = (range : IRange) => {
+        return '--' + separator + '\r\nContent-Type: ' + mimeType + '\r\nContent-Range: bytes ' + range.min + '-' + range.max + '/*\r\n\r\n';
+    };
+    const endMultipart = () => {
+        return '\r\n--' + separator + '--';
+    };
+
+    const ranges = range.split(',').map((block) => parseRangeBlock(size, block));
+    const separator = Array.apply(null, {length: 20}).map(() => String.fromCharCode('a'.charCodeAt(0) + Math.floor(Math.random() * 26))).join('');
+    const len = ranges.reduce((previous, mm) => mm.max - mm.min + 1 + previous, 0) + (ranges.length > 1 ? ranges.reduce((previous, mm) => createMultipart(mm).length + previous, endMultipart().length + '\r\n'.length * (ranges.length - 1)) : 0);
+
+    return {
+        ranges,
+        separator,
+        len,
+        createMultipart,
+        endMultipart
+    }
+
+}
+
 function parseRangeBlock(size : number, block : string) : IRange
 {
     size -= 1;
@@ -167,16 +190,7 @@ export default class implements HTTPMethod
                                         {
                                             try
                                             {
-                                                const createMultipart = (range : IRange) => {
-                                                    return '--' + separator + '\r\nContent-Type: ' + mimeType + '\r\nContent-Range: bytes ' + range.min + '-' + range.max + '/*\r\n\r\n';
-                                                };
-                                                const endMultipart = () => {
-                                                    return '\r\n--' + separator + '--';
-                                                };
-
-                                                const ranges = range.split(',').map((block) => parseRangeBlock(size, block));
-                                                const separator = Array.apply(null, {length: 20}).map(() => String.fromCharCode('a'.charCodeAt(0) + Math.floor(Math.random() * 26))).join('');
-                                                const len = ranges.reduce((previous, mm) => mm.max - mm.min + 1 + previous, 0) + (ranges.length > 1 ? ranges.reduce((previous, mm) => createMultipart(mm).length + previous, endMultipart().length + '\r\n'.length * (ranges.length - 1)) : 0);
+                                                const { ranges, separator, len, createMultipart, endMultipart } = parseRangeHeader(mimeType, size, range);
 
                                                 ctx.setCode(HTTPCodes.PartialContent);
                                                 ctx.response.setHeader('Accept-Ranges', 'bytes')
