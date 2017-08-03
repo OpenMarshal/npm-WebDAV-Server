@@ -77,7 +77,7 @@ class RangedStream extends Transform
     }
 }
 
-interface IRange
+export interface IRange
 {
     min : number
     max : number
