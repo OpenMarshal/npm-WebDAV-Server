@@ -17,13 +17,31 @@ function go(info : TestInfo, isValid : TestCallback, range : string, callback : 
         })
     })
 }
+function goHead(info : TestInfo, isValid : TestCallback, range : string, callback : (statusCode : number, headers : any) => void)
+{
+    starter(info.startServer(), info, isValid, content, (r, s) => {
+        info.req({
+            url: 'http://localhost:' + s.options.port + '/file.txt',
+            method: 'HEAD',
+            headers: {
+                'Range': range
+            }
+        }, (res) => {
+            callback(res.statusCode, res.headers);
+        })
+    })
+}
 
 export default ((info, isValid) =>
 {
-    const server = info.init(15);
+    const server = info.init(22);
 
     go(info, isValid, 'bytes=0-100', (statusCode, headers, body) => {
-        isValid(headers['content-length'] === content.length.toString(), 'The content length returned must be a maximum the range could retrieve, but instead of ' + content.length + ', got ' + headers['content-length'] + '.');
+        isValid(headers['content-length'] === content.length.toString(), 'The content length returned must be the maximum length possible, but instead of ' + content.length + ', got ' + headers['content-length'] + '.');
+    })
+
+    go(info, isValid, 'bytes=-100', (statusCode, headers, body) => {
+        isValid(headers['content-length'] === content.length.toString(), 'The content length returned must be the maximum length possible, but instead of ' + content.length + ', got ' + headers['content-length'] + '.');
     })
     
     go(info, isValid, 'bytes=0-1', (statusCode, headers, body) => {
@@ -31,6 +49,30 @@ export default ((info, isValid) =>
     })
     
     go(info, isValid, 'bytes=0-0', (statusCode, headers, body) => {
+        isValid(headers['content-length'] === '1', 'The content length returned must be equals to 1 when 0-0 is asked, but instead of ' + 1 + ', got ' + headers['content-length'] + '.');
+    })
+    
+    go(info, isValid, 'bytes=-1', (statusCode, headers, body) => {
+        isValid(headers['content-length'] === '1', 'The content length returned must be equals to 1 when 0-0 is asked, but instead of ' + 1 + ', got ' + headers['content-length'] + '.');
+    })
+    
+    goHead(info, isValid, 'bytes=0-100', (statusCode, headers) => {
+        isValid(headers['content-length'] === content.length.toString(), 'The content length returned must be the maximum length possible, but instead of ' + content.length + ', got ' + headers['content-length'] + '.');
+    })
+
+    goHead(info, isValid, 'bytes=-100', (statusCode, headers) => {
+        isValid(headers['content-length'] === content.length.toString(), 'The content length returned must be the maximum length possible, but instead of ' + content.length + ', got ' + headers['content-length'] + '.');
+    })
+    
+    goHead(info, isValid, 'bytes=0-1', (statusCode, headers) => {
+        isValid(headers['content-length'] === '2', 'The content length returned must be equals to 2 when 0-1 is asked, but instead of ' + 2 + ', got ' + headers['content-length'] + '.');
+    })
+    
+    goHead(info, isValid, 'bytes=0-0', (statusCode, headers) => {
+        isValid(headers['content-length'] === '1', 'The content length returned must be equals to 1 when 0-0 is asked, but instead of ' + 1 + ', got ' + headers['content-length'] + '.');
+    })
+    
+    goHead(info, isValid, 'bytes=-1', (statusCode, headers) => {
         isValid(headers['content-length'] === '1', 'The content length returned must be equals to 1 when 0-0 is asked, but instead of ' + 1 + ', got ' + headers['content-length'] + '.');
     })
     
