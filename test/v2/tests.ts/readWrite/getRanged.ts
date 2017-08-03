@@ -20,7 +20,7 @@ function go(info : TestInfo, isValid : TestCallback, range : string, callback : 
 
 export default ((info, isValid) =>
 {
-    const server = info.init(7);
+    const server = info.init(15);
 
     go(info, isValid, 'bytes=0-100', (statusCode, headers, body) => {
         isValid(headers['content-length'] === content.length.toString(), 'The content length returned must be a maximum the range could retrieve, but instead of ' + content.length + ', got ' + headers['content-length'] + '.');
@@ -48,6 +48,39 @@ export default ((info, isValid) =>
     
     go(info, isValid, 'bytes=' + (content.length - 1) + '-' + (content.length - 1), (statusCode, headers, body) => {
         isValid(body === '!', 'Expected "!" but got "' + body + '".');
+    })
+    
+    go(info, isValid, 'bytes=0-', (statusCode, headers, body) => {
+        isValid(body === content, 'Expected "' + content + '" but got "' + body + '".');
+    })
+    
+    go(info, isValid, 'bytes=1-', (statusCode, headers, body) => {
+        const expected = content.substr(1);
+        isValid(body === expected, 'Expected "' + expected + '" but got "' + body + '".');
+    })
+    
+    go(info, isValid, 'bytes=100-', (statusCode, headers, body) => {
+        isValid(body === '', 'Expected "" but got "' + body + '".');
+    })
+    
+    go(info, isValid, 'bytes=-0', (statusCode, headers, body) => {
+        isValid(body === '', 'Expected "" but got "' + body + '".');
+    })
+    
+    go(info, isValid, 'bytes=-1', (statusCode, headers, body) => {
+        isValid(body === '!', 'Expected "!" but got "' + body + '".');
+    })
+    
+    go(info, isValid, 'bytes=-100', (statusCode, headers, body) => {
+        isValid(body === content, 'Expected "' + content + '" but got "' + body + '".');
+    })
+    
+    go(info, isValid, 'bytes=0-0,1-1', (statusCode, headers, body) => {
+        isValid(/^--[^\n]+\n[^\n]+\n[^\n]+\n\r\nH\r\n--[^\n]+\n[^\n]+\n[^\n]+\n\r\ne\r\n--[^-]+--$/.test(body), 'Expected multipart "H -- e" but got "' + body + '".');
+    })
+    
+    go(info, isValid, 'bytes=-1,1-1', (statusCode, headers, body) => {
+        isValid(/^--[^\n]+\n[^\n]+\n[^\n]+\n\r\n!\r\n--[^\n]+\n[^\n]+\n[^\n]+\n\r\ne\r\n--[^-]+--$/.test(body), 'Expected multipart "! -- e" but got "' + body + '".');
     })
 
 }) as Test;
