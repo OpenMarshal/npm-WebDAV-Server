@@ -1,6 +1,7 @@
 import { HTTPCodes, HTTPMethod, HTTPRequestContext } from '../WebDAVRequest'
 import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
 import { Errors } from '../../../Errors'
+import { parseRangeHeader } from './Get'
 
 export default class implements HTTPMethod
 {
@@ -33,11 +34,35 @@ export default class implements HTTPMethod
                                     return callback();
                                 }
 
+                                const range = ctx.headers.find('Range');
                                 r.size(targetSource, (e, size) => {
-                                    if(e)
+                                    if(e && !range)
                                     {
                                         if(!ctx.setCodeFromError(e))
                                             ctx.setCode(HTTPCodes.InternalServerError)
+                                    }
+                                    else if(range)
+                                    {
+                                        try
+                                        {
+                                            const { ranges, separator, len } = parseRangeHeader(mimeType, size, range);
+
+                                            ctx.setCode(HTTPCodes.PartialContent);
+                                            ctx.response.setHeader('Accept-Ranges', 'bytes')
+                                            ctx.response.setHeader('Content-Length', len.toString())
+                                            if(ranges.length <= 1)
+                                            {
+                                                ctx.response.setHeader('Content-Type', mimeType)
+                                                ctx.response.setHeader('Content-Range', 'bytes ' + ranges[0].min + '-' + ranges[0].max + '/*')
+                                            }
+                                            else
+                                                ctx.response.setHeader('Content-Type', 'multipart/byteranges; boundary=' + separator)
+                                        }
+                                        catch(ex)
+                                        {
+                                            ctx.setCode(HTTPCodes.BadRequest);
+                                            callback();
+                                        }
                                     }
                                     else
                                     {
