@@ -1006,7 +1006,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                                 lm.refresh(uuid, timeout, (e, lock) => {
                                     if(!e)
                                         fs.emit('lock-refresh', ctx, pPath, { uuid, timeout, lock });
-                                    callback(e);
+                                    callback(e, lock);
                                 });
                             })
                         })
