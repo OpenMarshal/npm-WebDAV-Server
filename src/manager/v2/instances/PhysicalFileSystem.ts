@@ -150,7 +150,6 @@ export class PhysicalFileSystem extends FileSystem
         this.type(ctx.context, path, (e, type) => {
             if(e)
                 return callback(Errors.ResourceNotFound);
-            console.log(path.toString());
             
             if(type.isDirectory)
             {

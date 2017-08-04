@@ -109,7 +109,6 @@ function createLock(ctx : HTTPRequestContext, data : Buffer, callback)
     }
     catch(ex)
     {
-        console.log(ex);
         ctx.setCode(HTTPCodes.BadRequest);
         callback();
         return;
