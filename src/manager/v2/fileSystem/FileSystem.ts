@@ -210,6 +210,8 @@ export abstract class FileSystem implements ISerializableFileSystem
 
         if(!this._create)
             return callback(Errors.InvalidOperation);
+
+        this.emit('before-create', ctx, path, { type, createIntermediates })
         
         issuePrivilegeCheck(this, ctx, path, 'canWrite', callback, () => {
             const go = () => {
@@ -323,6 +325,8 @@ export abstract class FileSystem implements ISerializableFileSystem
 
         if(!this._delete)
             return callback(Errors.InvalidOperation);
+
+        this.emit('before-delete', ctx, path, { depth })
 
         issuePrivilegeCheck(this, ctx, path, 'canWrite', callback, () => {
             this.isLocked(ctx, path, (e, isLocked) => {
@@ -445,6 +449,8 @@ export abstract class FileSystem implements ISerializableFileSystem
         
         if(!this._openWriteStream)
             return callback(Errors.InvalidOperation);
+
+        this.emit('before-openWriteStream', ctx, path, { targetSource, mode, estimatedSize, created })
         
         issuePrivilegeCheck(this, ctx, path, targetSource ? 'canWriteContentSource' : 'canWriteContentTranslated', callback, () => {
             this.isLocked(ctx, path, (e, isLocked) => {
@@ -550,6 +556,8 @@ export abstract class FileSystem implements ISerializableFileSystem
                 this.emit('openReadStream', ctx, path, { targetSource, estimatedSize })
             callbackFinal(e, stream);
         }
+
+        this.emit('before-openReadStream', ctx, path, { targetSource, estimatedSize })
         
         issuePrivilegeCheck(this, ctx, path, targetSource ? 'canReadContentSource' : 'canReadContentTranslated', callback, () => {
             this.fastExistCheckEx(ctx, path, callback, () => {
@@ -597,6 +605,8 @@ export abstract class FileSystem implements ISerializableFileSystem
                 this.emit('move', ctx, pathFrom, { pathFrom, pathTo, overwrite, overrided })
             callbackFinal(e, overrided);
         }
+
+        this.emit('before-move', ctx, pathFrom, { pathFrom, pathTo, overwrite })
 
         issuePrivilegeCheck(this, ctx, pathFrom, 'canRead', callback, () => {
         issuePrivilegeCheck(this, ctx, pathTo, 'canWrite', callback, () => {
@@ -688,6 +698,8 @@ export abstract class FileSystem implements ISerializableFileSystem
                 this.emit('copy', ctx, pathFrom, { pathTo, overwrite, overrided, depth })
             callbackFinal(e, overrided);
         }
+        
+        this.emit('before-copy', ctx, pathFrom, { pathTo, overwrite, depth })
 
         issuePrivilegeCheck(this, ctx, pathFrom, 'canRead', callback, () => {
         issuePrivilegeCheck(this, ctx, pathTo, 'canWrite', callback, () => {
@@ -751,12 +763,11 @@ export abstract class FileSystem implements ISerializableFileSystem
 
         const callback : ReturnCallback<boolean> = (e, overrided) => {
             if(!e)
-                this.emit('rename', ctx, pathFrom, {
-                    newName,
-                    overrided
-                })
+                this.emit('rename', ctx, pathFrom, { newName, overrided })
             callbackFinal(e, overrided);
         }
+        
+        this.emit('before-rename', ctx, pathFrom, { newName })
 
         issuePrivilegeCheck(this, ctx, pathFrom, [ 'canRead', 'canWrite' ], callback, () => {
             this.isLocked(ctx, pathFrom, (e, isLocked) => {
@@ -962,6 +973,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                     },
                     setLock(lock : Lock, callback : SimpleCallback) : void
                     {
+                        fs.emit('before-lock-set', ctx, pPath, { lock });
                         issuePrivilegeCheck(fs, ctx, pPath, 'canWriteLocks', callback, () => {
                             buffIsLocked.isLocked((e, isLocked) => {
                                 if(e || isLocked)
@@ -977,6 +989,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                     },
                     removeLock(uuid : string, callback : ReturnCallback<boolean>) : void
                     {
+                        fs.emit('before-lock-remove', ctx, pPath, { uuid });
                         issuePrivilegeCheck(fs, ctx, pPath, 'canWriteLocks', callback, () => {
                             buffIsLocked.isLocked((e, isLocked) => {
                                 if(e || isLocked)
@@ -998,6 +1011,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                     },
                     refresh(uuid : string, timeout : number, callback : ReturnCallback<Lock>) : void
                     {
+                        fs.emit('before-lock-refresh', ctx, pPath, { uuid, timeout });
                         issuePrivilegeCheck(fs, ctx, pPath, 'canWriteLocks', callback, () => {
                             buffIsLocked.isLocked((e, isLocked) => {
                                 if(e || isLocked)
@@ -1041,6 +1055,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                 callback(null, {
                     setProperty(name : string, value : ResourcePropertyValue, attributes : PropertyAttributes, callback : SimpleCallback) : void
                     {
+                        fs.emit('before-property-set', ctx, pPath, { name, value, attributes });
                         issuePrivilegeCheck(fs, ctx, pPath, 'canWriteProperties', callback, () => {
                             buffIsLocked.isLocked((e, isLocked) => {
                                 if(e || isLocked)
@@ -1062,6 +1077,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                     },
                     removeProperty(name : string, callback : SimpleCallback) : void
                     {
+                        fs.emit('before-property-remove', ctx, pPath, { name });
                         issuePrivilegeCheck(fs, ctx, pPath, 'canWriteProperties', callback, () => {
                             buffIsLocked.isLocked((e, isLocked) => {
                                 if(e || isLocked)

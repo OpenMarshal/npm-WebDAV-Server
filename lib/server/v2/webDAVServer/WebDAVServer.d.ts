@@ -14,7 +14,7 @@ import * as startStop from './StartStop';
 import * as https from 'https';
 import * as http from 'http';
 export declare type WebDAVServerStartCallback = (server?: http.Server) => void;
-export declare type FileSystemEvent = 'create' | 'delete' | 'openReadStream' | 'openWriteStream' | 'move' | 'copy' | 'rename';
+export declare type FileSystemEvent = 'create' | 'delete' | 'openReadStream' | 'openWriteStream' | 'move' | 'copy' | 'rename' | 'before-create' | 'before-delete' | 'before-openReadStream' | 'before-openWriteStream' | 'before-move' | 'before-copy' | 'before-rename';
 export declare type ServerEvent = FileSystemEvent;
 export declare type EventCallback = (ctx: RequestContext, fs: FileSystem, path: Path, data?: any) => void;
 export declare class WebDAVServer {

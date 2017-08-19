@@ -18,7 +18,8 @@ import * as http from 'http'
 
 export type WebDAVServerStartCallback = (server ?: http.Server) => void;
 
-export type FileSystemEvent = 'create' | 'delete' | 'openReadStream' | 'openWriteStream' | 'move' | 'copy' | 'rename';
+export type FileSystemEvent = 'create' | 'delete' | 'openReadStream' | 'openWriteStream' | 'move' | 'copy' | 'rename' |
+                              'before-create' | 'before-delete' | 'before-openReadStream' | 'before-openWriteStream' | 'before-move' | 'before-copy' | 'before-rename';
 export type ServerEvent = FileSystemEvent;
 export type EventCallback = (ctx : RequestContext, fs : FileSystem, path : Path, data ?: any) => void;
 
