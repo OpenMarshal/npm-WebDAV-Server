@@ -253,6 +253,35 @@ export class WebDAVServer
         this.unknownMethod = unknownMethod;
     }
 
+    listResources(callback : (paths : string[]) => void) : void
+    listResources(root : string | Path, callback : (paths : string[]) => void) : void
+    listResources(_root : string | Path | ((paths : string[]) => void), _callback ?: (paths : string[]) => void) : void
+    {
+        const root = new Path(_callback ? _root as (string | Path) : '/');
+        const callback = _callback ? _callback : _root as ((paths : string[]) => void);
+
+        const output = [];
+        output.push(root.toString());
+        
+        this.getResource(this.createExternalContext(), root, (e, resource) => {
+            resource.readDir(true, (e, files) => {
+                if(e || files.length === 0)
+                    return callback(output);
+
+                let nb = files.length;
+
+                files.forEach((fileName) => {
+                    const childPath = root.getChildPath(fileName);
+                    this.listResources(childPath, (outputs) => {
+                        outputs.forEach((o) => output.push(o));
+                        if(--nb === 0)
+                            callback(output);
+                    })
+                })
+            });
+        });
+    }
+
     // Start / Stop
     start(port : number)
     start(callback : WebDAVServerStartCallback)

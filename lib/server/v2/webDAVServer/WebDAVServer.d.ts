@@ -68,6 +68,8 @@ export declare class WebDAVServer {
         subPath: Path;
     };
     onUnknownMethod(unknownMethod: HTTPMethod): void;
+    listResources(callback: (paths: string[]) => void): void;
+    listResources(root: string | Path, callback: (paths: string[]) => void): void;
     start(port: number): any;
     start(callback: WebDAVServerStartCallback): any;
     start(port: number, callback: WebDAVServerStartCallback): any;
