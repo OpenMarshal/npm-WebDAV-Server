@@ -98,8 +98,7 @@ export function start(port ?: number | WebDAVServerStartCallback, callback ?: We
             })
         })
 
-        if(this.options.autoSave)
-            autoSave.bind(this)(this.options.autoSave);
+        this.autoSave();
     }
 
     this.server.listen(_port, this.options.hostname, () => {

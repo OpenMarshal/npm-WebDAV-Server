@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { ExternalRequestContext, RequestContextExternalOptions, RequestContext } from '../RequestContext';
-import { WebDAVServerOptions } from '../WebDAVServerOptions';
+import { WebDAVServerOptions, IAutoSave } from '../WebDAVServerOptions';
 import { HTTPMethod } from '../WebDAVRequest';
 import { HTTPAuthentication } from '../../../user/v2/authentication/HTTPAuthentication';
 import { PrivilegeManager } from '../../../user/v2/privilege/PrivilegeManager';
@@ -72,6 +72,16 @@ export declare class WebDAVServer {
     start(callback: WebDAVServerStartCallback): any;
     start(port: number, callback: WebDAVServerStartCallback): any;
     stop: typeof startStop.stop;
+    /**
+     * Start the auto-save feature of the server. Use the server's options as settings.
+     */
+    autoSave(): any;
+    /**
+     * Start the auto-save feature of the server.
+     *
+     * @param options Settings of the auto-save.
+     */
+    autoSave(options: IAutoSave): any;
     autoLoad: typeof persistence.autoLoad;
     load: typeof persistence.load;
     save: typeof persistence.save;

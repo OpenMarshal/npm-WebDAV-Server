@@ -1,5 +1,5 @@
 import { HTTPRequestContext, ExternalRequestContext, RequestContextExternalOptions, RequestContext } from '../RequestContext'
-import { WebDAVServerOptions, setDefaultServerOptions } from '../WebDAVServerOptions'
+import { WebDAVServerOptions, setDefaultServerOptions, IAutoSave } from '../WebDAVServerOptions'
 import { HTTPCodes, HTTPMethod } from '../WebDAVRequest'
 import { HTTPAuthentication } from '../../../user/v2/authentication/HTTPAuthentication'
 import { PrivilegeManager } from '../../../user/v2/privilege/PrivilegeManager'
@@ -264,6 +264,25 @@ export class WebDAVServer
     stop = startStop.stop
 
     // Persistence
+    /**
+     * Start the auto-save feature of the server. Use the server's options as settings.
+     */
+    autoSave()
+    /**
+     * Start the auto-save feature of the server.
+     * 
+     * @param options Settings of the auto-save.
+     */
+    autoSave(options : IAutoSave)
+    autoSave(options ?: IAutoSave)
+    {
+        const fn = persistence.autoSave.bind(this);
+
+        if(options)
+            fn(options);
+        else if(this.options.autoSave)
+            fn(this.options.autoSave);
+    }
     autoLoad = persistence.autoLoad
     load = persistence.load
     save = persistence.save
