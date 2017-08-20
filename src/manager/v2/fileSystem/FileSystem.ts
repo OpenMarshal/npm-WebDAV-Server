@@ -1,5 +1,5 @@
 import { PrivilegeManagerInfo, AvailableLocksInfo, CopyInfo, CreateInfo, CreationDateInfo, DeleteInfo, DisplayNameInfo, ETagInfo, IContextInfo, LastModifiedDateInfo, LockManagerInfo, MimeTypeInfo, MoveInfo, OpenReadStreamInfo, OpenWriteStreamInfo, PropertyManagerInfo, ReadDirInfo, RenameInfo, SizeInfo, TypeInfo, WebNameInfo } from './ContextInfo'
-import { Readable, Writable } from 'stream'
+import { Readable, Writable, Transform } from 'stream'
 import { RequestContext } from '../../../server/v2/RequestContext'
 import { FileSystemEvent, WebDAVServer } from '../../../server/v2/webDAVServer/WebDAVServer'
 import { BasicPrivilege, PrivilegeManager } from '../../../user/v2/privilege/PrivilegeManager'
@@ -11,12 +11,14 @@ import { Errors } from '../../../Errors'
 import { Lock } from '../../../resource/lock/Lock'
 import { Path } from '../Path'
 import { ResourceType, SimpleCallback, Return2Callback, ReturnCallback, SubTree, OpenWriteStreamMode, ResourcePropertyValue, PropertyAttributes } from './CommonTypes'
+import { XMLElement } from 'xml-js-builder'
 import { ContextualFileSystem } from './ContextualFileSystem'
 import { ILockManager } from './LockManager'
 import { IPropertyManager, PropertyBag } from './PropertyManager'
 import { Resource } from './Resource'
 import { StandardMethods } from './StandardMethods'
 import { ISerializableFileSystem, FileSystemSerializer } from './Serialization'
+import { IStorageManager } from './StorageManager'
 import * as mimeTypes from 'mime-types'
 import * as crypto from 'crypto'
 
@@ -215,10 +217,22 @@ export abstract class FileSystem implements ISerializableFileSystem
         
         issuePrivilegeCheck(this, ctx, path, 'canWrite', callback, () => {
             const go = () => {
-                this._create(path, {
-                    context: ctx,
-                    type
-                }, callback);
+                ctx.server.options.storageManager.evaluateCreate(ctx, this, path, type, (size) => {
+                ctx.server.options.storageManager.reserve(ctx, this, size, (reserved) => {
+                    if(!reserved)
+                        return callback(Errors.InsufficientStorage);
+
+                    this._create(path, {
+                        context: ctx,
+                        type
+                    }, (e) => {
+                        if(e)
+                            ctx.server.options.storageManager.reserve(ctx, this, -size, () => callback(e));
+                        else
+                            callback();
+                    });
+                })
+                })
             }
 
             this.isLocked(ctx, path, (e, locked) => {
@@ -337,7 +351,20 @@ export abstract class FileSystem implements ISerializableFileSystem
                     this._delete(path, {
                         context: ctx,
                         depth
-                    }, callback);
+                    }, (e) => {
+                        if(!e)
+                        {
+                            this.type(ctx, path, (e, type) => {
+                                ctx.server.options.storageManager.evaluateCreate(ctx, this, path, type, (size) => {
+                                    ctx.server.options.storageManager.reserve(ctx, this, -size, () => {
+                                        callback();
+                                    })
+                                })
+                            })
+                        }
+                        else
+                            callback(e);
+                    });
                 })
             })
         })
@@ -457,7 +484,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                 if(e || isLocked)
                     return callback(e ? e : Errors.Locked);
                 
-                const go = (callback : Return2Callback<Writable, boolean>) =>
+                const finalGo = (callback : Return2Callback<Writable, boolean>) =>
                 {
                     this._openWriteStream(path, {
                         context: ctx,
@@ -465,6 +492,57 @@ export abstract class FileSystem implements ISerializableFileSystem
                         targetSource,
                         mode
                     }, (e, wStream) => callback(e, wStream, created));
+                }
+                const go = (callback : Return2Callback<Writable, boolean>) =>
+                {
+                    this.size(ctx, path, true, (e, size) => {
+                        ctx.server.options.storageManager.evaluateContent(ctx, this, size, (sizeStored) => {
+                            if(estimatedSize === undefined || estimatedSize === null || estimatedSize.constructor === Number && estimatedSize <= 0)
+                            {
+                                ctx.server.options.storageManager.available(ctx, this, (available) => {
+                                    if(available === -1)
+                                        return finalGo(callback);
+                                    if(available === 0)
+                                        return callback(Errors.InsufficientStorage);
+
+                                    let nb = 0;
+                                    finalGo((e, wStream, created) => {
+                                        if(e)
+                                            return callback(e, wStream, created);
+
+                                        const stream = new Transform({
+                                            transform(chunk, encoding, callback)
+                                            {
+                                                nb += chunk.length;
+                                                if(nb > available)
+                                                    callback(Errors.InsufficientStorage);
+                                                else
+                                                    callback(null, chunk, encoding);
+                                            }
+                                        });
+                                        stream.pipe(wStream);
+                                        stream.on('finish', () => {
+                                            ctx.server.options.storageManager.reserve(ctx, this, nb, (reserved) => {
+                                                if(!reserved)
+                                                    stream.emit('error', Errors.InsufficientStorage);
+                                            })
+                                        })
+                                        callback(e, stream, created);
+                                    })
+                                })
+                            }
+                            else
+                            {
+                                ctx.server.options.storageManager.evaluateContent(ctx, this, estimatedSize, (estimatedSizeStored) => {
+                                ctx.server.options.storageManager.reserve(ctx, this, estimatedSizeStored - sizeStored, (reserved) => {
+                                    if(!reserved)
+                                        return callback(Errors.InsufficientStorage);
+                                    finalGo(callback);
+                                })
+                                })
+                            }
+                        })
+                    })
                 }
 
                 const createAndGo = (intermediates : boolean) =>
@@ -1094,7 +1172,25 @@ export abstract class FileSystem implements ISerializableFileSystem
                     getProperties(callback : ReturnCallback<PropertyBag>, byCopy ?: boolean) : void
                     {
                         issuePrivilegeCheck(fs, ctx, pPath, 'canReadProperties', callback, () => {
-                            pm.getProperties(callback, byCopy);
+                            pm.getProperties((e, bag) => {
+                                if(!bag)
+                                    return callback(e, bag);
+
+                                ctx.server.options.storageManager.available(ctx, this, (availableSize) => {
+                                    if(availableSize === -1)
+                                        return callback(e, bag);
+
+                                    ctx.server.options.storageManager.reserved(ctx, this, (reservedSize) => {
+                                        bag['DAV:quota-available-bytes'] = {
+                                            value: availableSize.toString()
+                                        };
+                                        bag['DAV:quota-used-bytes'] = {
+                                            value: reservedSize.toString()
+                                        };
+                                        callback(e, bag);
+                                    })
+                                })
+                            }, byCopy);
                         })
                     }
                 })

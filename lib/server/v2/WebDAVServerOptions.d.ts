@@ -1,9 +1,10 @@
 /// <reference types="node" />
+import { IStorageManager } from '../../manager/v2/fileSystem/StorageManager';
+import { FileSystemSerializer } from '../../manager/v2/fileSystem/Serialization';
 import { HTTPAuthentication } from '../../user/v2/authentication/HTTPAuthentication';
 import { Writable, Readable } from 'stream';
 import { PrivilegeManager } from '../../user/v2/privilege/PrivilegeManager';
 import { FileSystem } from '../../manager/v2/fileSystem/FileSystem';
-import { FileSystemSerializer } from '../../manager/v2/fileSystem/Serialization';
 import * as https from 'https';
 export interface IAutoSave {
     treeFilePath: string;
@@ -30,6 +31,7 @@ export declare class WebDAVServerOptions {
     version?: string;
     autoSave?: IAutoSave;
     autoLoad?: IAutoLoad;
+    storageManager?: IStorageManager;
 }
 export default WebDAVServerOptions;
 export declare function setDefaultServerOptions(options: WebDAVServerOptions): WebDAVServerOptions;

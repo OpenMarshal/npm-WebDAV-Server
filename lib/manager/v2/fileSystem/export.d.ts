@@ -7,3 +7,4 @@ export * from './Resource';
 export * from './Serialization';
 export * from './StandardMethods';
 export * from './ContextInfo';
+export * from './StorageManager';

@@ -472,7 +472,6 @@ export default class implements HTTPMethod
                                         if(reqBody.mustDisplay(name))
                                         {
                                             const tag = prop.ele(name);
-                                            console.log(name, tag);
                                             if(reqBody.mustDisplayValue(name))
                                             {
                                                 const property = properties[name];
@@ -481,7 +480,7 @@ export default class implements HTTPMethod
                                                         tag.attributes[attName] = property.attributes[attName];
                                                 else
                                                     tag.attributes = property.attributes;
-                                                
+
                                                 tag.add(property.value);
                                             }
                                         }

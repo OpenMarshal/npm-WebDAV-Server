@@ -1,14 +1,15 @@
-import { HTTPBasicAuthentication } from '../../user/v2/authentication/HTTPBasicAuthentication'
+import { IStorageManager, NoStorageManager } from '../../manager/v2/fileSystem/StorageManager'
 import { HTTPDigestAuthentication } from '../../user/v2/authentication/HTTPDigestAuthentication'
+import { HTTPBasicAuthentication } from '../../user/v2/authentication/HTTPBasicAuthentication'
+import { FileSystemSerializer } from '../../manager/v2/fileSystem/Serialization'
 import { HTTPAuthentication } from '../../user/v2/authentication/HTTPAuthentication'
 import { Writable, Readable } from 'stream'
-import { PrivilegeManager } from '../../user/v2/privilege/PrivilegeManager'
+import { VirtualFileSystem } from '../../manager/v2/instances/VirtualFileSystem'
 import { SimpleUserManager } from '../../user/v2/simple/SimpleUserManager'
+import { PrivilegeManager } from '../../user/v2/privilege/PrivilegeManager'
 import { RootResource } from '../../resource/std/RootResource'
 import { IUserManager } from '../../user/v2/IUserManager'
-import { VirtualFileSystem } from '../../manager/v2/instances/VirtualFileSystem'
 import { FileSystem } from '../../manager/v2/fileSystem/FileSystem'
-import { FileSystemSerializer } from '../../manager/v2/fileSystem/Serialization'
 import * as https from 'https'
 
 export interface IAutoSave
@@ -41,6 +42,7 @@ export class WebDAVServerOptions
     version ?: string = '1.8.0'
     autoSave ?: IAutoSave = null
     autoLoad ?: IAutoLoad = null
+    storageManager ?: IStorageManager = new NoStorageManager()
 }
 export default WebDAVServerOptions;
 
