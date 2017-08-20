@@ -71,10 +71,10 @@ module.exports = (callback, options) => {
                                 info.isValid(false, 'HTTP error.', e);
                             })
                             stream.on('complete', (res, body) => {
-                                if(res.statusCode >= 300)
+                                if(!config.canFail && res.statusCode >= 300)
                                     return info.isValid(false, res.statusCode + ' - ' + res.statusMessage);
                                 
-                                callback();
+                                callback(res, body);
                             })
                             return stream;
                         },
