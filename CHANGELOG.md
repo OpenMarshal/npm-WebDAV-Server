@@ -1,5 +1,225 @@
 # Changelog
 
+# 2.3.0
+
+### New features
+* Added the storage manager to allow to limit the storage *[74094e3](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/74094e3)*
+* Added a method in the server to give the listing of resources *[18f0e3a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/18f0e3a)*
+* Added a 'autoSave' method to the server to start the auto-save without starting the HTTP server *[481413d](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/481413d)*
+* Added 'before-*' file system events *[8763396](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/8763396)*
+
+### Tests
+* Added the ability to fail a streaming request in the tests (v2) *[6eb0cd0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6eb0cd0)*
+* Added tests for the quotas *[d191d72](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d191d72)*
+* Added tests for the 'server.listResources(...)' method *[0caed21](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0caed21)*
+
+### Bug fix
+* Fixed custom properties' attributes removing the property namespace (xmlns) *[70c5341](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/70c5341)*
+
+# 2.2.3
+
+### Bug fix
+* Fixed the missing 'lock' argument in the callback of the 'refresh' method of the lock manager returned in the 'FileSystem' class *[3dae2aa](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3dae2aa)*
+
+# 2.2.2
+
+### Other
+* Removed forgotten 'console.log' *[3277908](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3277908)*
+
+# 2.2.1
+
+### Other
+* Exported the 'IRange' interface of the 'Range' header parsing *[961f1e7](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/961f1e7)*
+
+### Bug fix
+* Fixed the delete method in the 'PhysicalFileSystem' class *[da9abf0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/da9abf0)*
+
+# 2.2.0
+
+### New features
+* Added support for the sequence/multipart, start and end types of the 'Range' header in the 'GET' method *[dd23bfc](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/dd23bfc)*
+* Added 'Range' support in the 'HEAD' method to better fit the 'GET' response without body *[6ebfd98](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6ebfd98)*
+
+### Tests
+* Added more tests for the 'Range' header of the 'Get' method :
+  * *[6945b31](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6945b31)*
+  * *[25a1cf3](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/25a1cf3)*
+* Added more server ports to the tests of the v2 :
+  * *[68172a9](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/68172a9)*
+  * *[98d16af](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/98d16af)*
+
+### Other
+* Exported the 'Range' header parser to be usable in the 'GET' and 'HEAD' methods *[a2aabce](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a2aabce)*
+
+
+# 2.1.0
+
+### New features
+* Added server wide events *[6786998](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6786998)*
+* Added file system wide events *[9a5688c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/9a5688c)*
+
+### Tests
+* Added tests for the events *[f8d8969](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/f8d8969)*
+* Added tests for the ranged GET *[647a8c3](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/647a8c3)*
+
+### Bug fix
+* Fixed the GET Range *[3b2d11f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3b2d11f)*
+
+# 2.0.19
+
+### Changes
+* Added headers to allow cross domain access to the server *[654886c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/654886c)*
+
+### Bug fix
+* Fixed a bug on the mkcol method *[4dcabe7](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/4dcabe7)*
+
+# 2.0.18
+
+### Changes
+* Removed the decoding in the 'Path' class *[ad5c8a6](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/ad5c8a6)*
+
+### Bug fix
+* Fixed the URL decoding in the 'Path' class to be able to work with fully encoded and partially encoded URL *[5a743a9](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5a743a9)*
+
+# 2.0.17
+
+### Changes
+* Removed the URL encoding in the 'href' tags and in the 'displayname' tags *[014820b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/014820b)*
+
+### Other
+* Excluded the folder experiment :
+  * *[8abda60](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/8abda60)*
+  * *[e966921](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e966921)*
+
+### Bug fix
+* Fixed wrong content length when the content contains special characters + Specified the encoding when writing to the response body (UTF-8) + Minimified the 'Content-Type' header in the 'writeBody' method of the 'RequestContext' class *[c12096a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c12096a)*
+
+# 2.0.16
+
+### Bug fix
+* Fixed the 'HTTPDigestAuthentication' class of the v1 and v2 to work with the level 0 of the digest authentication *[6247297](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6247297)*
+
+# 2.0.15
+
+### Bug fix
+* Fixed the 'LOCK' method which needed the 'owner' in the lock properties (which was made optional in the past) *[21a4a94](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/21a4a94)*
+
+# 2.0.14
+
+### Changes
+* Use 'xml-js-builder' npm package instead of built-in XML manager *[15e4f2d](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/15e4f2d)*
+
+# 2.0.13
+
+### Bug fix
+* Fixed a bug saying that the callback is not a function when calling the 'readDir' method of a file system *[57056d0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/57056d0)*
+
+# 2.0.12
+
+### Bug fix
+* Fixed the standard copy/move methods to copy/move the source content of the resource *[ec0144e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/ec0144e)*
+
+# 2.0.11
+
+### Changes
+* Modified the 'VirtualSerializer' class serialize 'resources' into a property of the serialized object instead of being the serialized object *[2833836](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2833836)*
+* Added the 'VirtualSerializerVersions' and 'PhysicalSerializerVersions' object to provide a list of versions of the serializers *[2833836](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2833836)*
+
+# 2.0.10
+
+### Changes
+* Modified the class name from '_VirtualFileSystemResource' into 'VirtualFileSystemResource' *[8e8b425](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/8e8b425)*
+* Modified the class name from '_PhysicalFileSystemResource' into 'PhysicalFileSystemResource' *[a09fe35](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a09fe35)*
+
+### Documentation
+* Added a 2nd example of creating a custom method for the server *[d191897](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d191897)*
+* Added a README to the examples folder *[5efdead](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5efdead)*
+
+### Other
+* Cleaned the code :
+  * *[50782df](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/50782df)*
+  * *[6acbcdd](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6acbcdd)*
+* Removed the 'no-conditional-assignment' lint *[03105d9](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/03105d9)*
+
+### Bug fix
+* Fixed the HEAD method crashing when the size of a resource is undefined *[de276ff](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/de276ff)*
+
+# 2.0.9
+
+### Bug fix
+* Fixed the constructor by copy of the 'LocalPropertyManager' class and the 'LocalLockManager' class *[a5fb4c0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a5fb4c0)*
+
+# 2.0.8
+
+### Bug fix
+* Fixed the persistence (untriggered close event on saving) *[7e7f86d](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7e7f86d)*
+
+# 2.0.7
+
+### Changes
+* Removed the initial GZip/GUnZip of the persistence => now it is a default behaviour *[ac1fd34](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/ac1fd34)*
+* Modified the 'IAutoSave' interface to fit cases *[ac1fd34](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/ac1fd34)*
+
+### Documentation
+* Added the use of the method in the 'Custom Method' example *[c9f34e3](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c9f34e3)*
+* Added a note to the README of the 'Custom Method' example *[e58fdaf](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e58fdaf)*
+* Added the 'Custom Method' example *[eadb2b8](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/eadb2b8)*
+
+### Bug fix
+* Fixed the 'create' method of the 'FileSystem' class which was not creating more than 1 intermediate *[4b1cb25](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/4b1cb25)*
+
+# 2.0.6
+
+### Changes
+* Modified the LOCK method to make the owner tag optional *[7a34231](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7a34231)*
+
+### Bug fix
+* Fixed the 'SimplePathPrivilegeManager' class to add sub-rights when calling the 'setRights' method *[aaeed0c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/aaeed0c)*
+* Fixed a bad privilege check in the 'FileSystem' class which asked write rights for reading available locks of a resource *[feb1fe0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/feb1fe0)*
+
+# 2.0.5
+
+### New features
+* Allow to override the privilege checking in the context to allow special operations (list all locks, for instance) *[b96fde6](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b96fde6)*
+* Added the 'isLocked' method in the 'Resource' class and in the 'ContextualFileSystem' class *[7e3a142](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7e3a142)*
+
+### Tests
+* Upgraded the tests for the persistence to fail if the an error occurs while saving *[7f7a3cd](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7f7a3cd)*
+
+### Bug fix
+* Removed a bad privilege check in the 'listDeepLocks' method of the 'FileSystem' class *[2023611](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2023611)*
+
+# 2.0.4
+
+### New features
+* Modified the 'FileSystem' class and the serialization method to skip/allow non-serializable file system (skip the serialization of a fs if 'fs.serializer()' returns null/undefined) *[43acf3f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/43acf3f)*
+
+### Documentation
+* Added comments to describe methods of the 'FileSystem' class and the 'FileSystemSerializer' interface for better code completion details *[e95de1a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/e95de1a)*
+* Fixed the missing description of the 2nd example in the README *[218d907](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/218d907)*
+* Added the '@webdav-server' npm packages information in the README *[d80b6ab](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d80b6ab)*
+
+### Bug fix
+* Fixed the 'isLocked' method of the 'FileSystem' class to skip privilege checking *[f201b61](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/f201b61)*
+* Fixed the 'SimplePathPrivilegeManager' class *[25a9529](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/25a9529)*
+
+# 2.0.3
+
+### Changes
+* The default behaviour of the 'size' method in the 'FileSystem' class is now to return 'undefined' as value (= cannot tell the size) *[4aed15f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/4aed15f)*
+* Made the 'Content-Length' header optional in the response when no size can be obtained *[0f1cdcd](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0f1cdcd)*
+
+# 2.0.2
+
+### Bug fix
+* Fixed the MOVE method *[592d2bc](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/592d2bc)*
+* Fixed the 'autoLoad' method to not crash when the 'autoSave' option is missing *[a03cc96](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a03cc96)*
+
+# 2.0.1
+
+### Documentation
+* Fixed wrong place of the deprecated comment *[b6ed379](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b6ed379)*
+
 # 2.0.0
 
 ### New features
