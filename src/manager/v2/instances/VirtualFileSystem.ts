@@ -39,7 +39,7 @@ export class VirtualFileSystemResource
     constructor(data : VirtualFileSystemResource | ResourceType)
     {
         let rs : VirtualFileSystemResource;
-        if(data.constructor === ResourceType)
+        if(data && (data as ResourceType).isFile !== undefined && (data as ResourceType).isDirectory !== undefined)
         {
             rs = {
                 type: data as ResourceType
