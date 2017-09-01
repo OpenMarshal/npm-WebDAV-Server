@@ -110,6 +110,6 @@ server.autoLoad((e) => {
 })
 ```
 
-More examples at the [example page of the wiki](https://github.com/OpenMarshal/npm-WebDAV-Server/wiki/Examples).
+More examples at the [example page of the wiki](https://github.com/OpenMarshal/npm-WebDAV-Server/wiki/Examples-%5Bv2%5D).
 
 More information/possibilities in the [documentation](https://github.com/OpenMarshal/npm-WebDAV-Server/wiki).
