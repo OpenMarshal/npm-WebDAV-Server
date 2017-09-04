@@ -1430,7 +1430,7 @@ export abstract class FileSystem implements ISerializableFileSystem
      * @param resourceType Type of the resource to add.
      * @param callback Returns an error if one occured.
      */
-    addSubTree(ctx : RequestContext, resourceType : ResourceType, callback : SimpleCallback)
+    addSubTree(ctx : RequestContext, resourceType : ResourceType | string | Buffer, callback : SimpleCallback)
     /**
      * Add a sub-tree to the file system.
      * 
@@ -1450,8 +1450,8 @@ export abstract class FileSystem implements ISerializableFileSystem
      * @param resourceType Type of the resource to add.
      * @param callback Returns an error if one occured.
      */
-    addSubTree(ctx : RequestContext, rootPath : Path | string, resourceType : ResourceType, callback : SimpleCallback)
-    addSubTree(ctx : RequestContext, _rootPath : Path | string | SubTree | ResourceType | SimpleCallback, _tree : SubTree | ResourceType | SimpleCallback, _callback ?: SimpleCallback)
+    addSubTree(ctx : RequestContext, rootPath : Path | string, resourceType : ResourceType | string | Buffer, callback : SimpleCallback)
+    addSubTree(ctx : RequestContext, _rootPath : Path | string | SubTree | ResourceType | SimpleCallback | string | Buffer, _tree : SubTree | ResourceType | SimpleCallback | string | Buffer, _callback ?: SimpleCallback)
     {
         const tree = _callback ? _tree as SubTree | ResourceType : _rootPath as SubTree | ResourceType;
         const rootPath = _callback ? new Path(_rootPath as Path | string) : new Path('/');
@@ -1462,14 +1462,30 @@ export abstract class FileSystem implements ISerializableFileSystem
         {
             this.create(ctx, rootPath, tree as ResourceType, callback);
         }
+        else if(tree.constructor === String || tree.constructor === Buffer)
+        {
+            const data : String | Buffer = tree as any;
+            this.openWriteStream(ctx, rootPath, 'mustCreate', true, data.length, (e, w, created) => {
+                if(e)
+                    return callback(e);
+
+                w.end(data);
+                w.on('error', (e) => {
+                    callback(e);
+                })
+                w.on('finish', () => {
+                    callback();
+                })
+            })
+        }
         else
         {
             new Workflow()
                 .each(Object.keys(tree), (name, cb) => {
                     const value = tree[name];
                     const childPath = rootPath.getChildPath(name);
-                    if(value.constructor === ResourceType)
-                        this.addSubTree(ctx, childPath, value as ResourceType, cb)
+                    if(value.constructor === ResourceType || value.constructor === String || value.constructor === Buffer)
+                        this.addSubTree(ctx, childPath, value, cb)
                     else
                         this.addSubTree(ctx, childPath, ResourceType.Directory, (e) => {
                             if(e)

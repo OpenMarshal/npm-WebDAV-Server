@@ -486,7 +486,7 @@ export declare abstract class FileSystem implements ISerializableFileSystem {
      * @param resourceType Type of the resource to add.
      * @param callback Returns an error if one occured.
      */
-    addSubTree(ctx: RequestContext, resourceType: ResourceType, callback: SimpleCallback): any;
+    addSubTree(ctx: RequestContext, resourceType: ResourceType | string | Buffer, callback: SimpleCallback): any;
     /**
      * Add a sub-tree to the file system.
      *
@@ -506,7 +506,7 @@ export declare abstract class FileSystem implements ISerializableFileSystem {
      * @param resourceType Type of the resource to add.
      * @param callback Returns an error if one occured.
      */
-    addSubTree(ctx: RequestContext, rootPath: Path | string, resourceType: ResourceType, callback: SimpleCallback): any;
+    addSubTree(ctx: RequestContext, rootPath: Path | string, resourceType: ResourceType | string | Buffer, callback: SimpleCallback): any;
     /**
      * Search for locks in the parents, starting at the 'startPath' path.
      *

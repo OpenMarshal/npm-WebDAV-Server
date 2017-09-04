@@ -39,5 +39,5 @@ export type OpenWriteStreamMode = 'mustCreate' | 'canCreate' | 'mustExist' | 'ca
 
 export interface SubTree
 {
-    [name : string] : ResourceType | SubTree
+    [name : string] : ResourceType | SubTree | string | Buffer
 }

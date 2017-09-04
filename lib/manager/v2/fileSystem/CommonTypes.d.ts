@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { XMLElement } from 'xml-js-builder';
 export declare type SimpleCallback = (error?: Error) => void;
 export declare type ReturnCallback<T> = (error?: Error, data?: T) => void;
@@ -17,5 +18,5 @@ export declare class ResourceType {
 }
 export declare type OpenWriteStreamMode = 'mustCreate' | 'canCreate' | 'mustExist' | 'canCreateIntermediates' | 'mustCreateIntermediates';
 export interface SubTree {
-    [name: string]: ResourceType | SubTree;
+    [name: string]: ResourceType | SubTree | string | Buffer;
 }
