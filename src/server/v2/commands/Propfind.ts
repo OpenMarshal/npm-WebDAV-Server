@@ -211,7 +211,7 @@ export default class implements HTTPMethod
                                         ctx.server.getResource(ctx, ctx.requested.path.getChildPath(childName), (e, r) => {
                                             if(e)
                                                 return cb(e);
-                                            addXMLInfo(r, multistatus, cb);
+                                            addXMLInfo(r, multistatus, (e) => cb());
                                         });
                                     })
                                     .error(err)
@@ -233,6 +233,24 @@ export default class implements HTTPMethod
                             e = null;
                         else if(!e)
                             multistatus.add(response);
+                        else
+                        {
+                            const errorNumber = HTTPRequestContext.defaultStatusCode(e);
+                            if(errorNumber !== null)
+                            {
+                                const response = new XMLElementBuilder('D:response');
+                                response.ele('D:propstat').ele('D:status').add('HTTP/1.1 ' + errorNumber + ' ' + http.STATUS_CODES[errorNumber]);
+                                resource.fs.getFullPath(ctx, resource.path, (e, path) => {
+                                    if(e)
+                                        return nbOut(e);
+                                    
+                                    const p = encode(ctx.fullUri(path.toString()));
+                                    response.ele('D:href', undefined, true).add(p);
+                                    response.ele('D:location').ele('D:href', undefined, true).add(p);
+                                })
+                                multistatus.add(response);
+                            }
+                        }
 
                         _callback(e);
                     }
