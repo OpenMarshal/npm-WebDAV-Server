@@ -212,6 +212,37 @@ export class PhysicalFileSystem extends FileSystem
     {
         const { realPath: realPathFrom } = this.getRealPath(pathFrom);
         const { realPath: realPathTo } = this.getRealPath(pathTo);
+
+        const rename = (overwritten) => {
+            fs.rename(realPathFrom, realPathTo, (e) => {
+                if(e)
+                    return callback(e);
+
+                this.resources[realPathTo] = this.resources[realPathFrom];
+                delete this.resources[realPathFrom];
+                callback(null, overwritten);
+            });
+        };
+
+        fs.access(realPathTo, (e) => {
+            if(e)
+            { // destination doesn't exist
+                rename(false);
+            }
+            else
+            { // destination exists
+                if(!ctx.overwrite)
+                    return callback(Errors.ResourceAlreadyExists);
+                
+                this.delete(ctx.context, pathTo, (e) => {
+                    if(e)
+                        return callback(e);
+                    rename(true);
+                });
+            }
+        })
+
+        /*
         
         fs.rename(realPathFrom, realPathTo, (e) => {
             if(!e)
@@ -230,7 +261,7 @@ export class PhysicalFileSystem extends FileSystem
                     callback(e, false);
                 })
             }
-        })
+        })*/
     }
 
     protected _size(path : Path, ctx : SizeInfo, callback : ReturnCallback<number>) : void
@@ -305,6 +336,9 @@ export class PhysicalFileSystem extends FileSystem
     protected _type(path : Path, ctx : TypeInfo, callback : ReturnCallback<ResourceType>) : void
     {
         const { realPath } = this.getRealPath(path);
+
+        if(realPath.indexOf('.url') !== -1)
+            return callback(Errors.ResourceNotFound);
 
         fs.stat(realPath, (e, stat) => {
             if(e)
