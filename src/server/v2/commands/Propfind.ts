@@ -202,6 +202,9 @@ export default class implements HTTPMethod
                                 callback();
                             }
 
+                            if(e)
+                                return err(e);
+
                             addXMLInfo(resource, multistatus, (e) => {
                                 if(e)
                                     return err(e);
