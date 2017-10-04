@@ -8,7 +8,6 @@ import { Errors } from '../../../Errors'
 import { Lock } from '../../../resource/lock/Lock'
 import * as http from 'http'
 
-
 function dateISO8601(ticks : number) : string
 {
     // Adding date
@@ -32,63 +31,6 @@ function dateISO8601(ticks : number) : string
     
     return result;
 }
-
-/*
-function lockDiscovery(lockDiscoveryCache : any, ctx : HTTPRequestContext, path : Path, resource : IResource, callback : ReturnCallback<any>)
-{
-    const cached = lockDiscoveryCache[path.toString()];
-    if(cached)
-    {
-        callback(null, cached);
-        return;
-    }
-
-    const _Callback = callback;
-    callback = (e, l) => {
-        if(!e)
-            lockDiscoveryCache[path.toString()] = l;
-        _Callback(e, l);
-    }
-
-    ctx.requireErPrivilege('canListLocks', resource, (e, can) => {
-        if(e || !can)
-        {
-            callback(e, {});
-            return;
-        }
-
-        resource.getLocks((e, locks) => {
-            if(e === Errors.MustIgnore)
-            {
-                locks = [];
-            }
-            else if(e)
-            {
-                callback(e, null);
-                return;
-            }
-
-            if(resource.parent)
-            {
-                const parentPath = path.getParent();
-                lockDiscovery(lockDiscoveryCache, ctx, parentPath, resource.parent, (e, l) => {
-                    if(e)
-                        callback(e, null);
-                    else
-                    {
-                        l[path.toString()] = locks;
-                        callback(null, l);
-                    }
-                });
-            }
-            else
-                callback(null, {
-                    [path.toString()]: locks
-                });
-        });
-    })
-}
-*/
 
 interface PropertyRule
 {
@@ -193,37 +135,35 @@ export default class implements HTTPMethod
                         return;
                     }
                     
-                    //ctx.requirePrivilege('canGetChildren', resource, () => {
-                        resource.readDir(true, (e, children) => process.nextTick(() => {
-                            function err(e)
-                            {
-                                if(!ctx.setCodeFromError(e))
-                                    ctx.setCode(HTTPCodes.InternalServerError)
-                                callback();
-                            }
+                    resource.readDir(true, (e, children) => process.nextTick(() => {
+                        function err(e)
+                        {
+                            if(!ctx.setCodeFromError(e))
+                                ctx.setCode(HTTPCodes.InternalServerError)
+                            callback();
+                        }
 
+                        if(e)
+                            return err(e);
+
+                        addXMLInfo(resource, multistatus, (e) => {
                             if(e)
                                 return err(e);
 
-                            addXMLInfo(resource, multistatus, (e) => {
-                                if(e)
-                                    return err(e);
-
-                                new Workflow()
-                                    .each(children, (childName, cb) => {
-                                        ctx.server.getResource(ctx, ctx.requested.path.getChildPath(childName), (e, r) => {
-                                            if(e)
-                                                return cb(e);
-                                            addXMLInfo(r, multistatus, (e) => cb());
-                                        });
-                                    })
-                                    .error(err)
-                                    .done(() => {
-                                        done(multistatus)
+                            new Workflow()
+                                .each(children, (childName, cb) => {
+                                    ctx.server.getResource(ctx, ctx.requested.path.getChildPath(childName), (e, r) => {
+                                        if(e)
+                                            return cb(e);
+                                        addXMLInfo(r, multistatus, (e) => cb());
                                     });
-                            });
-                        }))
-                    //})
+                                })
+                                .error(err)
+                                .done(() => {
+                                    done(multistatus)
+                                });
+                        });
+                    }))
                 }))
                 
                 function addXMLInfo(resource : Resource, multistatus, _callback)
@@ -260,259 +200,240 @@ export default class implements HTTPMethod
 
                     const propstat = response.ele('D:propstat')
 
-                    /*const privileges : BasicPrivilege[] = [
-                        'canGetCreationDate', 'canGetAvailableLocks', 'canGetLastModifiedDate', 'canGetMimeType', 'canGetProperties', 'canGetSize', 'canGetType', 'canGetWebName'
-                    ];
-                    if(targetSource)
-                        privileges.push('canSource');
-                    ctx.requireErPrivilege(privileges, resource, (e, can) => {
+                    propstat.ele('D:status').add('HTTP/1.1 200 OK')
+
+                    const prop = propstat.ele('D:prop')
+                    
+                    let nb = 1;
+                    function nbOut(error?)
+                    {
+                        if(nb > 0 && error)
+                        {
+                            nb = -1000;
+                            return callback(error);
+                        }
+
+                        --nb;
+                        if(nb === 0)
+                        {
+                            if(reqBody.leftElements.length > 0)
+                            {
+                                const propstatError = response.ele('D:propstat');
+                                const prop = propstatError.ele('D:prop');
+                                propstatError.ele('D:status').add(propstatStatus(HTTPCodes.NotFound));
+
+                                for(const el of reqBody.leftElements)
+                                    if(el)
+                                        prop.ele(el.name);
+                            }
+                            callback();
+                        }
+                    }
+                    
+                    const tags : any = {};
+
+                    function mustDisplayTag(name : string)
+                    {
+                        if(reqBody.mustDisplay('DAV:' + name))
+                            tags[name] = {
+                                el: prop.ele('D:' + name),
+                                value: reqBody.mustDisplayValue('DAV:' + name)
+                            };
+                        else
+                            tags[name] = {
+                                value: false
+                            };
+                    }
+
+                    mustDisplayTag('getlastmodified')
+                    mustDisplayTag('lockdiscovery')
+                    mustDisplayTag('supportedlock')
+                    mustDisplayTag('creationdate')
+                    mustDisplayTag('resourcetype')
+                    mustDisplayTag('displayname')
+                    mustDisplayTag('getetag')
+
+                    function displayValue(values : string[] | string, fn : () => void)
+                    {
+                        if(values.constructor === String ? tags[values as string].value : (values as string[]).some((n) => tags[n].value))
+                        {
+                            ++nb;
+                            process.nextTick(fn);
+                        }
+                    }
+
+                    displayValue('creationdate', () =>
+                    {
+                        resource.creationDate((e, ticks) => process.nextTick(() => {
+                            if(!e)
+                                tags.creationdate.el.add(dateISO8601(ticks));
+                            
+                            nbOut(e);
+                        }))
+                    })
+
+                    displayValue('lockdiscovery', () =>
+                    {
+                        resource.listDeepLocks((e, locks) => {
+                            if(e)
+                                return nbOut(e);
+
+                            for(const path in locks)
+                            {
+                                for(const _lock of locks[path])
+                                {
+                                    const lock : Lock = _lock;
+                                    const activelock = tags.lockdiscovery.el.ele('D:activelock');
+                                    
+                                    activelock.ele('D:lockscope').ele('D:' + lock.lockKind.scope.value.toLowerCase())
+                                    activelock.ele('D:locktype').ele('D:' + lock.lockKind.type.value.toLowerCase())
+                                    activelock.ele('D:depth').add('Infinity')
+                                    if(lock.owner)
+                                        activelock.ele('D:owner').add(lock.owner)
+                                    activelock.ele('D:timeout').add('Second-' + (lock.expirationDate - Date.now()))
+                                    activelock.ele('D:locktoken').ele('D:href', undefined, true).add(lock.uuid)
+                                    activelock.ele('D:lockroot').ele('D:href', undefined, true).add(encode(ctx.fullUri(path)))
+                                }
+                            }
+                            
+                            nbOut(null);
+                        })
+                    })
+                    
+                    ++nb;
+                    resource.type((e, type) => process.nextTick(() => {
                         if(e)
-                        {
-                            callback(e);
-                            return;
-                        }
+                            return nbOut(e);
                         
-                        if(!can)
-                        {
-                            callback(Errors.BadAuthentication);
-                            return;
-                        }*/
-
-                        propstat.ele('D:status').add('HTTP/1.1 200 OK')
-
-                        const prop = propstat.ele('D:prop')
-                        
-                        let nb = 1;
-                        function nbOut(error?)
-                        {
-                            if(nb > 0 && error)
-                            {
-                                nb = -1000;
-                                return callback(error);
-                            }
-
-                            --nb;
-                            if(nb === 0)
-                            {
-                                if(reqBody.leftElements.length > 0)
-                                {
-                                    const propstatError = response.ele('D:propstat');
-                                    const prop = propstatError.ele('D:prop');
-                                    propstatError.ele('D:status').add(propstatStatus(HTTPCodes.NotFound));
-
-                                    for(const el of reqBody.leftElements)
-                                        if(el)
-                                            prop.ele(el.name);
-                                }
-                                callback();
-                            }
-                        }
-                        
-                        const tags : any = {};
-
-                        function mustDisplayTag(name : string)
-                        {
-                            if(reqBody.mustDisplay('DAV:' + name))
-                                tags[name] = {
-                                    el: prop.ele('D:' + name),
-                                    value: reqBody.mustDisplayValue('DAV:' + name)
-                                };
-                            else
-                                tags[name] = {
-                                    value: false
-                                };
-                        }
-
-                        mustDisplayTag('getlastmodified')
-                        mustDisplayTag('lockdiscovery')
-                        mustDisplayTag('supportedlock')
-                        mustDisplayTag('creationdate')
-                        mustDisplayTag('resourcetype')
-                        mustDisplayTag('displayname')
-                        mustDisplayTag('getetag')
-
-                        function displayValue(values : string[] | string, fn : () => void)
-                        {
-                            if(values.constructor === String ? tags[values as string].value : (values as string[]).some((n) => tags[n].value))
-                            {
-                                ++nb;
-                                process.nextTick(fn);
-                            }
-                        }
-
-                        displayValue('creationdate', () =>
-                        {
-                            resource.creationDate((e, ticks) => process.nextTick(() => {
-                                if(!e)
-                                    tags.creationdate.el.add(dateISO8601(ticks));
-                                
-                                nbOut(e);
-                            }))
-                        })
-
-                        displayValue('lockdiscovery', () =>
-                        {
-                            resource.listDeepLocks((e, locks) => {
-                                if(e)
-                                    return nbOut(e);
-
-                                for(const path in locks)
-                                {
-                                    for(const _lock of locks[path])
-                                    {
-                                        const lock : Lock = _lock;
-                                        const activelock = tags.lockdiscovery.el.ele('D:activelock');
-                                        
-                                        activelock.ele('D:lockscope').ele('D:' + lock.lockKind.scope.value.toLowerCase())
-                                        activelock.ele('D:locktype').ele('D:' + lock.lockKind.type.value.toLowerCase())
-                                        activelock.ele('D:depth').add('Infinity')
-                                        if(lock.owner)
-                                            activelock.ele('D:owner').add(lock.owner)
-                                        activelock.ele('D:timeout').add('Second-' + (lock.expirationDate - Date.now()))
-                                        activelock.ele('D:locktoken').ele('D:href', undefined, true).add(lock.uuid)
-                                        activelock.ele('D:lockroot').ele('D:href', undefined, true).add(encode(ctx.fullUri(path)))
-                                    }
-                                }
-                                
-                                nbOut(null);
-                            })
-                        })
-                        
-                        ++nb;
-                        resource.type((e, type) => process.nextTick(() => {
+                        resource.fs.getFullPath(ctx, resource.path, (e, path) => {
                             if(e)
                                 return nbOut(e);
                             
-                            resource.fs.getFullPath(ctx, resource.path, (e, path) => {
-                                if(e)
-                                    return nbOut(e);
+                            const p = encode(ctx.fullUri(path.toString()));
+                            const href = p.lastIndexOf('/') !== p.length - 1 && type.isDirectory ? p + '/' : p;
+                            response.ele('D:href', undefined, true).add(href);
+                            response.ele('D:location').ele('D:href', undefined, true).add(p);
+
+                            if(tags.resourcetype.value && type.isDirectory)
+                                tags.resourcetype.el.ele('D:collection')
                                 
-                                const p = encode(ctx.fullUri(path.toString()));
-                                const href = p.lastIndexOf('/') !== p.length - 1 && type.isDirectory ? p + '/' : p;
-                                response.ele('D:href', undefined, true).add(href);
-                                response.ele('D:location').ele('D:href', undefined, true).add(p);
+                            if(type.isFile)
+                            {
+                                mustDisplayTag('getcontentlength')
+                                mustDisplayTag('getcontenttype')
 
-                                if(tags.resourcetype.value && type.isDirectory)
-                                    tags.resourcetype.el.ele('D:collection')
-                                    
-                                if(type.isFile)
+                                if(tags.getcontenttype.value)
                                 {
-                                    mustDisplayTag('getcontentlength')
-                                    mustDisplayTag('getcontenttype')
-
-                                    if(tags.getcontenttype.value)
-                                    {
-                                        ++nb;
-                                        resource.mimeType(targetSource, (e, mimeType) => process.nextTick(() => {
-                                            if(!e)
-                                                tags.getcontenttype.el.add(mimeType)
-                                            nbOut(e);
-                                        }))
-                                    }
-
-                                    if(tags.getcontentlength.value)
-                                    {
-                                        ++nb;
-                                        resource.size(targetSource, (e, size) => process.nextTick(() => {
-                                            if(!e)
-                                                tags.getcontentlength.el.add(size === undefined || size === null || size.constructor !== Number ? 0 : size)
-                                            nbOut(e);
-                                        }))
-                                    }
+                                    ++nb;
+                                    resource.mimeType(targetSource, (e, mimeType) => process.nextTick(() => {
+                                        if(!e)
+                                            tags.getcontenttype.el.add(mimeType)
+                                        nbOut(e);
+                                    }))
                                 }
 
-                                nbOut();
-                            })
+                                if(tags.getcontentlength.value)
+                                {
+                                    ++nb;
+                                    resource.size(targetSource, (e, size) => process.nextTick(() => {
+                                        if(!e)
+                                            tags.getcontentlength.el.add(size === undefined || size === null || size.constructor !== Number ? 0 : size)
+                                        nbOut(e);
+                                    }))
+                                }
+                            }
+
+                            nbOut();
+                        })
+                    }))
+
+                    displayValue('displayname', () =>
+                    {
+                        let methodDisplayName = resource.webName;
+                        if(resource.displayName)
+                            methodDisplayName = resource.displayName;
+                        
+                        methodDisplayName.bind(resource)((e, name) => process.nextTick(() => {
+                            if(!e)
+                                tags.displayname.el.add(name ? encode(name) : '');
+                            nbOut(e);
                         }))
+                    })
 
-                        displayValue('displayname', () =>
-                        {
-                            let methodDisplayName = resource.webName;
-                            if(resource.displayName)
-                                methodDisplayName = resource.displayName;
+                    displayValue('supportedlock', () =>
+                    {
+                        resource.availableLocks((e, lockKinds) => process.nextTick(() => {
+                            if(e)
+                            {
+                                nbOut(e);
+                                return;
+                            }
+
+                            lockKinds.forEach((lockKind) => {
+                                const lockentry = tags.supportedlock.el.ele('D:lockentry')
+
+                                const lockscope = lockentry.ele('D:lockscope')
+                                lockscope.ele('D:' + lockKind.scope.value.toLowerCase())
+
+                                const locktype = lockentry.ele('D:locktype')
+                                locktype.ele('D:' + lockKind.type.value.toLowerCase())
+                            })
+                            nbOut();
+                        }))
+                    })
+
+                    displayValue('getlastmodified', () =>
+                    {
+                        resource.lastModifiedDate((e, lastModifiedDate) => process.nextTick(() => {
+                            if(!e && tags.getlastmodified.value)
+                                tags.getlastmodified.el.add(new Date(lastModifiedDate).toUTCString())
+                            nbOut(e);
+                        }))
+                    })
+
+                    displayValue('getetag', () =>
+                    {
+                        resource.etag((e, etag) => process.nextTick(() => {
+                            if(!e && tags.getetag.value)
+                                tags.getetag.el.add(etag);
+                            nbOut(e);
+                        }))
+                    })
+
+                    ++nb;
+                    process.nextTick(() => {
+                        resource.propertyManager((e, pm) => {
+                            if(e)
+                                return nbOut(e);
                             
-                            methodDisplayName.bind(resource)((e, name) => process.nextTick(() => {
-                                if(!e)
-                                    tags.displayname.el.add(name ? encode(name) : '');
-                                nbOut(e);
-                            }))
-                        })
-
-                        displayValue('supportedlock', () =>
-                        {
-                            resource.availableLocks((e, lockKinds) => process.nextTick(() => {
-                                if(e)
-                                {
-                                    nbOut(e);
-                                    return;
-                                }
-
-                                lockKinds.forEach((lockKind) => {
-                                    const lockentry = tags.supportedlock.el.ele('D:lockentry')
-
-                                    const lockscope = lockentry.ele('D:lockscope')
-                                    lockscope.ele('D:' + lockKind.scope.value.toLowerCase())
-
-                                    const locktype = lockentry.ele('D:locktype')
-                                    locktype.ele('D:' + lockKind.type.value.toLowerCase())
-                                })
-                                nbOut();
-                            }))
-                        })
-
-                        displayValue('getlastmodified', () =>
-                        {
-                            resource.lastModifiedDate((e, lastModifiedDate) => process.nextTick(() => {
-                                if(!e && tags.getlastmodified.value)
-                                    tags.getlastmodified.el.add(new Date(lastModifiedDate).toUTCString())
-                                nbOut(e);
-                            }))
-                        })
-
-                        displayValue('getetag', () =>
-                        {
-                            resource.etag((e, etag) => process.nextTick(() => {
-                                if(!e && tags.getetag.value)
-                                    tags.getetag.el.add(etag);
-                                nbOut(e);
-                            }))
-                        })
-
-                        ++nb;
-                        process.nextTick(() => {
-                            resource.propertyManager((e, pm) => {
+                            pm.getProperties((e, properties) => {
                                 if(e)
                                     return nbOut(e);
                                 
-                                pm.getProperties((e, properties) => {
-                                    if(e)
-                                        return nbOut(e);
-                                    
-                                    for(const name in properties)
+                                for(const name in properties)
+                                {
+                                    if(reqBody.mustDisplay(name))
                                     {
-                                        if(reqBody.mustDisplay(name))
+                                        const tag = prop.ele(name);
+                                        if(reqBody.mustDisplayValue(name))
                                         {
-                                            const tag = prop.ele(name);
-                                            if(reqBody.mustDisplayValue(name))
-                                            {
-                                                const property = properties[name];
-                                                if(tag.attributes)
-                                                    for(const attName in property.attributes)
-                                                        tag.attributes[attName] = property.attributes[attName];
-                                                else
-                                                    tag.attributes = property.attributes;
+                                            const property = properties[name];
+                                            if(tag.attributes)
+                                                for(const attName in property.attributes)
+                                                    tag.attributes[attName] = property.attributes[attName];
+                                            else
+                                                tag.attributes = property.attributes;
 
-                                                tag.add(property.value);
-                                            }
+                                            tag.add(property.value);
                                         }
                                     }
-                                    nbOut();
-                                })
+                                }
+                                nbOut();
                             })
                         })
+                    })
 
-                        nbOut();
-                    //})
+                    nbOut();
                 }
 
                 function done(multistatus)
