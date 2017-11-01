@@ -67,6 +67,7 @@ export declare class HTTPRequestContext extends RequestContext {
     exit: () => void;
     protected constructor(server: WebDAVServer, request: http.IncomingMessage, response: http.ServerResponse, exit: () => void);
     static create(server: WebDAVServer, request: http.IncomingMessage, response: http.ServerResponse, callback: (error: Error, ctx: HTTPRequestContext) => void): void;
+    static encodeURL(url: string): string;
     noBodyExpected(callback: () => void): void;
     checkIfHeader(resource: Resource, callback: () => void): any;
     checkIfHeader(fs: FileSystem, path: Path, callback: () => void): any;

@@ -17,7 +17,7 @@ export default class implements HTTPMethod
                         'xmlns:D': 'DAV:'
                     });
                     const response = multistatus.ele('D:response');
-                    response.ele('D:href', undefined, true).add(ctx.fullUri());
+                    response.ele('D:href', undefined, true).add(HTTPRequestContext.encodeURL(ctx.fullUri()));
 
                     try
                     {

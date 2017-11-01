@@ -263,6 +263,11 @@ export class HTTPRequestContext extends RequestContext
             callback(null, ctx);
         }
     }
+    
+    static encodeURL(url : string)
+    {
+        return encodeURI(url);
+    }
 
     noBodyExpected(callback : () => void)
     {
