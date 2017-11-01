@@ -90,7 +90,7 @@ function parseRequestBody(ctx : HTTPRequestContext, data : Buffer) : PropertyRul
 
 function encode(url : string)
 {
-    return url;
+    return url.replace(/ /img, '%20');
 }
 
 function propstatStatus(status : number)
