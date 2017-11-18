@@ -63,20 +63,56 @@ export class WebDAVServer
                 this.method(k, new commands[k]());
     }
 
+    /**
+     * Synchronously create an external context with full rights.
+     * 
+     * @returns The created context.
+     */
     createExternalContext() : ExternalRequestContext
+    /**
+     * Create an external context with full rights.
+     * 
+     * @param callback Callback containing the created context.
+     * @returns The created context.
+     */
     createExternalContext(callback : (error : Error, ctx : ExternalRequestContext) => void) : ExternalRequestContext
+    /**
+     * Create an external context with specified options.
+     * 
+     * @param options Options of the context
+     * @returns The created context.
+     */
     createExternalContext(options : RequestContextExternalOptions) : ExternalRequestContext
+    /**
+     * Create an external context with specified options.
+     * 
+     * @param options Options of the context
+     * @param callback Callback containing the created context.
+     * @returns The created context.
+     */
     createExternalContext(options : RequestContextExternalOptions, callback : (error : Error, ctx : ExternalRequestContext) => void) : ExternalRequestContext
     createExternalContext(_options ?: RequestContextExternalOptions | ((error : Error, ctx : ExternalRequestContext) => void), _callback ?: (error : Error, ctx : ExternalRequestContext) => void) : ExternalRequestContext
     {
         return ExternalRequestContext.create(this, _options as any, _callback);
     }
 
+    /**
+     * Get the root file system.
+     * 
+     * @returns The root file system
+     */
     rootFileSystem() : FileSystem
     {
         return this.fileSystems['/'];
     }
 
+    /**
+     * Get a resource object to manage a resource from its path.
+     * 
+     * @param ctx Context of the request
+     * @param path Path of the resource
+     * @param callback Callback containing the requested resource
+     */
     getResource(ctx : RequestContext, path : Path | string, callback : ReturnCallback<Resource>) : void
     {
         path = new Path(path);
@@ -85,6 +121,13 @@ export class WebDAVServer
             callback(null, fs.resource(ctx, subPath));
         })
     }
+    /**
+     * Synchronously get a resource object to manage a resource from its path.
+     * 
+     * @param ctx Context of the request
+     * @param path Path of the resource
+     * @returns The requested resource
+     */
     getResourceSync(ctx : RequestContext, path : Path | string) : Resource
     {
         path = new Path(path);
@@ -93,7 +136,22 @@ export class WebDAVServer
         return info.fs.resource(ctx, info.subPath);
     }
 
+    /**
+     * Map/mount a file system to a path.
+     * 
+     * @param path Path where to mount the file system
+     * @param fs File system to mount
+     * @param callback Callback containing the status of the mounting
+     */
     setFileSystem(path : Path | string, fs : FileSystem, callback : (successed ?: boolean) => void) : void
+    /**
+     * Map/mount a file system to a path.
+     * 
+     * @param path Path where to mount the file system
+     * @param fs File system to mount
+     * @param override Define if the mounting can override a previous mounted file system
+     * @param callback Callback containing the status of the mounting
+     */
     setFileSystem(path : Path | string, fs : FileSystem, override : boolean, callback : (successed ?: boolean) => void) : void
     setFileSystem(path : Path | string, fs : FileSystem, _override : boolean | ((successed ?: boolean) => void), _callback ?: (successed ?: boolean) => void) : void
     {
@@ -104,6 +162,14 @@ export class WebDAVServer
         if(callback)
             callback(result);
     }
+    /**
+     * Synchronously map/mount a file system to a path.
+     * 
+     * @param path Path where to mount the file system
+     * @param fs File system to mount
+     * @param override Define if the mounting can override a previous mounted file system
+     * @returns The status of the mounting
+     */
     setFileSystemSync(path : Path | string, fs : FileSystem, override : boolean = true) : boolean
     {
         const sPath = new Path(path).toString();
@@ -115,8 +181,27 @@ export class WebDAVServer
         return true;
     }
     
+    /**
+     * Remove a file system based on its path.
+     * 
+     * @param path Path of the file system to remove
+     * @param callback Callback containing the number of removed file systems (0 or 1)
+     */
     removeFileSystem(path : Path | string, callback : (nbRemoved ?: number) => void) : void
+    /**
+     * Remove a file system.
+     * 
+     * @param fs File system to remove
+     * @param callback Callback containing the number of removed file systems
+     */
     removeFileSystem(fs : FileSystem, callback : (nbRemoved ?: number) => void) : void
+    /**
+     * Remove a file system.
+     * 
+     * @param fs File system to remove
+     * @param checkByReference Define if the file systems must be matched by reference or by its serializer's UID
+     * @param callback Callback containing the number of removed file systems
+     */
     removeFileSystem(fs : FileSystem, checkByReference : boolean, callback : (nbRemoved ?: number) => void) : void
     removeFileSystem(fs_path : Path | string | FileSystem, _checkByReference : boolean | ((nbRemoved ?: number) => void), _callback ?: (nbRemoved ?: number) => void) : void
     {
@@ -127,8 +212,21 @@ export class WebDAVServer
         if(callback)
             callback(result);
     }
-
+    
+    /**
+     * Synchronously remove a file system.
+     * 
+     * @param fs File system to remove
+     * @returns The number of removed file systems (0 or 1)
+     */
     removeFileSystemSync(path : Path | string) : number
+    /**
+     * Synchronously remove a file system.
+     * 
+     * @param fs File system to remove
+     * @param checkByReference Define if the file systems must be matched by reference or by its serializer's UID
+     * @returns The number of removed file systems
+     */
     removeFileSystemSync(fs : FileSystem, checkByReference ?: boolean) : number
     removeFileSystemSync(fs_path : Path | string | FileSystem, checkByReference : boolean = true) : number
     {
@@ -158,7 +256,20 @@ export class WebDAVServer
         }
     }
 
+    /**
+     * Get the mount path of a file system.
+     * 
+     * @param fs File system
+     * @param callback Callback containing the mount path of the file system
+     */
     getFileSystemPath(fs : FileSystem, callback : (path : Path) => void) : void
+    /**
+     * Get the mount path of a file system.
+     * 
+     * @param fs File system
+     * @param checkByReference Define if the file system must be matched by reference or by its serializer's UID
+     * @param callback Callback containing the mount path of the file system
+     */
     getFileSystemPath(fs : FileSystem, checkByReference : boolean, callback : (path : Path) => void) : void
     getFileSystemPath(fs : FileSystem, _checkByReference : boolean | ((path : Path) => void), _callback ?: (path : Path) => void) : void
     {
@@ -167,6 +278,13 @@ export class WebDAVServer
 
         callback(this.getFileSystemPathSync(fs, checkByReference));
     }
+    /**
+     * Synchronously get the mount path of a file system.
+     * 
+     * @param fs File system
+     * @param checkByReference Define if the file system must be matched by reference or by its serializer's UID
+     * @returns The mount path of the file system
+     */
     getFileSystemPathSync(fs : FileSystem, checkByReference ?: boolean) : Path
     {
         checkByReference = checkByReference === null || checkByReference === undefined ? true : checkByReference;
@@ -177,11 +295,23 @@ export class WebDAVServer
         return null;
     }
 
+    /**
+     * Get the list of file systems mounted on or under the parentPath.
+     * 
+     * @param parentPath Path from which list sub file systems
+     * @param callback Callback containing the list of file systems found and their mount path
+     */
     getChildFileSystems(parentPath : Path, callback : (fss : { fs : FileSystem, path : Path }[]) => void) : void
     {
         const result = this.getChildFileSystemsSync(parentPath);
         callback(result);
     }
+    /**
+     * Synchronously get the list of file systems mounted on or under the parentPath.
+     * 
+     * @param parentPath Path from which list sub file systems
+     * @returns Object containing the list of file systems found and their mount path
+     */
     getChildFileSystemsSync(parentPath : Path) : { fs : FileSystem, path : Path }[]
     {
         const results : { fs : FileSystem, path : Path }[] = [];
@@ -200,11 +330,23 @@ export class WebDAVServer
         return results;
     }
 
+    /**
+     * Get the file system managing the provided path.
+     * 
+     * @param path Requested path
+     * @param callback Callback containing the file system, the mount path of the file system and the sub path from the mount path to the requested path
+     */
     getFileSystem(path : Path, callback : (fs : FileSystem, rootPath : Path, subPath : Path) => void) : void
     {
         const result = this.getFileSystemSync(path);
         callback(result.fs, result.rootPath, result.subPath);
     }
+    /**
+     * Get synchronously the file system managing the provided path.
+     * 
+     * @param path Requested path
+     * @returns Object containing the file system, the mount path of the file system and the sub path from the mount path to the requested path
+     */
     getFileSystemSync(path : Path) : { fs : FileSystem, rootPath : Path, subPath : Path }
     {
         let best : any = {
@@ -248,12 +390,28 @@ export class WebDAVServer
         };
     }
 
+    /**
+     * Action to execute when the requested method is unknown.
+     * 
+     * @param unknownMethod Action to execute
+     */
     onUnknownMethod(unknownMethod : HTTPMethod)
     {
         this.unknownMethod = unknownMethod;
     }
 
+    /**
+     * List all resources in every depth.
+     * 
+     * @param callback Callback providing the list of resources
+     */
     listResources(callback : (paths : string[]) => void) : void
+    /**
+     * List all resources in every depth.
+     * 
+     * @param root The root folder where to start the listing
+     * @param callback Callback providing the list of resources
+     */
     listResources(root : string | Path, callback : (paths : string[]) => void) : void
     listResources(_root : string | Path | ((paths : string[]) => void), _callback ?: (paths : string[]) => void) : void
     {
@@ -282,17 +440,37 @@ export class WebDAVServer
         });
     }
 
-    // Start / Stop
+    /**
+     * Start the WebDAV server.
+     * 
+     * @param port Port of the server
+     */
     start(port : number)
+    /**
+     * Start the WebDAV server.
+     * 
+     * @param callback Callback to call when the server is started
+     */
     start(callback : WebDAVServerStartCallback)
+    /**
+     * Start the WebDAV server.
+     * 
+     * @param port Port of the server
+     * @param callback Callback to call when the server is started
+     */
     start(port : number, callback : WebDAVServerStartCallback)
     start(port ?: number | WebDAVServerStartCallback, callback ?: WebDAVServerStartCallback)
     {
         startStop.start.bind(this)(port, callback);
     }
+    /**
+     * Stop the WebDAV server.
+     */
     stop = startStop.stop
 
-    // Execute request
+    /**
+     * Execute a request as if the HTTP server received it.
+     */
     executeRequest = startStop.executeRequest.bind(this)
 
     // Persistence
@@ -315,10 +493,25 @@ export class WebDAVServer
         else if(this.options.autoSave)
             fn(this.options.autoSave);
     }
+    /**
+     * Load the previous save made by the 'autoSave' system.
+     */
     autoLoad = persistence.autoLoad
+    /**
+     * Load a state of the resource tree.
+     */
     load = persistence.load
+    /**
+     * Save the state of the resource tree.
+     */
     save = persistence.save
 
+    /**
+     * Define an action to execute when a HTTP method is requested.
+     * 
+     * @param name Name of the method to bind to
+     * @param manager Action to execute when the method is requested
+     */
     method(name : string, manager : HTTPMethod)
     {
         this.methods[this.normalizeMethodName(name)] = manager;
@@ -363,25 +556,50 @@ export class WebDAVServer
         this.events[event].forEach((l) => process.nextTick(() => l(ctx, fs, path.constructor === String ? new Path(path as string) : path as Path, data)));
     }
 
+    /**
+     * Normalize the name of the method.
+     */
     protected normalizeMethodName(method : string) : string
     {
         return method.toLowerCase();
     }
 
     // Before / After execution
-    invokeBeforeRequest(base : RequestContext, callback)
+    /**
+     * Invoke the BeforeRequest events.
+     * 
+     * @param base Context of the request
+     * @param callback Callback to execute when all BeforeRequest events have been executed
+     */
+    invokeBeforeRequest(base : RequestContext, callback) : void
     {
         beforeAfter.invokeBeforeRequest.bind(this)(base, callback);
     }
-    invokeAfterRequest(base : RequestContext, callback)
+    /**
+     * Invoke the AfterRequest events.
+     * 
+     * @param base Context of the request
+     * @param callback Callback to execute when all AfterRequest events have been executed
+     */
+    invokeAfterRequest(base : RequestContext, callback) : void
     {
         beforeAfter.invokeAfterRequest.bind(this)(base, callback);
     }
-    beforeRequest(manager : beforeAfter.RequestListener)
+    /**
+     * Action to execute before an operation is executed when a HTTP request is received.
+     * 
+     * @param manager Action to execute
+     */
+    beforeRequest(manager : beforeAfter.RequestListener) : void
     {
         this.beforeManagers.push(manager);
     }
-    afterRequest(manager : beforeAfter.RequestListener)
+    /**
+     * Action to execute after an operation is executed when a HTTP request is received.
+     * 
+     * @param manager Action to execute
+     */
+    afterRequest(manager : beforeAfter.RequestListener) : void
     {
         this.afterManagers.push(manager);
     }
