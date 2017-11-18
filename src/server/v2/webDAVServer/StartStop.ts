@@ -10,6 +10,67 @@ import * as http from 'http'
 import * as zlib from 'zlib'
 import * as fs from 'fs'
 
+export function executeRequest(req : http.IncomingMessage, res : http.ServerResponse) : void
+{
+    let method : HTTPMethod = this.methods[this.normalizeMethodName(req.method)];
+    if(!method)
+        method = this.unknownMethod;
+
+    HTTPRequestContext.create(this, req, res, (e, base) => {
+        if(e)
+        {
+            if(e === Errors.AuenticationPropertyMissing || e === Errors.MissingAuthorisationHeader || e === Errors.BadAuthentication || e === Errors.WrongHeaderFormat)
+                base.setCode(HTTPCodes.Unauthorized);
+            else
+                base.setCode(HTTPCodes.InternalServerError);
+            res.end();
+            return;
+        }
+
+        base.exit = () =>
+        {
+            base.response.end();
+            this.invokeAfterRequest(base, null);
+        };
+
+        if(!method.chunked)
+        {
+            const go = (data : Buffer) =>
+            {
+                this.invokeBeforeRequest(base, () => {
+                    method.unchunked(base, data, base.exit);
+                })
+            }
+
+            if(base.headers.contentLength <= 0)
+            {
+                go(new Buffer(0));
+            }
+            else
+            {
+                const data = new Buffer(base.headers.contentLength);
+                let index = 0;
+                req.on('data', (chunk) => {
+                    if(chunk.constructor === String)
+                        chunk = new Buffer(chunk as string);
+                    
+                    for(let i = 0; i < chunk.length && index < data.length; ++i, ++index)
+                        data[index] = (chunk as Buffer)[i];
+                    
+                    if(index >= base.headers.contentLength)
+                        go(data);
+                });
+            }
+        }
+        else
+        {
+            this.invokeBeforeRequest(base, () => {
+                method.chunked(base, req, base.exit);
+            })
+        }
+    })
+}
+
 export function start(port ?: number | WebDAVServerStartCallback, callback ?: WebDAVServerStartCallback)
 {
     let _port : number = this.options.port;
@@ -37,66 +98,7 @@ export function start(port ?: number | WebDAVServerStartCallback, callback ?: We
     if(!this.server)
     {
         const serverCreator = this.options.https ? (c) => https.createServer(this.options.https, c) : (c) => http.createServer(c);
-        this.server = serverCreator((req : http.IncomingMessage, res : http.ServerResponse) =>
-        {
-            let method : HTTPMethod = this.methods[this.normalizeMethodName(req.method)];
-            if(!method)
-                method = this.unknownMethod;
-
-            HTTPRequestContext.create(this, req, res, (e, base) => {
-                if(e)
-                {
-                    if(e === Errors.AuenticationPropertyMissing || e === Errors.MissingAuthorisationHeader || e === Errors.BadAuthentication || e === Errors.WrongHeaderFormat)
-                        base.setCode(HTTPCodes.Unauthorized);
-                    else
-                        base.setCode(HTTPCodes.InternalServerError);
-                    res.end();
-                    return;
-                }
-
-                base.exit = () =>
-                {
-                    base.response.end();
-                    this.invokeAfterRequest(base, null);
-                };
-
-                if(!method.chunked)
-                {
-                    const go = (data : Buffer) =>
-                    {
-                        this.invokeBeforeRequest(base, () => {
-                            method.unchunked(base, data, base.exit);
-                        })
-                    }
-
-                    if(base.headers.contentLength <= 0)
-                    {
-                        go(new Buffer(0));
-                    }
-                    else
-                    {
-                        const data = new Buffer(base.headers.contentLength);
-                        let index = 0;
-                        req.on('data', (chunk) => {
-                            if(chunk.constructor === String)
-                                chunk = new Buffer(chunk as string);
-                            
-                            for(let i = 0; i < chunk.length && index < data.length; ++i, ++index)
-                                data[index] = (chunk as Buffer)[i];
-                            
-                            if(index >= base.headers.contentLength)
-                                go(data);
-                        });
-                    }
-                }
-                else
-                {
-                    this.invokeBeforeRequest(base, () => {
-                        method.chunked(base, req, base.exit);
-                    })
-                }
-            })
-        })
+        this.server = serverCreator(executeRequest.bind(this));
 
         this.autoSave();
     }

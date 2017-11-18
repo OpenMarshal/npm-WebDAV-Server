@@ -69,7 +69,7 @@ export class WebDAVServer
     createExternalContext(options : RequestContextExternalOptions, callback : (error : Error, ctx : ExternalRequestContext) => void) : ExternalRequestContext
     createExternalContext(_options ?: RequestContextExternalOptions | ((error : Error, ctx : ExternalRequestContext) => void), _callback ?: (error : Error, ctx : ExternalRequestContext) => void) : ExternalRequestContext
     {
-        return ExternalRequestContext.create(this, _options, _callback);
+        return ExternalRequestContext.create(this, _options as any, _callback);
     }
 
     rootFileSystem() : FileSystem
@@ -291,6 +291,9 @@ export class WebDAVServer
         startStop.start.bind(this)(port, callback);
     }
     stop = startStop.stop
+
+    // Execute request
+    executeRequest = startStop.executeRequest.bind(this)
 
     // Persistence
     /**

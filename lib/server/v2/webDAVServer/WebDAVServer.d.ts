@@ -74,6 +74,7 @@ export declare class WebDAVServer {
     start(callback: WebDAVServerStartCallback): any;
     start(port: number, callback: WebDAVServerStartCallback): any;
     stop: typeof startStop.stop;
+    executeRequest: any;
     /**
      * Start the auto-save feature of the server. Use the server's options as settings.
      */
