@@ -122,6 +122,7 @@ export class RequestContext
         this.server = server;
         
         uri = url.parse(uri).pathname;
+        uri = uri ? uri : '';
         this.requested = {
             uri,
             path: new Path(uri)
