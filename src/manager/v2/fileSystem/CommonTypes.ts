@@ -1,3 +1,4 @@
+import { ReturnCallback, SimpleCallback } from './CommonTypes'
 import { Readable, Writable } from 'stream'
 import { RequestContext } from '../../../server/v2/RequestContext'
 import { XMLElement } from 'xml-js-builder'
@@ -8,7 +9,6 @@ import { Workflow } from '../../../helper/Workflow'
 import { Errors } from '../../../Errors'
 import { Lock } from '../../../resource/lock/Lock'
 import { Path } from '../Path'
-import { ReturnCallback, SimpleCallback } from './CommonTypes'
 import * as mimeTypes from 'mime-types'
 import * as crypto from 'crypto'
 

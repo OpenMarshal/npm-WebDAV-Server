@@ -1,19 +1,41 @@
-import { AvailableLocksInfo, CopyInfo, CreateInfo, CreationDateInfo, DeleteInfo, DisplayNameInfo, ETagInfo, IContextInfo, LastModifiedDateInfo, LockManagerInfo, MimeTypeInfo, MoveInfo, OpenReadStreamInfo, OpenWriteStreamInfo, PropertyManagerInfo, ReadDirInfo, RenameInfo, SizeInfo, TypeInfo, WebNameInfo } from './ContextInfo'
+import {
+    AvailableLocksInfo,
+    CopyInfo,
+    CreateInfo,
+    CreationDateInfo,
+    DeleteInfo,
+    DisplayNameInfo,
+    ETagInfo,
+    IContextInfo,
+    LastModifiedDateInfo,
+    LockManagerInfo,
+    MimeTypeInfo,
+    MoveInfo,
+    OpenReadStreamInfo,
+    OpenWriteStreamInfo,
+    PropertyManagerInfo,
+    ReadDirInfo,
+    RenameInfo,
+    SizeInfo,
+    TypeInfo,
+    WebNameInfo
+} from './ContextInfo'
+import { ReturnCallback, SimpleCallback, Return2Callback, OpenWriteStreamMode, SubTree, ResourceType } from './CommonTypes'
+import { FileSystemSerializer, ISerializableFileSystem } from './Serialization'
 import { Readable, Writable } from 'stream'
+import { IPropertyManager } from './PropertyManager'
 import { RequestContext } from '../../../server/v2/RequestContext'
+import { ILockManager } from './LockManager'
+import { FileSystem } from './FileSystem'
 import { LockScope } from '../../../resource/lock/LockScope'
+import { Resource } from './Resource'
 import { LockType } from '../../../resource/lock/LockType'
 import { LockKind } from '../../../resource/lock/LockKind'
 import { Workflow } from '../../../helper/Workflow'
 import { Errors } from '../../../Errors'
 import { Lock } from '../../../resource/lock/Lock'
 import { Path } from '../Path'
-import { ReturnCallback, SimpleCallback, Return2Callback, OpenWriteStreamMode, SubTree, ResourceType } from './CommonTypes'
-import { FileSystemSerializer, ISerializableFileSystem } from './Serialization'
-import { FileSystem } from './FileSystem'
-import { Resource } from './Resource'
-import { IPropertyManager } from './PropertyManager'
-import { ILockManager } from './LockManager'
+
 import * as mimeTypes from 'mime-types'
 import * as crypto from 'crypto'
 

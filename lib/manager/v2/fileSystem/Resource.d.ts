@@ -1,13 +1,13 @@
 /// <reference types="node" />
 import { ReturnCallback, SimpleCallback, Return2Callback, OpenWriteStreamMode, SubTree, ResourceType } from './CommonTypes';
-import { FileSystem } from './FileSystem';
 import { Readable, Writable } from 'stream';
+import { IPropertyManager } from './PropertyManager';
 import { RequestContext } from '../../../server/v2/RequestContext';
+import { ILockManager } from './LockManager';
+import { FileSystem } from './FileSystem';
 import { LockKind } from '../../../resource/lock/LockKind';
 import { Lock } from '../../../resource/lock/Lock';
 import { Path } from '../Path';
-import { IPropertyManager } from './PropertyManager';
-import { ILockManager } from './LockManager';
 export declare class Resource {
     fs: FileSystem;
     context: RequestContext;

@@ -1,15 +1,15 @@
 /// <reference types="node" />
+import { ReturnCallback, SimpleCallback, Return2Callback, OpenWriteStreamMode, SubTree, ResourceType } from './CommonTypes';
+import { FileSystemSerializer, ISerializableFileSystem } from './Serialization';
 import { Readable, Writable } from 'stream';
+import { IPropertyManager } from './PropertyManager';
 import { RequestContext } from '../../../server/v2/RequestContext';
+import { ILockManager } from './LockManager';
+import { FileSystem } from './FileSystem';
+import { Resource } from './Resource';
 import { LockKind } from '../../../resource/lock/LockKind';
 import { Lock } from '../../../resource/lock/Lock';
 import { Path } from '../Path';
-import { ReturnCallback, SimpleCallback, Return2Callback, OpenWriteStreamMode, SubTree, ResourceType } from './CommonTypes';
-import { FileSystemSerializer, ISerializableFileSystem } from './Serialization';
-import { FileSystem } from './FileSystem';
-import { Resource } from './Resource';
-import { IPropertyManager } from './PropertyManager';
-import { ILockManager } from './LockManager';
 export declare class ContextualFileSystem implements ISerializableFileSystem {
     fs: FileSystem;
     context: RequestContext;

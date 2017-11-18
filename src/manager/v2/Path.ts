@@ -18,7 +18,7 @@ export class Path
         else
             this.paths = path as string[];
         
-        this.paths = this.paths.filter((p) => p.length > 0).map((s) => decodeURIComponent(s));
+        this.paths = this.paths.filter((p) => p.length > 0).map(decodeURIComponent);
     }
 
     isRoot() : boolean

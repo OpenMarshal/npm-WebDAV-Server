@@ -1,18 +1,18 @@
 /// <reference types="node" />
 import { PrivilegeManagerInfo, AvailableLocksInfo, CopyInfo, CreateInfo, CreationDateInfo, DeleteInfo, DisplayNameInfo, ETagInfo, LastModifiedDateInfo, LockManagerInfo, MimeTypeInfo, MoveInfo, OpenReadStreamInfo, OpenWriteStreamInfo, PropertyManagerInfo, ReadDirInfo, RenameInfo, SizeInfo, TypeInfo } from './ContextInfo';
-import { Readable, Writable } from 'stream';
-import { RequestContext } from '../../../server/v2/RequestContext';
-import { FileSystemEvent, WebDAVServer } from '../../../server/v2/webDAVServer/WebDAVServer';
+import { ResourceType, SimpleCallback, Return2Callback, ReturnCallback, SubTree, OpenWriteStreamMode } from './CommonTypes';
+import { ISerializableFileSystem, FileSystemSerializer } from './Serialization';
 import { BasicPrivilege, PrivilegeManager } from '../../../user/v2/privilege/PrivilegeManager';
+import { FileSystemEvent, WebDAVServer } from '../../../server/v2/webDAVServer/WebDAVServer';
+import { Readable, Writable } from 'stream';
+import { IPropertyManager } from './PropertyManager';
+import { ContextualFileSystem } from './ContextualFileSystem';
+import { RequestContext } from '../../../server/v2/RequestContext';
+import { ILockManager } from './LockManager';
 import { LockKind } from '../../../resource/lock/LockKind';
+import { Resource } from './Resource';
 import { Lock } from '../../../resource/lock/Lock';
 import { Path } from '../Path';
-import { ResourceType, SimpleCallback, Return2Callback, ReturnCallback, SubTree, OpenWriteStreamMode } from './CommonTypes';
-import { ContextualFileSystem } from './ContextualFileSystem';
-import { ILockManager } from './LockManager';
-import { IPropertyManager } from './PropertyManager';
-import { Resource } from './Resource';
-import { ISerializableFileSystem, FileSystemSerializer } from './Serialization';
 /**
  * File system which manage resources under its mounted path.
  *

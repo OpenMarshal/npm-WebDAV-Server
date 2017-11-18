@@ -1,7 +1,7 @@
-import { RequestContext } from '../../../server/v2/RequestContext';
-import { Path } from '../Path';
 import { ReturnCallback } from './CommonTypes';
+import { RequestContext } from '../../../server/v2/RequestContext';
 import { FileSystem } from './FileSystem';
+import { Path } from '../Path';
 export declare abstract class StandardMethods {
     static standardMove(ctx: RequestContext, subPathFrom: Path, fsFrom: FileSystem, subPathTo: Path, fsTo: FileSystem, callback: ReturnCallback<boolean>): void;
     static standardMove(ctx: RequestContext, subPathFrom: Path, fsFrom: FileSystem, subPathTo: Path, fsTo: FileSystem, overwrite: boolean, callback: ReturnCallback<boolean>): void;

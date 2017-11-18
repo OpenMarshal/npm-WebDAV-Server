@@ -1,8 +1,8 @@
-import { RequestContext } from '../../../server/v2/RequestContext'
-import { Path } from '../Path'
 import { ResourceType, ResourcePropertyValue, PropertyAttributes } from './CommonTypes'
+import { RequestContext } from '../../../server/v2/RequestContext'
 import { XMLElement } from 'xml-js-builder'
 import { FileSystem } from './FileSystem'
+import { Path } from '../Path'
 
 export type IStorageManagerEvaluateCallback = (size : number) => void;
 

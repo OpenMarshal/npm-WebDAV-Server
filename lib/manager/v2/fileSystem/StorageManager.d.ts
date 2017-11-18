@@ -1,7 +1,7 @@
-import { RequestContext } from '../../../server/v2/RequestContext';
-import { Path } from '../Path';
 import { ResourceType, ResourcePropertyValue, PropertyAttributes } from './CommonTypes';
+import { RequestContext } from '../../../server/v2/RequestContext';
 import { FileSystem } from './FileSystem';
+import { Path } from '../Path';
 export declare type IStorageManagerEvaluateCallback = (size: number) => void;
 export interface IStorageManager {
     reserve(ctx: RequestContext, fs: FileSystem, size: number, callback: (reserved: boolean) => void): void;

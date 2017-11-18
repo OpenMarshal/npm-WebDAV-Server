@@ -272,5 +272,4 @@ export abstract class XML
         return result;
     }
 }
-
 */

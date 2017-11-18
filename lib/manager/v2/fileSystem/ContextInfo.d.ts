@@ -1,6 +1,6 @@
+import { ResourceType, OpenWriteStreamMode } from './CommonTypes';
 import { RequestContext } from '../../../server/v2/RequestContext';
 import { Path } from '../Path';
-import { ResourceType, OpenWriteStreamMode } from './CommonTypes';
 export interface IContextInfo {
     context: RequestContext;
 }

@@ -1,24 +1,55 @@
-import { PrivilegeManagerInfo, AvailableLocksInfo, CopyInfo, CreateInfo, CreationDateInfo, DeleteInfo, DisplayNameInfo, ETagInfo, IContextInfo, LastModifiedDateInfo, LockManagerInfo, MimeTypeInfo, MoveInfo, OpenReadStreamInfo, OpenWriteStreamInfo, PropertyManagerInfo, ReadDirInfo, RenameInfo, SizeInfo, TypeInfo, WebNameInfo } from './ContextInfo'
-import { Readable, Writable, Transform } from 'stream'
-import { RequestContext } from '../../../server/v2/RequestContext'
-import { FileSystemEvent, WebDAVServer } from '../../../server/v2/webDAVServer/WebDAVServer'
+import {
+    PrivilegeManagerInfo,
+    AvailableLocksInfo,
+    CopyInfo,
+    CreateInfo,
+    CreationDateInfo,
+    DeleteInfo,
+    DisplayNameInfo,
+    ETagInfo,
+    IContextInfo,
+    LastModifiedDateInfo,
+    LockManagerInfo,
+    MimeTypeInfo,
+    MoveInfo,
+    OpenReadStreamInfo,
+    OpenWriteStreamInfo,
+    PropertyManagerInfo,
+    ReadDirInfo,
+    RenameInfo,
+    SizeInfo,
+    TypeInfo,
+    WebNameInfo
+} from './ContextInfo'
+import {
+    ResourceType,
+    SimpleCallback,
+    Return2Callback,
+    ReturnCallback,
+    SubTree,
+    OpenWriteStreamMode,
+    ResourcePropertyValue,
+    PropertyAttributes
+} from './CommonTypes'
+import { ISerializableFileSystem, FileSystemSerializer } from './Serialization'
 import { BasicPrivilege, PrivilegeManager } from '../../../user/v2/privilege/PrivilegeManager'
+import { FileSystemEvent, WebDAVServer } from '../../../server/v2/webDAVServer/WebDAVServer'
+import { Readable, Writable, Transform } from 'stream'
+import { IPropertyManager, PropertyBag } from './PropertyManager'
+import { ContextualFileSystem } from './ContextualFileSystem'
+import { StandardMethods } from './StandardMethods'
+import { IStorageManager } from './StorageManager'
+import { RequestContext } from '../../../server/v2/RequestContext'
+import { ILockManager } from './LockManager'
+import { XMLElement } from 'xml-js-builder'
 import { LockScope } from '../../../resource/lock/LockScope'
 import { LockType } from '../../../resource/lock/LockType'
 import { LockKind } from '../../../resource/lock/LockKind'
 import { Workflow } from '../../../helper/Workflow'
+import { Resource } from './Resource'
 import { Errors } from '../../../Errors'
 import { Lock } from '../../../resource/lock/Lock'
 import { Path } from '../Path'
-import { ResourceType, SimpleCallback, Return2Callback, ReturnCallback, SubTree, OpenWriteStreamMode, ResourcePropertyValue, PropertyAttributes } from './CommonTypes'
-import { XMLElement } from 'xml-js-builder'
-import { ContextualFileSystem } from './ContextualFileSystem'
-import { ILockManager } from './LockManager'
-import { IPropertyManager, PropertyBag } from './PropertyManager'
-import { Resource } from './Resource'
-import { StandardMethods } from './StandardMethods'
-import { ISerializableFileSystem, FileSystemSerializer } from './Serialization'
-import { IStorageManager } from './StorageManager'
 import * as mimeTypes from 'mime-types'
 import * as crypto from 'crypto'
 
