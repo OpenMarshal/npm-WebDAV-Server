@@ -6,16 +6,13 @@ export default ((info, isValid) =>
 {
     const server = info.init(1);
     
-    starter(server, info, isValid, (r, subFiles) => {
-        let error = false;
-
+    starter(server, info, isValid, (r, subFiles, allFiles) => {
         server.listResources('/', (paths) => {
             for(const path of paths)
             {
-                if(path !== '/' && path !== '/folder' && !subFiles.some((p) => '/folder/' + p == path))
+                if(path !== '/' && path !== '/folder' && !allFiles.some((p) => '/folder/' + p === path))
                 {
-                    error = true;
-                    return isValid(false, 'The result of "server.listResources(...)" is invalid.');
+                    return isValid(false, 'Cannot find "' + path + '" provided by "server.listResources(...)" in [' + allFiles + ']');
                 }
             }
             
