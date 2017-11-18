@@ -110,6 +110,37 @@ server.autoLoad((e) => {
 })
 ```
 
+Within `Express` :
+
+```javascript
+// TypeScript
+import { v2 as webdav } from 'webdav-server'
+import * as express from 'express'
+// Javascript
+const webdav = require('webdav-server').v2;
+const express = require('express');
+
+const server = new webdav.WebDAVServer();
+const app = express();
+
+// Root path
+// This will allow '/my/sub/path/folder/file.txt' to give '/folder/file.txt'
+// in the WebDAV server
+const pathRegex = /^\/?my\/sub\/path((\/[^\/]+)*)\/?$/;
+app.get(pathRegex, (req, res) => {
+    const subUrl = pathRegex.exec(req.url)[1];
+
+    // Set the sub path as the path of the request to point
+    // to the right resource in the WebDAV server
+    req.url = subUrl;
+
+    // Execute the request in the WebDAV server
+    server.executeRequest(req, res);
+});
+
+app.listen(1901); // Start the Express server
+```
+
 More examples at the [example page of the wiki](https://github.com/OpenMarshal/npm-WebDAV-Server/wiki/Examples-%5Bv2%5D).
 
 More information/possibilities in the [documentation](https://github.com/OpenMarshal/npm-WebDAV-Server/wiki).
