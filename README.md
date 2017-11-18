@@ -57,7 +57,7 @@ Very simple usage :
 ```javascript
 // TypeScript
 import { v2 as webdav } from 'webdav-server'
-// Javascript
+// JavaScript
 const webdav = require('webdav-server').v2;
 
 const server = new webdav.WebDAVServer({
@@ -72,7 +72,7 @@ With a user manager, privilege manager and serialization (save/load the state of
 ```javascript
 // TypeScript
 import { v2 as webdav } from 'webdav-server'
-// Javascript
+// JavaScript
 const webdav = require('webdav-server').v2;
 
 // User manager (tells who are the users)
@@ -116,7 +116,7 @@ Within `Express` :
 // TypeScript
 import { v2 as webdav } from 'webdav-server'
 import * as express from 'express'
-// Javascript
+// JavaScript
 const webdav = require('webdav-server').v2;
 const express = require('express');
 
