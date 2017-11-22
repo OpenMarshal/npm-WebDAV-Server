@@ -137,7 +137,7 @@ app.all(pathRegex, (req, res) => {
     req.url = subUrl;
 
     // Execute the request in the WebDAV server
-    server.executeRequest(req, res);
+    server.executeRequest(req, res, root);
 });
 
 app.listen(1901); // Start the Express server
