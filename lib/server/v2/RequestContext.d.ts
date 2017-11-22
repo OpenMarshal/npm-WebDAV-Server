@@ -26,6 +26,7 @@ export interface RequestedResource {
     uri: string;
 }
 export interface RequestContextExternalOptions {
+    rootPath?: string;
     headers?: {
         [name: string]: string;
     };
@@ -42,14 +43,15 @@ export declare class DefaultRequestContextExternalOptions implements RequestCont
 export declare class RequestContext {
     overridePrivileges: boolean;
     requested: RequestedResource;
+    rootPath: string;
     headers: RequestContextHeaders;
     server: WebDAVServer;
     user: IUser;
     protected constructor(server: WebDAVServer, uri: string, headers: {
         [name: string]: string;
-    });
-    getResource(callback: ReturnCallback<Resource>): any;
-    getResource(path: Path | string, callback: ReturnCallback<Resource>): any;
+    }, rootPath?: string);
+    getResource(callback: ReturnCallback<Resource>): void;
+    getResource(path: Path | string, callback: ReturnCallback<Resource>): void;
     getResourceSync(path?: Path | string): Resource;
     fullUri(uri?: string): string;
     prefixUri(): string;
@@ -65,8 +67,9 @@ export declare class HTTPRequestContext extends RequestContext {
     request: http.IncomingMessage;
     response: http.ServerResponse;
     exit: () => void;
-    protected constructor(server: WebDAVServer, request: http.IncomingMessage, response: http.ServerResponse, exit: () => void);
+    protected constructor(server: WebDAVServer, request: http.IncomingMessage, response: http.ServerResponse, exit: () => void, rootPath?: string);
     static create(server: WebDAVServer, request: http.IncomingMessage, response: http.ServerResponse, callback: (error: Error, ctx: HTTPRequestContext) => void): void;
+    static create(server: WebDAVServer, request: http.IncomingMessage, response: http.ServerResponse, rootPath: string, callback: (error: Error, ctx: HTTPRequestContext) => void): void;
     static encodeURL(url: string): string;
     noBodyExpected(callback: () => void): void;
     checkIfHeader(resource: Resource, callback: () => void): any;

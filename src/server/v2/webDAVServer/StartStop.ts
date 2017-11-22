@@ -10,13 +10,13 @@ import * as http from 'http'
 import * as zlib from 'zlib'
 import * as fs from 'fs'
 
-export function executeRequest(req : http.IncomingMessage, res : http.ServerResponse) : void
+export function executeRequest(req : http.IncomingMessage, res : http.ServerResponse, rootPath ?: string) : void
 {
     let method : HTTPMethod = this.methods[this.normalizeMethodName(req.method)];
     if(!method)
         method = this.unknownMethod;
 
-    HTTPRequestContext.create(this, req, res, (e, base) => {
+    HTTPRequestContext.create(this, req, res, rootPath, (e, base) => {
         if(e)
         {
             if(e === Errors.AuenticationPropertyMissing || e === Errors.MissingAuthorisationHeader || e === Errors.BadAuthentication || e === Errors.WrongHeaderFormat)

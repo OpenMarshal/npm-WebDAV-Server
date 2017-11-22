@@ -88,6 +88,7 @@ export interface RequestedResource
 
 export interface RequestContextExternalOptions
 {
+    rootPath ?: string
     headers ?: { [name : string] : string }
     url ?: string
     user ?: IUser
@@ -111,13 +112,15 @@ export class RequestContext
 {
     overridePrivileges : boolean
     requested : RequestedResource
+    rootPath : string
     headers : RequestContextHeaders
     server : WebDAVServer
     user : IUser
     
-    protected constructor(server : WebDAVServer, uri : string, headers : { [name : string] : string })
+    protected constructor(server : WebDAVServer, uri : string, headers : { [name : string] : string }, rootPath ?: string)
     {
         this.overridePrivileges = false;
+        this.rootPath = rootPath;
         this.headers = new RequestContextHeaders(headers);
         this.server = server;
         
@@ -127,11 +130,18 @@ export class RequestContext
             uri,
             path: new Path(uri)
         };
+
+        if(this.rootPath)
+        {
+            this.rootPath = new Path(this.rootPath).toString(false);
+            if(this.rootPath === '/')
+                this.rootPath = undefined;
+        }
     }
     
-    getResource(callback : ReturnCallback<Resource>)
-    getResource(path : Path | string, callback : ReturnCallback<Resource>)
-    getResource(_path : Path | string | ReturnCallback<Resource>, _callback ?: ReturnCallback<Resource>)
+    getResource(callback : ReturnCallback<Resource>) : void
+    getResource(path : Path | string, callback : ReturnCallback<Resource>) : void
+    getResource(_path : Path | string | ReturnCallback<Resource>, _callback ?: ReturnCallback<Resource>) : void
     {
         const path = _callback ? new Path(_path as Path | string) : this.requested.path;
         const callback = _callback ? _callback : _path as ReturnCallback<Resource>;
@@ -145,7 +155,7 @@ export class RequestContext
         return this.server.getResourceSync(this, path);
     }
 
-    fullUri(uri : string = null)
+    fullUri(uri : string = null) : string
     {
         if(!uri)
             uri = this.requested.uri;
@@ -153,9 +163,9 @@ export class RequestContext
         return (this.prefixUri() + uri).replace(/([^:])\/\//g, '$1/');
     }
 
-    prefixUri()
+    prefixUri() : string
     {
-        return 'http://' + this.headers.host.replace('/', '');
+        return 'http://' + this.headers.host.replace('/', '') + (this.rootPath ? this.rootPath : '');
     }
 }
 
@@ -202,9 +212,10 @@ export class HTTPRequestContext extends RequestContext
         server : WebDAVServer,
         request : http.IncomingMessage,
         response : http.ServerResponse,
-        exit : () => void
+        exit : () => void,
+        rootPath ?: string
     ) {
-        super(server, request.url, request.headers);
+        super(server, request.url, request.headers, rootPath);
 
         this.responseBody = undefined;
         this.response = response;
@@ -212,9 +223,14 @@ export class HTTPRequestContext extends RequestContext
         this.exit = exit;
     }
 
-    static create(server : WebDAVServer, request : http.IncomingMessage, response : http.ServerResponse, callback : (error : Error, ctx : HTTPRequestContext) => void)
+    static create(server : WebDAVServer, request : http.IncomingMessage, response : http.ServerResponse, callback : (error : Error, ctx : HTTPRequestContext) => void) : void
+    static create(server : WebDAVServer, request : http.IncomingMessage, response : http.ServerResponse, rootPath : string, callback : (error : Error, ctx : HTTPRequestContext) => void) : void
+    static create(server : WebDAVServer, request : http.IncomingMessage, response : http.ServerResponse, _rootPath : string | ((error : Error, ctx : HTTPRequestContext) => void), _callback ?: (error : Error, ctx : HTTPRequestContext) => void) : void
     {
-        const ctx = new HTTPRequestContext(server, request, response, null);
+        const rootPath = _callback ? _rootPath as string : undefined;
+        const callback = _callback ? _callback : _rootPath as ((error : Error, ctx : HTTPRequestContext) => void);
+
+        const ctx = new HTTPRequestContext(server, request, response, null, rootPath);
         response.setHeader('DAV', '1,2');
         response.setHeader('Access-Control-Allow-Origin', '*');
         response.setHeader('Access-Control-Allow-Credentials', 'true');
