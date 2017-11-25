@@ -123,23 +123,8 @@ const express = require('express');
 const server = new webdav.WebDAVServer();
 const app = express();
 
-// Root path
-// This will allow '/my/sub/path/folder/file.txt' to give '/folder/file.txt'
-// in the WebDAV server
-const pathRegex = /^(\/my\/sub\/path)((\/[^\/]+)*)\/?$/;
-app.all(pathRegex, (req, res) => {
-    const matches = pathRegex.exec(req.url);
-    const subUrl = matches[2];
-    const root = matches[1]; // = '/my/sub/path'
-
-    // Set the sub path as the path of the request to point
-    // to the right resource in the WebDAV server
-    req.url = subUrl;
-
-    // Execute the request in the WebDAV server
-    server.executeRequest(req, res, root);
-});
-
+// Mount the WebDAVServer instance
+app.use(webdav.extensions.express('/my/sub/path', server));
 app.listen(1901); // Start the Express server
 ```
 
