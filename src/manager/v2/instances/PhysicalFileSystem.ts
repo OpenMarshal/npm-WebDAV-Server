@@ -172,7 +172,7 @@ export class PhysicalFileSystem extends FileSystem
                             fs.rmdir(realPath, callback);
                     }
 
-                    files.forEach((file) => this.delete(ctx.context, path.getChildPath(file), ctx.depth === -1 ? -1 : ctx.depth - 1, (e) => done(e)));
+                    files.forEach((file) => this.delete(ctx.context, path.getChildPath(file), ctx.depth === -1 ? -1 : ctx.depth - 1, done));
                     done();
                 })
             }
