@@ -95,17 +95,292 @@ function propstatStatus(status : number)
 
 export default class implements HTTPMethod
 {
+    addXMLInfo(ctx : HTTPRequestContext, data : Buffer, resource : Resource, multistatus : XMLElementBuilder, _callback : (e ?: Error) => void) : void
+    {
+        const reqBody = parseRequestBody(ctx, data);
+
+        const response = new XMLElementBuilder('D:response');
+        const callback = (e ?: Error) => {
+            if(e === Errors.MustIgnore)
+                e = null;
+            else if(!e)
+                multistatus.add(response);
+            else
+            {
+                const errorNumber = HTTPRequestContext.defaultStatusCode(e);
+                if(errorNumber !== null)
+                {
+                    const response = new XMLElementBuilder('D:response');
+                    response.ele('D:propstat').ele('D:status').add('HTTP/1.1 ' + errorNumber + ' ' + http.STATUS_CODES[errorNumber]);
+                    resource.fs.getFullPath(ctx, resource.path, (e, path) => {
+                        if(e)
+                            return nbOut(e);
+                        
+                        const p = HTTPRequestContext.encodeURL(ctx.fullUri(path.toString()));
+                        response.ele('D:href', undefined, true).add(p);
+                        response.ele('D:location').ele('D:href', undefined, true).add(p);
+                    })
+                    multistatus.add(response);
+                }
+            }
+
+            _callback(e);
+        }
+
+        const propstat = response.ele('D:propstat')
+
+        propstat.ele('D:status').add('HTTP/1.1 200 OK')
+
+        const prop = propstat.ele('D:prop')
+        
+        let nb = 1;
+        function nbOut(error?)
+        {
+            if(nb > 0 && error)
+            {
+                nb = -1000;
+                return callback(error);
+            }
+
+            --nb;
+            if(nb === 0)
+            {
+                if(reqBody.leftElements.length > 0)
+                {
+                    const propstatError = response.ele('D:propstat');
+                    const prop = propstatError.ele('D:prop');
+                    propstatError.ele('D:status').add(propstatStatus(HTTPCodes.NotFound));
+
+                    for(const el of reqBody.leftElements)
+                        if(el)
+                            prop.ele(el.name);
+                }
+                callback();
+            }
+        }
+        
+        const tags : any = {};
+
+        function mustDisplayTag(name : string)
+        {
+            if(reqBody.mustDisplay('DAV:' + name))
+                tags[name] = {
+                    el: prop.ele('D:' + name),
+                    value: reqBody.mustDisplayValue('DAV:' + name)
+                };
+            else
+                tags[name] = {
+                    value: false
+                };
+        }
+
+        mustDisplayTag('getlastmodified')
+        mustDisplayTag('lockdiscovery')
+        mustDisplayTag('supportedlock')
+        mustDisplayTag('creationdate')
+        mustDisplayTag('resourcetype')
+        mustDisplayTag('displayname')
+        mustDisplayTag('getetag')
+
+        function displayValue(values : string[] | string, fn : () => void)
+        {
+            if(values.constructor === String ? tags[values as string].value : (values as string[]).some((n) => tags[n].value))
+            {
+                ++nb;
+                process.nextTick(fn);
+            }
+        }
+
+        displayValue('creationdate', () =>
+        {
+            resource.creationDate((e, ticks) => process.nextTick(() => {
+                if(!e)
+                    tags.creationdate.el.add(dateISO8601(ticks));
+                
+                nbOut(e);
+            }))
+        })
+
+        displayValue('lockdiscovery', () =>
+        {
+            resource.listDeepLocks((e, locks) => {
+                if(e)
+                    return nbOut(e);
+
+                for(const path in locks)
+                {
+                    for(const _lock of locks[path])
+                    {
+                        const lock : Lock = _lock;
+                        const activelock = tags.lockdiscovery.el.ele('D:activelock');
+                        
+                        activelock.ele('D:lockscope').ele('D:' + lock.lockKind.scope.value.toLowerCase())
+                        activelock.ele('D:locktype').ele('D:' + lock.lockKind.type.value.toLowerCase())
+                        activelock.ele('D:depth').add('Infinity')
+                        if(lock.owner)
+                            activelock.ele('D:owner').add(lock.owner)
+                        activelock.ele('D:timeout').add('Second-' + (lock.expirationDate - Date.now()))
+                        activelock.ele('D:locktoken').ele('D:href', undefined, true).add(lock.uuid)
+                        activelock.ele('D:lockroot').ele('D:href', undefined, true).add(HTTPRequestContext.encodeURL(ctx.fullUri(path)))
+                    }
+                }
+                
+                nbOut(null);
+            })
+        })
+        
+        ++nb;
+        resource.type((e, type) => process.nextTick(() => {
+            if(e)
+                return nbOut(e);
+            
+            resource.fs.getFullPath(ctx, resource.path, (e, path) => {
+                if(e)
+                    return nbOut(e);
+                
+                const p = HTTPRequestContext.encodeURL(ctx.fullUri(path.toString()));
+                const href = p.lastIndexOf('/') !== p.length - 1 && type.isDirectory ? p + '/' : p;
+                response.ele('D:href', undefined, true).add(href);
+                response.ele('D:location').ele('D:href', undefined, true).add(p);
+
+                if(tags.resourcetype.value && type.isDirectory)
+                    tags.resourcetype.el.ele('D:collection')
+                    
+                if(type.isFile)
+                {
+                    mustDisplayTag('getcontentlength')
+                    mustDisplayTag('getcontenttype')
+
+                    if(tags.getcontenttype.value)
+                    {
+                        ++nb;
+                        resource.mimeType(ctx.headers.isSource, (e, mimeType) => process.nextTick(() => {
+                            if(!e)
+                                tags.getcontenttype.el.add(mimeType)
+                            nbOut(e);
+                        }))
+                    }
+
+                    if(tags.getcontentlength.value)
+                    {
+                        ++nb;
+                        resource.size(ctx.headers.isSource, (e, size) => process.nextTick(() => {
+                            if(!e)
+                                tags.getcontentlength.el.add(size === undefined || size === null || size.constructor !== Number ? 0 : size)
+                            nbOut(e);
+                        }))
+                    }
+                }
+
+                nbOut();
+            })
+        }))
+
+        displayValue('displayname', () =>
+        {
+            let methodDisplayName = resource.webName;
+            if(resource.displayName)
+                methodDisplayName = resource.displayName;
+            
+            methodDisplayName.bind(resource)((e, name) => process.nextTick(() => {
+                if(!e)
+                    tags.displayname.el.add(name ? name : '');
+                nbOut(e);
+            }))
+        })
+
+        displayValue('supportedlock', () =>
+        {
+            resource.availableLocks((e, lockKinds) => process.nextTick(() => {
+                if(e)
+                {
+                    nbOut(e);
+                    return;
+                }
+
+                lockKinds.forEach((lockKind) => {
+                    const lockentry = tags.supportedlock.el.ele('D:lockentry')
+
+                    const lockscope = lockentry.ele('D:lockscope')
+                    lockscope.ele('D:' + lockKind.scope.value.toLowerCase())
+
+                    const locktype = lockentry.ele('D:locktype')
+                    locktype.ele('D:' + lockKind.type.value.toLowerCase())
+                })
+                nbOut();
+            }))
+        })
+
+        displayValue('getlastmodified', () =>
+        {
+            resource.lastModifiedDate((e, lastModifiedDate) => process.nextTick(() => {
+                if(!e && tags.getlastmodified.value)
+                    tags.getlastmodified.el.add(new Date(lastModifiedDate).toUTCString())
+                nbOut(e);
+            }))
+        })
+
+        displayValue('getetag', () =>
+        {
+            resource.etag((e, etag) => process.nextTick(() => {
+                if(!e && tags.getetag.value)
+                    tags.getetag.el.add(etag);
+                nbOut(e);
+            }))
+        })
+
+        ++nb;
+        process.nextTick(() => {
+            resource.propertyManager((e, pm) => {
+                if(e)
+                    return nbOut(e);
+                
+                pm.getProperties((e, properties) => {
+                    if(e)
+                        return nbOut(e);
+                    
+                    for(const name in properties)
+                    {
+                        if(reqBody.mustDisplay(name))
+                        {
+                            const tag = prop.ele(name);
+                            if(reqBody.mustDisplayValue(name))
+                            {
+                                const property = properties[name];
+                                if(tag.attributes)
+                                    for(const attName in property.attributes)
+                                        tag.attributes[attName] = property.attributes[attName];
+                                else
+                                    tag.attributes = property.attributes;
+
+                                tag.add(property.value);
+                            }
+                        }
+                    }
+                    nbOut();
+                })
+            })
+        })
+
+        nbOut();
+    }
+    
     unchunked(ctx : HTTPRequestContext, data : Buffer, callback : () => void) : void
     {
         ctx.getResource((e, resource) => {
             const lockDiscoveryCache = {};
 
             ctx.checkIfHeader(resource, () => {
-                const targetSource = ctx.headers.isSource;
-
                 const multistatus = new XMLElementBuilder('D:multistatus', {
                     'xmlns:D': 'DAV:'
                 })
+                
+                const done = (multistatus) =>
+                {
+                    ctx.setCode(HTTPCodes.MultiStatus);
+                    ctx.writeBody(multistatus);
+                    callback();
+                }
 
                 resource.type((e, type) => process.nextTick(() => {
                     if(e)
@@ -117,7 +392,7 @@ export default class implements HTTPMethod
 
                     if(!type.isDirectory || ctx.headers.depth === 0)
                     {
-                        addXMLInfo(resource, multistatus, (e) => {
+                        this.addXMLInfo(ctx, data, resource, multistatus, (e) => {
                             if(!e)
                                 done(multistatus);
                             else
@@ -141,7 +416,7 @@ export default class implements HTTPMethod
                         if(e)
                             return err(e);
 
-                        addXMLInfo(resource, multistatus, (e) => {
+                        this.addXMLInfo(ctx, data, resource, multistatus, (e) => {
                             if(e)
                                 return err(e);
 
@@ -150,7 +425,7 @@ export default class implements HTTPMethod
                                     ctx.server.getResource(ctx, ctx.requested.path.getChildPath(childName), (e, r) => {
                                         if(e)
                                             return cb(e);
-                                        addXMLInfo(r, multistatus, (e) => cb());
+                                        this.addXMLInfo(ctx, data, r, multistatus, (e) => cb());
                                     });
                                 })
                                 .error(err)
@@ -160,283 +435,6 @@ export default class implements HTTPMethod
                         });
                     }))
                 }))
-                
-                function addXMLInfo(resource : Resource, multistatus, _callback)
-                {
-                    const reqBody = parseRequestBody(ctx, data);
-
-                    const response = new XMLElementBuilder('D:response');
-                    const callback = (e ?: Error) => {
-                        if(e === Errors.MustIgnore)
-                            e = null;
-                        else if(!e)
-                            multistatus.add(response);
-                        else
-                        {
-                            const errorNumber = HTTPRequestContext.defaultStatusCode(e);
-                            if(errorNumber !== null)
-                            {
-                                const response = new XMLElementBuilder('D:response');
-                                response.ele('D:propstat').ele('D:status').add('HTTP/1.1 ' + errorNumber + ' ' + http.STATUS_CODES[errorNumber]);
-                                resource.fs.getFullPath(ctx, resource.path, (e, path) => {
-                                    if(e)
-                                        return nbOut(e);
-                                    
-                                    const p = HTTPRequestContext.encodeURL(ctx.fullUri(path.toString()));
-                                    response.ele('D:href', undefined, true).add(p);
-                                    response.ele('D:location').ele('D:href', undefined, true).add(p);
-                                })
-                                multistatus.add(response);
-                            }
-                        }
-
-                        _callback(e);
-                    }
-
-                    const propstat = response.ele('D:propstat')
-
-                    propstat.ele('D:status').add('HTTP/1.1 200 OK')
-
-                    const prop = propstat.ele('D:prop')
-                    
-                    let nb = 1;
-                    function nbOut(error?)
-                    {
-                        if(nb > 0 && error)
-                        {
-                            nb = -1000;
-                            return callback(error);
-                        }
-
-                        --nb;
-                        if(nb === 0)
-                        {
-                            if(reqBody.leftElements.length > 0)
-                            {
-                                const propstatError = response.ele('D:propstat');
-                                const prop = propstatError.ele('D:prop');
-                                propstatError.ele('D:status').add(propstatStatus(HTTPCodes.NotFound));
-
-                                for(const el of reqBody.leftElements)
-                                    if(el)
-                                        prop.ele(el.name);
-                            }
-                            callback();
-                        }
-                    }
-                    
-                    const tags : any = {};
-
-                    function mustDisplayTag(name : string)
-                    {
-                        if(reqBody.mustDisplay('DAV:' + name))
-                            tags[name] = {
-                                el: prop.ele('D:' + name),
-                                value: reqBody.mustDisplayValue('DAV:' + name)
-                            };
-                        else
-                            tags[name] = {
-                                value: false
-                            };
-                    }
-
-                    mustDisplayTag('getlastmodified')
-                    mustDisplayTag('lockdiscovery')
-                    mustDisplayTag('supportedlock')
-                    mustDisplayTag('creationdate')
-                    mustDisplayTag('resourcetype')
-                    mustDisplayTag('displayname')
-                    mustDisplayTag('getetag')
-
-                    function displayValue(values : string[] | string, fn : () => void)
-                    {
-                        if(values.constructor === String ? tags[values as string].value : (values as string[]).some((n) => tags[n].value))
-                        {
-                            ++nb;
-                            process.nextTick(fn);
-                        }
-                    }
-
-                    displayValue('creationdate', () =>
-                    {
-                        resource.creationDate((e, ticks) => process.nextTick(() => {
-                            if(!e)
-                                tags.creationdate.el.add(dateISO8601(ticks));
-                            
-                            nbOut(e);
-                        }))
-                    })
-
-                    displayValue('lockdiscovery', () =>
-                    {
-                        resource.listDeepLocks((e, locks) => {
-                            if(e)
-                                return nbOut(e);
-
-                            for(const path in locks)
-                            {
-                                for(const _lock of locks[path])
-                                {
-                                    const lock : Lock = _lock;
-                                    const activelock = tags.lockdiscovery.el.ele('D:activelock');
-                                    
-                                    activelock.ele('D:lockscope').ele('D:' + lock.lockKind.scope.value.toLowerCase())
-                                    activelock.ele('D:locktype').ele('D:' + lock.lockKind.type.value.toLowerCase())
-                                    activelock.ele('D:depth').add('Infinity')
-                                    if(lock.owner)
-                                        activelock.ele('D:owner').add(lock.owner)
-                                    activelock.ele('D:timeout').add('Second-' + (lock.expirationDate - Date.now()))
-                                    activelock.ele('D:locktoken').ele('D:href', undefined, true).add(lock.uuid)
-                                    activelock.ele('D:lockroot').ele('D:href', undefined, true).add(HTTPRequestContext.encodeURL(ctx.fullUri(path)))
-                                }
-                            }
-                            
-                            nbOut(null);
-                        })
-                    })
-                    
-                    ++nb;
-                    resource.type((e, type) => process.nextTick(() => {
-                        if(e)
-                            return nbOut(e);
-                        
-                        resource.fs.getFullPath(ctx, resource.path, (e, path) => {
-                            if(e)
-                                return nbOut(e);
-                            
-                            const p = HTTPRequestContext.encodeURL(ctx.fullUri(path.toString()));
-                            const href = p.lastIndexOf('/') !== p.length - 1 && type.isDirectory ? p + '/' : p;
-                            response.ele('D:href', undefined, true).add(href);
-                            response.ele('D:location').ele('D:href', undefined, true).add(p);
-
-                            if(tags.resourcetype.value && type.isDirectory)
-                                tags.resourcetype.el.ele('D:collection')
-                                
-                            if(type.isFile)
-                            {
-                                mustDisplayTag('getcontentlength')
-                                mustDisplayTag('getcontenttype')
-
-                                if(tags.getcontenttype.value)
-                                {
-                                    ++nb;
-                                    resource.mimeType(targetSource, (e, mimeType) => process.nextTick(() => {
-                                        if(!e)
-                                            tags.getcontenttype.el.add(mimeType)
-                                        nbOut(e);
-                                    }))
-                                }
-
-                                if(tags.getcontentlength.value)
-                                {
-                                    ++nb;
-                                    resource.size(targetSource, (e, size) => process.nextTick(() => {
-                                        if(!e)
-                                            tags.getcontentlength.el.add(size === undefined || size === null || size.constructor !== Number ? 0 : size)
-                                        nbOut(e);
-                                    }))
-                                }
-                            }
-
-                            nbOut();
-                        })
-                    }))
-
-                    displayValue('displayname', () =>
-                    {
-                        let methodDisplayName = resource.webName;
-                        if(resource.displayName)
-                            methodDisplayName = resource.displayName;
-                        
-                        methodDisplayName.bind(resource)((e, name) => process.nextTick(() => {
-                            if(!e)
-                                tags.displayname.el.add(name ? name : '');
-                            nbOut(e);
-                        }))
-                    })
-
-                    displayValue('supportedlock', () =>
-                    {
-                        resource.availableLocks((e, lockKinds) => process.nextTick(() => {
-                            if(e)
-                            {
-                                nbOut(e);
-                                return;
-                            }
-
-                            lockKinds.forEach((lockKind) => {
-                                const lockentry = tags.supportedlock.el.ele('D:lockentry')
-
-                                const lockscope = lockentry.ele('D:lockscope')
-                                lockscope.ele('D:' + lockKind.scope.value.toLowerCase())
-
-                                const locktype = lockentry.ele('D:locktype')
-                                locktype.ele('D:' + lockKind.type.value.toLowerCase())
-                            })
-                            nbOut();
-                        }))
-                    })
-
-                    displayValue('getlastmodified', () =>
-                    {
-                        resource.lastModifiedDate((e, lastModifiedDate) => process.nextTick(() => {
-                            if(!e && tags.getlastmodified.value)
-                                tags.getlastmodified.el.add(new Date(lastModifiedDate).toUTCString())
-                            nbOut(e);
-                        }))
-                    })
-
-                    displayValue('getetag', () =>
-                    {
-                        resource.etag((e, etag) => process.nextTick(() => {
-                            if(!e && tags.getetag.value)
-                                tags.getetag.el.add(etag);
-                            nbOut(e);
-                        }))
-                    })
-
-                    ++nb;
-                    process.nextTick(() => {
-                        resource.propertyManager((e, pm) => {
-                            if(e)
-                                return nbOut(e);
-                            
-                            pm.getProperties((e, properties) => {
-                                if(e)
-                                    return nbOut(e);
-                                
-                                for(const name in properties)
-                                {
-                                    if(reqBody.mustDisplay(name))
-                                    {
-                                        const tag = prop.ele(name);
-                                        if(reqBody.mustDisplayValue(name))
-                                        {
-                                            const property = properties[name];
-                                            if(tag.attributes)
-                                                for(const attName in property.attributes)
-                                                    tag.attributes[attName] = property.attributes[attName];
-                                            else
-                                                tag.attributes = property.attributes;
-
-                                            tag.add(property.value);
-                                        }
-                                    }
-                                }
-                                nbOut();
-                            })
-                        })
-                    })
-
-                    nbOut();
-                }
-
-                function done(multistatus)
-                {
-                    ctx.setCode(HTTPCodes.MultiStatus);
-                    ctx.writeBody(multistatus);
-                    callback();
-                }
             })
         })
     }
