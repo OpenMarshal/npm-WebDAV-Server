@@ -58,8 +58,8 @@ export abstract class StandardMethods
     public static standardCopy(ctx : RequestContext, subPathFrom : Path, fsFrom : FileSystem, subPathTo : Path, fsTo : FileSystem, _overwrite : boolean | number | ReturnCallback<boolean>, _depth ?: number | ReturnCallback<boolean>, _callback ?: ReturnCallback<boolean>) : void
     {
         const overwrite = _overwrite.constructor === Boolean ? _overwrite as boolean : false;
-        const depth = _callback ? _depth as number : !_depth ? -1 : _overwrite.constructor === Number ? _overwrite as number : -1;
-        const callback = _callback ? _callback : _depth ? _depth as ReturnCallback<boolean> : _overwrite as ReturnCallback<boolean>;
+        const depth = _callback ? _depth as number : (!_depth ? -1 : (_overwrite.constructor === Number ? _overwrite as number : -1));
+        const callback = _callback ? _callback : (_depth ? _depth as ReturnCallback<boolean> : _overwrite as ReturnCallback<boolean>);
 
         if(subPathFrom.isRoot())
         {
