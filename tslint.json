@@ -1,4 +1,9 @@
 {
+    "linterOptions": {
+        "exclude": [
+            "src/**/v1/**/*.ts"
+        ]
+    },
     "rules": {
         "no-bitwise:": false,
         "one-line:": false,
