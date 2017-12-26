@@ -7,3 +7,5 @@ exclude_patterns:
   - "test/"
   - "examples/"
   - "src/**/v1/"
+  - "src/**/v2/**/ContextualFileSystem.ts"
+  - "src/**/v2/**/Resource.ts"

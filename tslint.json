@@ -45,7 +45,7 @@
         "eofline": true,
         "indent": [ true, "spaces" ],
         "max-file-line-count": [ true, 1000 ],
-        "max-line-length": [ true, 250 ],
+        "max-line-length": [ true, 350 ],
         "no-require-imports": true,
         "no-mergeable-namespace": true,
         "prefer-const": true,
