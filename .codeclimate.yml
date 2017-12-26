@@ -1,12 +1,8 @@
-engines:
+plugins:
   tslint:
     enabled: true
-    channel: beta
     config: tslint.json
-ratings:
-  paths:
-    - "**.ts"
-exclude_paths:
-  - lib
-  - test
-  - src/**/v1
+exclude_patterns:
+  - "lib/"
+  - "test/"
+  - "src/**/v1/"
