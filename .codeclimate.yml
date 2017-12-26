@@ -9,3 +9,4 @@ ratings:
 exclude_paths:
   - lib
   - test
+  - src/**/v1
