@@ -63,6 +63,7 @@
         "quotemark": [ true, "single" ],
         "return-undefined": true,
         "space-before-function-paren": [true, "never"],
-        "whitespace": [ true, "check-decl", "check-operator", "check-module", "check-separator", "check-typecast", "check-preblock" ]
+        "whitespace": [ true, "check-decl", "check-operator", "check-module", "check-separator", "check-typecast", "check-preblock" ],
+        "max-func-body-length": 400
     }
 }

@@ -1,7 +1,20 @@
+version: "2"
 plugins:
   tslint:
     enabled: true
     config: tslint.json
+checks:
+  file-lines:
+    config:
+      threshold: 1000
+  method-count:
+    enabled: false
+  method-lines:
+    config:
+      threshold: 400
+  argument-count:
+    config:
+      threshold: 9
 exclude_patterns:
   - "lib/"
   - "test/"
