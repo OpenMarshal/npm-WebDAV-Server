@@ -5,7 +5,7 @@ import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
 import { Resource } from '../../../manager/v2/fileSystem/Resource'
 import { Path } from '../../../manager/v2/Path'
 import { Errors } from '../../../Errors'
-import { Lock } from '../../../resource/lock/Lock'
+import { Lock } from '../../../resource/v2/lock/Lock'
 import * as http from 'http'
 
 function dateISO8601(ticks : number) : string

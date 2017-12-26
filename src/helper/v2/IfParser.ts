@@ -1,8 +1,8 @@
-import { ReturnCallback, ETag } from '../../resource/IResource'
 import { RequestContext } from '../../server/v2/RequestContext'
 import { Errors } from '../../Errors'
 import { FileSystem } from '../../manager/v2/fileSystem/FileSystem'
 import { ContextualFileSystem } from '../../manager/v2/fileSystem/ContextualFileSystem'
+import { ReturnCallback } from '../../index.v2';
 import { Resource } from '../../manager/v2/fileSystem/Resource'
 import { Path } from '../../manager/v2/Path'
 import * as url from 'url'

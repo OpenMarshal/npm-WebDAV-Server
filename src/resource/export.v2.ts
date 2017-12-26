@@ -1,7 +1,7 @@
 
 // Locks
-export * from './lock/LockScope'
-export * from './lock/LockKind'
-export * from './lock/LockType'
-export * from './lock/LockBag'
-export * from './lock/Lock'
+export * from './v2/lock/LockScope'
+export * from './v2/lock/LockKind'
+export * from './v2/lock/LockType'
+export * from './v2/lock/LockBag'
+export * from './v2/lock/Lock'

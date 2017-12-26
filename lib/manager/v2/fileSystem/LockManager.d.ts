@@ -1,5 +1,5 @@
 import { ReturnCallback, SimpleCallback } from './CommonTypes';
-import { Lock } from '../../../resource/lock/Lock';
+import { Lock } from '../../../resource/v2/lock/Lock';
 export interface ILockManager {
     getLocks(callback: ReturnCallback<Lock[]>): void;
     setLock(lock: Lock, callback: SimpleCallback): void;

@@ -1,9 +1,9 @@
 
 // the order matters because of import dependencies
 
-export * from './manager/export';
-export * from './server/export';
-export * from './resource/export';
-export * from './user/export';
-export * from './helper/export';
+export * from './manager/v1/export';
+export * from './server/v1/export';
+export * from './resource/export.v1';
+export * from './user/v1/export';
+export * from './helper/v1/export';
 export * from './Errors';

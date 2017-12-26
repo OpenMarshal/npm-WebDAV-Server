@@ -9,9 +9,9 @@ import { IPropertyManager } from './PropertyManager';
 import { ContextualFileSystem } from './ContextualFileSystem';
 import { RequestContext } from '../../../server/v2/RequestContext';
 import { ILockManager } from './LockManager';
-import { LockKind } from '../../../resource/lock/LockKind';
+import { LockKind } from '../../../resource/v2/lock/LockKind';
 import { Resource } from './Resource';
-import { Lock } from '../../../resource/lock/Lock';
+import { Lock } from '../../../resource/v2/lock/Lock';
 import { Path } from '../Path';
 /**
  * File system which manage resources under its mounted path.

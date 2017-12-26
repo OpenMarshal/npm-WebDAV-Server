@@ -7,8 +7,8 @@ import { RequestContext } from '../../../server/v2/RequestContext';
 import { ILockManager } from './LockManager';
 import { FileSystem } from './FileSystem';
 import { Resource } from './Resource';
-import { LockKind } from '../../../resource/lock/LockKind';
-import { Lock } from '../../../resource/lock/Lock';
+import { LockKind } from '../../../resource/v2/lock/LockKind';
+import { Lock } from '../../../resource/v2/lock/Lock';
 import { Path } from '../Path';
 export declare class ContextualFileSystem implements ISerializableFileSystem {
     fs: FileSystem;

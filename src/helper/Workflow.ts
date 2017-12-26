@@ -1,5 +1,3 @@
-import { IResource, ReturnCallback, ETag } from '../resource/IResource'
-import { MethodCallArgs } from '../server/MethodCallArgs'
 import { Errors } from '../Errors'
 import * as url from 'url'
 

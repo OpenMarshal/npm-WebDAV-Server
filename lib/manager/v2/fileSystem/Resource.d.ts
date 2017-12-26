@@ -5,8 +5,8 @@ import { IPropertyManager } from './PropertyManager';
 import { RequestContext } from '../../../server/v2/RequestContext';
 import { ILockManager } from './LockManager';
 import { FileSystem } from './FileSystem';
-import { LockKind } from '../../../resource/lock/LockKind';
-import { Lock } from '../../../resource/lock/Lock';
+import { LockKind } from '../../../resource/v2/lock/LockKind';
+import { Lock } from '../../../resource/v2/lock/Lock';
 import { Path } from '../Path';
 export declare class Resource {
     fs: FileSystem;
