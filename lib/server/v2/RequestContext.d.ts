@@ -9,14 +9,14 @@ import { IUser } from '../../user/v2/IUser';
 import * as http from 'http';
 export declare class RequestContextHeaders {
     protected headers: {
-        [name: string]: string;
+        [name: string]: string | string[];
     };
     contentLength: number;
     isSource: boolean;
     depth: number;
     host: string;
     constructor(headers: {
-        [name: string]: string;
+        [name: string]: string | string[];
     });
     find(name: string, defaultValue?: string): string;
     findBestAccept(defaultType?: string): string;
@@ -48,7 +48,7 @@ export declare class RequestContext {
     server: WebDAVServer;
     user: IUser;
     protected constructor(server: WebDAVServer, uri: string, headers: {
-        [name: string]: string;
+        [name: string]: string | string[];
     }, rootPath?: string);
     getResource(callback: ReturnCallback<Resource>): void;
     getResource(path: Path | string, callback: ReturnCallback<Resource>): void;

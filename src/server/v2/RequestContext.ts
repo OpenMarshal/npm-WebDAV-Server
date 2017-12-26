@@ -18,7 +18,7 @@ export class RequestContextHeaders
     depth : number
     host : string
 
-    constructor(protected headers : { [name : string] : string })
+    constructor(protected headers : { [name : string] : string | string[] })
     {
         this.isSource = this.find('source', 'F').toUpperCase() === 'T' || this.find('translate', 'T').toUpperCase() === 'F';
         this.host = this.find('Host', 'localhost');
@@ -53,7 +53,7 @@ export class RequestContextHeaders
         for(const k in this.headers)
             if(k.replace(/(-| )/g, '').toLowerCase() === name)
             {
-                const value = this.headers[k].trim();
+                const value = this.headers[k].toString().trim();
                 if(value.length !== 0)
                     return value;
             }
@@ -117,7 +117,7 @@ export class RequestContext
     server : WebDAVServer
     user : IUser
     
-    protected constructor(server : WebDAVServer, uri : string, headers : { [name : string] : string }, rootPath ?: string)
+    protected constructor(server : WebDAVServer, uri : string, headers : { [name : string] : string | string[] }, rootPath ?: string)
     {
         this.overridePrivileges = false;
         this.rootPath = rootPath;

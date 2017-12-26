@@ -218,7 +218,7 @@ export class MethodCallArgs
 
         for(const k in this.request.headers)
             if(k.replace(/(-| )/g, '').toLowerCase() === name)
-                return this.request.headers[k];
+                return this.request.headers[k].toString();
         
         return defaultValue;
     }
