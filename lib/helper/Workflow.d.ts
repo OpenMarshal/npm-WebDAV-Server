@@ -19,5 +19,4 @@ export declare class Workflow {
 }
 export declare class WorkflowUnique extends Workflow {
     protected _done(subject: any, e?: any, data?: any): void;
-    done(fn: (data?: any[]) => void): this;
 }

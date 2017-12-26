@@ -62,6 +62,11 @@ export class WebDAVServer
             else
                 this.method(k, new commands[k]());
     }
+    
+    protected isSameFileSystem(fs : FileSystem, path : string, checkByReference : boolean) : boolean
+    {
+        return checkByReference && this.fileSystems[path] === fs || !checkByReference && this.fileSystems[path].serializer().uid() === fs.serializer().uid();
+    }
 
     /**
      * Synchronously create an external context with full rights.
@@ -247,7 +252,7 @@ export class WebDAVServer
             let nb = 0;
 
             for(const name in this.fileSystems)
-                if(checkByReference && this.fileSystems[name] === fs || !checkByReference && this.fileSystems[name].serializer().uid() === fs.serializer().uid())
+                if(this.isSameFileSystem(fs, name, checkByReference))
                 {
                     ++nb;
                     delete this.fileSystems[name];
@@ -290,7 +295,7 @@ export class WebDAVServer
         checkByReference = checkByReference === null || checkByReference === undefined ? true : checkByReference;
 
         for(const path in this.fileSystems)
-            if(checkByReference && this.fileSystems[path] === fs || !checkByReference && this.fileSystems[path].serializer().uid() === fs.serializer().uid())
+            if(this.isSameFileSystem(fs, path, checkByReference))
                 return new Path(path);
         return null;
     }

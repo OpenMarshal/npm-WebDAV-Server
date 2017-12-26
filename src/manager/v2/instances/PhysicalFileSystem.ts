@@ -241,63 +241,33 @@ export class PhysicalFileSystem extends FileSystem
                 });
             }
         })
-
-        /*
-        
-        fs.rename(realPathFrom, realPathTo, (e) => {
-            if(!e)
-            {
-                this.resources[realPathTo] = this.resources[realPathFrom];
-                delete this.resources[realPathFrom];
-                callback(null, true);
-            }
-            else
-            {
-                fs.stat(realPathTo, (er) => {
-                    if(!er)
-                        e = Errors.ResourceAlreadyExists;
-                    else
-                        e = Errors.ResourceNotFound;
-                    callback(e, false);
-                })
-            }
-        })*/
     }
 
     protected _size(path : Path, ctx : SizeInfo, callback : ReturnCallback<number>) : void
     {
-        const { realPath } = this.getRealPath(path);
+        this.getStatProperty(path, ctx, 'size', callback);
+    }
+    
+    protected getPropertyFromResource(path : Path, ctx : any, propertyName : string, callback : ReturnCallback<any>) : void
+    {
+        let resource = this.resources[path.toString()];
+        if(!resource)
+        {
+            resource = new PhysicalFileSystemResource();
+            this.resources[path.toString()] = resource;
+        }
 
-        fs.stat(realPath, (e, stat) => {
-            if(e)
-                return callback(Errors.ResourceNotFound);
-            
-            callback(null, stat.size);
-        })
+        callback(null, resource[propertyName]);
     }
 
     protected _lockManager(path : Path, ctx : LockManagerInfo, callback : ReturnCallback<ILockManager>) : void
     {
-        let resource = this.resources[path.toString()];
-        if(!resource)
-        {
-            resource = new PhysicalFileSystemResource();
-            this.resources[path.toString()] = resource;
-        }
-
-        callback(null, resource.locks);
+        this.getPropertyFromResource(path, ctx, 'locks', callback);
     }
 
     protected _propertyManager(path : Path, ctx : PropertyManagerInfo, callback : ReturnCallback<IPropertyManager>) : void
     {
-        let resource = this.resources[path.toString()];
-        if(!resource)
-        {
-            resource = new PhysicalFileSystemResource();
-            this.resources[path.toString()] = resource;
-        }
-
-        callback(null, resource.props);
+        this.getPropertyFromResource(path, ctx, 'props', callback);
     }
 
     protected _readDir(path : Path, ctx : ReadDirInfo, callback : ReturnCallback<string[] | Path[]>) : void
@@ -308,8 +278,8 @@ export class PhysicalFileSystem extends FileSystem
             callback(e ? Errors.ResourceNotFound : null, files);
         });
     }
-
-    protected _creationDate(path : Path, ctx : CreationDateInfo, callback : ReturnCallback<number>) : void
+    
+    protected getStatProperty(path : Path, ctx : any, propertyName : string, callback : ReturnCallback<any>) : void
     {
         const { realPath } = this.getRealPath(path);
 
@@ -317,20 +287,22 @@ export class PhysicalFileSystem extends FileSystem
             if(e)
                 return callback(Errors.ResourceNotFound);
             
-            callback(null, stat.birthtime.valueOf());
+            callback(null, stat[propertyName]);
         })
+    }
+    protected getStatDateProperty(path : Path, ctx : any, propertyName : string, callback : ReturnCallback<number>) : void
+    {
+        this.getStatProperty(path, ctx, propertyName, (e, value) => callback(e, value ? (value as Date).valueOf() : value));
+    }
+
+    protected _creationDate(path : Path, ctx : CreationDateInfo, callback : ReturnCallback<number>) : void
+    {
+        this.getStatDateProperty(path, ctx, 'birthtime', callback);
     }
 
     protected _lastModifiedDate(path : Path, ctx : LastModifiedDateInfo, callback : ReturnCallback<number>) : void
     {
-        const { realPath } = this.getRealPath(path);
-
-        fs.stat(realPath, (e, stat) => {
-            if(e)
-                return callback(Errors.ResourceNotFound);
-            
-            callback(null, stat.mtime.valueOf());
-        })
+        this.getStatDateProperty(path, ctx, 'mtime', callback);
     }
 
     protected _type(path : Path, ctx : TypeInfo, callback : ReturnCallback<ResourceType>) : void

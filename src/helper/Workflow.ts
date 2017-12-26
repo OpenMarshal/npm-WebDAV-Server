@@ -138,14 +138,4 @@ export class WorkflowUnique extends Workflow
             _doneFs.bind(this)(filtered[0]);
         }
     }
-
-    done(fn : (data ?: any[]) => void)
-    {
-        this.doneFn = fn;
-
-        if(this.counter === 0)
-            process.nextTick(() => this.doneFn(this.data));
-
-        return this;
-    }
 }

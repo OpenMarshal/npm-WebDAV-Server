@@ -35,6 +35,7 @@ export declare class WebDAVServer {
         [path: string]: FileSystem;
     };
     constructor(options?: WebDAVServerOptions);
+    protected isSameFileSystem(fs: FileSystem, path: string, checkByReference: boolean): boolean;
     /**
      * Synchronously create an external context with full rights.
      *

@@ -34,9 +34,12 @@ export declare class PhysicalFileSystem extends FileSystem {
     protected _openReadStream(path: Path, ctx: OpenReadStreamInfo, callback: ReturnCallback<Readable>): void;
     protected _move(pathFrom: Path, pathTo: Path, ctx: MoveInfo, callback: ReturnCallback<boolean>): void;
     protected _size(path: Path, ctx: SizeInfo, callback: ReturnCallback<number>): void;
+    protected getPropertyFromResource(path: Path, ctx: any, propertyName: string, callback: ReturnCallback<any>): void;
     protected _lockManager(path: Path, ctx: LockManagerInfo, callback: ReturnCallback<ILockManager>): void;
     protected _propertyManager(path: Path, ctx: PropertyManagerInfo, callback: ReturnCallback<IPropertyManager>): void;
     protected _readDir(path: Path, ctx: ReadDirInfo, callback: ReturnCallback<string[] | Path[]>): void;
+    protected getStatProperty(path: Path, ctx: any, propertyName: string, callback: ReturnCallback<any>): void;
+    protected getStatDateProperty(path: Path, ctx: any, propertyName: string, callback: ReturnCallback<number>): void;
     protected _creationDate(path: Path, ctx: CreationDateInfo, callback: ReturnCallback<number>): void;
     protected _lastModifiedDate(path: Path, ctx: LastModifiedDateInfo, callback: ReturnCallback<number>): void;
     protected _type(path: Path, ctx: TypeInfo, callback: ReturnCallback<ResourceType>): void;
