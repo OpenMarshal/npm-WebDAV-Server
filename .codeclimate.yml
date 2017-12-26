@@ -5,4 +5,5 @@ plugins:
 exclude_patterns:
   - "lib/"
   - "test/"
+  - "examples/"
   - "src/**/v1/"

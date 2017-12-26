@@ -3,6 +3,7 @@
     "lib/**",
     "node_modules/**",
     "test/**",
+    "examples/**",
     "src/**/v1/**"
   ],
   "critics": {
