@@ -50,6 +50,7 @@ export declare class VirtualFileSystem extends FileSystem {
     protected _lockManager(path: Path, ctx: LockManagerInfo, callback: ReturnCallback<ILockManager>): void;
     protected _propertyManager(path: Path, ctx: PropertyManagerInfo, callback: ReturnCallback<IPropertyManager>): void;
     protected _readDir(path: Path, ctx: ReadDirInfo, callback: ReturnCallback<string[] | Path[]>): void;
+    protected getPropertyFromResource(path: Path, ctx: TypeInfo, propertyName: string, callback: ReturnCallback<any>): void;
     protected _creationDate(path: Path, ctx: CreationDateInfo, callback: ReturnCallback<number>): void;
     protected _lastModifiedDate(path: Path, ctx: LastModifiedDateInfo, callback: ReturnCallback<number>): void;
     protected _type(path: Path, ctx: TypeInfo, callback: ReturnCallback<ResourceType>): void;

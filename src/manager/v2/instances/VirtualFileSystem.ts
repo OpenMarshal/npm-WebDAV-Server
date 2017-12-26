@@ -214,29 +214,17 @@ export class VirtualFileSystem extends FileSystem
 
     protected _size(path : Path, ctx : SizeInfo, callback : ReturnCallback<number>) : void
     {
-        const resource = this.resources[path.toString()];
-        if(!resource)
-            return callback(Errors.ResourceNotFound);
-        
-        callback(null, resource.size);
+        this.getPropertyFromResource(path, ctx, 'size', callback);
     }
 
     protected _lockManager(path : Path, ctx : LockManagerInfo, callback : ReturnCallback<ILockManager>) : void
     {
-        const resource = this.resources[path.toString()];
-        if(!resource)
-            return callback(Errors.ResourceNotFound);
-        
-        callback(null, resource.locks);
+        this.getPropertyFromResource(path, ctx, 'locks', callback);
     }
 
     protected _propertyManager(path : Path, ctx : PropertyManagerInfo, callback : ReturnCallback<IPropertyManager>) : void
     {
-        const resource = this.resources[path.toString()];
-        if(!resource)
-            return callback(Errors.ResourceNotFound);
-        
-        callback(null, resource.props);
+        this.getPropertyFromResource(path, ctx, 'props', callback);
     }
 
     protected _readDir(path : Path, ctx : ReadDirInfo, callback : ReturnCallback<string[] | Path[]>) : void
@@ -256,31 +244,28 @@ export class VirtualFileSystem extends FileSystem
 
         callback(null, children);
     }
-
-    protected _creationDate(path : Path, ctx : CreationDateInfo, callback : ReturnCallback<number>) : void
+    
+    protected getPropertyFromResource(path : Path, ctx : TypeInfo, propertyName : string, callback : ReturnCallback<any>) : void
     {
         const resource = this.resources[path.toString()];
         if(!resource)
             return callback(Errors.ResourceNotFound);
         
-        callback(null, resource.creationDate);
+        callback(null, resource[propertyName]);
+    }
+
+    protected _creationDate(path : Path, ctx : CreationDateInfo, callback : ReturnCallback<number>) : void
+    {
+        this.getPropertyFromResource(path, ctx, 'creationDate', callback);
     }
 
     protected _lastModifiedDate(path : Path, ctx : LastModifiedDateInfo, callback : ReturnCallback<number>) : void
     {
-        const resource = this.resources[path.toString()];
-        if(!resource)
-            return callback(Errors.ResourceNotFound);
-        
-        callback(null, resource.lastModifiedDate);
+        this.getPropertyFromResource(path, ctx, 'lastModifiedDate', callback);
     }
 
     protected _type(path : Path, ctx : TypeInfo, callback : ReturnCallback<ResourceType>) : void
     {
-        const resource = this.resources[path.toString()];
-        if(!resource)
-            return callback(Errors.ResourceNotFound);
-        
-        callback(null, resource.type);
+        this.getPropertyFromResource(path, ctx, 'type', callback);
     }
 }
