@@ -37,7 +37,6 @@
         "no-var-keyword": true,
         "radix": true,
         "restrict-plus-operands": true,
-        "strict-type-predicates": true,
         "triple-equals": true,
         "typeof-compare": true,
         "use-isnan": true,
