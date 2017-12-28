@@ -1,12 +1,5 @@
 import { HTTPCodes, HTTPMethod, HTTPRequestContext } from '../WebDAVRequest'
 import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
-import { STATUS_CODES } from 'http'
-import { LockScope } from '../../../resource/v2/lock/LockScope'
-import { LockKind } from '../../../resource/v2/lock/LockKind'
-import { LockType } from '../../../resource/v2/lock/LockType'
-import { Errors } from '../../../Errors'
-import { Lock } from '../../../resource/v2/lock/Lock'
-import { XML } from 'xml-js-builder'
 
 export default class implements HTTPMethod
 {

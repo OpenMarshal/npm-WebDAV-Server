@@ -1,41 +1,7 @@
 import { HTTPCodes, HTTPRequestContext, HTTPMethod } from '../WebDAVRequest'
 import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
-import { Errors } from '../../../Errors'
 import { Transform } from 'stream'
 
-class MultipleRangedStream extends Transform
-{
-    streams : { stream : RangedStream, range : IRange }[]
-    onEnded : () => void
-
-    constructor(public ranges : IRange[])
-    {
-        super();
-
-        this.streams = ranges.map((r) => {
-            return {
-                stream: new RangedStream(r.min, r.max),
-                range: r
-            }
-        });
-    }
-
-    _transform(chunk : string | Buffer, encoding : string, callback : Function)
-    {
-        this.streams.forEach((streamRange) => {
-            streamRange.stream.write(chunk, encoding);
-        });
-
-        callback(null, new Buffer(0));
-    }
-
-    end(chunk ?: any, encoding?: any, cb?: Function): void
-    {
-        if(this.onEnded)
-            process.nextTick(() => this.onEnded());
-        super.end(chunk, encoding, cb);
-    }
-}
 class RangedStream extends Transform
 {
     nb : number;
@@ -77,6 +43,40 @@ class RangedStream extends Transform
     }
 }
 
+class MultipleRangedStream extends Transform
+{
+    streams : { stream : RangedStream, range : IRange }[]
+    onEnded : () => void
+
+    constructor(public ranges : IRange[])
+    {
+        super();
+
+        this.streams = ranges.map((r) => {
+            return {
+                stream: new RangedStream(r.min, r.max),
+                range: r
+            }
+        });
+    }
+
+    _transform(chunk : string | Buffer, encoding : string, callback : Function)
+    {
+        this.streams.forEach((streamRange) => {
+            streamRange.stream.write(chunk, encoding);
+        });
+
+        callback(null, new Buffer(0));
+    }
+
+    end(chunk ?: any, encoding?: any, cb?: Function): void
+    {
+        if(this.onEnded)
+            process.nextTick(() => this.onEnded());
+        super.end(chunk, encoding, cb);
+    }
+}
+
 export interface IRange
 {
     min : number
@@ -85,16 +85,28 @@ export interface IRange
 
 export function parseRangeHeader(mimeType : string, size : number, range : string)
 {
+    const separator = Array.apply(null, { length: 20 })
+        .map(() => String.fromCharCode('a'.charCodeAt(0) + Math.floor(Math.random() * 26)))
+        .join('');
+
     const createMultipart = (range : IRange) => {
-        return '--' + separator + '\r\nContent-Type: ' + mimeType + '\r\nContent-Range: bytes ' + range.min + '-' + range.max + '/*\r\n\r\n';
+        return `--${separator}\r\nContent-Type: ${mimeType}\r\nContent-Range: bytes ${range.min}-${range.max}/*\r\n\r\n`;
     };
     const endMultipart = () => {
-        return '\r\n--' + separator + '--';
+        return `\r\n--${separator}--`;
     };
 
-    const ranges = range.split(',').map((block) => parseRangeBlock(size, block));
-    const separator = Array.apply(null, {length: 20}).map(() => String.fromCharCode('a'.charCodeAt(0) + Math.floor(Math.random() * 26))).join('');
-    const len = ranges.reduce((previous, mm) => mm.max - mm.min + 1 + previous, 0) + (ranges.length > 1 ? ranges.reduce((previous, mm) => createMultipart(mm).length + previous, endMultipart().length + '\r\n'.length * (ranges.length - 1)) : 0);
+    const ranges = range
+        .split(',')
+        .map((block) => parseRangeBlock(size, block));
+
+    const len = ranges.reduce((previous, mm) => mm.max - mm.min + 1 + previous, 0)
+        + (ranges.length <= 1 ?
+            0 : ranges.reduce(
+                (previous, mm) => createMultipart(mm).length + previous,
+                endMultipart().length + '\r\n'.length * (ranges.length - 1)
+            )
+        );
 
     return {
         ranges,
@@ -198,12 +210,12 @@ export default class implements HTTPMethod
                                                 if(ranges.length <= 1)
                                                 {
                                                     ctx.response.setHeader('Content-Type', mimeType)
-                                                    ctx.response.setHeader('Content-Range', 'bytes ' + ranges[0].min + '-' + ranges[0].max + '/*')
+                                                    ctx.response.setHeader('Content-Range', `bytes ${ranges[0].min}-${ranges[0].max}/*`)
                                                     rstream.on('end', callback);
                                                     return rstream.pipe(new RangedStream(ranges[0].min, ranges[0].max)).pipe(ctx.response);
                                                 }
                                                 
-                                                ctx.response.setHeader('Content-Type', 'multipart/byteranges; boundary=' + separator)
+                                                ctx.response.setHeader('Content-Type', `multipart/byteranges; boundary=${separator}`)
 
                                                 const multi = new MultipleRangedStream(ranges);
                                                 rstream.pipe(multi);

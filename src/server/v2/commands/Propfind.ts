@@ -1,9 +1,8 @@
 import { HTTPCodes, HTTPRequestContext, HTTPMethod } from '../WebDAVRequest'
 import { XML, XMLElementBuilder, XMLElement } from 'xml-js-builder'
-import { Workflow } from '../../../helper/Workflow'
 import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
+import { Workflow } from '../../../helper/Workflow'
 import { Resource } from '../../../manager/v2/fileSystem/Resource'
-import { Path } from '../../../manager/v2/Path'
 import { Errors } from '../../../Errors'
 import { Lock } from '../../../resource/v2/lock/Lock'
 import * as http from 'http'
@@ -90,7 +89,7 @@ function parseRequestBody(ctx : HTTPRequestContext, data : Buffer) : PropertyRul
 
 function propstatStatus(status : number)
 {
-    return 'HTTP/1.1 ' + status + ' ' + http.STATUS_CODES[status];
+    return `HTTP/1.1 ${status} ${http.STATUS_CODES[status]}`;
 }
 
 export default class implements HTTPMethod
@@ -111,7 +110,7 @@ export default class implements HTTPMethod
                 if(errorNumber !== null)
                 {
                     const response = new XMLElementBuilder('D:response');
-                    response.ele('D:propstat').ele('D:status').add('HTTP/1.1 ' + errorNumber + ' ' + http.STATUS_CODES[errorNumber]);
+                    response.ele('D:propstat').ele('D:status').add(`HTTP/1.1 ${errorNumber} ${http.STATUS_CODES[errorNumber]}`);
                     resource.fs.getFullPath(ctx, resource.path, (e, path) => {
                         if(e)
                             return nbOut(e);
@@ -219,7 +218,7 @@ export default class implements HTTPMethod
                         activelock.ele('D:depth').add('Infinity')
                         if(lock.owner)
                             activelock.ele('D:owner').add(lock.owner)
-                        activelock.ele('D:timeout').add('Second-' + (lock.expirationDate - Date.now()))
+                        activelock.ele('D:timeout').add(`Second-${lock.expirationDate - Date.now()}`)
                         activelock.ele('D:locktoken').ele('D:href', undefined, true).add(lock.uuid)
                         activelock.ele('D:lockroot').ele('D:href', undefined, true).add(HTTPRequestContext.encodeURL(ctx.fullUri(path)))
                     }
@@ -368,8 +367,6 @@ export default class implements HTTPMethod
     unchunked(ctx : HTTPRequestContext, data : Buffer, callback : () => void) : void
     {
         ctx.getResource((e, resource) => {
-            const lockDiscoveryCache = {};
-
             ctx.checkIfHeader(resource, () => {
                 const multistatus = new XMLElementBuilder('D:multistatus', {
                     'xmlns:D': 'DAV:'

@@ -1,8 +1,7 @@
 import { HTTPCodes, HTTPMethod, HTTPRequestContext } from '../WebDAVRequest'
 import { ResourceType, OpenWriteStreamMode } from '../../../manager/v2/fileSystem/CommonTypes'
-import { Errors } from '../../../Errors'
 import { Readable } from 'stream'
-import * as path from 'path'
+import { Errors } from '../../../Errors'
 
 export default class implements HTTPMethod
 {

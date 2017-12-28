@@ -8,7 +8,7 @@ export class Path
         if(path.constructor === String)
         {
             let sPath = path as string;
-            let doubleIndex;
+            let doubleIndex : number;
             while((doubleIndex = sPath.indexOf('//')) !== -1)
                 sPath = sPath.substr(0, doubleIndex) + sPath.substr(doubleIndex + 1);
             this.paths = sPath.replace(/(^\/|\/$)/g, '').split('/');

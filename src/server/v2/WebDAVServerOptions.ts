@@ -1,13 +1,11 @@
 import { IStorageManager, NoStorageManager } from '../../manager/v2/fileSystem/StorageManager'
 import { HTTPDigestAuthentication } from '../../user/v2/authentication/HTTPDigestAuthentication'
-import { HTTPBasicAuthentication } from '../../user/v2/authentication/HTTPBasicAuthentication'
 import { FileSystemSerializer } from '../../manager/v2/fileSystem/Serialization'
 import { HTTPAuthentication } from '../../user/v2/authentication/HTTPAuthentication'
 import { Writable, Readable } from 'stream'
 import { VirtualFileSystem } from '../../manager/v2/instances/VirtualFileSystem'
 import { SimpleUserManager } from '../../user/v2/simple/SimpleUserManager'
 import { PrivilegeManager } from '../../user/v2/privilege/PrivilegeManager'
-import { IUserManager } from '../../user/v2/IUserManager'
 import { FileSystem } from '../../manager/v2/fileSystem/FileSystem'
 import * as https from 'https'
 

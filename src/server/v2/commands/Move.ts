@@ -18,7 +18,7 @@ export function execute(ctx : HTTPRequestContext, methodName : string, privilege
                     return callback();
                 }
                 
-                const startIndex = destination.indexOf('://');
+                const startIndex : number = destination.indexOf('://');
                 if(startIndex !== -1)
                 {
                     destination = destination.substring(startIndex + '://'.length)

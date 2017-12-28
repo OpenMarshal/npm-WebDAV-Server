@@ -1,9 +1,8 @@
 import { HTTPCodes, HTTPMethod, HTTPRequestContext } from '../WebDAVRequest'
+import { XML, XMLElementBuilder, XMLElement } from 'xml-js-builder'
 import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
-import { IPropertyManager } from '../../../manager/v2/fileSystem/PropertyManager'
 import { STATUS_CODES } from 'http'
 import { Workflow } from '../../../helper/Workflow'
-import { XML, XMLElementBuilder, XMLElement } from 'xml-js-builder'
 import { Errors } from '../../../Errors'
 
 export default class implements HTTPMethod

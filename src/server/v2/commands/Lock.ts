@@ -8,8 +8,6 @@ import { LockType } from '../../../resource/v2/lock/LockType'
 import { Errors } from '../../../Errors'
 import { Lock } from '../../../resource/v2/lock/Lock'
 import { XML, XMLElementBuilder } from 'xml-js-builder'
-import { IUser } from '../../../user/v2/IUser'
-import * as path from 'path'
 
 function createResponse(ctx : HTTPRequestContext, lock : Lock)
 {
@@ -25,7 +23,7 @@ function createResponse(ctx : HTTPRequestContext, lock : Lock)
     activelock.ele('D:depth').add(lock.depth === -1 ? 'infinity' : lock.depth.toString());
     if(lock.owner)
         activelock.ele('D:owner').add(lock.owner);
-    activelock.ele('D:timeout').add('Second-' + lock.lockKind.timeout);
+    activelock.ele('D:timeout').add(`Second-${lock.lockKind.timeout}`);
 
     return prop;
 }

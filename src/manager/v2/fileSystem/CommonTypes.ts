@@ -1,16 +1,5 @@
 import { ReturnCallback, SimpleCallback } from './CommonTypes'
-import { Readable, Writable } from 'stream'
-import { RequestContext } from '../../../server/v2/RequestContext'
 import { XMLElement } from 'xml-js-builder'
-import { LockScope } from '../../../resource/v2/lock/LockScope'
-import { LockType } from '../../../resource/v2/lock/LockType'
-import { LockKind } from '../../../resource/v2/lock/LockKind'
-import { Workflow } from '../../../helper/Workflow'
-import { Errors } from '../../../Errors'
-import { Lock } from '../../../resource/v2/lock/Lock'
-import { Path } from '../Path'
-import * as mimeTypes from 'mime-types'
-import * as crypto from 'crypto'
 
 export type SimpleCallback = (error ?: Error) => void;
 export type ReturnCallback<T> = (error ?: Error, data ?: T) => void;

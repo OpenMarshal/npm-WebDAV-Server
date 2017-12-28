@@ -1,9 +1,5 @@
-import { HTTPCodes, HTTPMethod, HTTPRequestContext } from '../WebDAVRequest'
-import { ResourceType, SimpleCallback } from '../../../manager/v2/fileSystem/CommonTypes'
-import { Path } from '../../../manager/v2/Path'
-import { Workflow } from '../../../helper/Workflow'
-import { Readable } from 'stream'
-import { Errors } from '../../../Errors'
+import { HTTPMethod, HTTPRequestContext } from '../WebDAVRequest'
+import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
 import { execute } from './Move'
 
 export default class implements HTTPMethod

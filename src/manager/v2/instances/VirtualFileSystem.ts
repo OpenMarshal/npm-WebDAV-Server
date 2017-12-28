@@ -18,7 +18,6 @@ import {
     DeleteInfo,
     FileSystem,
     SizeInfo,
-    MoveInfo,
     TypeInfo,
 } from '../fileSystem/export'
 import { Readable, Writable } from 'stream'
@@ -193,7 +192,7 @@ export class VirtualFileSystem extends FileSystem
         if(resource === undefined)
             return callback(Errors.ResourceNotFound);
         
-        const content = [];
+        const content : Buffer[] = [];
         const stream = new VirtualFileWritable(content);
         stream.on('finish', () => {
             resource.content = content;

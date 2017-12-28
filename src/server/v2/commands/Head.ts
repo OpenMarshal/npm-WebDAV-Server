@@ -1,7 +1,6 @@
 import { HTTPCodes, HTTPMethod, HTTPRequestContext } from '../WebDAVRequest'
-import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
-import { Errors } from '../../../Errors'
 import { parseRangeHeader } from './Get'
+import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
 
 export default class implements HTTPMethod
 {
@@ -53,10 +52,10 @@ export default class implements HTTPMethod
                                             if(ranges.length <= 1)
                                             {
                                                 ctx.response.setHeader('Content-Type', mimeType)
-                                                ctx.response.setHeader('Content-Range', 'bytes ' + ranges[0].min + '-' + ranges[0].max + '/*')
+                                                ctx.response.setHeader('Content-Range', `bytes ${ranges[0].min}-${ranges[0].max}/*`)
                                             }
                                             else
-                                                ctx.response.setHeader('Content-Type', 'multipart/byteranges; boundary=' + separator)
+                                                ctx.response.setHeader('Content-Type', `multipart/byteranges; boundary=${separator}`)
                                         }
                                         catch(ex)
                                         {

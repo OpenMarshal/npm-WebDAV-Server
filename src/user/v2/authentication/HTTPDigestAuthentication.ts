@@ -27,7 +27,7 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
     askForAuthentication()
     {
         return {
-            'WWW-Authenticate': 'Digest realm="' + this.realm + '", qop="auth", nonce="' + this.generateNonce() + '", opaque="' + this.generateNonce() + '"'
+            'WWW-Authenticate': `Digest realm="${this.realm}", qop="auth", nonce="${this.generateNonce()}", opaque="${this.generateNonce()}"`
         }
     }
 
@@ -67,21 +67,21 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
             if(e)
                 return onError(e);
         
-            let ha1 = md5(authProps.username + ':' + this.realm + ':' + (user.password ? user.password : ''));
+            let ha1 = md5(`${authProps.username}:${this.realm}:${user.password ? user.password : ''}`);
             if(authProps.algorithm === 'MD5-sess')
-                ha1 = md5(ha1 + ':' + authProps.nonce + ':' + authProps.cnonce);
+                ha1 = md5(`${ha1}:${authProps.nonce}:${authProps.cnonce}`);
 
             let ha2;
             if(authProps.qop === 'auth-int')
                 return onError(Errors.WrongHeaderFormat); // ha2 = md5(ctx.request.method.toString().toUpperCase() + ':' + ctx.requested.uri + ':' + md5(...));
             else
-                ha2 = md5(ctx.request.method.toString().toUpperCase() + ':' + ctx.requested.uri);
+                ha2 = md5(`${ctx.request.method.toString().toUpperCase()}:${ctx.requested.uri}`);
 
             let result;
             if(authProps.qop === 'auth-int' || authProps.qop === 'auth')
-                result = md5(ha1 + ':' + authProps.nonce + ':' + authProps.nc + ':' + authProps.cnonce + ':' + authProps.qop + ':' + ha2);
+                result = md5(`${ha1}:${authProps.nonce}:${authProps.nc}:${authProps.cnonce}:${authProps.qop}:${ha2}`);
             else
-                result = md5(ha1 + ':' + authProps.nonce + ':' + ha2);
+                result = md5(`${ha1}:${authProps.nonce}:${ha2}`);
 
             if(result.toLowerCase() === authProps.response.toLowerCase())
                 callback(Errors.None, user);

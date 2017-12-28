@@ -7,7 +7,6 @@ import {
     DeleteInfo,
     DisplayNameInfo,
     ETagInfo,
-    IContextInfo,
     LastModifiedDateInfo,
     LockManagerInfo,
     MimeTypeInfo,
@@ -18,8 +17,7 @@ import {
     ReadDirInfo,
     RenameInfo,
     SizeInfo,
-    TypeInfo,
-    WebNameInfo
+    TypeInfo
 } from './ContextInfo'
 import {
     ResourceType,
@@ -38,10 +36,8 @@ import { Readable, Writable, Transform } from 'stream'
 import { IPropertyManager, PropertyBag } from './PropertyManager'
 import { ContextualFileSystem } from './ContextualFileSystem'
 import { StandardMethods } from './StandardMethods'
-import { IStorageManager } from './StorageManager'
 import { RequestContext } from '../../../server/v2/RequestContext'
 import { ILockManager } from './LockManager'
-import { XMLElement } from 'xml-js-builder'
 import { LockScope } from '../../../resource/v2/lock/LockScope'
 import { LockType } from '../../../resource/v2/lock/LockType'
 import { LockKind } from '../../../resource/v2/lock/LockKind'
@@ -50,7 +46,6 @@ import { Resource } from './Resource'
 import { Errors } from '../../../Errors'
 import { Lock } from '../../../resource/v2/lock/Lock'
 import { Path } from '../Path'
-import * as mimeTypes from 'mime-types'
 import * as crypto from 'crypto'
 
 class BufferedIsLocked

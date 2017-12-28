@@ -1,8 +1,6 @@
 import { HTTPCodes, HTTPMethod, HTTPRequestContext } from '../WebDAVRequest'
 import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
-import { Path } from '../../../manager/v2/Path'
 import { Errors } from '../../../Errors'
-import * as path from 'path'
 
 export default class implements HTTPMethod
 {

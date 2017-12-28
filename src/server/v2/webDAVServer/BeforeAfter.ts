@@ -1,4 +1,4 @@
-import { HTTPRequestContext, HTTPMethod } from '../WebDAVRequest'
+import { HTTPRequestContext } from '../WebDAVRequest'
 
 export type RequestListener = (ctx : HTTPRequestContext, next : () => void) => void;
 

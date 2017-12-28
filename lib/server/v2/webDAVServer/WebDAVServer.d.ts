@@ -1,11 +1,11 @@
 /// <reference types="node" />
 import { ExternalRequestContext, RequestContextExternalOptions, RequestContext } from '../RequestContext';
 import { WebDAVServerOptions, IAutoSave } from '../WebDAVServerOptions';
-import { HTTPMethod } from '../WebDAVRequest';
 import { HTTPAuthentication } from '../../../user/v2/authentication/HTTPAuthentication';
 import { PrivilegeManager } from '../../../user/v2/privilege/PrivilegeManager';
-import { FileSystem } from '../../../manager/v2/fileSystem/FileSystem';
 import { ReturnCallback } from '../../../manager/v2/fileSystem/CommonTypes';
+import { HTTPMethod } from '../WebDAVRequest';
+import { FileSystem } from '../../../manager/v2/fileSystem/FileSystem';
 import { Resource } from '../../../manager/v2/fileSystem/Resource';
 import { Path } from '../../../manager/v2/Path';
 import * as persistence from './Persistence';

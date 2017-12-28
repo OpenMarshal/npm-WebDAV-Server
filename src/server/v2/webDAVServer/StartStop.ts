@@ -1,14 +1,8 @@
 import { HTTPCodes, HTTPRequestContext, HTTPMethod } from '../WebDAVRequest'
 import { WebDAVServerStartCallback } from './WebDAVServer'
-import { Writable, Readable } from 'stream'
 import { Errors } from '../../../Errors'
-import { WebDAVServer } from './WebDAVServer'
-import { autoSave } from './Persistence'
-import { IAutoSave } from '../WebDAVServerOptions'
 import * as https from 'https'
 import * as http from 'http'
-import * as zlib from 'zlib'
-import * as fs from 'fs'
 
 export function executeRequest(req : http.IncomingMessage, res : http.ServerResponse, rootPath ?: string) : void
 {

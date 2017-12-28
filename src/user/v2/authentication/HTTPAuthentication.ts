@@ -1,5 +1,4 @@
 import { HTTPRequestContext } from '../../../server/v2/RequestContext'
-import { IUserManager } from '../IUserManager'
 import { IUser } from '../IUser'
 
 export interface HTTPAuthentication
