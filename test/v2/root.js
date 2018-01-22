@@ -237,6 +237,6 @@ if(!module.parent)
     }, {
         port: 1900,
         showExceptions : true,
-        timeout: 6000,
+        timeout: 15000,
         nbReservedSocketPerTest: 30
     })
