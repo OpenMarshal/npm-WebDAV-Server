@@ -104,7 +104,6 @@ export default class implements HTTPMethod
                         }
                         
                         r.fs.checkPrivilege(ctx, r.path, 'canWriteProperties', (e, can) => {
-                            console.log(e, can);
                             if(e || !can)
                             {
                                 if(e)
