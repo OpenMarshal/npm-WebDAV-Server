@@ -236,6 +236,20 @@ export class HTTPRequestContext extends RequestContext
         response.setHeader('Access-Control-Allow-Credentials', 'true');
         response.setHeader('Access-Control-Expose-Headers', 'DAV, content-length, Allow');
         response.setHeader('Server', server.options.serverName + '/' + server.options.version);
+        
+        const setAllowHeader = (type ?: ResourceType) =>
+        {
+            const allowedMethods = [];
+            for(const name in server.methods)
+            {
+                const method = server.methods[name];
+                if(!method.isValidFor || method.isValidFor(ctx, type))
+                    allowedMethods.push(name.toUpperCase());
+            }
+
+            response.setHeader('Allow', allowedMethods.join(','));
+            callback(null, ctx);
+        };
 
         ctx.askForAuthentication(false, (e) => {
             if(e)
@@ -256,7 +270,7 @@ export class HTTPRequestContext extends RequestContext
                     return callback(Errors.MissingAuthorisationHeader, ctx);
 
                 server.getFileSystem(ctx.requested.path, (fs, _, subPath) => {
-                    fs.type(ctx, subPath, (e, type) => {
+                    fs.type(ctx.requested.path.isRoot() ? server.createExternalContext() : ctx, subPath, (e, type) => {
                         if(e)
                             type = undefined;
 
@@ -265,20 +279,6 @@ export class HTTPRequestContext extends RequestContext
                 })
             })
         })
-
-        function setAllowHeader(type ?: ResourceType)
-        {
-            const allowedMethods = [];
-            for(const name in server.methods)
-            {
-                const method = server.methods[name];
-                if(!method.isValidFor || method.isValidFor(ctx, type))
-                    allowedMethods.push(name.toUpperCase());
-            }
-
-            response.setHeader('Allow', allowedMethods.join(','));
-            callback(null, ctx);
-        }
     }
     
     static encodeURL(url : string)
