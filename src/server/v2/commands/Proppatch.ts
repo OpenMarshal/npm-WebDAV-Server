@@ -102,29 +102,35 @@ export default class implements HTTPMethod
                                     .done((_) => finalize())
                             })
                         }
-
-                        r.fs.isLocked(ctx, r.path, (e, locked) => {
-                            if(e || locked)
+                        
+                        r.fs.checkPrivilege(ctx, r.path, 'canWriteProperties', (e, can) => {
+                            console.log(e, can);
+                            if(e || !can)
                             {
                                 if(e)
                                 {
                                     if(!ctx.setCodeFromError(e))
                                         ctx.setCode(HTTPCodes.InternalServerError)
                                 }
-                                else if(locked)
-                                    ctx.setCode(HTTPCodes.Locked);
+                                else if(!can)
+                                    ctx.setCodeFromError(Errors.NotEnoughPrivilege);
                                 return callback();
                             }
-                            
-                            r.propertyManager((e, pm) => {
-                                if(e)
+
+                            r.fs.isLocked(ctx, r.path, (e, locked) => {
+                                if(e || locked)
                                 {
-                                    if(!ctx.setCodeFromError(e))
-                                        ctx.setCode(HTTPCodes.InternalServerError)
+                                    if(e)
+                                    {
+                                        if(!ctx.setCodeFromError(e))
+                                            ctx.setCode(HTTPCodes.InternalServerError)
+                                    }
+                                    else if(locked)
+                                        ctx.setCode(HTTPCodes.Locked);
                                     return callback();
                                 }
-
-                                pm.getProperties((e, props) => {
+                            
+                                r.propertyManager((e, pm) => {
                                     if(e)
                                     {
                                         if(!ctx.setCodeFromError(e))
@@ -132,46 +138,55 @@ export default class implements HTTPMethod
                                         return callback();
                                     }
 
-                                    const properties = JSON.parse(JSON.stringify(props));
+                                    pm.getProperties((e, props) => {
+                                        if(e)
+                                        {
+                                            if(!ctx.setCodeFromError(e))
+                                                ctx.setCode(HTTPCodes.InternalServerError)
+                                            return callback();
+                                        }
 
-                                    const pushSetReverseAction = (el : XMLElement) => {
-                                        const prop = properties[el.name];
-                                        if(prop)
+                                        const properties = JSON.parse(JSON.stringify(props));
+
+                                        const pushSetReverseAction = (el : XMLElement) => {
+                                            const prop = properties[el.name];
+                                            if(prop)
+                                                reverse.push((cb) => pm.setProperty(el.name, prop.value, prop.attributes, cb));
+                                            else
+                                                reverse.push((cb) => pm.removeProperty(el.name, cb));
+                                        }
+                                        const pushRemoveReverseAction = (el : XMLElement) => {
+                                            const prop = properties[el.name];
                                             reverse.push((cb) => pm.setProperty(el.name, prop.value, prop.attributes, cb));
-                                        else
-                                            reverse.push((cb) => pm.removeProperty(el.name, cb));
-                                    }
-                                    const pushRemoveReverseAction = (el : XMLElement) => {
-                                        const prop = properties[el.name];
-                                        reverse.push((cb) => pm.setProperty(el.name, prop.value, prop.attributes, cb));
-                                    }
-                                    execute('DAV:set', 'setProperty', (el : XMLElement, callback) => {
-                                        if(el.name.indexOf('DAV:') === 0)
-                                        {
-                                            pushSetReverseAction(el);
-                                            return callback(Errors.Forbidden);
                                         }
-
-                                        pm.setProperty(el.name, el.elements, el.attributes, (e) => {
-                                            if(!e)
+                                        execute('DAV:set', 'setProperty', (el : XMLElement, callback) => {
+                                            if(el.name.indexOf('DAV:') === 0)
+                                            {
                                                 pushSetReverseAction(el);
-                                            callback(e);
-                                        })
-                                    })
-                                    execute('DAV:remove', 'removeProperty', (el : XMLElement, callback) => {
-                                        if(el.name.indexOf('DAV:') === 0)
-                                        {
-                                            pushRemoveReverseAction(el);
-                                            return callback(Errors.Forbidden);
-                                        }
+                                                return callback(Errors.Forbidden);
+                                            }
 
-                                        pm.removeProperty(el.name, (e) => {
-                                            if(!e)
-                                                pushRemoveReverseAction(el);
-                                            callback(e);
+                                            pm.setProperty(el.name, el.elements, el.attributes, (e) => {
+                                                if(!e)
+                                                    pushSetReverseAction(el);
+                                                callback(e);
+                                            })
                                         })
-                                    })
-                                }, false)
+                                        execute('DAV:remove', 'removeProperty', (el : XMLElement, callback) => {
+                                            if(el.name.indexOf('DAV:') === 0)
+                                            {
+                                                pushRemoveReverseAction(el);
+                                                return callback(Errors.Forbidden);
+                                            }
+
+                                            pm.removeProperty(el.name, (e) => {
+                                                if(!e)
+                                                    pushRemoveReverseAction(el);
+                                                callback(e);
+                                            })
+                                        })
+                                    }, false)
+                                })
                             })
                         })
                     }
