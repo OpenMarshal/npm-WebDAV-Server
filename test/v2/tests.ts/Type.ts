@@ -18,6 +18,7 @@ export interface TestInfo
         (config : Options, codeStatusExpected : number, callback : (res : RequestResponse, body ?: XMLElementUtil) => void) : void
     }
     reqStream : (config : Options & { canFail ?: boolean }, callback : (res : RequestResponse, body ?: string) => void) => Request
+    expect : (nb : number) => void
 }
 
 export interface TestCallback
