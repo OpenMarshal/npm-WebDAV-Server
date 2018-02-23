@@ -44,6 +44,7 @@
     "@types/node": "^7.0.48",
     "@types/request": "0.0.44",
     "request": "^2.81.0",
+    "safe-regex": "^1.1.0",
     "webdav-fs": "^1.5.0",
     "xml-js": "^1.4.1"
   },

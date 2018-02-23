@@ -1,14 +1,10 @@
+import { md5, parseHTTPAuthHeader } from '../../CommonFunctions'
 import { HTTPAuthentication } from './HTTPAuthentication'
 import { MethodCallArgs } from '../../../server/v1/MethodCallArgs'
 import { IUserManager } from '../IUserManager'
 import { Errors } from '../../../Errors'
 import { IUser } from '../IUser'
 import * as crypto from 'crypto'
-
-function md5(value : string | Buffer) : string
-{
-    return crypto.createHash('md5').update(value).digest('hex');
-}
 
 export class HTTPDigestAuthentication implements HTTPAuthentication
 {
@@ -43,19 +39,15 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
         let authHeader = arg.findHeader('Authorization')
         if(!authHeader)
             return onError(Errors.MissingAuthorisationHeader);
-        if(!/^Digest (\s*[a-zA-Z]+\s*=\s*(("(\\"|[^"])+")|([^,\s]+))?\s*(,|$))+$/.test(authHeader))
-            return onError(Errors.WrongHeaderFormat);
-
-        authHeader = authHeader.substring(authHeader.indexOf(' ') + 1); // remove the authentication type from the string
-
-        const authProps : any = { };
-
-        const rex = /([a-zA-Z]+)\s*=\s*(?:(?:"((?:\\"|[^"])+)")|([^,\s]+))/g;
-        let match = rex.exec(authHeader);
-        while(match)
+        
+        let authProps : any;
+        try
         {
-            authProps[match[1]] = match[3] ? match[3] : match[2];
-            match = rex.exec(authHeader);
+            authProps = parseHTTPAuthHeader(authHeader, 'Digest');
+        }
+        catch(ex)
+        {
+            return onError(Errors.WrongHeaderFormat);
         }
         
         if(!(authProps.username && authProps.nonce && authProps.response))

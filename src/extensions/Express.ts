@@ -9,20 +9,17 @@ import { Path } from '../manager/v2/Path'
  */
 export function express(root : string, server : WebDAVServer)
 {
-    const path = new Path(root).toString(false);
+    const path = new Path(root).toString(true);
 
-    const pathRegex = new RegExp('^' + path + '((\/[^\/]+)*)\/?$');
-    
     return function(req, res, next)
     {
-        const matches = pathRegex.exec(req.url);
-        if(!matches)
+        if(req.url.indexOf(path) !== 0)
             return next();
         
-        const subUrl = matches[1];
-    
-        req.url = new Path(subUrl).toString(false);
-    
+        const subPath = req.url.substring(path.length);
+        
+        req.url = new Path(subPath).toString(false);
+        
         server.executeRequest(req, res, path);
     };
 }
