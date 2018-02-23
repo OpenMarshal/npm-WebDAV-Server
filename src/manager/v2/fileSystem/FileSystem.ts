@@ -496,7 +496,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
         const callback : Return2Callback<Writable, boolean> = (e, stream, created) => {
             if(!e)
-                this.emit('openWriteStream', ctx, path, { targetSource, mode, estimatedSize, created })
+                this.emit('openWriteStream', ctx, path, { targetSource, mode, estimatedSize, created, stream })
             callbackFinal(e, stream, created);
         }
         
@@ -657,7 +657,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
         const callback : ReturnCallback<Readable> = (e, stream) => {
             if(!e)
-                this.emit('openReadStream', ctx, path, { targetSource, estimatedSize })
+                this.emit('openReadStream', ctx, path, { targetSource, estimatedSize, stream })
             callbackFinal(e, stream);
         }
 
