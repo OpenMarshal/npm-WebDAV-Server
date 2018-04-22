@@ -151,8 +151,24 @@ export default class implements HTTPMethod
                     propstatError.ele('D:status').add(propstatStatus(HTTPCodes.NotFound));
 
                     for(const el of reqBody.leftElements)
+                    {
                         if(el)
-                            prop.ele(el.name);
+                        {
+                            let name = el.name;
+                            let attributes = undefined;
+                            
+                            const namespaceSeparatorIndex = name.indexOf(':');
+                            if(namespaceSeparatorIndex >= 0)
+                            {
+                                attributes = {
+                                    'xmlns:x': name.substring(0, namespaceSeparatorIndex)
+                                };
+                                name = 'x:' + name.substring(namespaceSeparatorIndex + 1);
+                            }
+
+                            prop.ele(name, attributes);
+                        }
+                    }
                 }
                 callback();
             }
