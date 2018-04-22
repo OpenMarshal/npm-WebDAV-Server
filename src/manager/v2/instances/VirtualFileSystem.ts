@@ -244,6 +244,14 @@ export class VirtualFileSystem extends FileSystem
         callback(null, children);
     }
     
+    /**
+     * Get a property of an existing resource (object property, not WebDAV property). If the resource doesn't exist, it is created.
+     * 
+     * @param path Path of the resource
+     * @param ctx Context of the method
+     * @param propertyName Name of the property to get from the resource
+     * @param callback Callback returning the property object of the resource
+     */
     protected getPropertyFromResource(path : Path, ctx : TypeInfo, propertyName : string, callback : ReturnCallback<any>) : void
     {
         const resource = this.resources[path.toString()];

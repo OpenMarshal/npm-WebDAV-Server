@@ -248,6 +248,14 @@ export class PhysicalFileSystem extends FileSystem
         this.getStatProperty(path, ctx, 'size', callback);
     }
     
+    /**
+     * Get a property of an existing resource (object property, not WebDAV property). If the resource doesn't exist, it is created.
+     * 
+     * @param path Path of the resource
+     * @param ctx Context of the method
+     * @param propertyName Name of the property to get from the resource
+     * @param callback Callback returning the property object of the resource
+     */
     protected getPropertyFromResource(path : Path, ctx : any, propertyName : string, callback : ReturnCallback<any>) : void
     {
         let resource = this.resources[path.toString()];
