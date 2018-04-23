@@ -154,19 +154,7 @@ export default class implements HTTPMethod
                     {
                         if(el)
                         {
-                            let name = el.name;
-                            let attributes = undefined;
-                            
-                            const namespaceSeparatorIndex = name.indexOf(':');
-                            if(namespaceSeparatorIndex >= 0)
-                            {
-                                attributes = {
-                                    'xmlns:x': name.substring(0, namespaceSeparatorIndex)
-                                };
-                                name = 'x:' + name.substring(namespaceSeparatorIndex + 1);
-                            }
-
-                            prop.ele(name, attributes);
+                            prop.add(el);
                         }
                     }
                 }
