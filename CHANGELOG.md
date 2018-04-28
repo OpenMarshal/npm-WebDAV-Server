@@ -1,5 +1,162 @@
 # Changelog
 
+# 2.3.18
+
+### Bug fix
+* Fixed the name of the namespace of the elements added when not found in a PROPFIND request/response *[1b2b9cc](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/1b2b9cc)*
+
+# 2.3.17
+
+### Documentation
+* Added some comments for some methods/functions *[470c090](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/470c090)*
+* Added an example to display how to add logs *[5eafa1a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5eafa1a)*
+
+### Bug fix
+* Fixed the property name (changed from 'inline namespace' to 'attribute namespace') of not found properties in the response of PROPFIND which was causing errors in the parsing of the XML response *[f215bf7](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/f215bf7)*
+
+# 2.3.16
+
+### Other
+* Now provide the stream in the data of the 'openReadStream' and 'openWriteStream' events *[c72def0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c72def0)*
+
+### Tests
+* Added tests for security about regex *[be2190a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/be2190a)*
+* Exported the 'info.expected(...)' method in the v2 tests *[983da9c](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/983da9c)*
+
+### Bug fix
+* Fixed some security flaws about Regex *[d9c7194](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d9c7194)*
+
+# 2.3.15
+
+### Other
+* Removed a missed 'console.log(...)' *[c549111](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/c549111)*
+
+### Tests
+* Increased the timeout of the tests of the v2 from 6000 ms to 15000 ms *[b9684be](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b9684be)*
+
+# 2.3.14
+
+### Other
+* Added a npm command for tslint *[25b3dcc](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/25b3dcc)*
+* Refactored some code *[2dba204](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2dba204)*
+* Updated the code checking *[75fcf43](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/75fcf43)*
+* Updated the code checking *[70abf32](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/70abf32)*
+* Trying to decrease cognitive complexity of 'standardCopy' of the standard methods *[d8a495f](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/d8a495f)*
+* Refactored similar methods of 'VirtualFileSystem' *[612c91b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/612c91b)*
+* Excluded the 'examples' folder of lint *[1d68ec3](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/1d68ec3)*
+* Moved all v1 files into v1 folders *[4a1a417](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/4a1a417)*
+* Added v1 to the files to ignore for BitHound *[fe39d58](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/fe39d58)*
+* Cleaned the code of Propfind *[371228e](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/371228e)*
+* Upgraded the '.codeclimate.yml' file *[07a84ce](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/07a84ce)*
+* Excluded v1 from CodeClimate *[60a7e2d](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/60a7e2d)*
+* Excluded v1 from tslint *[0f06ed4](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0f06ed4)*
+* Updated the dependency version of @types/request and @types/node *[3f26a18](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3f26a18)*
+
+### Bug fix
+* Fixed the PROPPATCH method => returned LOCKED instead of NOT AUTHORIZED (authentication) *[90acbe1](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/90acbe1)*
+* Fixed the OPTIONS result ('Allow' header) on the root element *[2cec981](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2cec981)*
+* Fixed a lot of lint errors *[7de911b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7de911b)*
+* Fixed some tslint errors *[8f54de5](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/8f54de5)*
+* Fixed compilation errors with request headers which can contain 'string[]' *[1fcbbe2](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/1fcbbe2)*
+
+# 2.3.13
+
+### Documentation
+* Updated the README to display the ExpressJS extension *[0c9f4af](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0c9f4af)*
+
+### New features
+* Added extension for ExpressJS *[9114666](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/9114666)*
+
+# 2.3.12
+
+### Other
+* Added support for a new root path in 'executeRequest' *[876629a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/876629a)*
+
+### Bug fix
+* Fixed the example of using the library in Express *[4bf7bd3](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/4bf7bd3)*
+* Fixed the wrong example of use in ExpressJS *[7777cb4](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/7777cb4)*
+
+# 2.3.11
+
+### Documentation
+* Added comments / inline doc for the 'WebDAVServer' class's methods *[0e36914](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0e36914)*
+
+### Tests
+* Added tests for the encoding of the URL / displayName in PROPFIND *[45e9c56](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/45e9c56)*
+
+# 2.3.10
+
+### Documentation
+* Transformed in README.md 'Javascript' into 'JavaScript' to match 'TypeScript' *[5d1da18](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5d1da18)*
+* Added Express compatibility explaination in the README *[b61c7d5](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b61c7d5)*
+
+### Other
+* Cleaned the code (mainly the imports) *[cad8d1d](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/cad8d1d)*
+* Exported the function/method 'executeRequest' to execute requests without the server started *[fc22c3b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/fc22c3b)*
+
+### Bug fix
+* Fixed the parsing of the url when it is empty *[205e28a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/205e28a)*
+
+# 2.3.9
+
+### Bug fix
+* Removed the encoding of the 'displayname' tag *[b151337](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/b151337)*
+
+# 2.3.8
+
+### Bug fix
+* Fixed the URL encoding on all 'href', 'location' and 'displayname' tags in the XML responses *[5d48f22](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5d48f22)*
+
+# 2.3.7
+
+### Bug fix
+* Fixed the special character problem with a more generic solution *[6d54bd0](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/6d54bd0)*
+
+# 2.3.6
+
+### Bug fix
+* Fixed spaces not being encoded *[55261d5](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/55261d5)*
+
+# 2.3.5
+
+### Other
+* Removed old/commented code from the Propfind.ts file *[40e3792](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/40e3792)*
+* Compiled the change made by @leak4mk0 *[8e43d93](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/8e43d93)*
+* Merge pull request #21 from leak4mk0/patch-1 *[5943f26](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/5943f26)*
+
+### Bug fix
+* Fixed an issue where an error 'e' is ignored after readdir. *[716cba6](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/716cba6)*
+
+# 2.3.4
+
+### Tests
+* Added a few more tests for the MOVE method on files *[da1c79a](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/da1c79a)*
+
+### Other
+* Modified the behaviour of the PROPFIND method when an error occurs in the child resources *[a91227b](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/a91227b)*
+
+### Bug fix
+* Fixed the '_move' method in the 'PhysicalFileSystem' class *[656d0f6](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/656d0f6)*
+
+# 2.3.
+
+### Tests
+* Added tests for the new features of the 'addSubTree' method *[0f2c1d9](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/0f2c1d9)*
+
+### Other
+* Updated the dependencies of the project *[48e7287](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/48e7287)*
+* Added the support of a string and a buffer as value in the 'addSubTree' method *[3380374](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/3380374)*
+
+# 2.3.2
+
+### Documentation
+* Fixed the wrong link to the example page in the 'README' file *[91c28cd](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/91c28cd)*
+
+# 2.3.1
+
+### Bug fix
+* Modified the 'VirtualFileSystemResource' class to test the type of the constructor argument based on it's properties instead of it's constructor *[2f012cd](https://github.com/OpenMarshal/npm-WebDAV-Server/commit/2f012cd)*
+
 # 2.3.0
 
 ### New features
