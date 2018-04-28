@@ -24,7 +24,7 @@ module.exports = (test, options, index) => test('write/create a physical file', 
     const fileName = 'file';
     const filePath = path.join(folderPath, fileName);
     if(fs.existsSync(filePath))
-        fs.unlink(filePath);
+        fs.unlinkSync(filePath);
     
     const fileContent = 'Hello!';
     
