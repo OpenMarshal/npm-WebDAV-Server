@@ -1,3 +1,4 @@
+// tslint:disable:max-file-line-count max-line-length
 import {
     PrivilegeManagerInfo,
     AvailableLocksInfo,

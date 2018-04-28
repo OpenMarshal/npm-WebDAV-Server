@@ -65,6 +65,7 @@ export class PhysicalSerializer implements FileSystemSerializer
 
     unserialize(serializedData : any, callback : ReturnCallback<FileSystem>) : void
     {
+        // tslint:disable-next-line
         const fs = new PhysicalFileSystem(serializedData.rootPath);
         fs.resources = serializedData.resources;
         callback(null, fs);

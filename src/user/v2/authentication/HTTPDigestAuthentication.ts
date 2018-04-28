@@ -4,7 +4,6 @@ import { HTTPRequestContext } from '../../../server/v2/RequestContext'
 import { IListUserManager } from '../userManager/IListUserManager'
 import { Errors } from '../../../Errors'
 import { IUser } from '../IUser'
-import * as crypto from 'crypto'
 
 export class HTTPDigestAuthentication implements HTTPAuthentication
 {
@@ -36,7 +35,7 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
             })
         }
 
-        let authHeader = ctx.headers.find('Authorization')
+        const authHeader = ctx.headers.find('Authorization')
         if(!authHeader)
             return onError(Errors.MissingAuthorisationHeader);
 
