@@ -37,7 +37,7 @@
   "description": "WebDAV Server",
   "dependencies": {
     "mime-types": "^2.1.17",
-    "xml-js-builder": "^1.0.1"
+    "xml-js-builder": "^1.0.3"
   },
   "devDependencies": {
     "@types/mime-types": "^2.1.0",
