@@ -8,6 +8,7 @@ export function starter(server : v2.WebDAVServer, info : TestInfo, isValid : Tes
         'subFolder2',
         'subFile1',
         'subFile2',
+        'folder%20no%20space',
         'subFolder3',
         'sub Folder 4',
         'file漢字',
@@ -20,6 +21,9 @@ export function starter(server : v2.WebDAVServer, info : TestInfo, isValid : Tes
         'subFolder2',
         'subFile1',
         'subFile2',
+        'folder%20no%20space',
+        'folder%20no%20space/file',
+        'folder%20no%20space/folder',
         'subFolder3',
         'subFolder3/file漢字',
         'subFolder3/dir漢字',
@@ -43,6 +47,10 @@ export function starter(server : v2.WebDAVServer, info : TestInfo, isValid : Tes
             'subFolder2': v2.ResourceType.Directory,
             'subFile1': v2.ResourceType.File,
             'subFile2': v2.ResourceType.File,
+            'folder%20no%20space': {
+                'file': v2.ResourceType.File,
+                'folder': v2.ResourceType.Directory
+            },
             'subFolder3': {
                 'file漢字': v2.ResourceType.File,
                 'dir漢字': v2.ResourceType.Directory,
