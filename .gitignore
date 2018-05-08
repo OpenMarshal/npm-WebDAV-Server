@@ -2,3 +2,4 @@ node_modules
 *.log
 test/v2/tests
 experiment
+package-lock.json
