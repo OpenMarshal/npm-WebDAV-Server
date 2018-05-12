@@ -35,7 +35,7 @@ export default class implements HTTPMethod
                                     codes.forEach((code) => {
                                         const propstat = response.ele('D:propstat');
                                         const prop = propstat.ele('D:prop');
-                                        notifications[code].forEach((name) => prop.ele(name));
+                                        notifications[code].forEach((name) => prop.add(new XMLElementBuilder(name)));
                                         propstat.ele('D:status').add('HTTP/1.1 ' + code + ' ' + STATUS_CODES[code]);
                                     })
 
