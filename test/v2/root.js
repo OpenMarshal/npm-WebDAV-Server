@@ -59,6 +59,7 @@ module.exports = (callback, options) => {
                         startServer: (options, autoStart) => {
                             options = options ? options : {};
                             options.port = info.port + info.servers.length;
+                            options.enableLocationTag = true;
                             const startServer = new webdav.WebDAVServer(options);
                             if(autoStart || autoStart === undefined || autoStart === null)
                                 startServer.start();
