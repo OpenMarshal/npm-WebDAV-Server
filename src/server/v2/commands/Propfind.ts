@@ -117,7 +117,8 @@ export default class implements HTTPMethod
                         
                         const p = HTTPRequestContext.encodeURL(ctx.fullUri(path.toString()));
                         response.ele('D:href', undefined, true).add(p);
-                        response.ele('D:location').ele('D:href', undefined, true).add(p);
+                        if(ctx.server.options.enableLocationTag)
+                            response.ele('D:location').ele('D:href', undefined, true).add(p);
                     })
                     multistatus.add(response);
                 }
@@ -244,7 +245,8 @@ export default class implements HTTPMethod
                 const p = HTTPRequestContext.encodeURL(ctx.fullUri(path.toString()));
                 const href = p.lastIndexOf('/') !== p.length - 1 && type.isDirectory ? p + '/' : p;
                 response.ele('D:href', undefined, true).add(href);
-                response.ele('D:location').ele('D:href', undefined, true).add(p);
+                if(ctx.server.options.enableLocationTag)
+                    response.ele('D:location').ele('D:href', undefined, true).add(p);
 
                 if(tags.resourcetype.value && type.isDirectory)
                     tags.resourcetype.el.ele('D:collection')

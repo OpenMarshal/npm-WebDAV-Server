@@ -40,6 +40,7 @@ export class WebDAVServerOptions
     autoSave ?: IAutoSave = null
     autoLoad ?: IAutoLoad = null
     storageManager ?: IStorageManager = new NoStorageManager()
+    enableLocationTag ?: boolean = false
 }
 export default WebDAVServerOptions;
 
