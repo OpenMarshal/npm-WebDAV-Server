@@ -36,16 +36,16 @@
   },
   "description": "WebDAV Server",
   "dependencies": {
-    "mime-types": "^2.1.17",
+    "mime-types": "^2.1.18",
     "xml-js-builder": "^1.0.3"
   },
   "devDependencies": {
     "@types/mime-types": "^2.1.0",
-    "@types/node": "^7.0.48",
+    "@types/node": "^7.0.64",
     "@types/request": "0.0.44",
-    "request": "^2.81.0",
+    "request": "^2.85.0",
     "safe-regex": "^1.1.0",
-    "webdav-fs": "^1.5.0",
+    "webdav-fs": "^1.10.1",
     "xml-js": "^1.4.1"
   },
   "types": "./lib/index.d.ts"
