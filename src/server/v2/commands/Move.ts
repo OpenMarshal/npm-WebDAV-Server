@@ -25,6 +25,7 @@ export function execute(ctx : HTTPRequestContext, methodName : string, privilege
                     destination = destination.substring(destination.indexOf('/')) // Remove the hostname + port
                 }
                 destination = new Path(destination);
+                destination.decode();
 
                 const sDest = destination.toString(true);
                 const sSource = ctx.requested.path.toString(true);

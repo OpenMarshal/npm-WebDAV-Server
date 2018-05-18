@@ -130,6 +130,7 @@ export class RequestContext
             uri,
             path: new Path(uri)
         };
+        this.requested.path.decode();
 
         if(this.rootPath)
         {

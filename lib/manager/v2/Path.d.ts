@@ -1,6 +1,7 @@
 export declare class Path {
     paths: string[];
     constructor(path: Path | string[] | string);
+    decode(): void;
     isRoot(): boolean;
     fileName(): string;
     rootName(): string;
