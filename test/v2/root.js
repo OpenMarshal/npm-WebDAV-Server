@@ -89,7 +89,7 @@ module.exports = (callback, options) => {
                                 if(codeStatusExpected === -1 && res.statusCode >= 300)
                                     return info.isValid(false, res.statusCode + ' - ' + res.statusMessage);
                                 if(codeStatusExpected !== -1 && res.statusCode != codeStatusExpected)
-                                    return info.isValid(false, 'Expected ' + codeStatusExpected + ' but got : ' + res.statusCode + ' - ' + res.statusMessage);
+                                    return info.isValid(false, 'Expected ' + codeStatusExpected + ' but got : ' + res.statusCode + ' - ' + res.statusMessage + ' / ' + (config.uri || config.url));
                                 
                                 if(body)
                                     body = body.toString();
@@ -107,7 +107,7 @@ module.exports = (callback, options) => {
                                 if(codeStatusExpected === -1 && res.statusCode >= 300)
                                     return info.isValid(false, res.statusCode + ' - ' + res.statusMessage);
                                 if(codeStatusExpected !== -1 && res.statusCode != codeStatusExpected)
-                                    return info.isValid(false, 'Expected ' + codeStatusExpected + ' but got : ' + res.statusCode + ' - ' + res.statusMessage);
+                                    return info.isValid(false, 'Expected ' + codeStatusExpected + ' but got : ' + res.statusCode + ' - ' + res.statusMessage + ' / ' + (config.uri || config.url));
                                 
                                 if(body)
                                 {
