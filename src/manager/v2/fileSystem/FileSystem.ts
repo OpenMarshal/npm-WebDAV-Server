@@ -324,6 +324,9 @@ export abstract class FileSystem implements ISerializableFileSystem
                     return this.lastModifiedDate(ctx, path, (e, date) => {
                         if(e)
                             return callback(e);
+                        
+                        date = FileSystem.neutralizeEmptyDate(date);
+
                         callback(null, '"' + crypto.createHash('md5').update(date.toString()).digest('hex') + '"');
                     })
 
@@ -1314,6 +1317,25 @@ export abstract class FileSystem implements ISerializableFileSystem
     }
     protected _readDir?(path : Path, ctx : ReadDirInfo, callback : ReturnCallback<string[] | Path[]>) : void
 
+    protected static neutralizeEmptyDate(date : number, defaultDate ?: number) : number
+    {
+        if(!date || isNaN(date))
+        {
+            if(defaultDate === undefined || defaultDate === null)
+                defaultDate = 0;
+            return defaultDate;
+        }
+        else
+        {
+            return date;
+        }
+    }
+    protected static neutralizeEmptyDateCallback = (callback : ReturnCallback<number>) : ReturnCallback<number> => {
+        return (e : Error, date : number) => {
+            callback(e, FileSystem.neutralizeEmptyDate(date));
+        }
+    }
+
     /**
      * Get the creation date information of a resource.
      * If neither '_creationDate' nor '_lastModifiedDate' are implemented, it returns 0.
@@ -1327,6 +1349,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     creationDate(ctx : RequestContext, path : Path | string, callback : ReturnCallback<number>) : void
     {
         const pPath = new Path(path);
+        callback = FileSystem.neutralizeEmptyDateCallback(callback);
 
         issuePrivilegeCheck(this, ctx, pPath, 'canReadProperties', callback, () => {
             this.fastExistCheckEx(ctx, pPath, callback, () => {
@@ -1356,6 +1379,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     lastModifiedDate(ctx : RequestContext, path : Path | string, callback : ReturnCallback<number>) : void
     {
         const pPath = new Path(path);
+        callback = FileSystem.neutralizeEmptyDateCallback(callback);
 
         issuePrivilegeCheck(this, ctx, pPath, 'canReadProperties', callback, () => {
             this.fastExistCheckEx(ctx, pPath, callback, () => {

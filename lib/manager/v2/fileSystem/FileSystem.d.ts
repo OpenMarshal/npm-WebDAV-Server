@@ -417,6 +417,8 @@ export declare abstract class FileSystem implements ISerializableFileSystem {
      */
     readDir(ctx: RequestContext, path: Path | string, retrieveExternalFiles: boolean, callback: ReturnCallback<string[]>): void;
     protected _readDir?(path: Path, ctx: ReadDirInfo, callback: ReturnCallback<string[] | Path[]>): void;
+    protected static neutralizeEmptyDate(date: number, defaultDate?: number): number;
+    protected static neutralizeEmptyDateCallback: (callback: ReturnCallback<number>) => ReturnCallback<number>;
     /**
      * Get the creation date information of a resource.
      * If neither '_creationDate' nor '_lastModifiedDate' are implemented, it returns 0.
