@@ -50,7 +50,7 @@ function Not(filter)
 
 function parseInternal(group : string)
 {
-    const rex = /((not)|<([^>]+)>|\[([^\]]+)\]|<(DAV:no-lock)>)/ig;
+    const rex = /((not)|<*([^>]+)>*|\[([^\]]+)\]|<(DAV:no-lock)>)/ig;
     let match = rex.exec(group);
 
     let isNot = false;
