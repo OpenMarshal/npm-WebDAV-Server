@@ -50,7 +50,7 @@ function Not(filter)
 
 function parseInternal(group : string)
 {
-    const rex = /((not)|<([^>]+)>|\[([^\]]+)\]|<(DAV:no-lock)>)/ig;
+    const rex = /((not)|\[([^\]]+)\]|<(DAV:no-lock)>|<([^>]+)>|([^\s]+))/ig;
     let match = rex.exec(group);
 
     let isNot = false;
@@ -67,15 +67,15 @@ function parseInternal(group : string)
         { // not
             isNot = true;
         }
-        else if(match[3])
+        else if(match[5] || match[6])
         { // lock-token
-            add(Token(match[3]));
+            add(Token(match[5] || match[6]));
+        }
+        else if(match[3])
+        { // tag
+            add(Tag(match[3]));
         }
         else if(match[4])
-        { // tag
-            add(Tag(match[4]));
-        }
-        else if(match[5])
         { // DAV:no-lock
             add(NoLock());
         }
