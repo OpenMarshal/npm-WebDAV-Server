@@ -13,10 +13,14 @@ export function express(root : string, server : WebDAVServer)
 
     return function(req, res, next)
     {
-        if(req.url.indexOf(path) !== 0)
+        let url = req.url;
+        if(url[url.length - 1] !== '/')
+            url += '/';
+        
+        if(url.indexOf(path) !== 0)
             return next();
         
-        const subPath = req.url.substring(path.length);
+        const subPath = url.substring(path.length);
         
         req.url = new Path(subPath).toString(false);
         
