@@ -902,42 +902,49 @@ export abstract class FileSystem implements ISerializableFileSystem
                                 }
 
                                 if(!subPath.isRoot())
-                                    return go(false);
-
-                                if(!overwrite)
-                                    return callback(Errors.ResourceAlreadyExists);
-                                
-                                ctx.server.removeFileSystem(newPath, () => {
-                                    go(true);
-                                })
+                                {
+                                    go(false);
+                                }
+                                else if(!overwrite)
+                                {
+                                    callback(Errors.ResourceAlreadyExists);
+                                }
+                                else
+                                {
+                                    ctx.server.removeFileSystem(newPath, () => {
+                                        go(true);
+                                    })
+                                }
                             })
                         })
                     })
-                    return;
                 }
-
-                this.fastExistCheckEx(ctx, pathFrom, callback, () => {
-                this.fastExistCheckExReverse(ctx, pathFrom.getParent().getChildPath(newName), callback, () => {
-                    const newPath = pathFrom.getParent().getChildPath(newName);
-                    this.isLocked(ctx, newPath, (e, isLocked) => {
-                        if(e || isLocked)
-                            return callback(e ? e : Errors.Locked);
-                        
-                        issuePrivilegeCheck(this, ctx, newPath, 'canWrite', callback, () => {
-                            if(this._rename)
-                            {
-                                this._rename(pathFrom, newName, {
-                                    context: ctx,
-                                    destinationPath: newPath
-                                }, callback);
-                                return;
-                            }
+                else
+                {
+                    this.fastExistCheckEx(ctx, pathFrom, callback, () => {
+                    this.fastExistCheckExReverse(ctx, pathFrom.getParent().getChildPath(newName), callback, () => {
+                        const newPath = pathFrom.getParent().getChildPath(newName);
+                        this.isLocked(ctx, newPath, (e, isLocked) => {
+                            if(e || isLocked)
+                                return callback(e ? e : Errors.Locked);
+                            
+                            issuePrivilegeCheck(this, ctx, newPath, 'canWrite', callback, () => {
+                                if(this._rename)
+                                {
+                                    this._rename(pathFrom, newName, {
+                                        context: ctx,
+                                        destinationPath: newPath
+                                    }, callback);
+                                }
+                                else
+                                {
+                                    this.move(ctx, pathFrom, pathFrom.getParent().getChildPath(newName), overwrite, callback);
+                                }
+                            })
                         })
-
-                        this.move(ctx, pathFrom, pathFrom.getParent().getChildPath(newName), overwrite, callback);
                     })
-                })
-                })
+                    })
+                }
             })
         })
     }
@@ -976,10 +983,11 @@ export abstract class FileSystem implements ISerializableFileSystem
                         context: ctx,
                         targetSource
                     }, callback);
-                    return;
                 }
-
-                StandardMethods.standardMimeType(ctx, this, path, targetSource, callback);
+                else
+                {
+                    StandardMethods.standardMimeType(ctx, this, path, targetSource, callback);
+                }
             })
         })
     }
@@ -1038,14 +1046,18 @@ export abstract class FileSystem implements ISerializableFileSystem
         issuePrivilegeCheck(this, ctx, pPath, 'canReadLocks', callback, () => {
             this.fastExistCheckEx(ctx, pPath, callback, () => {
                 if(!this._availableLocks)
-                    return callback(null, [
+                {
+                    callback(null, [
                         new LockKind(LockScope.Exclusive, LockType.Write),
                         new LockKind(LockScope.Shared, LockType.Write)
                     ]);
-
-                this._availableLocks(pPath, {
-                    context: ctx
-                }, callback);
+                }
+                else
+                {
+                    this._availableLocks(pPath, {
+                        context: ctx
+                    }, callback);
+                }
             })
         })
     }
@@ -1536,14 +1548,18 @@ export abstract class FileSystem implements ISerializableFileSystem
                     const value = tree[name];
                     const childPath = rootPath.getChildPath(name);
                     if(value.constructor === ResourceType || value.constructor === String || value.constructor === Buffer)
+                    {
                         this.addSubTree(ctx, childPath, value, cb)
+                    }
                     else
+                    {
                         this.addSubTree(ctx, childPath, ResourceType.Directory, (e) => {
                             if(e)
                                 return cb(e);
                                 
                             this.addSubTree(ctx, childPath, value, cb);
                         })
+                    }
                 })
                 .error(callback)
                 .done((_) => callback());
@@ -1584,13 +1600,19 @@ export abstract class FileSystem implements ISerializableFileSystem
                 } as ILockManager;
             }
             else if(e)
+            {
                 return callback(e);
+            }
             
             lm.getLocks((e, locks) => {
                 if(e === Errors.NotEnoughPrivilege)
+                {
                     locks = [];
+                }
                 else if(e)
+                {
                     return callback(e);
+                }
                 
                 if(depth !== -1)
                     locks = locks.filter((f) => f.depth === -1 || f.depth >= depth);
@@ -1609,24 +1631,28 @@ export abstract class FileSystem implements ISerializableFileSystem
                 }
 
                 if(!pStartPath.isRoot())
-                    return go(this, pStartPath.getParent());
-                
-                this.getFullPath(ctx, (e, fsPath) => {
-                    if(e)
-                        return callback(e);
-                    
-                    if(fsPath.isRoot())
-                    {
-                        const result = {};
-                        if(locks && locks.length > 0)
-                            result[pStartPath.toString()] = locks;
-                        return callback(null, result);
-                    }
-                    
-                    ctx.server.getFileSystem(fsPath.getParent(), (fs, _, subPath) => {
-                        go(fs, subPath);
+                {
+                    go(this, pStartPath.getParent());
+                }
+                else
+                {
+                    this.getFullPath(ctx, (e, fsPath) => {
+                        if(e)
+                            return callback(e);
+                        
+                        if(fsPath.isRoot())
+                        {
+                            const result = {};
+                            if(locks && locks.length > 0)
+                                result[pStartPath.toString()] = locks;
+                            return callback(null, result);
+                        }
+                        
+                        ctx.server.getFileSystem(fsPath.getParent(), (fs, _, subPath) => {
+                            go(fs, subPath);
+                        })
                     })
-                })
+                }
             })
         })
     }
