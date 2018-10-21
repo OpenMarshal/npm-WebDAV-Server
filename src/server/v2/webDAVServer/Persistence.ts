@@ -65,7 +65,7 @@ export function save(callback : (error : Error, obj : SerializedData) => void)
     serialize(this.fileSystems, callback);
 }
 
-export function autoSave(options : IAutoSave)
+function loadDefaultIAutoSaveParam(options : IAutoSave)
 {
     if(!options.streamProvider)
         options.streamProvider = (cb) => cb();
@@ -74,8 +74,105 @@ export function autoSave(options : IAutoSave)
     if(!options.tempTreeFilePath)
         options.tempTreeFilePath = options.treeFilePath + '.tmp';
 
-    let saving = false;
-    let saveRequested = false;
+    return options;
+}
+
+export class AutoSavePool
+{
+    constructor(options : IAutoSave, saveFn : (callback : (error : Error, data : any) => void) => void)
+    {
+        options = loadDefaultIAutoSaveParam(options);
+
+        this.saveRequested = false;
+        this.options = options;
+        this.saveFn = saveFn;
+        this.saving = false;
+    }
+
+    protected saveFn : (callback : (error : Error, data : any) => void) => void;
+    protected saveRequested : boolean;
+    protected saving : boolean;
+    protected options : IAutoSave;
+
+    imediateSave()
+    {
+        this.saveFn((e, data) => {
+            if(e)
+            {
+                this.options.onSaveError(e);
+                this.saveIfNext();
+            }
+            else
+            {
+                this.options.streamProvider((inputStream, outputStream) => {
+                    if(!inputStream)
+                        inputStream = zlib.createGzip();
+                    if(!outputStream)
+                        outputStream = inputStream;
+                    const fileStream = fs.createWriteStream(this.options.tempTreeFilePath);
+                    outputStream.pipe(fileStream);
+    
+                    inputStream.end(JSON.stringify(data), (e) => {
+                        if(e)
+                        {
+                            this.options.onSaveError(e);
+                            this.saveIfNext();
+                            return;
+                        }
+                    });
+    
+                    fileStream.on('close', () => {
+                        fs.unlink(this.options.treeFilePath, (e) => {
+                            if(e && e.code !== 'ENOENT') // An error other than ENOENT (no file/folder found)
+                            {
+                                this.options.onSaveError(e);
+                                this.saveIfNext();
+                                return;
+                            }
+    
+                            fs.rename(this.options.tempTreeFilePath, this.options.treeFilePath, (e) => {
+                                if(e)
+                                    this.options.onSaveError(e);
+                                this.saveIfNext();
+                            })
+                        })
+                    })
+                })
+            }
+        })
+    }
+
+    save()
+    {
+        if(this.saving)
+        {
+            this.saveRequested = true;
+        }
+        else
+        {
+            this.saving = true;
+            this.imediateSave();
+        }
+    }
+
+    protected saveIfNext()
+    {
+        if(this.saveRequested)
+        {
+            this.saveRequested = false;
+            this.imediateSave();
+        }
+        else
+        {
+            this.saving = false;
+        }
+    }
+}
+
+export function autoSave(options : IAutoSave)
+{
+    this.autoSavePool = new AutoSavePool(options, this.save.bind(this));
+
     this.afterRequest((ctx : HTTPRequestContext, next) => {
         switch(ctx.request.method.toUpperCase())
         {
@@ -86,78 +183,10 @@ export function autoSave(options : IAutoSave)
             case 'COPY':
             case 'POST':
             case 'PUT':
-                // Avoid concurrent saving
-                if(saving)
-                {
-                    saveRequested = true;
-                    next();
-                    return;
-                }
-
-                const save = function()
-                {
-                    this.save((e, data) => {
-                        if(e)
-                        {
-                            options.onSaveError(e);
-                            next();
-                        }
-                        else
-                        {
-                            options.streamProvider((inputStream, outputStream) => {
-                                if(!inputStream)
-                                    inputStream = zlib.createGzip();
-                                if(!outputStream)
-                                    outputStream = inputStream;
-                                const fileStream = fs.createWriteStream(options.tempTreeFilePath);
-                                outputStream.pipe(fileStream);
-
-                                inputStream.end(JSON.stringify(data), (e) => {
-                                    if(e)
-                                    {
-                                        options.onSaveError(e);
-                                        next();
-                                        return;
-                                    }
-                                });
-
-                                fileStream.on('close', () => {
-                                    fs.unlink(options.treeFilePath, (e) => {
-                                        if(e && e.code !== 'ENOENT') // An error other than ENOENT (no file/folder found)
-                                        {
-                                            options.onSaveError(e);
-                                            next();
-                                            return;
-                                        }
-
-                                        fs.rename(options.tempTreeFilePath, options.treeFilePath, (e) => {
-                                            if(e)
-                                                options.onSaveError(e);
-                                            next();
-                                        })
-                                    })
-                                })
-                            })
-                        }
-                    })
-                }
-
-                saving = true;
-                next = () => {
-                    if(saveRequested)
-                    {
-                        saveRequested = false;
-                        save.bind(this)();
-                    }
-                    else
-                        saving = false;
-                }
-                save.bind(this)();
-                break;
-            
-            default:
-                next();
+                this.autoSavePool.save();
                 break;
         }
+
+        next();
     })
 }

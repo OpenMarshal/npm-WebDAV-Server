@@ -478,6 +478,8 @@ export class WebDAVServer
     executeRequest = startStop.executeRequest.bind(this)
 
     // Persistence
+    protected autoSavePool ?: persistence.AutoSavePool;
+
     /**
      * Start the auto-save feature of the server. Use the server's options as settings.
      */
@@ -497,6 +499,15 @@ export class WebDAVServer
         else if(this.options.autoSave)
             fn(this.options.autoSave);
     }
+
+    /**
+     * Force the autoSave system to save when available.
+     */
+    forceAutoSave() : void
+    {
+        this.autoSavePool.save();
+    }
+
     /**
      * Load the previous save made by the 'autoSave' system.
      */

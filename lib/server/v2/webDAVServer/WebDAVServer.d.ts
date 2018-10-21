@@ -256,6 +256,7 @@ export declare class WebDAVServer {
      * Execute a request as if the HTTP server received it.
      */
     executeRequest: any;
+    protected autoSavePool?: persistence.AutoSavePool;
     /**
      * Start the auto-save feature of the server. Use the server's options as settings.
      */
@@ -266,6 +267,10 @@ export declare class WebDAVServer {
      * @param options Settings of the auto-save.
      */
     autoSave(options: IAutoSave): any;
+    /**
+     * Force the autoSave system to save when available.
+     */
+    forceAutoSave(): void;
     /**
      * Load the previous save made by the 'autoSave' system.
      */
