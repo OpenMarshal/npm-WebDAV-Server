@@ -15,7 +15,7 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
     {
         const buffer = new Buffer(this.nonceSize);
         for(let i = 0; i < buffer.length; ++i)
-            buffer[i] = Math.ceil(Math.random() * 256);
+            buffer[i] = Math.floor(Math.random() * 256);
 
         return md5(buffer);
     }
