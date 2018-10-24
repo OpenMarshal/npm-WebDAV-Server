@@ -62,11 +62,16 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
             if(authProps.algorithm === 'MD5-sess')
                 ha1 = md5(`${ha1}:${authProps.nonce}:${authProps.cnonce}`);
 
+            let digestUri = ctx.requested.uri;
+            // work around issue with OSX Finder and Mountainduck mounting /directory/ versus /directory
+            if (digestUri !== authProps.uri && digestUri.length + 1 === authProps.uri.length && authProps.uri[digestUri.length] === "/")
+                digestUri = authProps.uri;
+
             let ha2;
             if(authProps.qop === 'auth-int')
-                return onError(Errors.WrongHeaderFormat); // ha2 = md5(ctx.request.method.toString().toUpperCase() + ':' + ctx.requested.uri + ':' + md5(...));
+                return onError(Errors.WrongHeaderFormat); // ha2 = md5(ctx.request.method.toString().toUpperCase() + ':' + digestUri + ':' + md5(...));
             else
-                ha2 = md5(`${ctx.request.method.toString().toUpperCase()}:${ctx.requested.uri}`);
+                ha2 = md5(`${ctx.request.method.toString().toUpperCase()}:${digestUri}`);
 
             let result;
             if(authProps.qop === 'auth-int' || authProps.qop === 'auth')
