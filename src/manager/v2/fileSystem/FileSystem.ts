@@ -378,22 +378,28 @@ export abstract class FileSystem implements ISerializableFileSystem
                     return callback(e ? e : Errors.Locked);
                 
                 this.fastExistCheckEx(ctx, path, callback, () => {
-                    this._delete(path, {
-                        context: ctx,
-                        depth
-                    }, (e) => {
-                        if(!e)
-                        {
-                            this.type(ctx, path, (e, type) => {
-                                ctx.server.options.storageManager.evaluateCreate(ctx, this, path, type, (size) => {
-                                    ctx.server.options.storageManager.reserve(ctx, this, -size, () => {
-                                        callback();
+                    this.size(ctx, path, (e, contentSize) => {
+                        contentSize = contentSize || 0;
+
+                        this._delete(path, {
+                            context: ctx,
+                            depth
+                        }, (e) => {
+                            if(!e)
+                            {
+                                this.type(ctx, path, (e, type) => {
+                                    ctx.server.options.storageManager.evaluateContent(ctx, this, contentSize, (reservedContentSize) => {
+                                    ctx.server.options.storageManager.evaluateCreate(ctx, this, path, type, (size) => {
+                                        ctx.server.options.storageManager.reserve(ctx, this, -size - reservedContentSize, () => {
+                                            callback();
+                                        })
+                                    })
                                     })
                                 })
-                            })
-                        }
-                        else
-                            callback(e);
+                            }
+                            else
+                                callback(e);
+                        });
                     });
                 })
             })
