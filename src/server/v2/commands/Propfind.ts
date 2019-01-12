@@ -18,7 +18,7 @@ function dateISO8601(ticks : number) : string
     result += offset < 0 ? '-' : '+'
     offset = Math.abs(offset)
 
-    let h = Math.ceil(offset / 60).toString(10);
+    let h = Math.floor(offset / 60).toString(10);
     while(h.length < 2)
         h = '0' + h;
 
