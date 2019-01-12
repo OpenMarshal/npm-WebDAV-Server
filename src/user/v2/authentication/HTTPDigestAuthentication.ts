@@ -64,7 +64,7 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
 
             let digestUri = ctx.requested.uri;
             // work around issue with OSX Finder and Mountainduck mounting /directory/ versus /directory
-            if (digestUri !== authProps.uri && digestUri.length + 1 === authProps.uri.length && authProps.uri[digestUri.length] === '/')
+            if (digestUri !== authProps.uri && digestUri.length + 1 === authProps.uri.length && authProps.uri[digestUri.length] === '/' && authProps.uri.indexOf(digestUri) === 0)
                 digestUri = authProps.uri;
 
             let ha2;
