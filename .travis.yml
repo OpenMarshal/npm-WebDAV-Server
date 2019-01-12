@@ -7,3 +7,7 @@ node_js:
   - "4"
 before_script:
   - npm i -g typescript
+os:
+  - linux
+  - osx
+  - windows
