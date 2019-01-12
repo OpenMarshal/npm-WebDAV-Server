@@ -1,6 +1,7 @@
 import { HTTPCodes, HTTPMethod, HTTPRequestContext } from '../WebDAVRequest'
-import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
 import { StandardMethods } from '../../../manager/v2/fileSystem/StandardMethods'
+import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
+import { startsWith } from '../../../helper/JSCompatibility'
 import { Path } from '../../../manager/v2/Path'
 import { Errors } from '../../../Errors'
 
@@ -34,7 +35,7 @@ export function execute(ctx : HTTPRequestContext, methodName : string, privilege
                     ctx.setCode(HTTPCodes.Forbidden);
                     return callback();
                 }
-                if(sDest.indexOf(sSource) === 0)
+                if(startsWith(sDest, sSource))
                 {
                     ctx.setCode(HTTPCodes.BadGateway);
                     return callback();

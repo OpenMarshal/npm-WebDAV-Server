@@ -3,11 +3,13 @@ import { WebDAVServerOptions, setDefaultServerOptions, IAutoSave } from '../WebD
 import { HTTPAuthentication } from '../../../user/v2/authentication/HTTPAuthentication'
 import { PrivilegeManager } from '../../../user/v2/privilege/PrivilegeManager'
 import { ReturnCallback } from '../../../manager/v2/fileSystem/CommonTypes'
-import { HTTPMethod } from '../WebDAVRequest'
 import { FileSystem } from '../../../manager/v2/fileSystem/FileSystem'
+import { startsWith } from '../../../helper/JSCompatibility'
+import { HTTPMethod } from '../WebDAVRequest'
 import { Resource } from '../../../manager/v2/fileSystem/Resource'
-import Commands from '../commands/Commands'
 import { Path } from '../../../manager/v2/Path'
+
+import Commands from '../commands/Commands'
 
 import * as persistence from './Persistence'
 import * as beforeAfter from './BeforeAfter'
@@ -324,11 +326,13 @@ export class WebDAVServer
         for(const fsPath in this.fileSystems)
         {
             const pfsPath = new Path(fsPath);
-            if(pfsPath.paths.length === parentPath.paths.length + 1 && fsPath.indexOf(seekPath) === 0)
+            if(pfsPath.paths.length === parentPath.paths.length + 1 && startsWith(fsPath, seekPath))
+            {
                 results.push({
                     fs: this.fileSystems[fsPath],
                     path: pfsPath
                 });
+            }
         }
 
         return results;

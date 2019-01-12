@@ -22,6 +22,7 @@ import {
 } from '../fileSystem/export'
 import { Readable, Writable } from 'stream'
 import { RequestContext } from '../../../server/v2/RequestContext'
+import { startsWith } from '../../../helper/JSCompatibility'
 import { Errors } from '../../../Errors'
 import { Path } from '../Path'
 
@@ -180,8 +181,11 @@ export class VirtualFileSystem extends FileSystem
     {
         const sPath = path.toString(true);
         for(const path in this.resources)
-            if(path.indexOf(sPath) === 0)
+        {
+            if(startsWith(path, sPath))
                 delete this.resources[path];
+        }
+
         delete this.resources[path.toString()];
         
         callback();
@@ -234,7 +238,7 @@ export class VirtualFileSystem extends FileSystem
 
         for(const subPath in this.resources)
         {
-            if(subPath.indexOf(base) === 0)
+            if(startsWith(subPath, base))
             {
                 const pSubPath = new Path(subPath);
                 if(pSubPath.paths.length === path.paths.length + 1)

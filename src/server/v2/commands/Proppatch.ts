@@ -2,6 +2,7 @@ import { HTTPCodes, HTTPMethod, HTTPRequestContext } from '../WebDAVRequest'
 import { XML, XMLElementBuilder, XMLElement } from 'xml-js-builder'
 import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
 import { STATUS_CODES } from 'http'
+import { startsWith } from '../../../helper/JSCompatibility'
 import { Workflow } from '../../../helper/Workflow'
 import { Errors } from '../../../Errors'
 
@@ -159,7 +160,7 @@ export default class implements HTTPMethod
                                             reverse.push((cb) => pm.setProperty(el.name, prop.value, prop.attributes, cb));
                                         }
                                         execute('DAV:set', 'setProperty', (el : XMLElement, callback) => {
-                                            if(el.name.indexOf('DAV:') === 0)
+                                            if(startsWith(el.name, 'DAV:'))
                                             {
                                                 pushSetReverseAction(el);
                                                 return callback(Errors.Forbidden);
@@ -172,7 +173,7 @@ export default class implements HTTPMethod
                                             })
                                         })
                                         execute('DAV:remove', 'removeProperty', (el : XMLElement, callback) => {
-                                            if(el.name.indexOf('DAV:') === 0)
+                                            if(startsWith(el.name, 'DAV:'))
                                             {
                                                 pushRemoveReverseAction(el);
                                                 return callback(Errors.Forbidden);

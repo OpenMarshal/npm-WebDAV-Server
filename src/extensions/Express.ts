@@ -1,4 +1,5 @@
 import { WebDAVServer } from '../server/v2/export'
+import { startsWith } from '../helper/JSCompatibility'
 import { Path } from '../manager/v2/Path'
 
 /**
@@ -17,7 +18,7 @@ export function express(root : string, server : WebDAVServer)
         if(url[url.length - 1] !== '/')
             url += '/';
         
-        if(url.indexOf(path) !== 0)
+        if(!startsWith(url, path))
             return next();
         
         const subPath = url.substring(path.length);

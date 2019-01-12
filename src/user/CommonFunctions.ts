@@ -1,3 +1,5 @@
+import { startsWith } from '../helper/JSCompatibility'
+
 import * as crypto from 'crypto'
 
 export function md5(value : string | Buffer) : string
@@ -65,7 +67,7 @@ export function parseHTTPAuthHeader(authHeader : string, prefix : string) : any
         };
     };
     
-    if(authHeader.indexOf(prefix + ' ') !== 0)
+    if(!startsWith(authHeader, prefix + ' '))
         throw Error('Invalid format');
     authHeader = authHeader.substring((prefix + ' ').length);
     

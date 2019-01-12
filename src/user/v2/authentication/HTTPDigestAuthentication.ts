@@ -2,6 +2,7 @@ import { md5, parseHTTPAuthHeader } from '../../CommonFunctions'
 import { HTTPAuthentication } from './HTTPAuthentication'
 import { HTTPRequestContext } from '../../../server/v2/RequestContext'
 import { IListUserManager } from '../userManager/IListUserManager'
+import { startsWith } from '../../../helper/JSCompatibility'
 import { Errors } from '../../../Errors'
 import { IUser } from '../IUser'
 
@@ -61,12 +62,38 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
             let ha1 = md5(`${authProps.username}:${this.realm}:${user.password ? user.password : ''}`);
             if(authProps.algorithm === 'MD5-sess')
                 ha1 = md5(`${ha1}:${authProps.nonce}:${authProps.cnonce}`);
+            
+            const digestUri = authProps.uri || ctx.requested.uri;
+            if(digestUri !== ctx.requested.uri)
+            {
+                let uriMismatch;
 
+                switch(digestUri.length - authProps.uri.length)
+                {
+                    case -1:
+                        uriMismatch = !startsWith(authProps.uri, digestUri);
+                        break;
+
+                    case 1:
+                        uriMismatch = !startsWith(digestUri, authProps.uri);
+                        break;
+
+                    default:
+                        uriMismatch = true;
+                        break;
+                }
+
+                if(uriMismatch)
+                {
+                    return onError(Errors.BadAuthentication);
+                }
+            }
+            
             let ha2;
             if(authProps.qop === 'auth-int')
-                return onError(Errors.WrongHeaderFormat); // ha2 = md5(ctx.request.method.toString().toUpperCase() + ':' + ctx.requested.uri + ':' + md5(...));
+                return onError(Errors.WrongHeaderFormat); // ha2 = md5(ctx.request.method.toString().toUpperCase() + ':' + digestUri + ':' + md5(...));
             else
-                ha2 = md5(`${ctx.request.method.toString().toUpperCase()}:${ctx.requested.uri}`);
+                ha2 = md5(`${ctx.request.method.toString().toUpperCase()}:${digestUri}`);
 
             let result;
             if(authProps.qop === 'auth-int' || authProps.qop === 'auth')
