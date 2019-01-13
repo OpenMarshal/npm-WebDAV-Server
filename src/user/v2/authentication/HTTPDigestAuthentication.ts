@@ -71,11 +71,11 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
                 switch(digestUri.length - authProps.uri.length)
                 {
                     case -1:
-                        uriMismatch = !startsWith(authProps.uri, digestUri);
+                        uriMismatch = !startsWith(authProps.uri, digestUri) || authProps.uri[digestUri.length] !== '/';
                         break;
 
                     case 1:
-                        uriMismatch = !startsWith(digestUri, authProps.uri);
+                        uriMismatch = !startsWith(digestUri, authProps.uri) || digestUri[authProps.uri.length] !== '/';
                         break;
 
                     default:
