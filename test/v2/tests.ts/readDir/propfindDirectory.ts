@@ -25,10 +25,10 @@ export default ((info, isValid) =>
                     if(index === -1)
                         return isValid(false, 'Got a file name in "readDir(...)" which must not exist here : ' + sf);
                     
-                    delete subFiles[index];
+                    subFiles.splice(index, 1);
                 }
 
-                isValid(subFiles.length > 0, 'All children were not returned ; here are the left ones : ' + subFiles.toString());
+                isValid(subFiles.length === 0, 'All children were not returned ; here are the left ones : ' + subFiles.toString());
             }
             catch(ex)
             {
