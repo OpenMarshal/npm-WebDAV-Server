@@ -109,6 +109,7 @@ module.exports = (callback, options) => {
                                 if(codeStatusExpected !== -1 && res.statusCode != codeStatusExpected)
                                     return info.isValid(false, 'Expected ' + codeStatusExpected + ' but got : ' + res.statusCode + ' - ' + res.statusMessage + ' / ' + (config.uri || config.url));
                                 
+                                const bodySource = body;
                                 if(body)
                                 {
                                     try
@@ -121,7 +122,7 @@ module.exports = (callback, options) => {
                                     }
                                 }
 
-                                callback(res, body);
+                                callback(res, body, bodySource);
                             })
                         },
                         init: (nbExpected, name) => {
