@@ -372,6 +372,13 @@ export default class implements HTTPMethod
     
     unchunked(ctx : HTTPRequestContext, data : Buffer, callback : () => void) : void
     {
+        if(ctx.server.options.maxRequestDepth < ctx.headers.depth || ctx.headers.depth < 0 && (ctx.server.options.maxRequestDepth !== Infinity && ctx.server.options.maxRequestDepth >= 0))
+        {
+            ctx.setCode(HTTPCodes.Forbidden);
+            callback();
+            return;
+        }
+
         ctx.getResource((e, resource) => {
             ctx.checkIfHeader(resource, () => {
                 const multistatus = new XMLElementBuilder('D:multistatus', {
@@ -407,36 +414,70 @@ export default class implements HTTPMethod
                         })
                         return;
                     }
-                    
-                    resource.readDir(true, (e, children) => process.nextTick(() => {
-                        function err(e)
-                        {
-                            if(!ctx.setCodeFromError(e))
-                                ctx.setCode(HTTPCodes.InternalServerError)
-                            callback();
-                        }
 
-                        if(e)
-                            return err(e);
+                    const injectResourcePropfind = (resource : Resource, depth : number, callback : () => void) => {
+                        --depth;
 
-                        this.addXMLInfo(ctx, data, resource, multistatus, (e) => {
+                        resource.readDir(true, (e, children) => process.nextTick(() => {
+                            function err(e)
+                            {
+                                if(!ctx.setCodeFromError(e))
+                                    ctx.setCode(HTTPCodes.InternalServerError)
+                                callback();
+                            }
+    
                             if(e)
                                 return err(e);
 
                             new Workflow()
                                 .each(children, (childName, cb) => {
-                                    ctx.server.getResource(ctx, ctx.requested.path.getChildPath(childName), (e, r) => {
+                                    ctx.server.getResource(ctx, resource.path.getChildPath(childName), (e, r) => {
                                         if(e)
                                             return cb(e);
-                                        this.addXMLInfo(ctx, data, r, multistatus, (e) => cb());
+
+                                        this.addXMLInfo(ctx, data, r, multistatus, (e) => {
+                                            if(e)
+                                                return cb(e);
+                                            
+                                            if(depth !== 0)
+                                            {
+                                                r.type((e, type) => {
+                                                    if(e || !type.isDirectory)
+                                                        return cb(e);
+                                                        
+                                                    injectResourcePropfind(r, depth, () => {
+                                                        cb();
+                                                    });
+                                                })
+                                            }
+                                            else
+                                            {
+                                                cb();
+                                            }
+                                        });
                                     });
                                 })
                                 .error(err)
                                 .done(() => {
-                                    done(multistatus)
+                                    callback();
                                 });
-                        });
-                    }))
+                        }))
+                    }
+
+                    this.addXMLInfo(ctx, data, resource, multistatus, (e) => {
+                        if(!e)
+                        {
+                            injectResourcePropfind(resource, ctx.headers.depth, () => {
+                                done(multistatus);
+                            });
+                        }
+                        else
+                        {
+                            if(!ctx.setCodeFromError(e))
+                                ctx.setCode(HTTPCodes.InternalServerError)
+                            callback();
+                        }
+                    })
                 }))
             })
         })
