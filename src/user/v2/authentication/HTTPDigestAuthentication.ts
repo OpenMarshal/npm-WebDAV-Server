@@ -50,7 +50,7 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
             return onError(Errors.WrongHeaderFormat);
         }
         
-        if(!(authProps.username && authProps.nonce && authProps.response))
+        if(!(authProps.username && authProps.uri && authProps.nonce && authProps.response))
             return onError(Errors.AuenticationPropertyMissing);
         if(!authProps.algorithm)
             authProps.algorithm = 'MD5';
@@ -63,19 +63,20 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
             if(authProps.algorithm === 'MD5-sess')
                 ha1 = md5(`${ha1}:${authProps.nonce}:${authProps.cnonce}`);
             
-            const digestUri = authProps.uri || ctx.requested.uri;
-            if(digestUri !== ctx.requested.uri)
+            const requestedUri = ctx.requested.uri;
+            const digestUri = authProps.uri || requestedUri;
+            if(digestUri !== requestedUri)
             {
                 let uriMismatch;
 
-                switch(digestUri.length - authProps.uri.length)
+                switch(digestUri.length - requestedUri.length)
                 {
                     case -1:
-                        uriMismatch = !startsWith(authProps.uri, digestUri) || authProps.uri[digestUri.length] !== '/';
+                        uriMismatch = !startsWith(requestedUri, digestUri) || requestedUri[digestUri.length] !== '/';
                         break;
 
                     case 1:
-                        uriMismatch = !startsWith(digestUri, authProps.uri) || digestUri[authProps.uri.length] !== '/';
+                        uriMismatch = !startsWith(digestUri, requestedUri) || digestUri[requestedUri.length] !== '/';
                         break;
 
                     default:
