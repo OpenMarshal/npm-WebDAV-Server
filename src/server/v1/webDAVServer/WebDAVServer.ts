@@ -65,7 +65,7 @@ export class WebDAVServer
 
     addResourceTree(resoureceTree : ResourceTreeNode, callback : (e : Error) => void)
     addResourceTree(rootResource : IResource, resoureceTree : ResourceTreeNode, callback : (e : Error) => void)
-    addResourceTree(_rootResource : IResource | ResourceTreeNode, _resoureceTree : ResourceTreeNode | (() => void), _callback ?: (e : Error) => void)
+    addResourceTree(_rootResource : IResource | ResourceTreeNode, _resoureceTree : ResourceTreeNode | ((e : Error) => void), _callback ?: (e : Error) => void)
     {
         resource.addResourceTree.bind(this)(_rootResource, _resoureceTree, _callback);
     }

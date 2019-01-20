@@ -88,7 +88,7 @@ export function addResourceTree(_rootResource : IResource | ResourceTreeNode, _r
     }
     else
     {
-        resoureceTree = _resoureceTree;
+        resoureceTree = _resoureceTree as ResourceTreeNode;
         rootResource = _rootResource as IResource;
     }
 
