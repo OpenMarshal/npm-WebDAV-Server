@@ -14,7 +14,7 @@ export default (async (info, isValid) =>
     };
 
     const fileContent = 'Hello!';
-    
+
     const createTree = async (server) => {
         return new Promise((resolve, reject) => {
             const userManager = new v2.SimpleUserManager();
@@ -22,6 +22,7 @@ export default (async (info, isValid) =>
 
             server.httpAuthentication = new v2.HTTPDigestAuthentication(userManager);
             server.privilegeManager = new v2.SimplePathPrivilegeManager();
+            server.options.privilegeManager = server.privilegeManager;
             server.privilegeManager.setRights(user, '/', [ 'all' ]);
 
             server.rootFileSystem().addSubTree(v2.ExternalRequestContext.create(server), {
