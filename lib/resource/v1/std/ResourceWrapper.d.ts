@@ -37,7 +37,7 @@ export interface IWrappableResource<T> extends IResource {
 }
 export declare class SimpleResourceWrapper<T> implements IResource {
     resource: IWrappableResource<T>;
-    data: T;
+    data?: T;
     fsManager: FSManager;
     parent: IResource;
     readonly _isWrapper: boolean;

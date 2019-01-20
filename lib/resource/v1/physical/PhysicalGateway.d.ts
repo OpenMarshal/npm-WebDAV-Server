@@ -4,7 +4,7 @@ import { PhysicalResource } from './PhysicalResource';
 import { MethodCallArgs } from '../../../server/v1/MethodCallArgs';
 import { PhysicalFolder } from './PhysicalFolder';
 export declare class PhysicalGateway extends PhysicalFolder {
-    protected customName: string;
+    protected customName?: string;
     cache: {
         [path: string]: PhysicalResource;
     };

@@ -8,7 +8,7 @@ export declare class SerializerNotFound extends Error {
 }
 export declare class HTTPError extends Error {
     HTTPCode: number;
-    inheritedError: Error;
+    inheritedError?: Error;
     constructor(HTTPCode: number, inheritedError?: Error);
 }
 export declare const Errors: {

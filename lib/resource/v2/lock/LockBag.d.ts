@@ -9,6 +9,6 @@ export declare class LockBag {
     setLock(lock: Lock): boolean;
     removeLock(uuid: string): void;
     canLock(lockKind: LockKind): boolean;
-    private notExpired(l);
-    private cleanLocks();
+    private notExpired;
+    private cleanLocks;
 }
