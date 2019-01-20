@@ -43,7 +43,7 @@ export class HTTPBasicAuthentication implements HTTPAuthentication
         
         this.userManager.getUserByNamePassword(username, password, (e, user) => {
             if(e)
-                onError(e); // Errors.BadAuthentication
+                onError(Errors.BadAuthentication);
             else
                 callback(null, user);
         });

@@ -57,7 +57,7 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
         
         this.userManager.getUserByName(authProps.username, (e, user) => {
             if(e)
-                return onError(e);
+                return onError(Errors.BadAuthentication);
         
             let ha1 = md5(`${authProps.username}:${this.realm}:${user.password ? user.password : ''}`);
             if(authProps.algorithm === 'MD5-sess')
