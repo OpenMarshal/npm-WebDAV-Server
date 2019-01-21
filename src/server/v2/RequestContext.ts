@@ -239,6 +239,7 @@ export class HTTPRequestContext extends RequestContext
         response.setHeader('Access-Control-Allow-Origin', '*');
         response.setHeader('Access-Control-Allow-Credentials', 'true');
         response.setHeader('Access-Control-Expose-Headers', 'DAV, content-length, Allow');
+        response.setHeader('MS-Author-Via', 'DAV');
         response.setHeader('Server', server.options.serverName + '/' + server.options.version);
         
         const setAllowHeader = (type ?: ResourceType) =>
