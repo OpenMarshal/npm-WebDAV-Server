@@ -14,7 +14,8 @@ export function starter(server : v2.WebDAVServer, info : TestInfo, isValid : Tes
         'file漢字',
         'dir漢字',
         'this is a file',
-        'this is a directory'
+        'this is a directory',
+        'vfs'
     ];
     const allFiles = [
         'subFolder1',
@@ -37,10 +38,15 @@ export function starter(server : v2.WebDAVServer, info : TestInfo, isValid : Tes
         'file漢字',
         'dir漢字',
         'this is a file',
-        'this is a directory'
+        'this is a directory',
+        'vfs',
+        'vfs/file',
+        'vfs/folder'
     ];
     const name = 'folder';
     const ctx = v2.ExternalRequestContext.create(server);
+    const vfs = new v2.VirtualFileSystem();
+
     server.rootFileSystem().addSubTree(ctx, {
         [name]: {
             'subFolder1': v2.ResourceType.Directory,
@@ -69,12 +75,19 @@ export function starter(server : v2.WebDAVServer, info : TestInfo, isValid : Tes
             'this is a directory': v2.ResourceType.Directory
         }
     }, (e) => {
-        if(e) return isValid(false, 'Cannot call "addSubTree(...)".', e);
+        server.setFileSystem(`/${name}/vfs`, vfs, () => {
+            vfs.addSubTree(ctx, {
+                'file': v2.ResourceType.File,
+                'folder': v2.ResourceType.Directory
+            }, () => {
+                if(e) return isValid(false, 'Cannot call "addSubTree(...)".', e);
 
-        server.getResource(ctx, '/' + name, (e, r) => {
-            if(e) return isValid(false, 'Could not find /' + name, e);
+                server.getResource(ctx, '/' + name, (e, r) => {
+                    if(e) return isValid(false, 'Could not find /' + name, e);
 
-            callback(r, subFiles, allFiles);
+                    callback(r, subFiles, allFiles);
+                })
+            })
         })
-    })
+    });
 }
