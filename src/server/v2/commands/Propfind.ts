@@ -429,38 +429,40 @@ export default class implements HTTPMethod
                             if(e)
                                 return err(e);
 
-                            new Workflow()
-                                .each(children, (childName, cb) => {
-                                    ctx.server.getResource(ctx, resource.path.getChildPath(childName), (e, r) => {
-                                        if(e)
-                                            return cb(e);
-
-                                        this.addXMLInfo(ctx, data, r, multistatus, (e) => {
+                            resource.fs.getFullPath(ctx, resource.path, (e, rsPath) => {
+                                new Workflow()
+                                    .each(children, (childName, cb) => {
+                                        ctx.server.getResource(ctx, rsPath.getChildPath(childName), (e, r) => {
                                             if(e)
                                                 return cb(e);
-                                            
-                                            if(depth !== 0)
-                                            {
-                                                r.type((e, type) => {
-                                                    if(e || !type.isDirectory)
-                                                        return cb(e);
-                                                        
-                                                    injectResourcePropfind(r, depth, () => {
-                                                        cb();
-                                                    });
-                                                })
-                                            }
-                                            else
-                                            {
-                                                cb();
-                                            }
+
+                                            this.addXMLInfo(ctx, data, r, multistatus, (e) => {
+                                                if(e)
+                                                    return cb(e);
+                                                
+                                                if(depth !== 0)
+                                                {
+                                                    r.type((e, type) => {
+                                                        if(e || !type.isDirectory)
+                                                            return cb(e);
+                                                            
+                                                        injectResourcePropfind(r, depth, () => {
+                                                            cb();
+                                                        });
+                                                    })
+                                                }
+                                                else
+                                                {
+                                                    cb();
+                                                }
+                                            });
                                         });
+                                    })
+                                    .error(err)
+                                    .done(() => {
+                                        callback();
                                     });
-                                })
-                                .error(err)
-                                .done(() => {
-                                    callback();
-                                });
+                            })
                         }))
                     }
 
