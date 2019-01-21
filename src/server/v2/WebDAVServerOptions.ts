@@ -42,6 +42,7 @@ export class WebDAVServerOptions
     storageManager ?: IStorageManager = new NoStorageManager()
     enableLocationTag ?: boolean = false
     maxRequestDepth ?: number = 1
+    respondWithPaths ?: boolean = false
 }
 export default WebDAVServerOptions;
 
