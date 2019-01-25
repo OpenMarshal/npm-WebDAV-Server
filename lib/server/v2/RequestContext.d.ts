@@ -77,6 +77,10 @@ export declare class HTTPRequestContext extends RequestContext {
     askForAuthentication(checkForUser: boolean, callback: (error: Error) => void): void;
     writeBody(xmlObject: XMLElement | object): void;
     setCode(code: number, message?: string): void;
+    protected static defaultErrorStatusCodes: {
+        error: Error;
+        code: number;
+    }[];
     static defaultStatusCode(error: Error): number;
     setCodeFromError(error: Error): boolean;
 }

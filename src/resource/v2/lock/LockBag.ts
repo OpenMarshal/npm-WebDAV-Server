@@ -5,7 +5,7 @@ import { Lock } from './Lock'
 
 export class LockBag
 {
-    locks : Lock[]
+    protected locks : Lock[]
 
     constructor()
     {
@@ -15,45 +15,55 @@ export class LockBag
     getLocks(lockType ?: LockType) : Lock[]
     {
         this.cleanLocks();
+
+        let locks = this.locks;
+
         if(lockType)
-            return this.locks.filter((l) => l.lockKind.type.isSame(lockType));
-        else
-            return this.locks;
+            locks = locks.filter((lock) => lock.lockKind.type.isSame(lockType));
+
+        return locks;
     }
+
     getLock(uuid : string) : Lock
     {
         for(const lock of this.locks)
+        {
             if(lock.uuid === uuid)
                 return lock;
+        }
         
         return null;
     }
 
     setLock(lock : Lock) : boolean
     {
-        if(!this.canLock(lock.lockKind))
-            return false;
-        
-        this.locks.push(lock);
-        return true;
+        const canLock = this.canLock(lock.lockKind);
+
+        if(canLock)
+            this.locks.push(lock);
+
+        return canLock;
     }
 
     removeLock(uuid : string) : void
     {
-        this.locks = this.locks.filter((l) => this.notExpired(l) && l.uuid !== uuid);
+        this.locks = this.locks.filter((lock) => this.notExpired(lock) && lock.uuid !== uuid);
     }
 
     canLock(lockKind : LockKind) : boolean
     {
         this.cleanLocks();
-        return !(lockKind.scope.isSame(LockScope.Exclusive) && this.locks.length > 0) && !this.locks.some((l) => l.lockKind.scope.isSame(LockScope.Exclusive));
+
+        return !(lockKind.scope.isSame(LockScope.Exclusive) && this.locks.length > 0)
+            && !this.locks.some((l) => l.lockKind.scope.isSame(LockScope.Exclusive));
     }
 
-    private notExpired(l : Lock)
+    protected notExpired(lock : Lock)
     {
-        return !l.expired();
+        return !lock.expired();
     }
-    private cleanLocks()
+
+    protected cleanLocks()
     {
         this.locks = this.locks.filter(this.notExpired);
     }

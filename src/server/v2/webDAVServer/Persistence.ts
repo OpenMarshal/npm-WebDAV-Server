@@ -26,14 +26,15 @@ export function load(data : SerializedData, serializers : FileSystemSerializer[]
 
 export function autoLoad(callback : SimpleCallback)
 {
-    let options : IAutoLoad = this.options.autoLoad;
-    if(!options)
-        options = { } as IAutoLoad;
+    const options : IAutoLoad = this.options.autoLoad || {};
+    
     if(!options.treeFilePath)
+    {
         if(!this.options.autoSave || !this.options.autoSave.treeFilePath)
             return callback(new Error('The "treeFilePath" of the "autoLoad" option is not found.'));
         else
             options.treeFilePath = this.options.autoSave.treeFilePath;
+    }
 
     const stream = fs.createReadStream(options.treeFilePath);
     

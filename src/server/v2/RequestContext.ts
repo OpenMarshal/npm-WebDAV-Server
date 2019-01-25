@@ -392,39 +392,42 @@ export class HTTPRequestContext extends RequestContext
             this.response.statusMessage = message;
         }
     }
+
+    protected static defaultErrorStatusCodes = [
+        { error: Errors.ResourceNotFound,               code: HTTPCodes.NotFound },
+        { error: Errors.Locked,                         code: HTTPCodes.Locked },
+        { error: Errors.BadAuthentication,              code: HTTPCodes.Unauthorized },
+        { error: Errors.NotEnoughPrivilege,             code: HTTPCodes.Unauthorized },
+        { error: Errors.ResourceAlreadyExists,          code: HTTPCodes.Conflict },
+        { error: Errors.IntermediateResourceMissing,    code: HTTPCodes.Conflict },
+        { error: Errors.WrongParentTypeForCreation,     code: HTTPCodes.Conflict },
+        { error: Errors.InsufficientStorage,            code: HTTPCodes.InsufficientStorage },
+        { error: Errors.Forbidden,                      code: HTTPCodes.Forbidden }
+    ];
+
     static defaultStatusCode(error : Error) : number
     {
         let code = null;
 
-        if(error === Errors.ResourceNotFound)
-            code = HTTPCodes.NotFound;
-        else if(error === Errors.Locked)
-            code = HTTPCodes.Locked;
-        else if(error === Errors.BadAuthentication)
-            code = HTTPCodes.Unauthorized;
-        else if(error === Errors.NotEnoughPrivilege)
-            code = HTTPCodes.Unauthorized;
-        else if(error === Errors.ResourceAlreadyExists)
-            code = HTTPCodes.Conflict;
-        else if(error === Errors.IntermediateResourceMissing)
-            code = HTTPCodes.Conflict;
-        else if(error === Errors.WrongParentTypeForCreation)
-            code = HTTPCodes.Conflict;
-        else if(error === Errors.InsufficientStorage)
-            code = HTTPCodes.InsufficientStorage;
-        else if(error === Errors.Forbidden)
-            code = HTTPCodes.Forbidden;
+        for(const errorCode of this.defaultErrorStatusCodes)
+        {
+            if(errorCode.error === error)
+            {
+                code = errorCode.code;
+                break;
+            }
+        }
         
         return code;
     }
+
     setCodeFromError(error : Error) : boolean
     {
         const code = HTTPRequestContext.defaultStatusCode(error);
 
-        if(!code)
-            return false;
-        
-        this.setCode(code);
-        return true;
+        if(code)
+            this.setCode(code);
+
+        return !!code;
     }
 }

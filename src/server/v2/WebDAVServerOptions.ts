@@ -48,14 +48,16 @@ export default WebDAVServerOptions;
 
 export function setDefaultServerOptions(options : WebDAVServerOptions) : WebDAVServerOptions
 {
-    const def = new WebDAVServerOptions();
+    const defaultOptions = new WebDAVServerOptions();
 
     if(!options)
-        return def;
+        return defaultOptions;
 
-    for(const name in def)
+    for(const name in defaultOptions)
+    {
         if(options[name] === undefined)
-            options[name] = def[name];
+            options[name] = defaultOptions[name];
+    }
     
     return options;
 }

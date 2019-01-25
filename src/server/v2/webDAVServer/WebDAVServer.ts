@@ -236,30 +236,31 @@ export class WebDAVServer
     removeFileSystemSync(fs : FileSystem, checkByReference ?: boolean) : number
     removeFileSystemSync(fs_path : Path | string | FileSystem, checkByReference : boolean = true) : number
     {
+        let nb = 0;
         if(fs_path.constructor === Path || fs_path.constructor === String)
         {
             const path = new Path(fs_path as (Path | string)).toString();
-            if(this.fileSystems[path] === undefined)
-                return 0;
-            else
+            if(this.fileSystems[path] !== undefined)
             {
                 delete this.fileSystems[path];
-                return 1;
+                nb = 1;
             }
         }
         else
         {
             const fs = fs_path as FileSystem;
-            let nb = 0;
 
             for(const name in this.fileSystems)
+            {
                 if(this.isSameFileSystem(fs, name, checkByReference))
                 {
-                    ++nb;
                     delete this.fileSystems[name];
+                    ++nb;
                 }
-            return nb;
+            }
         }
+
+        return nb;
     }
 
     /**
