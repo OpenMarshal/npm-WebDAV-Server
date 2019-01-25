@@ -27,7 +27,7 @@
     "test": "cd test/v2/tests.ts && tsc && cd ../../.. && node test/v2/root.js && node test/v1/root.js"
   },
   "name": "webdav-server",
-  "version": "2.4.5",
+  "version": "2.4.6",
   "author": "Adrien Castex <adrien.castex@gmail.com>",
   "license": "Unlicense",
   "repository": {
