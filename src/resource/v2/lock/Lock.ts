@@ -68,6 +68,6 @@ export class Lock
 
     refresh(timeout ?: number)
     {
-        this.expirationDate += timeout ? timeout : this.lockKind.timeout;
+        this.expirationDate = Date.now() + (timeout ? timeout : this.lockKind.timeout) * 1000;
     }
 }
