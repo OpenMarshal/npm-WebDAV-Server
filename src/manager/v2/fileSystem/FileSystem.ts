@@ -1135,17 +1135,17 @@ export abstract class FileSystem implements ISerializableFileSystem
                             lm.getLock(uuid, callback);
                         })
                     },
-                    refresh(uuid : string, timeout : number, callback : ReturnCallback<Lock>) : void
+                    refresh(uuid : string, timeoutSeconds : number, callback : ReturnCallback<Lock>) : void
                     {
-                        fs.emit('before-lock-refresh', ctx, pPath, { uuid, timeout });
+                        fs.emit('before-lock-refresh', ctx, pPath, { uuid, timeout: timeoutSeconds });
                         issuePrivilegeCheck(fs, ctx, pPath, 'canWriteLocks', callback, () => {
                             buffIsLocked.isLocked((e, isLocked) => {
                                 if(e || isLocked)
                                     return callback(e ? e : Errors.Locked);
                                 
-                                lm.refresh(uuid, timeout, (e, lock) => {
+                                lm.refresh(uuid, timeoutSeconds, (e, lock) => {
                                     if(!e)
-                                        fs.emit('lock-refresh', ctx, pPath, { uuid, timeout, lock });
+                                        fs.emit('lock-refresh', ctx, pPath, { uuid, timeout: timeoutSeconds, lock });
                                     callback(e, lock);
                                 });
                             })

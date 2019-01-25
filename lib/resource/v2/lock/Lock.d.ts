@@ -13,5 +13,5 @@ export declare class Lock {
     constructor(lockKind: LockKind, user: IUser | string, owner: LockOwner, depth?: number);
     isSame(lock: Lock): boolean;
     expired(): boolean;
-    refresh(timeout?: number): void;
+    refresh(timeoutSeconds?: number): void;
 }

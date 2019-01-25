@@ -7,7 +7,7 @@ export interface ILockManager
     setLock(lock : Lock, callback : SimpleCallback) : void
     removeLock(uuid : string, callback : ReturnCallback<boolean>) : void
     getLock(uuid : string, callback : ReturnCallback<Lock>) : void
-    refresh(uuid : string, timeout : number, callback : ReturnCallback<Lock>) : void
+    refresh(uuid : string, timeoutSeconds : number, callback : ReturnCallback<Lock>) : void
 }
 export class LocalLockManager implements ILockManager
 {
@@ -56,13 +56,13 @@ export class LocalLockManager implements ILockManager
         callback();
     }
 
-    refresh(uuid : string, timeout : number, callback : ReturnCallback<Lock>) : void
+    refresh(uuid : string, timeoutSeconds : number, callback : ReturnCallback<Lock>) : void
     {
         this.getLock(uuid, (e, lock) => {
             if(e || !lock)
                 return callback(e);
             
-            lock.refresh(timeout);
+            lock.refresh(timeoutSeconds);
             callback(null, lock);
         })
     }

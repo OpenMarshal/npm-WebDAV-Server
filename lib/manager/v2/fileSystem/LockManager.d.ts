@@ -5,7 +5,7 @@ export interface ILockManager {
     setLock(lock: Lock, callback: SimpleCallback): void;
     removeLock(uuid: string, callback: ReturnCallback<boolean>): void;
     getLock(uuid: string, callback: ReturnCallback<Lock>): void;
-    refresh(uuid: string, timeout: number, callback: ReturnCallback<Lock>): void;
+    refresh(uuid: string, timeoutSeconds: number, callback: ReturnCallback<Lock>): void;
 }
 export declare class LocalLockManager implements ILockManager {
     locks: Lock[];
@@ -14,5 +14,5 @@ export declare class LocalLockManager implements ILockManager {
     setLock(lock: Lock, callback: SimpleCallback): void;
     removeLock(uuid: string, callback: ReturnCallback<boolean>): void;
     getLock(uuid: string, callback: ReturnCallback<Lock>): void;
-    refresh(uuid: string, timeout: number, callback: ReturnCallback<Lock>): void;
+    refresh(uuid: string, timeoutSeconds: number, callback: ReturnCallback<Lock>): void;
 }
