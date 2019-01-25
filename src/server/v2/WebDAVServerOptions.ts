@@ -36,7 +36,7 @@ export class WebDAVServerOptions
     https ?: https.ServerOptions = null
     port ?: number = 1900
     serverName ?: string = 'webdav-server'
-    version ?: string = '1.8.0'
+    version ?: string = '2.4.6'
     autoSave ?: IAutoSave = null
     autoLoad ?: IAutoLoad = null
     storageManager ?: IStorageManager = new NoStorageManager()
