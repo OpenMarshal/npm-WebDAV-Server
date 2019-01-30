@@ -125,22 +125,28 @@ module.exports = (callback, options) => {
                                 callback(res, body, bodySource);
                             })
                         },
-                        init: (nbExpected, name) => {
+                        init: (nbExpected, name, autoStart) => {
+                            if(autoStart === undefined)
+                                autoStart = true;
+
                             if(name !== undefined)
                             {
                                 if(name.constructor === String)
                                 {
                                     info.name = name;
-                                    info.startServer();
+                                    info.startServer(undefined, autoStart);
                                 }
                                 else
                                 {
                                     name.port = info.port;
-                                    info.startServer(name);
+                                    info.startServer(name, autoStart);
                                 }
                             }
                             else
-                                info.startServer();
+                            {
+                                info.startServer(undefined, autoStart);
+                            }
+
                             info.ctx = webdav.ExternalRequestContext.create(info.servers[0]);
                             info.expect(nbExpected);
                             return info.servers[0];

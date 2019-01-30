@@ -43,6 +43,7 @@
     "@types/mime-types": "^2.1.0",
     "@types/node": "^7.0.64",
     "@types/request": "0.0.44",
+    "express": "^4.16.4",
     "request": "^2.85.0",
     "safe-regex": "^1.1.0",
     "webdav-fs": "^1.10.1",
