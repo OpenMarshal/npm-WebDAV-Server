@@ -2,8 +2,8 @@ import { HTTPCodes, HTTPMethod, HTTPRequestContext } from '../WebDAVRequest'
 import { StandardMethods } from '../../../manager/v2/fileSystem/StandardMethods'
 import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
 import { startsWith } from '../../../helper/JSCompatibility'
-import { Path } from '../../../manager/v2/Path'
 import { Errors } from '../../../Errors'
+import { Path } from '../../../manager/v2/Path'
 
 export function execute(ctx : HTTPRequestContext, methodName : string, privilegeName : string, callback : () => void)
 {
@@ -25,6 +25,11 @@ export function execute(ctx : HTTPRequestContext, methodName : string, privilege
                     destination = destination.substring(startIndex + '://'.length)
                     destination = destination.substring(destination.indexOf('/')) // Remove the hostname + port
                 }
+                if(ctx.rootPath && startsWith(destination, ctx.rootPath))
+                {
+                    destination = destination.substring(ctx.rootPath.length);
+                }
+
                 destination = new Path(destination);
                 destination.decode();
 
