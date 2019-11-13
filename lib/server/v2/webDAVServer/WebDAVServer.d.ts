@@ -305,6 +305,32 @@ export declare class WebDAVServer {
      */
     on(event: string, listener: EventCallback): this;
     /**
+     * Remove an event.
+     *
+     * @param event Name of the event.
+     */
+    removeEvent(event: ServerEvent): this;
+    /**
+     * Remove an event.
+     *
+     * @param event Name of the event.
+     */
+    removeEvent(event: string): this;
+    /**
+     * Remove a listener to an event.
+     *
+     * @param event Name of the event.
+     * @param listener Listener of the event.
+     */
+    removeEvent(event: ServerEvent, listener: EventCallback): this;
+    /**
+     * Remove a listener to an event.
+     *
+     * @param event Name of the event.
+     * @param listener Listener of the event.
+     */
+    removeEvent(event: string, listener: EventCallback): this;
+    /**
      * Trigger an event.
      *
      * @param event Name of the event.

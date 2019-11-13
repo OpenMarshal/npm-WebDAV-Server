@@ -559,6 +559,58 @@ export class WebDAVServer
 
         return this;
     }
+
+    /**
+     * Remove an event.
+     * 
+     * @param event Name of the event.
+     */
+    removeEvent(event : ServerEvent) : this
+    /**
+     * Remove an event.
+     * 
+     * @param event Name of the event.
+     */
+    removeEvent(event : string) : this
+    /**
+     * Remove a listener to an event.
+     * 
+     * @param event Name of the event.
+     * @param listener Listener of the event.
+     */
+    removeEvent(event : ServerEvent, listener : EventCallback) : this
+    /**
+     * Remove a listener to an event.
+     * 
+     * @param event Name of the event.
+     * @param listener Listener of the event.
+     */
+    removeEvent(event : string, listener : EventCallback) : this
+    removeEvent(event : ServerEvent | string, listener ?: EventCallback) : this
+    {
+        if(listener)
+        {
+            if(this.events[event])
+            {
+                const eventList = this.events[event];
+                
+                for(let index = 0; index < eventList.length; ++index)
+                {
+                    if(eventList[index] === listener)
+                    {
+                        eventList.splice(index, 1);
+                        --index;
+                    }
+                }
+            }
+        }
+        else
+        {
+            delete this.events[event];
+        }
+
+        return this;
+    }
     
     /**
      * Trigger an event.
