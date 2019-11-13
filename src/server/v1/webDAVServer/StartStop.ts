@@ -163,16 +163,16 @@ export function start(port ?: number | WebDAVServerStartCallback, callback ?: We
 
                     if(base.contentLength <= 0)
                     {
-                        base.data = new Buffer(0);
+                        base.data = Buffer.alloc(0);
                         go();
                     }
                     else
                     {
-                        const data = new Buffer(base.contentLength);
+                        const data = Buffer.alloc(base.contentLength);
                         let index = 0;
                         req.on('data', (chunk) => {
                             if(chunk.constructor === String)
-                                chunk = new Buffer(chunk as string);
+                                chunk = Buffer.from(chunk as string);
                             
                             for(let i = 0; i < chunk.length && index < data.length; ++i, ++index)
                                 data[index] = (chunk as Buffer)[i];

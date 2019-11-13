@@ -5,7 +5,7 @@ import { starter } from './.createFileTxt'
 export default ((info, isValid) =>
 {
     const server = info.init(1);
-    const cx = new Buffer(100000);
+    const cx = Buffer.alloc(100000);
     for(let i = 0; i < cx.length; ++i)
         cx.write('X', i, 1, 'utf-8');
     const content = cx.toString();

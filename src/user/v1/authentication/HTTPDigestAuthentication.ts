@@ -13,7 +13,7 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
 
     generateNonce() : string
     {
-        const buffer = new Buffer(this.nonceSize);
+        const buffer = Buffer.alloc(this.nonceSize);
         for(let i = 0; i < buffer.length; ++i)
             buffer[i] = Math.floor(Math.random() * 256);
 

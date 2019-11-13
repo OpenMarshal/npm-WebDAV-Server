@@ -42,7 +42,7 @@ export class VirtualFSManager implements FSManager
             const rs = new VirtualFile(data.name, null, this);
             if(data.content)
             {
-                rs.content = data.content.map((a) => new Buffer(a));
+                rs.content = data.content.map((a) => Buffer.from(a));
                 rs.len = data.len;
             }
             rs.dateCreation = data.dateCreation;

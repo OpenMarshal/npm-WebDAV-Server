@@ -52,7 +52,7 @@ export class VirtualFileSystemResource
 
         this.lastModifiedDate = rs.lastModifiedDate ? rs.lastModifiedDate : Date.now();
         this.creationDate = rs.creationDate ? rs.creationDate : Date.now();
-        this.content = rs.content ? rs.content.map((o) => new Buffer(o)) : [];
+        this.content = rs.content ? rs.content.map((o) => Buffer.from(o)) : [];
         this.props = new LocalPropertyManager(rs.props);
         this.locks = new LocalLockManager();
         this.size = rs.size ? rs.size : 0;

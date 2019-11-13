@@ -225,7 +225,7 @@ export class FTPFile extends FTPResource
             if(e)
                 callback(e);
             else
-                w.end(new Buffer(0), callback);
+                w.end(Buffer.alloc(0), callback);
         })
     }
     

@@ -48,7 +48,7 @@ export class HTTPBasicAuthentication implements HTTPAuthentication
             
             for(const user of users)
             {
-                const expected = new Buffer(user.username + ':' + (user.password ? user.password : '')).toString('base64')
+                const expected = Buffer.from(user.username + ':' + (user.password ? user.password : '')).toString('base64')
 
                 if(value === expected)
                 {

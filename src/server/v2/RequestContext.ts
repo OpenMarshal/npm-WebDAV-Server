@@ -363,14 +363,14 @@ export class HTTPRequestContext extends RequestContext
             default:
             case 'xml':
                 this.response.setHeader('Content-Type', 'application/xml;charset=utf-8');
-                this.response.setHeader('Content-Length', new Buffer(content).length.toString());
+                this.response.setHeader('Content-Length', Buffer.from(content).length.toString());
                 this.response.write(content, 'UTF-8');
                 break;
                 
             case 'json':
                 content = XML.toJSON(content);
                 this.response.setHeader('Content-Type', 'application/json;charset=utf-8');
-                this.response.setHeader('Content-Length', new Buffer(content).length.toString());
+                this.response.setHeader('Content-Length', Buffer.from(content).length.toString());
                 this.response.write(content, 'UTF-8');
                 break;
         }
