@@ -24,7 +24,8 @@
     "dev": "cd src && tsc --declaration -w",
     "build": "cd src && tsc --declaration",
     "lint": "tslint --project tslint.json src/**/v2/**/*.ts",
-    "test": "cd test/v2/tests.ts && tsc && cd ../../.. && node test/v2/root.js && node test/v1/root.js"
+    "test": "node test/v2/root.js && node test/v1/root.js",
+    "build-test": "cd test/v2/tests.ts && tsc"
   },
   "name": "webdav-server",
   "version": "2.5.0",

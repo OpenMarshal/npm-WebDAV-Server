@@ -1,5 +1,5 @@
 node_modules
 *.log
-test/v2/tests
+test/v2/tests/**/*.json
 experiment
 package-lock.json
