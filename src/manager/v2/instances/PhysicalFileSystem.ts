@@ -318,9 +318,6 @@ export class PhysicalFileSystem extends FileSystem
     {
         const { realPath } = this.getRealPath(path);
 
-        if(realPath.indexOf('.url') !== -1)
-            return callback(Errors.ResourceNotFound);
-
         fs.stat(realPath, (e, stat) => {
             if(e)
                 return callback(Errors.ResourceNotFound);
