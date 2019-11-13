@@ -21,7 +21,7 @@ export default class implements HTTPMethod
 
                     try
                     {
-                        const xml = XML.parse(data);
+                        const xml = XML.parse(data as any);
                         const root = xml.find('DAV:propertyupdate');
                         const notifications : any = { }
                         const reverse = [];

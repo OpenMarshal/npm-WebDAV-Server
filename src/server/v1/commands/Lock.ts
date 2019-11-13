@@ -32,7 +32,7 @@ function createLock(arg : MethodCallArgs, callback)
 {
     try
     {
-        const xml = XML.parse(arg.data);
+        const xml = XML.parse(arg.data as any);
         const root = xml.find('DAV:lockinfo');
         
         const scope = new LockScope(root.find('DAV:lockscope').elements[0].name.substr(4).toLowerCase());

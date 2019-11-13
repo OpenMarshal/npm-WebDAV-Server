@@ -1,4 +1,3 @@
-import { ReturnCallback, SimpleCallback } from './CommonTypes'
 import { XMLElement } from 'xml-js-builder'
 
 export type SimpleCallback = (error ?: Error) => void;

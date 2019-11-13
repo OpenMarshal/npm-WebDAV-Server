@@ -56,7 +56,7 @@ function parseRequestBody(ctx : HTTPRequestContext, data : Buffer) : PropertyRul
 
     try
     {
-        const xml = XML.parse(data);
+        const xml = XML.parse(data as any);
 
         const propfind = xml.find('DAV:propfind');
 

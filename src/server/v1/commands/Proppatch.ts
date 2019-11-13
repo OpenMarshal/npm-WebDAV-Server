@@ -25,7 +25,7 @@ export function method(arg : MethodCallArgs, callback)
 
                 try
                 {
-                    const xml = XML.parse(arg.data);
+                    const xml = XML.parse(arg.data as any);
                     const root = xml.find('DAV:propertyupdate');
 
                     let finalize = function()

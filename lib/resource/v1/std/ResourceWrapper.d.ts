@@ -38,9 +38,11 @@ export interface IWrappableResource<T> extends IResource {
 export declare class SimpleResourceWrapper<T> implements IResource {
     resource: IWrappableResource<T>;
     data?: T;
-    fsManager: FSManager;
-    parent: IResource;
-    readonly _isWrapper: boolean;
+    get fsManager(): FSManager;
+    set fsManager(fsManager: FSManager);
+    get parent(): IResource;
+    set parent(parent: IResource);
+    get _isWrapper(): boolean;
     constructor(resource: IWrappableResource<T>, data?: T);
     create(callback: SimpleCallback): void;
     delete(callback: SimpleCallback): void;
@@ -67,7 +69,7 @@ export declare class SimpleResourceWrapper<T> implements IResource {
     webName(callback: ReturnCallback<string>): void;
     type(callback: ReturnCallback<ResourceType>): void;
     displayName(callback: ReturnCallback<string>): void;
-    readonly gateway: (arg: MethodCallArgs, path: FSPath, callback: (error: Error, resource?: IResource) => void) => any;
+    get gateway(): (arg: MethodCallArgs, path: FSPath, callback: (error: Error, resource?: IResource) => void) => any;
     protected _invoke(name: string, args: any[]): void;
 }
 export declare class ResourceWrapper<T> extends SimpleResourceWrapper<T> {

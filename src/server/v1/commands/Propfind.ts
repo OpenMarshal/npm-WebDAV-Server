@@ -88,7 +88,7 @@ function parseRequestBody(arg : MethodCallArgs) : PropertyRule
 
     try
     {
-        const xml = XML.parse(arg.data);
+        const xml = XML.parse(arg.data as any);
 
         const propfind = xml.find('DAV:propfind');
 

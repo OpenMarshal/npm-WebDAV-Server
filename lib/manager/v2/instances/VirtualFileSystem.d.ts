@@ -15,14 +15,14 @@ export declare class VirtualFileSystemResource {
     static updateLastModified(r: VirtualFileSystemResource): void;
 }
 export declare class VirtualFileReadable extends Readable {
-    contents: Int8Array[];
+    contents: any[][] | Buffer[] | Int8Array[];
     blockIndex: number;
-    constructor(contents: Int8Array[]);
+    constructor(contents: any[][] | Buffer[] | Int8Array[]);
     _read(size: number): void;
 }
 export declare class VirtualFileWritable extends Writable {
-    contents: Int8Array[];
-    constructor(contents: Int8Array[]);
+    contents: any[][] | Buffer[] | Int8Array[];
+    constructor(contents: any[][] | Buffer[] | Int8Array[]);
     _write(chunk: Buffer | string | any, encoding: string, callback: (error: Error) => void): void;
 }
 export declare class VirtualSerializer implements FileSystemSerializer {

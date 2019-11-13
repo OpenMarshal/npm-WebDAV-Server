@@ -22,7 +22,7 @@ export class MethodCallArgs
     resource : IResource
     resourceType : ResourceType
     
-    data : Int8Array
+    data : Buffer | Int8Array
     user : IUser
 
     protected constructor(

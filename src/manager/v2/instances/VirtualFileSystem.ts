@@ -69,7 +69,7 @@ export class VirtualFileReadable extends Readable
 {
     blockIndex : number
 
-    constructor(public contents : Int8Array[])
+    constructor(public contents : any[][] | Buffer[] | Int8Array[])
     {
         super();
 
@@ -96,7 +96,7 @@ export class VirtualFileReadable extends Readable
 
 export class VirtualFileWritable extends Writable
 {
-    constructor(public contents : Int8Array[])
+    constructor(public contents : any[][] | Buffer[] | Int8Array[])
     {
         super(null);
     }

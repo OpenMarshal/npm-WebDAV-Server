@@ -21,7 +21,7 @@ export declare class MethodCallArgs {
     uri: string;
     resource: IResource;
     resourceType: ResourceType;
-    data: Int8Array;
+    data: Buffer | Int8Array;
     user: IUser;
     protected constructor(server: WebDAVServer, request: http.IncomingMessage, response: http.ServerResponse, exit: () => void, callback: () => void);
     static create(server: WebDAVServer, request: http.IncomingMessage, response: http.ServerResponse, callback: (error: Error, mca: MethodCallArgs) => void): void;
