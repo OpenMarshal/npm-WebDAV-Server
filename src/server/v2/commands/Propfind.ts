@@ -100,7 +100,7 @@ export default class implements HTTPMethod
 
         const response = new XMLElementBuilder('D:response');
         const callback = (e ?: Error) => {
-            if(e === Errors.MustIgnore)
+            if(e === Errors.MustIgnore || e === Errors.ResourceNotFound)
                 e = null;
             else if(!e)
                 multistatus.add(response);
