@@ -62,4 +62,77 @@ export declare class Resource {
     }>): any;
     isLocked(callback: ReturnCallback<boolean>): any;
     isLocked(depth: number, callback: ReturnCallback<boolean>): any;
+    deleteAsync(): Promise<void>;
+    deleteAsync(depth: number): Promise<void>;
+    openWriteStreamAsync(): Promise<{
+        stream: Writable;
+        created: boolean;
+    }>;
+    openWriteStreamAsync(estimatedSize: number): Promise<{
+        stream: Writable;
+        created: boolean;
+    }>;
+    openWriteStreamAsync(targetSource: boolean): Promise<{
+        stream: Writable;
+        created: boolean;
+    }>;
+    openWriteStreamAsync(targetSource: boolean, estimatedSize: number): Promise<{
+        stream: Writable;
+        created: boolean;
+    }>;
+    openWriteStreamAsync(mode: OpenWriteStreamMode): Promise<{
+        stream: Writable;
+        created: boolean;
+    }>;
+    openWriteStreamAsync(mode: OpenWriteStreamMode, estimatedSize: number): Promise<{
+        stream: Writable;
+        created: boolean;
+    }>;
+    openWriteStreamAsync(mode: OpenWriteStreamMode, targetSource: boolean): Promise<{
+        stream: Writable;
+        created: boolean;
+    }>;
+    openWriteStreamAsync(mode: OpenWriteStreamMode, targetSource: boolean, estimatedSize: number): Promise<{
+        stream: Writable;
+        created: boolean;
+    }>;
+    openReadStreamAsync(): Promise<Readable>;
+    openReadStreamAsync(estimatedSize: number): Promise<Readable>;
+    openReadStreamAsync(targetSource: boolean): Promise<Readable>;
+    openReadStreamAsync(targetSource: boolean, estimatedSize: number): Promise<Readable>;
+    copyAsync(pathTo: Path | string): Promise<boolean>;
+    copyAsync(pathTo: Path | string, depth: number): Promise<boolean>;
+    copyAsync(pathTo: Path | string, overwrite: boolean): Promise<boolean>;
+    copyAsync(pathTo: Path | string, overwrite: boolean, depth: number): Promise<boolean>;
+    mimeTypeAsync(): Promise<string>;
+    mimeTypeAsync(targetSource: boolean): Promise<string>;
+    sizeAsync(): Promise<number>;
+    sizeAsync(targetSource: boolean): Promise<number>;
+    addSubTreeAsync(subTree: SubTree, callback: SimpleCallback): any;
+    addSubTreeAsync(resourceType: ResourceType, callback: SimpleCallback): any;
+    createAsync(type: ResourceType): Promise<void>;
+    createAsync(type: ResourceType, createIntermediates: boolean): Promise<void>;
+    etagAsync(): Promise<string>;
+    moveAsync(pathTo: Path | string): Promise<boolean>;
+    moveAsync(pathTo: Path | string, overwrite: boolean): Promise<boolean>;
+    renameAsync(newName: string): Promise<boolean>;
+    renameAsync(newName: string, overwrite: boolean): Promise<boolean>;
+    availableLocksAsync(): Promise<LockKind[]>;
+    lockManagerAsync(): Promise<ILockManager>;
+    propertyManagerAsync(): Promise<IPropertyManager>;
+    readDirAsync(): Promise<string[]>;
+    readDirAsync(retrieveExternalFiles: boolean): Promise<string[]>;
+    creationDateAsync(): Promise<number>;
+    lastModifiedDateAsync(): Promise<number>;
+    webNameAsync(): Promise<string>;
+    displayNameAsync(): Promise<string>;
+    typeAsync(): Promise<ResourceType>;
+    listDeepLocksAsync(): Promise<{
+        [path: string]: Lock[];
+    }>;
+    listDeepLocksAsync(depth: number): Promise<{
+        [path: string]: Lock[];
+    }>;
+    isLockedAsync(): Promise<boolean>;
+    isLockedAsync(depth: number): Promise<boolean>;
 }

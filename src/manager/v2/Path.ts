@@ -3,6 +3,11 @@ export class Path
 {
     paths : string[]
 
+    static isPath(obj : any) : boolean
+    {
+        return typeof obj === 'string' || obj && obj.constructor === Path;
+    }
+
     constructor(path : Path | string[] | string)
     {
         if(path.constructor === String)

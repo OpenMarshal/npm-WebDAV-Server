@@ -16,6 +16,8 @@ import * as beforeAfter from './BeforeAfter'
 import * as startStop from './StartStop'
 import * as https from 'https'
 import * as http from 'http'
+import { promisifyCall } from '../../../helper/v2/promise'
+import { SerializedData, FileSystemSerializer } from '../../../manager/v2/export'
 
 export type WebDAVServerStartCallback = (server ?: http.Server) => void;
 
@@ -117,6 +119,17 @@ export class WebDAVServer
      * 
      * @param ctx Context of the request
      * @param path Path of the resource
+     */
+    getResourceAsync(ctx : RequestContext, path : Path | string) : Promise<Resource>
+    {
+        return promisifyCall((cb) => this.getResource(ctx, path, cb));
+    }
+
+    /**
+     * Get a resource object to manage a resource from its path.
+     * 
+     * @param ctx Context of the request
+     * @param path Path of the resource
      * @param callback Callback containing the requested resource
      */
     getResource(ctx : RequestContext, path : Path | string, callback : ReturnCallback<Resource>) : void
@@ -127,6 +140,7 @@ export class WebDAVServer
             callback(null, fs.resource(ctx, subPath));
         })
     }
+
     /**
      * Synchronously get a resource object to manage a resource from its path.
      * 
@@ -140,6 +154,26 @@ export class WebDAVServer
 
         const info = this.getFileSystemSync(path);
         return info.fs.resource(ctx, info.subPath);
+    }
+    
+    /**
+     * Map/mount a file system to a path.
+     * 
+     * @param path Path where to mount the file system
+     * @param fs File system to mount
+     */
+    setFileSystemAsync(path : Path | string, fs : FileSystem) : Promise<boolean>
+    /**
+     * Map/mount a file system to a path.
+     * 
+     * @param path Path where to mount the file system
+     * @param fs File system to mount
+     * @param override Define if the mounting can override a previous mounted file system
+     */
+    setFileSystemAsync(path : Path | string, fs : FileSystem, override : boolean) : Promise<boolean>
+    setFileSystemAsync(path : Path | string, fs : FileSystem, override ?: boolean) : Promise<boolean>
+    {
+        return promisifyCall((cb) => this.setFileSystem(path, fs, override, (successed) => cb(undefined, successed)));
     }
 
     /**
@@ -168,6 +202,7 @@ export class WebDAVServer
         if(callback)
             callback(result);
     }
+
     /**
      * Synchronously map/mount a file system to a path.
      * 
@@ -343,6 +378,16 @@ export class WebDAVServer
      * Get the file system managing the provided path.
      * 
      * @param path Requested path
+     */
+    getFileSystemAsync(path : Path) : Promise<{ fs : FileSystem, rootPath : Path, subPath : Path }>
+    {
+        return promisifyCall((cb) => this.getFileSystem(path, (fs, rootPath, subPath) => cb(undefined, { fs, rootPath, subPath })));
+    }
+
+    /**
+     * Get the file system managing the provided path.
+     * 
+     * @param path Requested path
      * @param callback Callback containing the file system, the mount path of the file system and the sub path from the mount path to the requested path
      */
     getFileSystem(path : Path, callback : (fs : FileSystem, rootPath : Path, subPath : Path) => void) : void
@@ -350,6 +395,7 @@ export class WebDAVServer
         const result = this.getFileSystemSync(path);
         callback(result.fs, result.rootPath, result.subPath);
     }
+
     /**
      * Get synchronously the file system managing the provided path.
      * 
@@ -411,6 +457,21 @@ export class WebDAVServer
 
     /**
      * List all resources in every depth.
+     */
+    listResourcesAsync() : Promise<string[]>
+    /**
+     * List all resources in every depth.
+     * 
+     * @param root The root folder where to start the listing
+     */
+    listResourcesAsync(root : string | Path) : Promise<string[]>
+    listResourcesAsync(root ?: string | Path) : Promise<string[]>
+    {
+        return promisifyCall((cb) => this.listResources(root, (paths) => cb(undefined, paths)));
+    }
+
+    /**
+     * List all resources in every depth.
      * 
      * @param callback Callback providing the list of resources
      */
@@ -424,7 +485,7 @@ export class WebDAVServer
     listResources(root : string | Path, callback : (paths : string[]) => void) : void
     listResources(_root : string | Path | ((paths : string[]) => void), _callback ?: (paths : string[]) => void) : void
     {
-        const root = new Path(_callback ? _root as (string | Path) : '/');
+        const root = new Path(Path.isPath(_root) ? _root as (string | Path) : '/');
         const callback = _callback ? _callback : _root as ((paths : string[]) => void);
 
         const output = [];
@@ -454,6 +515,17 @@ export class WebDAVServer
      * 
      * @param port Port of the server
      */
+    startAsync(port : number) : Promise<http.Server>
+    startAsync(port ?: number) : Promise<http.Server>
+    {
+        return promisifyCall((cb) => this.start(port, (server) => cb(undefined, server)));
+    }
+
+    /**
+     * Start the WebDAV server.
+     * 
+     * @param port Port of the server
+     */
     start(port : number)
     /**
      * Start the WebDAV server.
@@ -471,6 +543,13 @@ export class WebDAVServer
     start(port ?: number | WebDAVServerStartCallback, callback ?: WebDAVServerStartCallback)
     {
         startStop.start.bind(this)(port, callback);
+    }
+    /**
+     * Stop the WebDAV server.
+     */
+    stopAsync() : Promise<void>
+    {
+        return promisifyCall((cb) => this.stop(cb));
     }
     /**
      * Stop the WebDAV server.
@@ -516,11 +595,32 @@ export class WebDAVServer
     /**
      * Load the previous save made by the 'autoSave' system.
      */
+    autoLoadAsync() : Promise<void>
+    {
+        return promisifyCall((cb) => this.autoLoad(cb));
+    }
+    /**
+     * Load the previous save made by the 'autoSave' system.
+     */
     autoLoad = persistence.autoLoad
     /**
      * Load a state of the resource tree.
      */
+    loadAsync(data : SerializedData, serializers : FileSystemSerializer[]) : Promise<void>
+    {
+        return promisifyCall((cb) => this.load(data, serializers, cb));
+    }
+    /**
+     * Load a state of the resource tree.
+     */
     load = persistence.load
+    /**
+     * Save the state of the resource tree.
+     */
+    saveAsync() : Promise<SerializedData>
+    {
+        return promisifyCall((cb) => this.save(cb));
+    }
     /**
      * Save the state of the resource tree.
      */

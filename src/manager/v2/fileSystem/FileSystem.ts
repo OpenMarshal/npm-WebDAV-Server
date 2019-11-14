@@ -48,6 +48,7 @@ import { Errors } from '../../../Errors'
 import { Lock } from '../../../resource/v2/lock/Lock'
 import { Path } from '../Path'
 import * as crypto from 'crypto'
+import { ensureValue, promisifyCall } from '../../../helper/v2/promise'
 
 class BufferedIsLocked
 {
@@ -212,6 +213,28 @@ export abstract class FileSystem implements ISerializableFileSystem
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param type Type of the resource to create.
+     */
+    createAsync(ctx : RequestContext, path : Path | string, type : ResourceType) : Promise<void>
+    /**
+     * Create a new resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     * @param type Type of the resource to create.
+     * @param createIntermediates Defines if the operation is allowed to create intermediate resources ('/folder1/folder2/file3', if 'folder2' doesn't exist, it is an intermediate).
+     */
+    createAsync(ctx : RequestContext, path : Path | string, type : ResourceType, createIntermediates : boolean) : Promise<void>
+    createAsync(ctx : RequestContext, path : Path | string, type : ResourceType, createIntermediates ?: boolean) : Promise<void>
+    {
+        return promisifyCall((cb) => this.create(ctx, path, type, createIntermediates, cb));
+    }
+
+    /**
+     * Create a new resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     * @param type Type of the resource to create.
      * @param callback Returns an error if one occured.
      */
     create(ctx : RequestContext, path : Path | string, type : ResourceType, callback : SimpleCallback) : void
@@ -227,7 +250,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     create(ctx : RequestContext, path : Path | string, type : ResourceType, createIntermediates : boolean, callback : SimpleCallback) : void
     create(ctx : RequestContext, _path : Path | string, type : ResourceType, _createIntermediates : boolean | SimpleCallback, _callback ?: SimpleCallback) : void
     {
-        const createIntermediates = _callback ? _createIntermediates as boolean : false;
+        const createIntermediates = ensureValue(_callback ? _createIntermediates as boolean : undefined, false);
         const callbackFinal = _callback ? _callback : _createIntermediates as SimpleCallback;
         const path = new Path(_path);
 
@@ -312,6 +335,18 @@ export abstract class FileSystem implements ISerializableFileSystem
      * 
      * @param ctx Context of the operation.
      * @param _path Path of the resource.
+     */
+    etagAsync(ctx : RequestContext, path : Path | string) : Promise<string>
+    {
+        return promisifyCall((cb) => this.etag(ctx, path, cb))
+    }
+
+    /**
+     * Get the etag of the resource.
+     * The default etag, if '_etag' is not implemented, is to hash the last modified date information of the resource and wrap it with quotes.
+     * 
+     * @param ctx Context of the operation.
+     * @param _path Path of the resource.
      * @param callback Returns the etag of the resource.
      */
     etag(ctx : RequestContext, _path : Path | string, callback : ReturnCallback<string>) : void
@@ -343,6 +378,26 @@ export abstract class FileSystem implements ISerializableFileSystem
      * 
      * @param ctx Context of the operation.
      * @param path Path of the resource.
+     */
+    deleteAsync(ctx : RequestContext, path : Path | string) : Promise<void>
+    /**
+     * Delete a resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     * @param depth Depth of the delete. Might be ignored depending on the implementation.
+     */
+    deleteAsync(ctx : RequestContext, path : Path | string, depth : number) : Promise<void>
+    deleteAsync(ctx : RequestContext, path : Path | string, depth ?: number) : Promise<void>
+    {
+        return promisifyCall((cb) => this.delete(ctx, path, depth, cb))
+    }
+
+    /**
+     * Delete a resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
      * @param callback Returns an error if one occured.
      */
     delete(ctx : RequestContext, path : Path | string, callback : SimpleCallback) : void
@@ -357,7 +412,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     delete(ctx : RequestContext, path : Path | string, depth : number, callback : SimpleCallback) : void
     delete(ctx : RequestContext, _path : Path | string, _depth : number | SimpleCallback, _callback ?: SimpleCallback) : void
     {
-        const depth = _callback ? _depth as number : -1;
+        const depth = ensureValue(_callback ? _depth as number : undefined, -1);
         const callbackFinal = _callback ? _callback : _depth as SimpleCallback;
         const path = new Path(_path);
 
@@ -407,6 +462,79 @@ export abstract class FileSystem implements ISerializableFileSystem
     }
     protected _delete?(path : Path, ctx : DeleteInfo, callback : SimpleCallback) : void
     
+    /**
+     * Open a stream to write the content of the resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     */
+    openWriteStreamAsync(ctx : RequestContext, path : Path | string) : Promise<{ stream : Writable, created : boolean }>
+    /**
+     * Open a stream to write the content of the resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     * @param estimatedSize Estimate of the size to write.
+     */
+    openWriteStreamAsync(ctx : RequestContext, path : Path | string, estimatedSize : number) : Promise<{ stream : Writable, created : boolean }>
+    /**
+     * Open a stream to write the content of the resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     * @param targetSource Define if the content must be the source or the computed content. Might make no difference depending on the implementation.
+     */
+    openWriteStreamAsync(ctx : RequestContext, path : Path | string, targetSource : boolean) : Promise<{ stream : Writable, created : boolean }>
+    /**
+     * Open a stream to write the content of the resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     * @param targetSource Define if the content must be the source or the computed content. Might make no difference depending on the implementation.
+     * @param estimatedSize Estimate of the size to write.
+     */
+    openWriteStreamAsync(ctx : RequestContext, path : Path | string, targetSource : boolean, estimatedSize : number) : Promise<{ stream : Writable, created : boolean }>
+    /**
+     * Open a stream to write the content of the resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     * @param mode Define if this operation can/must create a new resource and/or its intermediate resources ('/folder1/folder2/file3', if 'folder2' doesn't exist, it is an intermediate).
+     */
+    openWriteStreamAsync(ctx : RequestContext, path : Path | string, mode : OpenWriteStreamMode) : Promise<{ stream : Writable, created : boolean }>
+    /**
+     * Open a stream to write the content of the resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     * @param mode Define if this operation can/must create a new resource and/or its intermediate resources ('/folder1/folder2/file3', if 'folder2' doesn't exist, it is an intermediate).
+     * @param estimatedSize Estimate of the size to write.
+     */
+    openWriteStreamAsync(ctx : RequestContext, path : Path | string, mode : OpenWriteStreamMode, estimatedSize : number) : Promise<{ stream : Writable, created : boolean }>
+    /**
+     * Open a stream to write the content of the resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     * @param mode Define if this operation can/must create a new resource and/or its intermediate resources ('/folder1/folder2/file3', if 'folder2' doesn't exist, it is an intermediate).
+     * @param targetSource Define if the content must be the source or the computed content. Might make no difference depending on the implementation.
+     */
+    openWriteStreamAsync(ctx : RequestContext, path : Path | string, mode : OpenWriteStreamMode, targetSource : boolean) : Promise<{ stream : Writable, created : boolean }>
+    /**
+     * Open a stream to write the content of the resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     * @param mode Define if this operation can/must create a new resource and/or its intermediate resources ('/folder1/folder2/file3', if 'folder2' doesn't exist, it is an intermediate).
+     * @param targetSource Define if the content must be the source or the computed content. Might make no difference depending on the implementation.
+     * @param estimatedSize Estimate of the size to write.
+     */
+    openWriteStreamAsync(ctx : RequestContext, path : Path | string, mode : OpenWriteStreamMode, targetSource : boolean, estimatedSize : number) : Promise<{ stream : Writable, created : boolean }>
+    openWriteStreamAsync(ctx : RequestContext, path : Path | string, mode ?: any, targetSource ?: any, estimatedSize ?: any) : Promise<{ stream : Writable, created : boolean }>
+    {
+        return promisifyCall((cb) => this.openWriteStream(ctx, path, mode, targetSource, estimatedSize, (e, data1, data2) => cb(e, e ? undefined : { stream: data1, created: data2 })));
+    }
+
     /**
      * Open a stream to write the content of the resource.
      * 
@@ -627,6 +755,43 @@ export abstract class FileSystem implements ISerializableFileSystem
      * 
      * @param ctx Context of the operation.
      * @param path Path of the resource.
+     */
+    openReadStreamAsync(ctx : RequestContext, path : Path | string) : Promise<Readable>
+    /**
+     * Open a stream to read the content of the resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     * @param estimatedSize Estimate of the size to read.
+     */
+    openReadStreamAsync(ctx : RequestContext, path : Path | string, estimatedSize : number) : Promise<Readable>
+    /**
+     * Open a stream to read the content of the resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     * @param targetSource Define if the content must be the source or the computed content. Might make no difference depending on the implementation.
+     */
+    openReadStreamAsync(ctx : RequestContext, path : Path | string, targetSource : boolean) : Promise<Readable>
+    /**
+     * Open a stream to read the content of the resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     * @param targetSource Define if the content must be the source or the computed content. Might make no difference depending on the implementation.
+     * @param estimatedSize Estimate of the size to read.
+     */
+    openReadStreamAsync(ctx : RequestContext, path : Path | string, targetSource : boolean, estimatedSize : number) : Promise<Readable>
+    openReadStreamAsync(ctx : RequestContext, path : Path | string, targetSource ?: any, estimatedSize ?: any) : Promise<Readable>
+    {
+        return promisifyCall((cb) => this.openReadStream(ctx, path, targetSource, estimatedSize, cb))
+    }
+    
+    /**
+     * Open a stream to read the content of the resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
      * @param callback Returns the stream.
      */
     openReadStream(ctx : RequestContext, path : Path | string, callback : ReturnCallback<Readable>) : void
@@ -660,8 +825,8 @@ export abstract class FileSystem implements ISerializableFileSystem
     openReadStream(ctx : RequestContext, path : Path | string, targetSource : boolean, estimatedSize : number, callback : ReturnCallback<Readable>) : void
     openReadStream(ctx : RequestContext, _path : Path | string, _targetSource : boolean | number | ReturnCallback<Readable>, _estimatedSize ?: number | ReturnCallback<Readable>, _callback ?: ReturnCallback<Readable>) : void
     {
-        const targetSource = _targetSource.constructor === Boolean ? _targetSource as boolean : false;
-        const estimatedSize = _callback ? _estimatedSize as number : _estimatedSize ? _targetSource as number : -1;
+        const targetSource = ensureValue(_targetSource.constructor === Boolean ? _targetSource as boolean : undefined, false);
+        const estimatedSize = ensureValue(_callback ? _estimatedSize as number : _estimatedSize ? _targetSource as number : undefined, -1);
         const callbackFinal = _callback ? _callback : _estimatedSize ? _estimatedSize as ReturnCallback<Readable> : _targetSource as ReturnCallback<Readable>;
         const path = new Path(_path);
 
@@ -694,6 +859,28 @@ export abstract class FileSystem implements ISerializableFileSystem
      * @param ctx Context of the operation.
      * @param pathFrom Path of the resource to move.
      * @param pathTo Destination path to where move the resource.
+     */
+    moveAsync(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string) : Promise<boolean>
+    /**
+     * Move a resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param pathFrom Path of the resource to move.
+     * @param pathTo Destination path to where move the resource.
+     * @param overwrite 
+     */
+    moveAsync(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string, overwrite : boolean) : Promise<boolean>
+    moveAsync(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string, overwrite ?: boolean) : Promise<boolean>
+    {
+        return promisifyCall((cb) => this.move(ctx, pathFrom, pathTo, overwrite, cb))
+    }
+
+    /**
+     * Move a resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param pathFrom Path of the resource to move.
+     * @param pathTo Destination path to where move the resource.
      * @param callback Returns if the resource has been owerwritten.
      */
     move(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string, callback : ReturnCallback<boolean>) : void
@@ -710,7 +897,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     move(ctx : RequestContext, _pathFrom : Path | string, _pathTo : Path | string, _overwrite : boolean | ReturnCallback<boolean>, _callback ?: ReturnCallback<boolean>) : void
     {
         const callbackFinal = _callback ? _callback : _overwrite as ReturnCallback<boolean>;
-        const overwrite = _callback ? _overwrite as boolean : false;
+        const overwrite = ensureValue(_callback ? _overwrite as boolean : undefined, false);
         const pathFrom = new Path(_pathFrom);
         const pathTo = new Path(_pathTo);
 
@@ -765,6 +952,47 @@ export abstract class FileSystem implements ISerializableFileSystem
      * @param ctx Context of the operation.
      * @param pathFrom Path of the resource to copy.
      * @param pathTo Destination path to where copy the resource.
+     */
+    copyAsync(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string) : Promise<boolean>
+    /**
+     * Copy a resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param pathFrom Path of the resource to copy.
+     * @param pathTo Destination path to where copy the resource.
+     * @param depth Depth to make the copy. (Infinite = -1)
+     */
+    copyAsync(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string, depth : number) : Promise<boolean>
+    /**
+     * Copy a resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param pathFrom Path of the resource to copy.
+     * @param pathTo Destination path to where copy the resource.
+     * @param overwrite 
+     */
+    copyAsync(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string, overwrite : boolean) : Promise<boolean>
+    /**
+     * Copy a resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param pathFrom Path of the resource to copy.
+     * @param pathTo Destination path to where copy the resource.
+     * @param overwrite 
+     * @param depth Depth to make the copy. (Infinite = -1)
+     */
+    copyAsync(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string, overwrite : boolean, depth : number) : Promise<boolean>
+    copyAsync(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string, overwrite ?: any, depth ?: any) : Promise<boolean>
+    {
+        return promisifyCall((cb) => this.copy(ctx, pathFrom, pathTo, overwrite, depth))
+    }
+
+    /**
+     * Copy a resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param pathFrom Path of the resource to copy.
+     * @param pathTo Destination path to where copy the resource.
      * @param callback Returns if the resource has been owerwritten.
      */
     copy(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string, callback : ReturnCallback<boolean>) : void
@@ -801,8 +1029,8 @@ export abstract class FileSystem implements ISerializableFileSystem
     copy(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string, overwrite : boolean, depth : number, callback : ReturnCallback<boolean>) : void
     copy(ctx : RequestContext, _pathFrom : Path | string, _pathTo : Path | string, _overwrite : boolean | number | ReturnCallback<boolean>, _depth ?: number | ReturnCallback<boolean>, _callback ?: ReturnCallback<boolean>) : void
     {
-        const overwrite = _overwrite.constructor === Boolean ? _overwrite as boolean : false;
-        const depth = _callback ? _depth as number : !_depth ? -1 : _overwrite.constructor === Number ? _overwrite as number : -1;
+        const overwrite = ensureValue(_overwrite.constructor === Boolean ? _overwrite as boolean : undefined, false);
+        const depth = ensureValue(_callback ? _depth as number : !_depth ? -1 : _overwrite.constructor === Number ? _overwrite as number : undefined, -1);
         const callbackFinal = _callback ? _callback : _depth ? _depth as ReturnCallback<boolean> : _overwrite as ReturnCallback<boolean>;
         const pathFrom = new Path(_pathFrom);
         const pathTo = new Path(_pathTo);
@@ -855,6 +1083,30 @@ export abstract class FileSystem implements ISerializableFileSystem
      * @param ctx Context of the operation.
      * @param pathFrom Path of the resource to rename.
      * @param newName New name of the resource.
+     */
+    renameAsync(ctx : RequestContext, pathFrom : Path | string, newName : string) : Promise<boolean>
+    /**
+     * Rename the resource.
+     * By default, if the '_rename' method is not implemented, it makes a move.
+     * 
+     * @param ctx Context of the operation.
+     * @param pathFrom Path of the resource to rename.
+     * @param newName New name of the resource.
+     * @param overwrite 
+     */
+    renameAsync(ctx : RequestContext, pathFrom : Path | string, newName : string, overwrite : boolean) : Promise<boolean>
+    renameAsync(ctx : RequestContext, pathFrom : Path | string, newName : string, overwrite ?: boolean) : Promise<boolean>
+    {
+        return promisifyCall((cb) => this.rename(ctx, pathFrom, newName, overwrite, cb))
+    }
+
+    /**
+     * Rename the resource.
+     * By default, if the '_rename' method is not implemented, it makes a move.
+     * 
+     * @param ctx Context of the operation.
+     * @param pathFrom Path of the resource to rename.
+     * @param newName New name of the resource.
      * @param callback Returns if the resource has been owerwritten.
      */
     rename(ctx : RequestContext, pathFrom : Path | string, newName : string, callback : ReturnCallback<boolean>) : void
@@ -871,7 +1123,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     rename(ctx : RequestContext, pathFrom : Path | string, newName : string, overwrite : boolean, callback : ReturnCallback<boolean>) : void
     rename(ctx : RequestContext, _pathFrom : Path | string, newName : string, _overwrite : boolean | ReturnCallback<boolean>, _callback ?: ReturnCallback<boolean>) : void
     {
-        const overwrite = _callback ? _overwrite as boolean : false;
+        const overwrite = ensureValue(_callback ? _overwrite as boolean : undefined, false);
         const callbackFinal = _callback ? _callback : _overwrite as ReturnCallback<boolean>;
         const pathFrom = new Path(_pathFrom);
 
@@ -962,6 +1214,28 @@ export abstract class FileSystem implements ISerializableFileSystem
      * 
      * @param ctx Context of the operation.
      * @param path Path of the resource.
+     */
+    mimeTypeAsync(ctx : RequestContext, path : Path | string) : Promise<string>
+    /**
+     * Get the mime type and the encoding of the resource's content.
+     * By default, it uses the file name of the resource to determine its mime type and its encoding.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     * @param targetSource Define if the content must be the source or the computed content. Might make no difference depending on the implementation.
+     */
+    mimeTypeAsync(ctx : RequestContext, path : Path | string, targetSource : boolean) : Promise<string>
+    mimeTypeAsync(ctx : RequestContext, path : Path | string, targetSource ?: boolean) : Promise<string>
+    {
+        return promisifyCall((cb) => this.mimeType(ctx, path, targetSource, cb))
+    }
+
+    /**
+     * Get the mime type and the encoding of the resource's content.
+     * By default, it uses the file name of the resource to determine its mime type and its encoding.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
      * @param callback Returns the mime type and the encoding of the resource.
      */
     mimeType(ctx : RequestContext, path : Path | string, callback : ReturnCallback<string>) : void
@@ -977,7 +1251,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     mimeType(ctx : RequestContext, path : Path | string, targetSource : boolean, callback : ReturnCallback<string>) : void
     mimeType(ctx : RequestContext, _path : Path | string, _targetSource : boolean | ReturnCallback<string>, _callback ?: ReturnCallback<string>) : void
     {
-        const targetSource = _callback ? _targetSource as boolean : true;
+        const targetSource = ensureValue(_callback ? _targetSource as boolean : undefined, true);
         const callback = _callback ? _callback : _targetSource as ReturnCallback<string>;
         const path = new Path(_path);
 
@@ -1005,6 +1279,28 @@ export abstract class FileSystem implements ISerializableFileSystem
      * 
      * @param ctx Context of the operation.
      * @param path Path of the resource.
+     */
+    sizeAsync(ctx : RequestContext, path : Path | string) : Promise<number>
+    /**
+     * Get the size of the resource's content.
+     * If the '_size' method is not implemented, it returns 'undefined'.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     * @param targetSource Define if the content must be the source or the computed content. Might make no difference depending on the implementation.
+     */
+    sizeAsync(ctx : RequestContext, path : Path | string, targetSource : boolean) : Promise<number>
+    sizeAsync(ctx : RequestContext, path : Path | string, targetSource ?: boolean) : Promise<number>
+    {
+        return promisifyCall((cb) => this.size(ctx, path, targetSource, cb))
+    }
+
+    /**
+     * Get the size of the resource's content.
+     * If the '_size' method is not implemented, it returns 'undefined'.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
      * @param callback Returns the size of the resource.
      */
     size(ctx : RequestContext, path : Path | string, callback : ReturnCallback<number>) : void
@@ -1020,7 +1316,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     size(ctx : RequestContext, path : Path | string, targetSource : boolean, callback : ReturnCallback<number>) : void
     size(ctx : RequestContext, path : Path | string, _targetSource : boolean | ReturnCallback<number>, _callback ?: ReturnCallback<number>) : void
     {
-        const targetSource = _callback ? _targetSource as boolean : false;
+        const targetSource = ensureValue(_callback ? _targetSource as boolean : undefined, false);
         const callback = _callback ? _callback : _targetSource as ReturnCallback<number>;
         const pPath = new Path(path);
 
@@ -1037,6 +1333,17 @@ export abstract class FileSystem implements ISerializableFileSystem
         })
     }
     protected _size?(path : Path, ctx : SizeInfo, callback : ReturnCallback<number>) : void
+
+    /**
+     * Get the list of available lock kinds.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     */
+    availableLocksAsync(ctx : RequestContext, path : Path | string) : Promise<LockKind[]>
+    {
+        return promisifyCall((cb) => this.availableLocks(ctx, path, cb))
+    }
 
     /**
      * Get the list of available lock kinds.
@@ -1074,6 +1381,17 @@ export abstract class FileSystem implements ISerializableFileSystem
      * 
      * @param ctx Context of the operation.
      * @param path Path of the resource.
+     */
+    lockManagerAsync(ctx : RequestContext, path : Path | string) : Promise<ILockManager>
+    {
+        return promisifyCall((cb) => this.lockManager(ctx, path, cb))
+    }
+
+    /**
+     * Get the lock manager of the resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
      * @param callback Returns the lock manager of the resource.
      */
     lockManager(ctx : RequestContext, path : Path | string, callback : ReturnCallback<ILockManager>) : void
@@ -1089,13 +1407,20 @@ export abstract class FileSystem implements ISerializableFileSystem
                 
                 const buffIsLocked = new BufferedIsLocked(this, ctx, pPath);
                 const fs = this;
-                
-                callback(null, {
+                const manager = {
+                    getLocksAsync() : Promise<Lock[]>
+                    {
+                        return promisifyCall((cb) => manager.getLocks(cb));
+                    },
                     getLocks(callback : ReturnCallback<Lock[]>) : void
                     {
                         issuePrivilegeCheck(fs, ctx, pPath, 'canReadLocks', callback, () => {
                             lm.getLocks(callback);
                         })
+                    },
+                    setLockAsync(lock : Lock) : Promise<void>
+                    {
+                        return promisifyCall((cb) => manager.setLock(lock, cb));
                     },
                     setLock(lock : Lock, callback : SimpleCallback) : void
                     {
@@ -1113,6 +1438,10 @@ export abstract class FileSystem implements ISerializableFileSystem
                             })
                         })
                     },
+                    removeLockAsync(uuid : string) : Promise<boolean>
+                    {
+                        return promisifyCall((cb) => manager.removeLock(uuid, cb));
+                    },
                     removeLock(uuid : string, callback : ReturnCallback<boolean>) : void
                     {
                         fs.emit('before-lock-remove', ctx, pPath, { uuid });
@@ -1129,11 +1458,19 @@ export abstract class FileSystem implements ISerializableFileSystem
                             })
                         })
                     },
+                    getLockAsync(uuid : string) : Promise<Lock>
+                    {
+                        return promisifyCall((cb) => manager.getLock(uuid, cb));
+                    },
                     getLock(uuid : string, callback : ReturnCallback<Lock>) : void
                     {
                         issuePrivilegeCheck(fs, ctx, pPath, 'canReadLocks', callback, () => {
                             lm.getLock(uuid, callback);
                         })
+                    },
+                    refreshAsync(uuid : string, timeoutSeconds : number) : Promise<Lock>
+                    {
+                        return promisifyCall((cb) => manager.refresh(uuid, timeoutSeconds, cb));
                     },
                     refresh(uuid : string, timeoutSeconds : number, callback : ReturnCallback<Lock>) : void
                     {
@@ -1151,11 +1488,24 @@ export abstract class FileSystem implements ISerializableFileSystem
                             })
                         })
                     }
-                })
+                };
+
+                callback(null, manager)
             });
         })
     }
     protected abstract _lockManager(path : Path, ctx : LockManagerInfo, callback : ReturnCallback<ILockManager>) : void
+
+    /**
+     * Get the property manager of the resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     */
+    propertyManagerAsync(ctx : RequestContext, path : Path | string) : Promise<IPropertyManager>
+    {
+        return promisifyCall((cb) => this.propertyManager(ctx, path, cb))
+    }
 
     /**
      * Get the property manager of the resource.
@@ -1253,6 +1603,27 @@ export abstract class FileSystem implements ISerializableFileSystem
      * 
      * @param ctx Context of the operation.
      * @param path Path of the resource.
+     */
+    readDirAsync(ctx : RequestContext, path : Path | string) : Promise<string[]>
+    /**
+     * Get the list of children of a resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     * @param retrieveExternalFiles Define if it must include the resources out of the file system, like other file systems mounted as child.
+     */
+    readDirAsync(ctx : RequestContext, path : Path | string, retrieveExternalFiles : boolean) : Promise<string[]>
+    readDirAsync(ctx : RequestContext, path : Path | string, retrieveExternalFiles ?: boolean) : Promise<string[]>
+    {
+        return promisifyCall((cb) => this.readDir(ctx, path, retrieveExternalFiles, cb));
+    }
+
+    /**
+     * Get the list of children of a resource.
+     * Excludes the external resources, such as file systems mounted as child.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
      * @param callback Returns the list of children (file name) of the resource.
      */
     readDir(ctx : RequestContext, path : Path | string, callback : ReturnCallback<string[]>) : void
@@ -1267,7 +1638,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     readDir(ctx : RequestContext, path : Path | string, retrieveExternalFiles : boolean, callback : ReturnCallback<string[]>) : void
     readDir(ctx : RequestContext, path : Path | string, _retrieveExternalFiles : boolean | ReturnCallback<string[]>, _callback ?: ReturnCallback<string[]>) : void
     {
-        const retrieveExternalFiles = _callback ? _retrieveExternalFiles as boolean : false;
+        const retrieveExternalFiles = ensureValue(_callback ? _retrieveExternalFiles as boolean : undefined, false);
         const __callback = _callback ? _callback : _retrieveExternalFiles as ReturnCallback<string[]>;
         const pPath = new Path(path);
         const callback = (e ?: Error, data ?: Path[]) => {
@@ -1362,6 +1733,20 @@ export abstract class FileSystem implements ISerializableFileSystem
      * 
      * @param ctx Context of the operation.
      * @param path Path of the resource.
+     */
+    creationDateAsync(ctx : RequestContext, path : Path | string) : Promise<number>
+    {
+        return promisifyCall((cb) => this.creationDate(ctx, path, cb));
+    }
+
+    /**
+     * Get the creation date information of a resource.
+     * If neither '_creationDate' nor '_lastModifiedDate' are implemented, it returns 0.
+     * If '_creationDate' is not implemented, it calls the 'lastModifiedDate' method.
+     * Otherwise it calls the '_creationDate' method.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
      * @param callback Returns the creation date of the resource.
      */
     creationDate(ctx : RequestContext, path : Path | string, callback : ReturnCallback<number>) : void
@@ -1383,6 +1768,20 @@ export abstract class FileSystem implements ISerializableFileSystem
         })
     }
     protected _creationDate?(path : Path, ctx : CreationDateInfo, callback : ReturnCallback<number>) : void
+
+    /**
+     * Get the last modified date information of a resource.
+     * If neither '_creationDate' nor '_lastModifiedDate' are implemented, it returns 0.
+     * If '_lastModifiedDate' is not implemented, it calls the 'creationDate' method.
+     * Otherwise it calls the '_lastModifiedDate' method.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     */
+    lastModifiedDateAsync(ctx : RequestContext, path : Path | string) : Promise<number>
+    {
+        return promisifyCall((cb) => this.lastModifiedDate(ctx, path, cb));
+    }
 
     /**
      * Get the last modified date information of a resource.
@@ -1419,6 +1818,17 @@ export abstract class FileSystem implements ISerializableFileSystem
      * 
      * @param ctx Context of the operation.
      * @param path Path of the resource.
+     */
+    webNameAsync(ctx : RequestContext, path : Path | string) : Promise<string>
+    {
+        return promisifyCall((cb) => this.webName(ctx, path, cb));
+    }
+
+    /**
+     * Get the name of the resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
      * @param callback Returns the name of the resource.
      */
     webName(ctx : RequestContext, path : Path | string, callback : ReturnCallback<string>) : void
@@ -1433,6 +1843,19 @@ export abstract class FileSystem implements ISerializableFileSystem
                     callback(null, pPath.fileName());
             })
         })
+    }
+
+    /**
+     * Get the 'displayName' information of the resource.
+     * This value is used in the 'DAV:displayName' tag in the PROPFIND response body.
+     * Its default behaviour is to return the result of the 'webName' method. This behaviour can be overrided by implementing the '_displayName' method.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     */
+    displayNameAsync(ctx : RequestContext, path : Path | string) : Promise<string>
+    {
+        return promisifyCall((cb) => this.displayName(ctx, path, cb));
     }
 
     /**
@@ -1466,6 +1889,17 @@ export abstract class FileSystem implements ISerializableFileSystem
      * 
      * @param ctx Context of the operation.
      * @param path Path of the resource.
+     */
+    typeAsync(ctx : RequestContext, path : Path | string) : Promise<ResourceType>
+    {
+        return promisifyCall((cb) => this.type(ctx, path, cb));
+    }
+
+    /**
+     * Get the type of the resource.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
      * @param callback Returns the type of the resource.
      */
     type(ctx : RequestContext, path : Path | string, callback : ReturnCallback<ResourceType>) : void
@@ -1487,9 +1921,48 @@ export abstract class FileSystem implements ISerializableFileSystem
      * 
      * @param ctx Context of the operation.
      * @param subTree Sub-tree to add.
+     */
+    addSubTreeAsync(ctx : RequestContext, subTree : SubTree) : Promise<void>
+    /**
+     * Add a resource to the file system as root.
+     * 
+     * This method is equivalent to the 'fs.create(ctx, '/', resourceType, callback)' method.
+     * 
+     * @param ctx Context of the operation.
+     * @param resourceType Type of the resource to add.
+     */
+    addSubTreeAsync(ctx : RequestContext, resourceType : ResourceType | string | Buffer) : Promise<void>
+    /**
+     * Add a sub-tree to the file system.
+     * 
+     * @param ctx Context of the operation.
+     * @param rootPath Path to which add the sub-tree.
+     * @param subTree Sub-tree to add.
+     */
+    addSubTreeAsync(ctx : RequestContext, rootPath : Path | string, subTree : SubTree) : Promise<void>
+    /**
+     * Add a resource to the file system.
+     * 
+     * This method is equivalent to the 'fs.create(ctx, rootPath, resourceType, callback)' method.
+     * 
+     * @param ctx Context of the operation.
+     * @param rootPath Path to which add the resource.
+     * @param resourceType Type of the resource to add.
+     */
+    addSubTreeAsync(ctx : RequestContext, rootPath : Path | string, resourceType : ResourceType | string | Buffer) : Promise<void>
+    addSubTreeAsync(ctx : RequestContext, rootPath : any, tree ?: any) : Promise<void>
+    {
+        return promisifyCall((cb) => this.addSubTree(ctx, rootPath, tree, cb))
+    }
+
+    /**
+     * Add a sub-tree to the file system at the root.
+     * 
+     * @param ctx Context of the operation.
+     * @param subTree Sub-tree to add.
      * @param callback Returns an error if one occured.
      */
-    addSubTree(ctx : RequestContext, subTree : SubTree, callback : SimpleCallback)
+    addSubTree(ctx : RequestContext, subTree : SubTree, callback : SimpleCallback) : void
     /**
      * Add a resource to the file system as root.
      * 
@@ -1499,7 +1972,7 @@ export abstract class FileSystem implements ISerializableFileSystem
      * @param resourceType Type of the resource to add.
      * @param callback Returns an error if one occured.
      */
-    addSubTree(ctx : RequestContext, resourceType : ResourceType | string | Buffer, callback : SimpleCallback)
+    addSubTree(ctx : RequestContext, resourceType : ResourceType | string | Buffer, callback : SimpleCallback) : void
     /**
      * Add a sub-tree to the file system.
      * 
@@ -1508,7 +1981,7 @@ export abstract class FileSystem implements ISerializableFileSystem
      * @param subTree Sub-tree to add.
      * @param callback Returns an error if one occured.
      */
-    addSubTree(ctx : RequestContext, rootPath : Path | string, subTree : SubTree, callback : SimpleCallback)
+    addSubTree(ctx : RequestContext, rootPath : Path | string, subTree : SubTree, callback : SimpleCallback) : void
     /**
      * Add a resource to the file system.
      * 
@@ -1519,11 +1992,12 @@ export abstract class FileSystem implements ISerializableFileSystem
      * @param resourceType Type of the resource to add.
      * @param callback Returns an error if one occured.
      */
-    addSubTree(ctx : RequestContext, rootPath : Path | string, resourceType : ResourceType | string | Buffer, callback : SimpleCallback)
-    addSubTree(ctx : RequestContext, _rootPath : Path | string | SubTree | ResourceType | SimpleCallback | string | Buffer, _tree : SubTree | ResourceType | SimpleCallback | string | Buffer, _callback ?: SimpleCallback)
+    addSubTree(ctx : RequestContext, rootPath : Path | string, resourceType : ResourceType | string | Buffer, callback : SimpleCallback) : void
+    addSubTree(ctx : RequestContext, _rootPath : Path | string | SubTree | ResourceType | SimpleCallback | string | Buffer, _tree : SubTree | ResourceType | SimpleCallback | string | Buffer, _callback ?: SimpleCallback) : void
     {
-        const tree = _callback ? _tree as SubTree | ResourceType : _rootPath as SubTree | ResourceType;
-        const rootPath = _callback ? new Path(_rootPath as Path | string) : new Path('/');
+        const _rootPathIsPath = Path.isPath(_rootPath);
+        const tree = _rootPathIsPath ? _tree as SubTree | ResourceType : _rootPath as SubTree | ResourceType;
+        const rootPath = _rootPathIsPath ? new Path(_rootPath as Path | string) : new Path('/');
         let callback = _callback ? _callback : _tree as SimpleCallback;
         callback = callback ? callback : () => {};
 
@@ -1577,6 +2051,26 @@ export abstract class FileSystem implements ISerializableFileSystem
      * 
      * @param ctx Context of the operation.
      * @param startPath Path where to start the research of locks.
+     */
+    listDeepLocksAsync(ctx : RequestContext, startPath : Path | string) : Promise<{ [path : string] : Lock[] }>
+    /**
+     * Search for locks in the parents, starting at the 'startPath' path.
+     * 
+     * @param ctx Context of the operation.
+     * @param startPath Path where to start the research of locks.
+     * @param depth Depth to filter out-of-range locks (default = 0) (Infinite = -1).
+     */
+    listDeepLocksAsync(ctx : RequestContext, startPath : Path | string, depth : number) : Promise<{ [path : string] : Lock[] }>
+    listDeepLocksAsync(ctx : RequestContext, startPath : Path | string, depth ?: number) : Promise<{ [path : string] : Lock[] }>
+    {
+        return promisifyCall((cb) => this.listDeepLocks(ctx, startPath, depth, cb))
+    }
+
+    /**
+     * Search for locks in the parents, starting at the 'startPath' path.
+     * 
+     * @param ctx Context of the operation.
+     * @param startPath Path where to start the research of locks.
      * @param callback Returns an object { path: lock[] }.
      */
     listDeepLocks(ctx : RequestContext, startPath : Path | string, callback : ReturnCallback<{ [path : string] : Lock[] }>)
@@ -1591,7 +2085,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     listDeepLocks(ctx : RequestContext, startPath : Path | string, depth : number, callback : ReturnCallback<{ [path : string] : Lock[] }>)
     listDeepLocks(ctx : RequestContext, startPath : Path | string, _depth : number | ReturnCallback<{ [path : string] : Lock[] }>, _callback ?: ReturnCallback<{ [path : string] : Lock[] }>)
     {
-        const depth = _callback ? _depth as number : 0;
+        const depth = ensureValue(_callback ? _depth as number : undefined, 0);
         const callback = _callback ? _callback : _depth as ReturnCallback<{ [path : string] : Lock[] }>;
         const pStartPath = new Path(startPath);
         
@@ -1667,9 +2161,29 @@ export abstract class FileSystem implements ISerializableFileSystem
      * Get the root based file system path. This can also be understood as getting the mount path of the file system.
      * 
      * @param ctx Context of the operation.
+     */
+    getFullPathAsync(ctx : RequestContext) : Promise<Path>
+    /**
+     * Get the root based path.
+     * 
+     * @example If the file system is mounted on '/folder1', resolving '/folder2/folder3' will result to '/folder1/folder2/folder3'.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path to resolve.
+     */
+    getFullPathAsync(ctx : RequestContext, path : Path | string) : Promise<Path>
+    getFullPathAsync(ctx : RequestContext, path ?: Path | string) : Promise<Path>
+    {
+        return promisifyCall((cb) => this.getFullPath(ctx, path, cb));
+    }
+
+    /**
+     * Get the root based file system path. This can also be understood as getting the mount path of the file system.
+     * 
+     * @param ctx Context of the operation.
      * @param callback Returns the full path (root based).
      */
-    getFullPath(ctx : RequestContext, callback : ReturnCallback<Path>)
+    getFullPath(ctx : RequestContext, callback : ReturnCallback<Path>) : void
     /**
      * Get the root based path.
      * 
@@ -1679,15 +2193,32 @@ export abstract class FileSystem implements ISerializableFileSystem
      * @param path Path to resolve.
      * @param callback Returns the root based path.
      */
-    getFullPath(ctx : RequestContext, path : Path | string, callback : ReturnCallback<Path>)
-    getFullPath(ctx : RequestContext, _path : Path | string | ReturnCallback<Path>, _callback ?: ReturnCallback<Path>)
+    getFullPath(ctx : RequestContext, path : Path | string, callback : ReturnCallback<Path>) : void
+    getFullPath(ctx : RequestContext, _path : Path | string | ReturnCallback<Path>, _callback ?: ReturnCallback<Path>) : void
     {
-        const path = _callback ? new Path(_path as Path | string) : undefined;
+        const path = !_path || typeof _path === 'function' ? undefined : new Path(_path as Path | string);
         const callback = _callback ? _callback : _path as ReturnCallback<Path>;
         
         ctx.server.getFileSystemPath(this, (fsPath) => {
             callback(null, path ? fsPath.getChildPath(path) : fsPath);
         })
+    }
+
+    /**
+     * From the global paths (root based), retrieve the file system local paths (file system based).
+     * 
+     * @example If the file system is mounted on '/folder1', the path '/folder1/folder2/folder3' will be returned as '/folder2/folder3'.
+     * @param ctx Context of the operation.
+     * @param fullPath The path or the list of paths to localize in the file system.
+     */
+    localizeAsync(ctx : RequestContext, fullPath : Path) : Promise<Path[]>
+    localizeAsync(ctx : RequestContext, fullPath : Path[]) : Promise<Path[]>
+    localizeAsync(ctx : RequestContext, fullPath : string) : Promise<Path[]>
+    localizeAsync(ctx : RequestContext, fullPath : string[]) : Promise<Path[]>
+    localizeAsync(ctx : RequestContext, fullPath : (string | Path)[]) : Promise<Path[]>
+    localizeAsync(ctx : RequestContext, fullPath : Path | string | (string | Path)[]) : Promise<Path[]>
+    {
+        return promisifyCall((cb) => this.localize(ctx, fullPath as any, cb));
     }
 
     /**
@@ -1727,6 +2258,24 @@ export abstract class FileSystem implements ISerializableFileSystem
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param privilege Privilege or list of privileges to check.
+     */
+    checkPrivilegeAsync(ctx : RequestContext, path : Path | string, privilege : BasicPrivilege) : Promise<boolean>
+    checkPrivilegeAsync(ctx : RequestContext, path : Path | string, privileges : BasicPrivilege[]) : Promise<boolean>
+    checkPrivilegeAsync(ctx : RequestContext, path : Path | string, privilege : string) : Promise<boolean>
+    checkPrivilegeAsync(ctx : RequestContext, path : Path | string, privileges : string[]) : Promise<boolean>
+    checkPrivilegeAsync(ctx : RequestContext, path : Path | string, privileges : BasicPrivilege | BasicPrivilege[]) : Promise<boolean>
+    checkPrivilegeAsync(ctx : RequestContext, path : Path | string, privileges : string | string[]) : Promise<boolean>
+    checkPrivilegeAsync(ctx : RequestContext, path : Path | string, privileges : string | string[] | BasicPrivilege | BasicPrivilege[]) : Promise<boolean>
+    {
+        return promisifyCall((cb) => this.checkPrivilege(ctx, path, privileges as any, cb));
+    }
+
+    /**
+     * Check if the user in the current context (ctx) has ALL privileges requested.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
+     * @param privilege Privilege or list of privileges to check.
      * @param callback Returns if the current user has ALL of the privileges.
      */
     checkPrivilege(ctx : RequestContext, path : Path | string, privilege : BasicPrivilege, callback : ReturnCallback<boolean>)
@@ -1757,6 +2306,18 @@ export abstract class FileSystem implements ISerializableFileSystem
      * 
      * @param ctx Context of the operation.
      * @param path Path of the resource.
+     */
+    privilegeManagerAsync(ctx : RequestContext, path : Path | string) : Promise<PrivilegeManager>
+    {
+        return promisifyCall((cb) => this.privilegeManager(ctx, path, cb));
+    }
+
+    /**
+     * Get the privilege manager to use to authorize actions for a user.
+     * By default, it returns the value in the server options, but it can be overrided by implementing the '_privilegeManager' method.
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
      * @param callback Returns the privilege manager representing the requested resource.
      */
     privilegeManager(ctx : RequestContext, path : Path | string, callback : ReturnCallback<PrivilegeManager>)
@@ -1777,6 +2338,21 @@ export abstract class FileSystem implements ISerializableFileSystem
      * 
      * @param ctx Context of the operation.
      * @param path Path of the resource.
+     */
+    isLockedAsync(ctx : RequestContext, path : Path | string) : Promise<boolean>
+    isLockedAsync(ctx : RequestContext, path : Path | string, depth : number) : Promise<boolean>
+    isLockedAsync(ctx : RequestContext, path : Path | string, depth ?: number) : Promise<boolean>
+    {
+        return promisifyCall((cb) => this.isLockedAsync(ctx, path, depth))
+    }
+
+    /**
+     * Get if a resource is locked by another user than the one in the context argument or if the user has rights to write to the resource.
+     * If the user has locked the resource and there is no conflicting lock, so the resource is considered as "not locked".
+     * If the user didn't locked the resource and is not administrator, then the resource is considered as "locked".
+     * 
+     * @param ctx Context of the operation.
+     * @param path Path of the resource.
      * @param callback Returns if the resource is locked or not (true = locked, cannot write to it ; false = not locked) or returns an error.
      */
     isLocked(ctx : RequestContext, path : Path | string, callback : ReturnCallback<boolean>)
@@ -1784,7 +2360,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     isLocked(ctx : RequestContext, path : Path | string, _depth : number | ReturnCallback<boolean>, _callback ?: ReturnCallback<boolean>)
     {
         const callback = _callback ? _callback : _depth as ReturnCallback<boolean>;
-        const depth = _callback ? _depth as number : 0;
+        const depth = typeof _depth === 'number' ? _depth : 0;
 
         if(ctx.user && ctx.user.isAdministrator)
             return callback(null, false);
@@ -1841,6 +2417,14 @@ export abstract class FileSystem implements ISerializableFileSystem
                 })
             })
         })
+    }
+
+    /**
+     * Serialize the file system based on the 'this.serializer()' value.
+     */
+    serializeAsync() : Promise<any>
+    {
+        return promisifyCall((cb) => this.serialize(cb))
     }
 
     /**

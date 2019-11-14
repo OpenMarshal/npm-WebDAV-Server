@@ -157,4 +157,140 @@ export class Resource
     {
         this.fs.isLocked(this.context, this.path, _depth, _callback);
     }
+
+    // Async methods
+        
+    deleteAsync() : Promise<void>
+    deleteAsync(depth : number) : Promise<void>
+    deleteAsync(_depth ?: any) : Promise<void>
+    {
+        return this.fs.deleteAsync(this.context, this.path, _depth);
+    }
+    
+    openWriteStreamAsync() : Promise<{ stream : Writable, created : boolean }>
+    openWriteStreamAsync(estimatedSize : number) : Promise<{ stream : Writable, created : boolean }>
+    openWriteStreamAsync(targetSource : boolean) : Promise<{ stream : Writable, created : boolean }>
+    openWriteStreamAsync(targetSource : boolean, estimatedSize : number) : Promise<{ stream : Writable, created : boolean }>
+    openWriteStreamAsync(mode : OpenWriteStreamMode) : Promise<{ stream : Writable, created : boolean }>
+    openWriteStreamAsync(mode : OpenWriteStreamMode, estimatedSize : number) : Promise<{ stream : Writable, created : boolean }>
+    openWriteStreamAsync(mode : OpenWriteStreamMode, targetSource : boolean) : Promise<{ stream : Writable, created : boolean }>
+    openWriteStreamAsync(mode : OpenWriteStreamMode, targetSource : boolean, estimatedSize : number) : Promise<{ stream : Writable, created : boolean }>
+    openWriteStreamAsync(_mode ?: any, _targetSource ?: any, _estimatedSize ?: any) : Promise<{ stream : Writable, created : boolean }>
+    {
+        return this.fs.openWriteStreamAsync(this.context, this.path, _mode, _targetSource, _estimatedSize);
+    }
+
+    openReadStreamAsync() : Promise<Readable>
+    openReadStreamAsync(estimatedSize : number) : Promise<Readable>
+    openReadStreamAsync(targetSource : boolean) : Promise<Readable>
+    openReadStreamAsync(targetSource : boolean, estimatedSize : number) : Promise<Readable>
+    openReadStreamAsync(_targetSource ?: any, _estimatedSize ?: any) : Promise<Readable>
+    {
+        return this.fs.openReadStreamAsync(this.context, this.path, _targetSource, _estimatedSize);
+    }
+    
+    copyAsync(pathTo : Path | string) : Promise<boolean>
+    copyAsync(pathTo : Path | string, depth : number) : Promise<boolean>
+    copyAsync(pathTo : Path | string, overwrite : boolean) : Promise<boolean>
+    copyAsync(pathTo : Path | string, overwrite : boolean, depth : number) : Promise<boolean>
+    copyAsync(pathTo : Path | string, _overwrite ?: any, _depth ?: any) : Promise<boolean>
+    {
+        return this.fs.copyAsync(this.context, this.path, pathTo, _overwrite, _depth);
+    }
+
+    mimeTypeAsync() : Promise<string>
+    mimeTypeAsync(targetSource : boolean) : Promise<string>
+    mimeTypeAsync(_targetSource ?: any) : Promise<string>
+    {
+        return this.fs.mimeTypeAsync(this.context, this.path, _targetSource);
+    }
+
+    sizeAsync() : Promise<number>
+    sizeAsync(targetSource : boolean) : Promise<number>
+    sizeAsync(_targetSource ?: any) : Promise<number>
+    {
+        return this.fs.sizeAsync(this.context, this.path, _targetSource);
+    }
+    
+    addSubTreeAsync(subTree : SubTree, callback : SimpleCallback)
+    addSubTreeAsync(resourceType : ResourceType, callback : SimpleCallback)
+    addSubTreeAsync(tree : any, callback : SimpleCallback)
+    {
+        return this.fs.addSubTreeAsync(this.context, this.path, tree);
+    }
+
+    createAsync(type : ResourceType) : Promise<void>
+    createAsync(type : ResourceType, createIntermediates : boolean) : Promise<void>
+    createAsync(type : ResourceType, _createIntermediates ?: any) : Promise<void>
+    {
+        return this.fs.createAsync(this.context, this.path, type, _createIntermediates);
+    }
+    etagAsync() : Promise<string>
+    {
+        return this.fs.etagAsync(this.context, this.path);
+    }
+    moveAsync(pathTo : Path | string) : Promise<boolean>
+    moveAsync(pathTo : Path | string, overwrite : boolean) : Promise<boolean>
+    moveAsync(pathTo : Path | string, _overwrite ?: any) : Promise<boolean>
+    {
+        return this.fs.moveAsync(this.context, this.path, pathTo, _overwrite);
+    }
+    renameAsync(newName : string) : Promise<boolean>
+    renameAsync(newName : string, overwrite : boolean) : Promise<boolean>
+    renameAsync(newName : string, _overwrite ?: any) : Promise<boolean>
+    {
+        return this.fs.renameAsync(this.context, this.path, newName, _overwrite);
+    }
+    availableLocksAsync() : Promise<LockKind[]>
+    {
+        return this.fs.availableLocksAsync(this.context, this.path);
+    }
+    lockManagerAsync() : Promise<ILockManager>
+    {
+        return this.fs.lockManagerAsync(this.context, this.path);
+    }
+    propertyManagerAsync() : Promise<IPropertyManager>
+    {
+        return this.fs.propertyManagerAsync(this.context, this.path);
+    }
+    readDirAsync() : Promise<string[]>
+    readDirAsync(retrieveExternalFiles : boolean) : Promise<string[]>
+    readDirAsync(_retrieveExternalFiles ?: any) : Promise<string[]>
+    {
+        return this.fs.readDirAsync(this.context, this.path, _retrieveExternalFiles);
+    }
+    creationDateAsync() : Promise<number>
+    {
+        return this.fs.creationDateAsync(this.context, this.path);
+    }
+    lastModifiedDateAsync() : Promise<number>
+    {
+        return this.fs.lastModifiedDateAsync(this.context, this.path);
+    }
+    webNameAsync() : Promise<string>
+    {
+        return this.fs.webNameAsync(this.context, this.path);
+    }
+    displayNameAsync() : Promise<string>
+    {
+        return this.fs.displayNameAsync(this.context, this.path);
+    }
+    typeAsync() : Promise<ResourceType>
+    {
+        return this.fs.typeAsync(this.context, this.path);
+    }
+    
+    listDeepLocksAsync() : Promise<{ [path : string] : Lock[] }>
+    listDeepLocksAsync(depth : number) : Promise<{ [path : string] : Lock[] }>
+    listDeepLocksAsync(_depth ?: any) : Promise<{ [path : string] : Lock[] }>
+    {
+        return this.fs.listDeepLocksAsync(this.context, this.path, _depth);
+    }
+    
+    isLockedAsync() : Promise<boolean>
+    isLockedAsync(depth : number) : Promise<boolean>
+    isLockedAsync(_depth ?: any) : Promise<boolean>
+    {
+        return this.fs.isLockedAsync(this.context, this.path, _depth);
+    }
 }

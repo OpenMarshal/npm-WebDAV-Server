@@ -13,6 +13,7 @@ import * as beforeAfter from './BeforeAfter';
 import * as startStop from './StartStop';
 import * as https from 'https';
 import * as http from 'http';
+import { SerializedData, FileSystemSerializer } from '../../../manager/v2/export';
 export declare type WebDAVServerStartCallback = (server?: http.Server) => void;
 export declare type FileSystemEvent = 'create' | 'delete' | 'openReadStream' | 'openWriteStream' | 'move' | 'copy' | 'rename' | 'before-create' | 'before-delete' | 'before-openReadStream' | 'before-openWriteStream' | 'before-move' | 'before-copy' | 'before-rename';
 export declare type ServerEvent = FileSystemEvent;
@@ -75,6 +76,13 @@ export declare class WebDAVServer {
      *
      * @param ctx Context of the request
      * @param path Path of the resource
+     */
+    getResourceAsync(ctx: RequestContext, path: Path | string): Promise<Resource>;
+    /**
+     * Get a resource object to manage a resource from its path.
+     *
+     * @param ctx Context of the request
+     * @param path Path of the resource
      * @param callback Callback containing the requested resource
      */
     getResource(ctx: RequestContext, path: Path | string, callback: ReturnCallback<Resource>): void;
@@ -86,6 +94,21 @@ export declare class WebDAVServer {
      * @returns The requested resource
      */
     getResourceSync(ctx: RequestContext, path: Path | string): Resource;
+    /**
+     * Map/mount a file system to a path.
+     *
+     * @param path Path where to mount the file system
+     * @param fs File system to mount
+     */
+    setFileSystemAsync(path: Path | string, fs: FileSystem): Promise<boolean>;
+    /**
+     * Map/mount a file system to a path.
+     *
+     * @param path Path where to mount the file system
+     * @param fs File system to mount
+     * @param override Define if the mounting can override a previous mounted file system
+     */
+    setFileSystemAsync(path: Path | string, fs: FileSystem, override: boolean): Promise<boolean>;
     /**
      * Map/mount a file system to a path.
      *
@@ -196,6 +219,16 @@ export declare class WebDAVServer {
      * Get the file system managing the provided path.
      *
      * @param path Requested path
+     */
+    getFileSystemAsync(path: Path): Promise<{
+        fs: FileSystem;
+        rootPath: Path;
+        subPath: Path;
+    }>;
+    /**
+     * Get the file system managing the provided path.
+     *
+     * @param path Requested path
      * @param callback Callback containing the file system, the mount path of the file system and the sub path from the mount path to the requested path
      */
     getFileSystem(path: Path, callback: (fs: FileSystem, rootPath: Path, subPath: Path) => void): void;
@@ -218,6 +251,16 @@ export declare class WebDAVServer {
     onUnknownMethod(unknownMethod: HTTPMethod): void;
     /**
      * List all resources in every depth.
+     */
+    listResourcesAsync(): Promise<string[]>;
+    /**
+     * List all resources in every depth.
+     *
+     * @param root The root folder where to start the listing
+     */
+    listResourcesAsync(root: string | Path): Promise<string[]>;
+    /**
+     * List all resources in every depth.
      *
      * @param callback Callback providing the list of resources
      */
@@ -229,6 +272,12 @@ export declare class WebDAVServer {
      * @param callback Callback providing the list of resources
      */
     listResources(root: string | Path, callback: (paths: string[]) => void): void;
+    /**
+     * Start the WebDAV server.
+     *
+     * @param port Port of the server
+     */
+    startAsync(port: number): Promise<http.Server>;
     /**
      * Start the WebDAV server.
      *
@@ -248,6 +297,10 @@ export declare class WebDAVServer {
      * @param callback Callback to call when the server is started
      */
     start(port: number, callback: WebDAVServerStartCallback): any;
+    /**
+     * Stop the WebDAV server.
+     */
+    stopAsync(): Promise<void>;
     /**
      * Stop the WebDAV server.
      */
@@ -274,11 +327,23 @@ export declare class WebDAVServer {
     /**
      * Load the previous save made by the 'autoSave' system.
      */
+    autoLoadAsync(): Promise<void>;
+    /**
+     * Load the previous save made by the 'autoSave' system.
+     */
     autoLoad: typeof persistence.autoLoad;
     /**
      * Load a state of the resource tree.
      */
+    loadAsync(data: SerializedData, serializers: FileSystemSerializer[]): Promise<void>;
+    /**
+     * Load a state of the resource tree.
+     */
     load: typeof persistence.load;
+    /**
+     * Save the state of the resource tree.
+     */
+    saveAsync(): Promise<SerializedData>;
     /**
      * Save the state of the resource tree.
      */
