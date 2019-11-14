@@ -9,7 +9,7 @@ export class HTTPBasicAuthentication implements HTTPAuthentication
     constructor(public userManager : ITestableUserManager, public realm : string = 'realm')
     { }
 
-    askForAuthentication()
+    askForAuthentication(ctx : HTTPRequestContext)
     {
         return {
             'WWW-Authenticate': 'Basic realm="' + this.realm + '"'

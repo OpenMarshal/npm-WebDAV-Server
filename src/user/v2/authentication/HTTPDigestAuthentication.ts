@@ -20,7 +20,7 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
         return md5(buffer);
     }
 
-    askForAuthentication()
+    askForAuthentication(ctx : HTTPRequestContext)
     {
         return {
             'WWW-Authenticate': `Digest realm="${this.realm}", qop="auth", nonce="${this.generateNonce()}", opaque="${this.generateNonce()}"`

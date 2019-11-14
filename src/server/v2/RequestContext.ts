@@ -348,7 +348,7 @@ export class HTTPRequestContext extends RequestContext
             return;
         }
 
-        const auth = this.server.httpAuthentication.askForAuthentication();
+        const auth = this.server.httpAuthentication.askForAuthentication(this);
         for(const name in auth)
             this.response.setHeader(name, auth[name]);
         callback(null);

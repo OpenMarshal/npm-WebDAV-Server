@@ -8,7 +8,7 @@ export declare class HTTPDigestAuthentication implements HTTPAuthentication {
     nonceSize: number;
     constructor(userManager: IListUserManager, realm?: string, nonceSize?: number);
     generateNonce(): string;
-    askForAuthentication(): {
+    askForAuthentication(ctx: HTTPRequestContext): {
         'WWW-Authenticate': string;
     };
     getUser(ctx: HTTPRequestContext, callback: (error: Error, user: IUser) => void): void;
