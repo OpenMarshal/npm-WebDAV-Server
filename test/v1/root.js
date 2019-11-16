@@ -135,5 +135,5 @@ if(!module.parent)
     }, {
         port: 1900,
         showExceptions : true,
-        timeout: 6000
+        timeout: 30000
     })
