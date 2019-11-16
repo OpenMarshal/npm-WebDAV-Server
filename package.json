@@ -28,7 +28,7 @@
     "build-test": "cd test/v2/tests.ts && tsc"
   },
   "name": "webdav-server",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "author": "Adrien Castex <adrien.castex@gmail.com>",
   "license": "Unlicense",
   "repository": {
