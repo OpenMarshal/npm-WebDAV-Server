@@ -14,5 +14,4 @@ before_script:
   - npm i -g typescript
 os:
   - linux
-  - windows
   - osx
