@@ -21,7 +21,7 @@ export default ((info, isValid) =>
 
                 for(const sf of sub)
                 {
-                    const index = subFiles.indexOf(decodeURIComponent(sf));
+                    const index = subFiles.indexOf(sf);
                     if(index === -1)
                         return isValid(false, 'Got a file name in "readDir(...)" which must not exist here : ' + sf);
                     

@@ -289,7 +289,7 @@ export default class implements HTTPMethod
             
             methodDisplayName.bind(resource)((e, name) => process.nextTick(() => {
                 if(!e)
-                    tags.displayname.el.add(name ? encodeURI(name) : '');
+                    tags.displayname.el.add(name || '');
                 nbOut(e);
             }))
         })

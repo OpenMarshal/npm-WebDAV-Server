@@ -22,8 +22,7 @@ function test(info, isValid, root, callback) {
                 if (entry.href === encodeURI(entry.href))
                     return false;
                 return decodeURI(entry.href) === entry.href
-                    || decodeURI(entry.locationHref) === entry.locationHref
-                    || encodeURI(entry.displayName) === entry.displayName;
+                    || decodeURI(entry.locationHref) === entry.locationHref;
             });
             if (invalidEntries.length === 0)
                 return callback();

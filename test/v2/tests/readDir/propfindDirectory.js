@@ -17,7 +17,7 @@ exports.default = (function (info, isValid) {
                 subFiles.push('folder');
                 for (var _i = 0, sub_1 = sub; _i < sub_1.length; _i++) {
                     var sf = sub_1[_i];
-                    var index = subFiles.indexOf(decodeURIComponent(sf));
+                    var index = subFiles.indexOf(sf);
                     if (index === -1)
                         return isValid(false, 'Got a file name in "readDir(...)" which must not exist here : ' + sf);
                     subFiles.splice(index, 1);
