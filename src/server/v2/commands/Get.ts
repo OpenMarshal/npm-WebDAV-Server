@@ -198,6 +198,12 @@ export default class implements HTTPMethod
                                         }
                                         //ctx.invokeEvent('read', r);
 
+                                        rstream.on('error', (e) => {
+                                            if(!ctx.setCodeFromError(e))
+                                                ctx.setCode(HTTPCodes.InternalServerError);
+                                            return callback();
+                                        })
+
                                         if(range)
                                         {
                                             try
