@@ -225,6 +225,13 @@ export class HTTPRequestContext extends RequestContext
         this.response = response;
         this.request = request;
         this.exit = exit;
+        
+        if(this.response)
+        {
+            this.response.on('error', (e) => {
+                console.error(e);
+            });
+        }
     }
 
     static create(server : WebDAVServer, request : http.IncomingMessage, response : http.ServerResponse, callback : (error : Error, ctx : HTTPRequestContext) => void) : void
