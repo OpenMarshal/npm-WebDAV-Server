@@ -35,6 +35,9 @@ export declare class WebDAVServerOptions {
     enableLocationTag?: boolean;
     maxRequestDepth?: number;
     respondWithPaths?: boolean;
+    headers?: {
+        [name: string]: string | string[];
+    };
 }
 export default WebDAVServerOptions;
 export declare function setDefaultServerOptions(options: WebDAVServerOptions): WebDAVServerOptions;

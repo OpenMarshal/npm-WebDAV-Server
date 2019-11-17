@@ -43,6 +43,7 @@ export class WebDAVServerOptions
     enableLocationTag ?: boolean = false
     maxRequestDepth ?: number = 1
     respondWithPaths ?: boolean = false
+    headers ?: { [name : string] : string | string[] }
 }
 export default WebDAVServerOptions;
 

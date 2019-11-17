@@ -248,6 +248,12 @@ export class HTTPRequestContext extends RequestContext
         response.setHeader('Access-Control-Expose-Headers', 'DAV, content-length, Allow');
         response.setHeader('MS-Author-Via', 'DAV');
         response.setHeader('Server', server.options.serverName + '/' + server.options.version);
+
+        if(server.options.headers)
+        {
+            for(const headerName in server.options.headers)
+                response.setHeader(headerName, server.options.headers[headerName]);
+        }
         
         const setAllowHeader = (type ?: ResourceType) =>
         {
