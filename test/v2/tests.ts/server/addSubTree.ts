@@ -1,6 +1,5 @@
 import { Test } from '../Type'
 import { v2 } from '../../../../lib/index.js'
-import * as request from 'request'
 
 export default ((info, isValid) =>
 {
