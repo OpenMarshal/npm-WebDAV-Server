@@ -6,6 +6,7 @@ import { Writable, Readable } from 'stream'
 import { VirtualFileSystem } from '../../manager/v2/instances/VirtualFileSystem'
 import { SimpleUserManager } from '../../user/v2/simple/SimpleUserManager'
 import { PrivilegeManager } from '../../user/v2/privilege/PrivilegeManager'
+import { getPackageData } from '../../helper/v2/npmPackage'
 import { FileSystem } from '../../manager/v2/fileSystem/FileSystem'
 import * as https from 'https'
 
@@ -36,7 +37,7 @@ export class WebDAVServerOptions
     https ?: https.ServerOptions = null
     port ?: number = 1900
     serverName ?: string = 'webdav-server'
-    version ?: string = '2.4.6'
+    version ?: string = undefined
     autoSave ?: IAutoSave = null
     autoLoad ?: IAutoLoad = null
     storageManager ?: IStorageManager = new NoStorageManager()
@@ -52,12 +53,20 @@ export function setDefaultServerOptions(options : WebDAVServerOptions) : WebDAVS
     const defaultOptions = new WebDAVServerOptions();
 
     if(!options)
-        return defaultOptions;
-
+        options = {};
+    
     for(const name in defaultOptions)
     {
         if(options[name] === undefined)
             options[name] = defaultOptions[name];
+    }
+
+    if(!options.version)
+    {
+        getPackageData((e, pkg) => {
+            if(pkg && !options.version && pkg.version)
+                options.version = pkg.version;
+        })
     }
     
     return options;
