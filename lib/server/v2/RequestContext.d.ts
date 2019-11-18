@@ -50,6 +50,8 @@ export declare class RequestContext {
     protected constructor(server: WebDAVServer, uri: string, headers: {
         [name: string]: string | string[];
     }, rootPath?: string);
+    getResourceAsync(): Promise<Resource>;
+    getResourceAsync(path: Path | string): Promise<Resource>;
     getResource(callback: ReturnCallback<Resource>): void;
     getResource(path: Path | string, callback: ReturnCallback<Resource>): void;
     getResourceSync(path?: Path | string): Resource;

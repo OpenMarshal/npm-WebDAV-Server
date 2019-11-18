@@ -9,7 +9,7 @@ import {
 import { Readable, Writable } from 'stream'
 import { IPropertyManager } from './PropertyManager'
 import { RequestContext } from '../../../server/v2/RequestContext'
-import { ILockManager } from './LockManager'
+import { ILockManager, ILockManagerAsync } from './LockManager'
 import { FileSystem } from './FileSystem'
 import { LockKind } from '../../../resource/v2/lock/LockKind'
 import { Lock } from '../../../resource/v2/lock/Lock'
@@ -109,7 +109,7 @@ export class Resource
     {
         this.fs.availableLocks(this.context, this.path, callback);
     }
-    lockManager(callback : ReturnCallback<ILockManager>) : void
+    lockManager(callback : ReturnCallback<ILockManagerAsync>) : void
     {
         this.fs.lockManager(this.context, this.path, callback);
     }
@@ -245,7 +245,7 @@ export class Resource
     {
         return this.fs.availableLocksAsync(this.context, this.path);
     }
-    lockManagerAsync() : Promise<ILockManager>
+    lockManagerAsync() : Promise<ILockManagerAsync>
     {
         return this.fs.lockManagerAsync(this.context, this.path);
     }

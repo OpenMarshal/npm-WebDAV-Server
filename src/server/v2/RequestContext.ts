@@ -10,6 +10,7 @@ import { Errors } from '../../Errors'
 import { IUser } from '../../user/v2/IUser'
 import * as http from 'http'
 import * as url from 'url'
+import { promisifyCall } from '../../helper/v2/promise'
 
 export class RequestContextHeaders
 {
@@ -140,11 +141,18 @@ export class RequestContext
         }
     }
     
+    getResourceAsync() : Promise<Resource>
+    getResourceAsync(path : Path | string) : Promise<Resource>
+    getResourceAsync(path ?: Path | string) : Promise<Resource>
+    {
+        return promisifyCall((cb) => this.getResource(path, cb));
+    }
+
     getResource(callback : ReturnCallback<Resource>) : void
     getResource(path : Path | string, callback : ReturnCallback<Resource>) : void
     getResource(_path : Path | string | ReturnCallback<Resource>, _callback ?: ReturnCallback<Resource>) : void
     {
-        const path = _callback ? new Path(_path as Path | string) : this.requested.path;
+        const path = Path.isPath(_path) ? new Path(_path as Path | string) : this.requested.path;
         const callback = _callback ? _callback : _path as ReturnCallback<Resource>;
 
         this.server.getResource(this, path, callback);

@@ -3,7 +3,7 @@ import { ReturnCallback, SimpleCallback, Return2Callback, OpenWriteStreamMode, S
 import { Readable, Writable } from 'stream';
 import { IPropertyManager } from './PropertyManager';
 import { RequestContext } from '../../../server/v2/RequestContext';
-import { ILockManager } from './LockManager';
+import { ILockManagerAsync } from './LockManager';
 import { FileSystem } from './FileSystem';
 import { LockKind } from '../../../resource/v2/lock/LockKind';
 import { Lock } from '../../../resource/v2/lock/Lock';
@@ -45,7 +45,7 @@ export declare class Resource {
     rename(newName: string, callback: ReturnCallback<boolean>): void;
     rename(newName: string, overwrite: boolean, callback: ReturnCallback<boolean>): void;
     availableLocks(callback: ReturnCallback<LockKind[]>): void;
-    lockManager(callback: ReturnCallback<ILockManager>): void;
+    lockManager(callback: ReturnCallback<ILockManagerAsync>): void;
     propertyManager(callback: ReturnCallback<IPropertyManager>): void;
     readDir(callback: ReturnCallback<string[]>): void;
     readDir(retrieveExternalFiles: boolean, callback: ReturnCallback<string[]>): void;
@@ -118,7 +118,7 @@ export declare class Resource {
     renameAsync(newName: string): Promise<boolean>;
     renameAsync(newName: string, overwrite: boolean): Promise<boolean>;
     availableLocksAsync(): Promise<LockKind[]>;
-    lockManagerAsync(): Promise<ILockManager>;
+    lockManagerAsync(): Promise<ILockManagerAsync>;
     propertyManagerAsync(): Promise<IPropertyManager>;
     readDirAsync(): Promise<string[]>;
     readDirAsync(retrieveExternalFiles: boolean): Promise<string[]>;

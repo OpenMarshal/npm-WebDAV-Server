@@ -38,7 +38,7 @@ import { IPropertyManager, PropertyBag } from './PropertyManager'
 import { ContextualFileSystem } from './ContextualFileSystem'
 import { StandardMethods } from './StandardMethods'
 import { RequestContext } from '../../../server/v2/RequestContext'
-import { ILockManager } from './LockManager'
+import { ILockManager, ILockManagerAsync } from './LockManager'
 import { LockScope } from '../../../resource/v2/lock/LockScope'
 import { LockType } from '../../../resource/v2/lock/LockType'
 import { LockKind } from '../../../resource/v2/lock/LockKind'
@@ -1382,7 +1382,7 @@ export abstract class FileSystem implements ISerializableFileSystem
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      */
-    lockManagerAsync(ctx : RequestContext, path : Path | string) : Promise<ILockManager>
+    lockManagerAsync(ctx : RequestContext, path : Path | string) : Promise<ILockManagerAsync>
     {
         return promisifyCall((cb) => this.lockManager(ctx, path, cb))
     }
@@ -1394,7 +1394,7 @@ export abstract class FileSystem implements ISerializableFileSystem
      * @param path Path of the resource.
      * @param callback Returns the lock manager of the resource.
      */
-    lockManager(ctx : RequestContext, path : Path | string, callback : ReturnCallback<ILockManager>) : void
+    lockManager(ctx : RequestContext, path : Path | string, callback : ReturnCallback<ILockManagerAsync>) : void
     {
         const pPath = new Path(path);
 
@@ -2097,7 +2097,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                     {
                         callback(null, []);
                     }
-                } as ILockManager;
+                } as ILockManagerAsync;
             }
             else if(e)
             {

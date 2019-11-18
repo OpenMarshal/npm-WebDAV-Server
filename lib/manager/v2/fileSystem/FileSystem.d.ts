@@ -8,7 +8,7 @@ import { Readable, Writable } from 'stream';
 import { IPropertyManager } from './PropertyManager';
 import { ContextualFileSystem } from './ContextualFileSystem';
 import { RequestContext } from '../../../server/v2/RequestContext';
-import { ILockManager } from './LockManager';
+import { ILockManager, ILockManagerAsync } from './LockManager';
 import { LockKind } from '../../../resource/v2/lock/LockKind';
 import { Resource } from './Resource';
 import { Lock } from '../../../resource/v2/lock/Lock';
@@ -663,7 +663,7 @@ export declare abstract class FileSystem implements ISerializableFileSystem {
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      */
-    lockManagerAsync(ctx: RequestContext, path: Path | string): Promise<ILockManager>;
+    lockManagerAsync(ctx: RequestContext, path: Path | string): Promise<ILockManagerAsync>;
     /**
      * Get the lock manager of the resource.
      *
@@ -671,7 +671,7 @@ export declare abstract class FileSystem implements ISerializableFileSystem {
      * @param path Path of the resource.
      * @param callback Returns the lock manager of the resource.
      */
-    lockManager(ctx: RequestContext, path: Path | string, callback: ReturnCallback<ILockManager>): void;
+    lockManager(ctx: RequestContext, path: Path | string, callback: ReturnCallback<ILockManagerAsync>): void;
     protected abstract _lockManager(path: Path, ctx: LockManagerInfo, callback: ReturnCallback<ILockManager>): void;
     /**
      * Get the property manager of the resource.
