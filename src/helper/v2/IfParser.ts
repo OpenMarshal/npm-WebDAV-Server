@@ -111,7 +111,7 @@ function parseInternal(group : string)
 
 export function extractOneToken(ifHeader : string)
 {
-    const match = /^[ ]*\([ ]*<([^>]+)>[ ]*\)[ ]*$/.exec(ifHeader);
+    const match = /^\s*\(\s*<?([^\)\s>]+)>?\s*\)\s*$/.exec(ifHeader);
     if(!match)
         return null;
     else
