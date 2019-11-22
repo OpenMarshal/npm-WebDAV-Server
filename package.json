@@ -21,6 +21,7 @@
     "virtual"
   ],
   "scripts": {
+    "prepare": "npm run build",
     "dev": "cd src && tsc --declaration -w",
     "build": "cd src && tsc --declaration",
     "lint": "tslint --project tslint.json src/**/v2/**/*.ts",
