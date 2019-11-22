@@ -4,6 +4,7 @@
     "noImplicitAny": false,
     "removeComments": true,
     "preserveConstEnums": true,
+    "moduleResolution": "node",
     "outDir": "../tests",
     "typeRoots": [
       "../../../node_modules/@types"
