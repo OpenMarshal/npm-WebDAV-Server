@@ -47,6 +47,8 @@
     "express": "^4.16.4",
     "request": "^2.85.0",
     "safe-regex": "^1.1.0",
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.2",
     "webdav-fs": "^1.10.1",
     "xml-js": "^1.4.1"
   },
