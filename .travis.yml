@@ -11,7 +11,7 @@ node_js:
   - 5
   - 4
 before_script:
-  - npm i -g typescript
+  - npm run prepare
 os:
   - linux
   - osx
