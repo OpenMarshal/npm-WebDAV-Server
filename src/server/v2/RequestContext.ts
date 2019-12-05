@@ -170,7 +170,7 @@ export class RequestContext
             uri = this.requested.uri;
 
         if(this.server.options.respondWithPaths)
-            return uri;
+            return this.rootPath ? this.rootPath + uri : uri;
         else
             return (this.prefixUri() + uri).replace(/([^:])\/\//g, '$1/');
     }
