@@ -277,34 +277,42 @@ export class HTTPRequestContext extends RequestContext
             callback(null, ctx);
         };
 
-        ctx.askForAuthentication(false, (e) => {
-            if(e)
-            {
-                callback(e, ctx);
-                return;
-            }
+        const getFileSystem = () =>
+        {
+            server.getFileSystem(ctx.requested.path, (fs, _, subPath) => {
+                fs.type(ctx.requested.path.isRoot() ? server.createExternalContext() : ctx, subPath, (e, type) => {
+                    if(e)
+                        type = undefined;
 
-            server.httpAuthentication.getUser(ctx, (e, user) => {
-                ctx.user = user;
-                if(e && e !== Errors.UserNotFound)
-                {
-                    if(server.options.requireAuthentification || e !== Errors.MissingAuthorisationHeader)
-                        return callback(e, ctx);
-                }
-
-                if(server.options.requireAuthentification && (!user || user.isDefaultUser || e === Errors.UserNotFound))
-                    return callback(Errors.MissingAuthorisationHeader, ctx);
-
-                server.getFileSystem(ctx.requested.path, (fs, _, subPath) => {
-                    fs.type(ctx.requested.path.isRoot() ? server.createExternalContext() : ctx, subPath, (e, type) => {
-                        if(e)
-                            type = undefined;
-
-                        setAllowHeader(type);
-                    })
+                    setAllowHeader(type);
                 })
             })
-        })
+        }
+
+        if(server.options.requireAuthentification)
+            ctx.askForAuthentication(false, (e) => {
+                if(e)
+                {
+                    callback(e, ctx);
+                    return;
+                }
+
+                server.httpAuthentication.getUser(ctx, (e, user) => {
+                    ctx.user = user;
+                    if(e && e !== Errors.UserNotFound)
+                    {
+                        if(server.options.requireAuthentification || e !== Errors.MissingAuthorisationHeader)
+                            return callback(e, ctx);
+                    }
+
+                    if(server.options.requireAuthentification && (!user || user.isDefaultUser || e === Errors.UserNotFound))
+                        return callback(Errors.MissingAuthorisationHeader, ctx);
+
+                    getFileSystem();
+                })
+            })
+        else
+            getFileSystem();
     }
     
     static encodeURL(url : string)
