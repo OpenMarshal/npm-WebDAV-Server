@@ -1,5 +1,6 @@
 import { ITestableUserManager } from '../userManager/ITestableUserManager'
 import { IListUserManager } from '../userManager/IListUserManager'
+import { HTTPRequestContext } from '../../../server/v2/RequestContext'
 import { SimpleUser } from './SimpleUser'
 import { Errors } from '../../../Errors'
 import { IUser } from '../IUser'
@@ -15,26 +16,26 @@ export class SimpleUserManager implements ITestableUserManager, IListUserManager
         };
     }
 
-    getUserByName(name : string, callback : (error : Error, user ?: IUser) => void)
+    getUserByName(ctx : HTTPRequestContext, name : string, callback : (error : Error, user ?: IUser) => void)
     {
         if(!this.users[name])
             callback(Errors.UserNotFound);
         else
             callback(null, this.users[name]);
     }
-    getDefaultUser(callback : (user : IUser) => void)
+    getDefaultUser(ctx : HTTPRequestContext, callback : (user : IUser) => void)
     {
         callback(this.users.__default);
     }
 
-    addUser(name : string, password : string, isAdmin : boolean = false) : IUser
+    addUser(ctx : HTTPRequestContext, name : string, password : string, isAdmin : boolean = false) : IUser
     {
         const user = new SimpleUser(name, password, isAdmin, false);
         this.users[name] = user;
         return user;
     }
 
-    getUsers(callback : (error : Error, users : IUser[]) => void)
+    getUsers(ctx : HTTPRequestContext, callback : (error : Error, users : IUser[]) => void)
     {
         const users = [];
 
@@ -44,9 +45,9 @@ export class SimpleUserManager implements ITestableUserManager, IListUserManager
         callback(null, users);
     }
     
-    getUserByNamePassword(name : string, password : string, callback : (error : Error, user ?: IUser) => void) : void
+    getUserByNamePassword(ctx : HTTPRequestContext, name : string, password : string, callback : (error : Error, user ?: IUser) => void) : void
     {
-        this.getUserByName(name, (e, user) => {
+        this.getUserByName(ctx, name, (e, user) => {
             if(e)
                 return callback(e);
             

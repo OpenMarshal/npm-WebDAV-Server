@@ -31,7 +31,7 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
     {
         const onError = (error : Error) =>
         {
-            this.userManager.getDefaultUser((defaultUser) => {
+            this.userManager.getDefaultUser(ctx, (defaultUser) => {
                 callback(error, defaultUser)
             })
         }
@@ -55,7 +55,7 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
         if(!authProps.algorithm)
             authProps.algorithm = 'MD5';
         
-        this.userManager.getUserByName(authProps.username, (e, user) => {
+        this.userManager.getUserByName(ctx, authProps.username, (e, user) => {
             if(e)
                 return onError(Errors.BadAuthentication);
         

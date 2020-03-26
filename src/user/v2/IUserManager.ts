@@ -1,6 +1,7 @@
 import { IUser } from './IUser'
+import { HTTPRequestContext } from '../../server/v2/RequestContext'
 
 export interface IUserManager
 {
-    getDefaultUser(callback : (user : IUser) => void)
+    getDefaultUser(ctx : HTTPRequestContext, callback : (user : IUser) => void)
 }
