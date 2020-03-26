@@ -28,7 +28,7 @@ export class SimpleUserManager implements ITestableUserManager, IListUserManager
         callback(this.users.__default);
     }
 
-    addUser(ctx : HTTPRequestContext, name : string, password : string, isAdmin : boolean = false) : IUser
+    addUser(name : string, password : string, isAdmin : boolean = false) : IUser
     {
         const user = new SimpleUser(name, password, isAdmin, false);
         this.users[name] = user;
