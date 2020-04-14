@@ -177,7 +177,7 @@ export class RequestContext
 
     prefixUri() : string
     {
-        return 'http://' + this.headers.host.replace('/', '') + (this.rootPath ? this.rootPath : '');
+        return (this.server.options.https?'https://':'http://') + this.headers.host.replace('/', '') + (this.rootPath ? this.rootPath : '');
     }
 }
 
