@@ -296,7 +296,7 @@ export class HTTPRequestContext extends RequestContext
                     return callback(Errors.MissingAuthorisationHeader, ctx);
 
                 server.getFileSystem(ctx.requested.path, (fs, _, subPath) => {
-                    fs.type(ctx.requested.path.isRoot() ? server.createExternalContext() : ctx, subPath, (e, type) => {
+                    fs.type(ctx.requested.path.isRoot() ? server.createExternalContext({user}) : ctx, subPath, (e, type) => {
                         if(e)
                             type = undefined;
 
