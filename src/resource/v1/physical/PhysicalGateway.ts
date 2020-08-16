@@ -16,7 +16,7 @@ export class PhysicalGateway extends PhysicalFolder
         [path : string] : PhysicalResource
     }
 
-    constructor(rootPath : string, protected customName ?: string, parent ?: IResource, fsManager ?: FSManager)
+    constructor(rootPath : string, public customName ?: string, parent ?: IResource, fsManager ?: FSManager)
     {
         super(rootPath, parent, fsManager ? fsManager : new PhysicalGFSManager());
 
@@ -97,7 +97,7 @@ export class PhysicalGateway extends PhysicalFolder
                         callback(e);
                         return;
                     }
-                
+
                     this.listChildren(parent, parentPath.toString(), (e, children) => {
                         if(e)
                         {
@@ -108,7 +108,7 @@ export class PhysicalGateway extends PhysicalFolder
                         actualChildren
                             .filter((c) => c.constructor !== PhysicalResource && c.constructor !== PhysicalFile && c.constructor !== PhysicalFolder)
                             .forEach((c) => children.push(c));
-                            
+
                         (parent as PhysicalFolder).children.children = children;
 
                         new Workflow()
@@ -125,7 +125,7 @@ export class PhysicalGateway extends PhysicalFolder
                                         callback(null, child);
                                         return;
                                     }
-                                
+
                                 callback(Errors.ResourceNotFound);
                             })
                     })
@@ -146,7 +146,7 @@ export class PhysicalGateway extends PhysicalFolder
                     (r as PhysicalFolder).children.children
                         .filter((c) => c.constructor !== PhysicalResource && c.constructor !== PhysicalFile && c.constructor !== PhysicalFolder)
                         .forEach((c) => (children as IResource[]).push(c));
-                        
+
                     (r as PhysicalFolder).children.children = children;
                 }
                 cb(e);

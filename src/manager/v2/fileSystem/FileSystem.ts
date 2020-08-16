@@ -63,11 +63,11 @@ class BufferedIsLocked
     {
         if(this._isLocked !== null)
             return callback(null, this._isLocked);
-        
+
         this.fs.isLocked(this.ctx, this.path, (e, locked) => {
             if(e)
                 return callback(e);
-            
+
             this._isLocked = locked;
             callback(null, locked);
         })
@@ -76,7 +76,7 @@ class BufferedIsLocked
 
 /**
  * File system which manage resources under its mounted path.
- * 
+ *
  * @see https://github.com/OpenMarshal/npm-WebDAV-Server/wiki/Custom-File-System-%5Bv2%5D
  */
 export abstract class FileSystem implements ISerializableFileSystem
@@ -87,7 +87,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     {
         this.__serializer = serializer;
     }
-    
+
     /**
      * Get the serializer.
      */
@@ -98,7 +98,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Defines the serializer to use.
-     * 
+     *
      * @param serializer Serializer to use.
      */
     setSerializer(serializer : FileSystemSerializer)
@@ -116,7 +116,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Wrap the file system with the context.
-     * 
+     *
      * @param ctx Context of the operation.
      */
     contextualize(ctx : RequestContext) : ContextualFileSystem
@@ -126,7 +126,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Wrap the file system with the context and a resource path.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      */
@@ -134,14 +134,14 @@ export abstract class FileSystem implements ISerializableFileSystem
     {
         return new Resource(path, this, ctx);
     }
-    
+
     /**
      * Make a fast check if the resource exists.
      * If '_fastExistCheck' is not implemented, this method call 'callback'.
      * If '_fastExistCheck' is implemented and it returns 'false', then the 'errorCallback' is called, otherwise the 'callback' is called.
-     * 
+     *
      * This method will not give a true information, but just an estimate of the existence of a resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param _path Path of the resource.
      * @param errorCallback Callback to call when the resource is sure to not exist.
@@ -151,7 +151,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     {
         if(!this._fastExistCheck)
             return callback();
-        
+
         const path = new Path(_path);
         this._fastExistCheck(ctx, path, (exists) => {
             if(!exists)
@@ -160,14 +160,14 @@ export abstract class FileSystem implements ISerializableFileSystem
                 callback();
         });
     }
-    
+
     /**
      * Make a fast check if the resource exists.
      * If '_fastExistCheck' is not implemented, this method call 'callback'.
      * If '_fastExistCheck' is implemented and it returns 'false', then the 'callback' is called, otherwise the 'errorCallback' is called.
-     * 
+     *
      * This method will not give a true information, but just an estimate of the existence of a resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param _path Path of the resource.
      * @param errorCallback Callback to call when the resource might exists.
@@ -177,7 +177,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     {
         if(!this._fastExistCheck)
             return callback();
-        
+
         const path = new Path(_path);
         this._fastExistCheck(ctx, path, (exists) => {
             if(exists)
@@ -190,9 +190,9 @@ export abstract class FileSystem implements ISerializableFileSystem
     /**
      * Make a fast check if a resource exists.
      * This method will call '_fastExistCheck' if it is implemented or return 'true'.
-     * 
+     *
      * This method will not give a true information, but just an estimate of the existence of a resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param _path Path of the resource.
      * @param callback Returns if the resource exists.
@@ -201,7 +201,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     {
         if(!this._fastExistCheck)
             return callback(true);
-        
+
         const path = new Path(_path);
         this._fastExistCheck(ctx, path, (exists) => callback(!!exists));
     }
@@ -209,7 +209,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Create a new resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param type Type of the resource to create.
@@ -217,7 +217,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     createAsync(ctx : RequestContext, path : Path | string, type : ResourceType) : Promise<void>
     /**
      * Create a new resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param type Type of the resource to create.
@@ -231,7 +231,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Create a new resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param type Type of the resource to create.
@@ -240,7 +240,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     create(ctx : RequestContext, path : Path | string, type : ResourceType, callback : SimpleCallback) : void
     /**
      * Create a new resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param type Type of the resource to create.
@@ -264,7 +264,7 @@ export abstract class FileSystem implements ISerializableFileSystem
             return callback(Errors.InvalidOperation);
 
         this.emit('before-create', ctx, path, { type, createIntermediates })
-        
+
         issuePrivilegeCheck(this, ctx, path, 'canWrite', callback, () => {
             const go = () => {
                 ctx.server.options.storageManager.evaluateCreate(ctx, this, path, type, (size) => {
@@ -288,7 +288,7 @@ export abstract class FileSystem implements ISerializableFileSystem
             this.isLocked(ctx, path, (e, locked) => {
                 if(e || locked)
                     return callback(locked ? Errors.Locked : e);
-                
+
                 this.fastExistCheckExReverse(ctx, path, callback, () => {
                     this.type(ctx, path.getParent(), (e, type) => {
                         if(e === Errors.ResourceNotFound)
@@ -299,16 +299,16 @@ export abstract class FileSystem implements ISerializableFileSystem
                             this.getFullPath(ctx, path, (e, fullPath) => {
                                 if(e)
                                     return callback(e);
-                                
+
                                 fullPath = fullPath.getParent();
                                 ctx.getResource(fullPath, (e, r) => {
                                     if(e)
                                         return callback(e);
-                                    
+
                                     r.create(ResourceType.Directory, true, (e) => {
                                         if(e && e !== Errors.ResourceAlreadyExists)
                                             return callback(e);
-                                        
+
                                         go();
                                     })
                                 })
@@ -317,7 +317,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                         }
                         if(e)
                             return callback(e);
-                        
+
                         if(!type.isDirectory)
                             return callback(Errors.WrongParentTypeForCreation);
 
@@ -332,7 +332,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     /**
      * Get the etag of the resource.
      * The default etag, if '_etag' is not implemented, is to hash the last modified date information of the resource and wrap it with quotes.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param _path Path of the resource.
      */
@@ -344,7 +344,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     /**
      * Get the etag of the resource.
      * The default etag, if '_etag' is not implemented, is to hash the last modified date information of the resource and wrap it with quotes.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param _path Path of the resource.
      * @param callback Returns the etag of the resource.
@@ -359,7 +359,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                     return this.lastModifiedDate(ctx, path, (e, date) => {
                         if(e)
                             return callback(e);
-                        
+
                         date = FileSystem.neutralizeEmptyDate(date);
 
                         callback(null, '"' + crypto.createHash('md5').update(date.toString()).digest('hex') + '"');
@@ -375,14 +375,14 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Delete a resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      */
     deleteAsync(ctx : RequestContext, path : Path | string) : Promise<void>
     /**
      * Delete a resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param depth Depth of the delete. Might be ignored depending on the implementation.
@@ -395,7 +395,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Delete a resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param callback Returns an error if one occured.
@@ -403,7 +403,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     delete(ctx : RequestContext, path : Path | string, callback : SimpleCallback) : void
     /**
      * Delete a resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param depth Depth of the delete. Might be ignored depending on the implementation.
@@ -431,7 +431,7 @@ export abstract class FileSystem implements ISerializableFileSystem
             this.isLocked(ctx, path, (e, isLocked) => {
                 if(e || isLocked)
                     return callback(e ? e : Errors.Locked);
-                
+
                 this.fastExistCheckEx(ctx, path, callback, () => {
                     this.size(ctx, path, (e, contentSize) => {
                         contentSize = contentSize || 0;
@@ -461,17 +461,17 @@ export abstract class FileSystem implements ISerializableFileSystem
         })
     }
     protected _delete?(path : Path, ctx : DeleteInfo, callback : SimpleCallback) : void
-    
+
     /**
      * Open a stream to write the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      */
     openWriteStreamAsync(ctx : RequestContext, path : Path | string) : Promise<{ stream : Writable, created : boolean }>
     /**
      * Open a stream to write the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param estimatedSize Estimate of the size to write.
@@ -479,7 +479,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     openWriteStreamAsync(ctx : RequestContext, path : Path | string, estimatedSize : number) : Promise<{ stream : Writable, created : boolean }>
     /**
      * Open a stream to write the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param targetSource Define if the content must be the source or the computed content. Might make no difference depending on the implementation.
@@ -487,7 +487,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     openWriteStreamAsync(ctx : RequestContext, path : Path | string, targetSource : boolean) : Promise<{ stream : Writable, created : boolean }>
     /**
      * Open a stream to write the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param targetSource Define if the content must be the source or the computed content. Might make no difference depending on the implementation.
@@ -496,7 +496,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     openWriteStreamAsync(ctx : RequestContext, path : Path | string, targetSource : boolean, estimatedSize : number) : Promise<{ stream : Writable, created : boolean }>
     /**
      * Open a stream to write the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param mode Define if this operation can/must create a new resource and/or its intermediate resources ('/folder1/folder2/file3', if 'folder2' doesn't exist, it is an intermediate).
@@ -504,7 +504,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     openWriteStreamAsync(ctx : RequestContext, path : Path | string, mode : OpenWriteStreamMode) : Promise<{ stream : Writable, created : boolean }>
     /**
      * Open a stream to write the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param mode Define if this operation can/must create a new resource and/or its intermediate resources ('/folder1/folder2/file3', if 'folder2' doesn't exist, it is an intermediate).
@@ -513,7 +513,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     openWriteStreamAsync(ctx : RequestContext, path : Path | string, mode : OpenWriteStreamMode, estimatedSize : number) : Promise<{ stream : Writable, created : boolean }>
     /**
      * Open a stream to write the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param mode Define if this operation can/must create a new resource and/or its intermediate resources ('/folder1/folder2/file3', if 'folder2' doesn't exist, it is an intermediate).
@@ -522,7 +522,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     openWriteStreamAsync(ctx : RequestContext, path : Path | string, mode : OpenWriteStreamMode, targetSource : boolean) : Promise<{ stream : Writable, created : boolean }>
     /**
      * Open a stream to write the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param mode Define if this operation can/must create a new resource and/or its intermediate resources ('/folder1/folder2/file3', if 'folder2' doesn't exist, it is an intermediate).
@@ -537,7 +537,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Open a stream to write the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param callback Returns the stream.
@@ -545,7 +545,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     openWriteStream(ctx : RequestContext, path : Path | string, callback : Return2Callback<Writable, boolean>) : void
     /**
      * Open a stream to write the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param estimatedSize Estimate of the size to write.
@@ -554,7 +554,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     openWriteStream(ctx : RequestContext, path : Path | string, estimatedSize : number, callback : Return2Callback<Writable, boolean>) : void
     /**
      * Open a stream to write the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param targetSource Define if the content must be the source or the computed content. Might make no difference depending on the implementation.
@@ -563,7 +563,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     openWriteStream(ctx : RequestContext, path : Path | string, targetSource : boolean, callback : Return2Callback<Writable, boolean>) : void
     /**
      * Open a stream to write the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param targetSource Define if the content must be the source or the computed content. Might make no difference depending on the implementation.
@@ -573,7 +573,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     openWriteStream(ctx : RequestContext, path : Path | string, targetSource : boolean, estimatedSize : number, callback : Return2Callback<Writable, boolean>) : void
     /**
      * Open a stream to write the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param mode Define if this operation can/must create a new resource and/or its intermediate resources ('/folder1/folder2/file3', if 'folder2' doesn't exist, it is an intermediate).
@@ -582,7 +582,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     openWriteStream(ctx : RequestContext, path : Path | string, mode : OpenWriteStreamMode, callback : Return2Callback<Writable, boolean>) : void
     /**
      * Open a stream to write the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param mode Define if this operation can/must create a new resource and/or its intermediate resources ('/folder1/folder2/file3', if 'folder2' doesn't exist, it is an intermediate).
@@ -592,7 +592,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     openWriteStream(ctx : RequestContext, path : Path | string, mode : OpenWriteStreamMode, estimatedSize : number, callback : Return2Callback<Writable, boolean>) : void
     /**
      * Open a stream to write the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param mode Define if this operation can/must create a new resource and/or its intermediate resources ('/folder1/folder2/file3', if 'folder2' doesn't exist, it is an intermediate).
@@ -602,7 +602,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     openWriteStream(ctx : RequestContext, path : Path | string, mode : OpenWriteStreamMode, targetSource : boolean, callback : Return2Callback<Writable, boolean>) : void
     /**
      * Open a stream to write the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param mode Define if this operation can/must create a new resource and/or its intermediate resources ('/folder1/folder2/file3', if 'folder2' doesn't exist, it is an intermediate).
@@ -627,7 +627,7 @@ export abstract class FileSystem implements ISerializableFileSystem
         for(const obj of [ _mode, _targetSource, _estimatedSize, _callback ])
             if(obj && obj.constructor === Function)
                 callbackFinal = obj as Return2Callback<Writable, boolean>;
-        
+
         const mode = _mode && _mode.constructor === String ? _mode as OpenWriteStreamMode : 'mustExist';
         const path = new Path(_path);
         let created = false;
@@ -637,17 +637,17 @@ export abstract class FileSystem implements ISerializableFileSystem
                 this.emit('openWriteStream', ctx, path, { targetSource, mode, estimatedSize, created, stream })
             callbackFinal(e, stream, created);
         }
-        
+
         if(!this._openWriteStream)
             return callback(Errors.InvalidOperation);
 
         this.emit('before-openWriteStream', ctx, path, { targetSource, mode, estimatedSize, created })
-        
+
         issuePrivilegeCheck(this, ctx, path, targetSource ? 'canWriteContentSource' : 'canWriteContentTranslated', callback, () => {
             this.isLocked(ctx, path, (e, isLocked) => {
                 if(e || isLocked)
                     return callback(e ? e : Errors.Locked);
-                
+
                 const finalGo = (callback : Return2Callback<Writable, boolean>) =>
                 {
                     this._openWriteStream(path, {
@@ -714,7 +714,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                     this.create(ctx, path, ResourceType.File, intermediates, (e) => {
                         if(e)
                             return callback(e);
-                        
+
                         created = true;
                         go(callback);
                     })
@@ -725,12 +725,12 @@ export abstract class FileSystem implements ISerializableFileSystem
                     case 'mustExist':
                         this.fastExistCheckEx(ctx, path, callback, () => go(callback));
                         break;
-                    
+
                     case 'mustCreateIntermediates':
                     case 'mustCreate':
                         createAndGo(mode === 'mustCreateIntermediates');
                         break;
-                    
+
                     case 'canCreateIntermediates':
                     case 'canCreate':
                         go((e, wStream) => {
@@ -740,7 +740,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                                 callback(e, wStream);
                         })
                         break;
-                    
+
                     default:
                         callback(Errors.IllegalArguments);
                         break;
@@ -749,17 +749,17 @@ export abstract class FileSystem implements ISerializableFileSystem
         })
     }
     protected _openWriteStream?(path : Path, ctx : OpenWriteStreamInfo, callback : ReturnCallback<Writable>) : void
-    
+
     /**
      * Open a stream to read the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      */
     openReadStreamAsync(ctx : RequestContext, path : Path | string) : Promise<Readable>
     /**
      * Open a stream to read the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param estimatedSize Estimate of the size to read.
@@ -767,7 +767,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     openReadStreamAsync(ctx : RequestContext, path : Path | string, estimatedSize : number) : Promise<Readable>
     /**
      * Open a stream to read the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param targetSource Define if the content must be the source or the computed content. Might make no difference depending on the implementation.
@@ -775,7 +775,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     openReadStreamAsync(ctx : RequestContext, path : Path | string, targetSource : boolean) : Promise<Readable>
     /**
      * Open a stream to read the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param targetSource Define if the content must be the source or the computed content. Might make no difference depending on the implementation.
@@ -786,10 +786,10 @@ export abstract class FileSystem implements ISerializableFileSystem
     {
         return promisifyCall((cb) => this.openReadStream(ctx, path, targetSource, estimatedSize, cb))
     }
-    
+
     /**
      * Open a stream to read the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param callback Returns the stream.
@@ -797,7 +797,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     openReadStream(ctx : RequestContext, path : Path | string, callback : ReturnCallback<Readable>) : void
     /**
      * Open a stream to read the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param estimatedSize Estimate of the size to read.
@@ -806,7 +806,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     openReadStream(ctx : RequestContext, path : Path | string, estimatedSize : number, callback : ReturnCallback<Readable>) : void
     /**
      * Open a stream to read the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param targetSource Define if the content must be the source or the computed content. Might make no difference depending on the implementation.
@@ -815,7 +815,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     openReadStream(ctx : RequestContext, path : Path | string, targetSource : boolean, callback : ReturnCallback<Readable>) : void
     /**
      * Open a stream to read the content of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param targetSource Define if the content must be the source or the computed content. Might make no difference depending on the implementation.
@@ -837,7 +837,7 @@ export abstract class FileSystem implements ISerializableFileSystem
         }
 
         this.emit('before-openReadStream', ctx, path, { targetSource, estimatedSize })
-        
+
         issuePrivilegeCheck(this, ctx, path, targetSource ? 'canReadContentSource' : 'canReadContentTranslated', callback, () => {
             this.fastExistCheckEx(ctx, path, callback, () => {
                 if(!this._openReadStream)
@@ -855,7 +855,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Move a resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param pathFrom Path of the resource to move.
      * @param pathTo Destination path to where move the resource.
@@ -863,11 +863,11 @@ export abstract class FileSystem implements ISerializableFileSystem
     moveAsync(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string) : Promise<boolean>
     /**
      * Move a resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param pathFrom Path of the resource to move.
      * @param pathTo Destination path to where move the resource.
-     * @param overwrite 
+     * @param overwrite
      */
     moveAsync(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string, overwrite : boolean) : Promise<boolean>
     moveAsync(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string, overwrite ?: boolean) : Promise<boolean>
@@ -877,7 +877,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Move a resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param pathFrom Path of the resource to move.
      * @param pathTo Destination path to where move the resource.
@@ -886,11 +886,11 @@ export abstract class FileSystem implements ISerializableFileSystem
     move(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string, callback : ReturnCallback<boolean>) : void
     /**
      * Move a resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param pathFrom Path of the resource to move.
      * @param pathTo Destination path to where move the resource.
-     * @param overwrite 
+     * @param overwrite
      * @param callback Returns if the resource has been owerwritten.
      */
     move(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string, overwrite : boolean, callback : ReturnCallback<boolean>) : void
@@ -914,11 +914,11 @@ export abstract class FileSystem implements ISerializableFileSystem
             this.isLocked(ctx, pathFrom, (e, isLocked) => {
                 if(e || isLocked)
                     return callback(e ? e : Errors.Locked);
-                
+
                     this.isLocked(ctx, pathTo, (e, isLocked) => {
                         if(e || isLocked)
                             return callback(e ? e : Errors.Locked);
-                        
+
                     const go = () =>
                     {
                         if(this._move)
@@ -948,7 +948,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Copy a resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param pathFrom Path of the resource to copy.
      * @param pathTo Destination path to where copy the resource.
@@ -956,7 +956,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     copyAsync(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string) : Promise<boolean>
     /**
      * Copy a resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param pathFrom Path of the resource to copy.
      * @param pathTo Destination path to where copy the resource.
@@ -965,20 +965,20 @@ export abstract class FileSystem implements ISerializableFileSystem
     copyAsync(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string, depth : number) : Promise<boolean>
     /**
      * Copy a resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param pathFrom Path of the resource to copy.
      * @param pathTo Destination path to where copy the resource.
-     * @param overwrite 
+     * @param overwrite
      */
     copyAsync(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string, overwrite : boolean) : Promise<boolean>
     /**
      * Copy a resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param pathFrom Path of the resource to copy.
      * @param pathTo Destination path to where copy the resource.
-     * @param overwrite 
+     * @param overwrite
      * @param depth Depth to make the copy. (Infinite = -1)
      */
     copyAsync(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string, overwrite : boolean, depth : number) : Promise<boolean>
@@ -989,7 +989,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Copy a resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param pathFrom Path of the resource to copy.
      * @param pathTo Destination path to where copy the resource.
@@ -998,7 +998,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     copy(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string, callback : ReturnCallback<boolean>) : void
     /**
      * Copy a resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param pathFrom Path of the resource to copy.
      * @param pathTo Destination path to where copy the resource.
@@ -1008,21 +1008,21 @@ export abstract class FileSystem implements ISerializableFileSystem
     copy(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string, depth : number, callback : ReturnCallback<boolean>) : void
     /**
      * Copy a resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param pathFrom Path of the resource to copy.
      * @param pathTo Destination path to where copy the resource.
-     * @param overwrite 
+     * @param overwrite
      * @param callback Returns if the resource has been owerwritten.
      */
     copy(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string, overwrite : boolean, callback : ReturnCallback<boolean>) : void
     /**
      * Copy a resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param pathFrom Path of the resource to copy.
      * @param pathTo Destination path to where copy the resource.
-     * @param overwrite 
+     * @param overwrite
      * @param depth Depth to make the copy. (Infinite = -1)
      * @param callback Returns if the resource has been owerwritten.
      */
@@ -1040,7 +1040,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                 this.emit('copy', ctx, pathFrom, { pathTo, overwrite, overrided, depth })
             callbackFinal(e, overrided);
         }
-        
+
         this.emit('before-copy', ctx, pathFrom, { pathTo, overwrite, depth })
 
         issuePrivilegeCheck(this, ctx, pathFrom, 'canRead', callback, () => {
@@ -1048,7 +1048,7 @@ export abstract class FileSystem implements ISerializableFileSystem
             this.isLocked(ctx, pathTo, (e, isLocked) => {
                 if(e || isLocked)
                     return callback(e ? e : Errors.Locked);
-                
+
                 const go = () =>
                 {
                     if(this._copy)
@@ -1060,10 +1060,10 @@ export abstract class FileSystem implements ISerializableFileSystem
                         }, callback);
                         return;
                     }
-                    
+
                     StandardMethods.standardCopy(ctx, pathFrom, this, pathTo, this, overwrite, depth, callback);
                 }
-                
+
                 this.fastExistCheckEx(ctx, pathFrom, callback, () => {
                     if(!overwrite)
                         this.fastExistCheckExReverse(ctx, pathTo, callback, go);
@@ -1079,7 +1079,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     /**
      * Rename the resource.
      * By default, if the '_rename' method is not implemented, it makes a move.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param pathFrom Path of the resource to rename.
      * @param newName New name of the resource.
@@ -1088,11 +1088,11 @@ export abstract class FileSystem implements ISerializableFileSystem
     /**
      * Rename the resource.
      * By default, if the '_rename' method is not implemented, it makes a move.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param pathFrom Path of the resource to rename.
      * @param newName New name of the resource.
-     * @param overwrite 
+     * @param overwrite
      */
     renameAsync(ctx : RequestContext, pathFrom : Path | string, newName : string, overwrite : boolean) : Promise<boolean>
     renameAsync(ctx : RequestContext, pathFrom : Path | string, newName : string, overwrite ?: boolean) : Promise<boolean>
@@ -1103,7 +1103,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     /**
      * Rename the resource.
      * By default, if the '_rename' method is not implemented, it makes a move.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param pathFrom Path of the resource to rename.
      * @param newName New name of the resource.
@@ -1113,11 +1113,11 @@ export abstract class FileSystem implements ISerializableFileSystem
     /**
      * Rename the resource.
      * By default, if the '_rename' method is not implemented, it makes a move.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param pathFrom Path of the resource to rename.
      * @param newName New name of the resource.
-     * @param overwrite 
+     * @param overwrite
      * @param callback Returns if the resource has been owerwritten.
      */
     rename(ctx : RequestContext, pathFrom : Path | string, newName : string, overwrite : boolean, callback : ReturnCallback<boolean>) : void
@@ -1132,20 +1132,20 @@ export abstract class FileSystem implements ISerializableFileSystem
                 this.emit('rename', ctx, pathFrom, { newName, overrided })
             callbackFinal(e, overrided);
         }
-        
+
         this.emit('before-rename', ctx, pathFrom, { newName })
 
         issuePrivilegeCheck(this, ctx, pathFrom, [ 'canRead', 'canWrite' ], callback, () => {
             this.isLocked(ctx, pathFrom, (e, isLocked) => {
                 if(e || isLocked)
                     return callback(e ? e : Errors.Locked);
-                
+
                 if(pathFrom.isRoot())
                 {
                     this.getFullPath(ctx, (e, fullPath) => {
                         if(fullPath.isRoot())
                             return callback(Errors.InvalidOperation);
-                        
+
                         const newPath = fullPath.getParent().getChildPath(newName);
                         issuePrivilegeCheck(this, ctx, newPath, 'canWrite', callback, () => {
                             ctx.server.getFileSystem(newPath, (fs, _, subPath) => {
@@ -1154,7 +1154,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                                     ctx.server.setFileSystem(newPath, this, (successed) => {
                                         if(!successed)
                                             return callback(Errors.InvalidOperation);
-                                        
+
                                         ctx.server.removeFileSystem(fullPath, () => callback(null, overwritten));
                                     })
                                 }
@@ -1185,7 +1185,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                         this.isLocked(ctx, newPath, (e, isLocked) => {
                             if(e || isLocked)
                                 return callback(e ? e : Errors.Locked);
-                            
+
                             issuePrivilegeCheck(this, ctx, newPath, 'canWrite', callback, () => {
                                 if(this._rename)
                                 {
@@ -1211,7 +1211,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     /**
      * Get the mime type and the encoding of the resource's content.
      * By default, it uses the file name of the resource to determine its mime type and its encoding.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      */
@@ -1219,7 +1219,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     /**
      * Get the mime type and the encoding of the resource's content.
      * By default, it uses the file name of the resource to determine its mime type and its encoding.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param targetSource Define if the content must be the source or the computed content. Might make no difference depending on the implementation.
@@ -1233,7 +1233,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     /**
      * Get the mime type and the encoding of the resource's content.
      * By default, it uses the file name of the resource to determine its mime type and its encoding.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param callback Returns the mime type and the encoding of the resource.
@@ -1242,7 +1242,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     /**
      * Get the mime type and the encoding of the resource's content.
      * By default, it uses the file name of the resource to determine its mime type and its encoding.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param targetSource Define if the content must be the source or the computed content. Might make no difference depending on the implementation.
@@ -1276,7 +1276,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     /**
      * Get the size of the resource's content.
      * If the '_size' method is not implemented, it returns 'undefined'.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      */
@@ -1284,7 +1284,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     /**
      * Get the size of the resource's content.
      * If the '_size' method is not implemented, it returns 'undefined'.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param targetSource Define if the content must be the source or the computed content. Might make no difference depending on the implementation.
@@ -1298,7 +1298,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     /**
      * Get the size of the resource's content.
      * If the '_size' method is not implemented, it returns 'undefined'.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param callback Returns the size of the resource.
@@ -1307,7 +1307,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     /**
      * Get the size of the resource's content.
      * If the '_size' method is not implemented, it returns 'undefined'.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param targetSource Define if the content must be the source or the computed content. Might make no difference depending on the implementation.
@@ -1336,7 +1336,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Get the list of available lock kinds.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      */
@@ -1347,7 +1347,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Get the list of available lock kinds.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param callback Returns the list of available lock kinds.
@@ -1378,7 +1378,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Get the lock manager of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      */
@@ -1389,7 +1389,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Get the lock manager of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param callback Returns the lock manager of the resource.
@@ -1404,7 +1404,7 @@ export abstract class FileSystem implements ISerializableFileSystem
             }, (e, lm) => {
                 if(e)
                     return callback(e);
-                
+
                 const buffIsLocked = new BufferedIsLocked(this, ctx, pPath);
                 const fs = this;
                 const manager = {
@@ -1429,7 +1429,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                             buffIsLocked.isLocked((e, isLocked) => {
                                 if(e || isLocked)
                                     return callback(e ? e : Errors.Locked);
-                                
+
                                 lm.setLock(lock, (e) => {
                                     if(!e)
                                         fs.emit('lock-set', ctx, pPath, { lock });
@@ -1449,7 +1449,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                             buffIsLocked.isLocked((e, isLocked) => {
                                 if(e || isLocked)
                                     return callback(e ? e : Errors.Locked);
-                                
+
                                 lm.removeLock(uuid, (e, removed) => {
                                     if(!e)
                                         fs.emit('lock-remove', ctx, pPath, { uuid, removed });
@@ -1479,7 +1479,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                             buffIsLocked.isLocked((e, isLocked) => {
                                 if(e || isLocked)
                                     return callback(e ? e : Errors.Locked);
-                                
+
                                 lm.refresh(uuid, timeoutSeconds, (e, lock) => {
                                     if(!e)
                                         fs.emit('lock-refresh', ctx, pPath, { uuid, timeout: timeoutSeconds, lock });
@@ -1498,7 +1498,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Get the property manager of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      */
@@ -1509,7 +1509,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Get the property manager of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param callback Returns the property manager of the resource.
@@ -1524,10 +1524,10 @@ export abstract class FileSystem implements ISerializableFileSystem
             }, (e, pm) => {
                 if(e)
                     return callback(e);
-                
+
                 const buffIsLocked = new BufferedIsLocked(this, ctx, pPath);
                 const fs = this;
-                
+
                 callback(null, {
                     setProperty(name : string, value : ResourcePropertyValue, attributes : PropertyAttributes, callback : SimpleCallback) : void
                     {
@@ -1536,7 +1536,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                             buffIsLocked.isLocked((e, isLocked) => {
                                 if(e || isLocked)
                                     return callback(e ? e : Errors.Locked);
-                                
+
                                 pm.setProperty(name, value, attributes, (e) => {
                                     if(!e)
                                         fs.emit('property-set', ctx, pPath, { name, value, attributes });
@@ -1558,7 +1558,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                             buffIsLocked.isLocked((e, isLocked) => {
                                 if(e || isLocked)
                                     return callback(e ? e : Errors.Locked);
-                                
+
                                 pm.removeProperty(name, (e) => {
                                     if(!e)
                                         fs.emit('property-remove', ctx, pPath, { name });
@@ -1600,14 +1600,14 @@ export abstract class FileSystem implements ISerializableFileSystem
     /**
      * Get the list of children of a resource.
      * Excludes the external resources, such as file systems mounted as child.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      */
     readDirAsync(ctx : RequestContext, path : Path | string) : Promise<string[]>
     /**
      * Get the list of children of a resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param retrieveExternalFiles Define if it must include the resources out of the file system, like other file systems mounted as child.
@@ -1621,7 +1621,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     /**
      * Get the list of children of a resource.
      * Excludes the external resources, such as file systems mounted as child.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param callback Returns the list of children (file name) of the resource.
@@ -1629,7 +1629,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     readDir(ctx : RequestContext, path : Path | string, callback : ReturnCallback<string[]>) : void
     /**
      * Get the list of children of a resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param retrieveExternalFiles Define if it must include the resources out of the file system, like other file systems mounted as child.
@@ -1646,7 +1646,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                 return __callback(e);
             if(!data)
                 data = [];
-            
+
             this.getFullPath(ctx, (e, fsFullPath) => {
                 new Workflow()
                     .each(data, (path, cb) => {
@@ -1667,21 +1667,21 @@ export abstract class FileSystem implements ISerializableFileSystem
                 const next = (base : Path[]) => {
                     if(!this._readDir)
                         return callback(null, base);
-                    
+
                     this._readDir(pPath, {
                         context: ctx
                     }, (e, paths) => {
                         if(e)
                             return callback(e);
-                        
+
                         if(paths.length === 0)
                             return callback(null, base);
-                        
+
                         if(paths[0].constructor === String)
                             base = base.concat((paths as string[]).map((s) => pPath.getChildPath(s)));
                         else
                             base = base.concat(paths as Path[]);
-                        
+
                         callback(null, base);
                     });
                 }
@@ -1692,7 +1692,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                 this.getFullPath(ctx, (e, thisFullPath) => {
                     if(e)
                         return callback(e);
-                    
+
                     ctx.server.getChildFileSystems(thisFullPath.getChildPath(pPath), (fss) => {
                         this.localize(ctx, fss.map((f) => f.path), (e, paths) => {
                             if(e)
@@ -1730,7 +1730,7 @@ export abstract class FileSystem implements ISerializableFileSystem
      * If neither '_creationDate' nor '_lastModifiedDate' are implemented, it returns 0.
      * If '_creationDate' is not implemented, it calls the 'lastModifiedDate' method.
      * Otherwise it calls the '_creationDate' method.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      */
@@ -1744,7 +1744,7 @@ export abstract class FileSystem implements ISerializableFileSystem
      * If neither '_creationDate' nor '_lastModifiedDate' are implemented, it returns 0.
      * If '_creationDate' is not implemented, it calls the 'lastModifiedDate' method.
      * Otherwise it calls the '_creationDate' method.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param callback Returns the creation date of the resource.
@@ -1760,7 +1760,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                     return callback(null, 0);
                 if(!this._creationDate)
                     return this.lastModifiedDate(ctx, pPath, callback);
-                
+
                 this._creationDate(pPath, {
                     context: ctx
                 }, callback);
@@ -1774,7 +1774,7 @@ export abstract class FileSystem implements ISerializableFileSystem
      * If neither '_creationDate' nor '_lastModifiedDate' are implemented, it returns 0.
      * If '_lastModifiedDate' is not implemented, it calls the 'creationDate' method.
      * Otherwise it calls the '_lastModifiedDate' method.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      */
@@ -1788,7 +1788,7 @@ export abstract class FileSystem implements ISerializableFileSystem
      * If neither '_creationDate' nor '_lastModifiedDate' are implemented, it returns 0.
      * If '_lastModifiedDate' is not implemented, it calls the 'creationDate' method.
      * Otherwise it calls the '_lastModifiedDate' method.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param callback Returns the last modified date of the resource.
@@ -1804,7 +1804,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                     return callback(null, 0);
                 if(!this._lastModifiedDate)
                     return this.creationDate(ctx, pPath, callback);
-                
+
                 this._lastModifiedDate(pPath, {
                     context: ctx
                 }, callback);
@@ -1815,7 +1815,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Get the name of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      */
@@ -1826,7 +1826,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Get the name of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param callback Returns the name of the resource.
@@ -1849,7 +1849,7 @@ export abstract class FileSystem implements ISerializableFileSystem
      * Get the 'displayName' information of the resource.
      * This value is used in the 'DAV:displayName' tag in the PROPFIND response body.
      * Its default behaviour is to return the result of the 'webName' method. This behaviour can be overrided by implementing the '_displayName' method.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      */
@@ -1862,7 +1862,7 @@ export abstract class FileSystem implements ISerializableFileSystem
      * Get the 'displayName' information of the resource.
      * This value is used in the 'DAV:displayName' tag in the PROPFIND response body.
      * Its default behaviour is to return the result of the 'webName' method. This behaviour can be overrided by implementing the '_displayName' method.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param callback Returns the 'displayName' information of the resource.
@@ -1875,7 +1875,7 @@ export abstract class FileSystem implements ISerializableFileSystem
             this.fastExistCheckEx(ctx, pPath, callback, () => {
                 if(!this._displayName)
                     return this.webName(ctx, pPath, callback);
-                
+
                 this._displayName(pPath, {
                     context: ctx
                 }, callback);
@@ -1886,7 +1886,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Get the type of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      */
@@ -1897,7 +1897,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Get the type of the resource.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param callback Returns the type of the resource.
@@ -1918,23 +1918,23 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Add a sub-tree to the file system at the root.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param subTree Sub-tree to add.
      */
     addSubTreeAsync(ctx : RequestContext, subTree : SubTree) : Promise<void>
     /**
      * Add a resource to the file system as root.
-     * 
+     *
      * This method is equivalent to the 'fs.create(ctx, '/', resourceType, callback)' method.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param resourceType Type of the resource to add.
      */
     addSubTreeAsync(ctx : RequestContext, resourceType : ResourceType | string | Buffer) : Promise<void>
     /**
      * Add a sub-tree to the file system.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param rootPath Path to which add the sub-tree.
      * @param subTree Sub-tree to add.
@@ -1942,9 +1942,9 @@ export abstract class FileSystem implements ISerializableFileSystem
     addSubTreeAsync(ctx : RequestContext, rootPath : Path | string, subTree : SubTree) : Promise<void>
     /**
      * Add a resource to the file system.
-     * 
+     *
      * This method is equivalent to the 'fs.create(ctx, rootPath, resourceType, callback)' method.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param rootPath Path to which add the resource.
      * @param resourceType Type of the resource to add.
@@ -1957,7 +1957,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Add a sub-tree to the file system at the root.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param subTree Sub-tree to add.
      * @param callback Returns an error if one occured.
@@ -1965,9 +1965,9 @@ export abstract class FileSystem implements ISerializableFileSystem
     addSubTree(ctx : RequestContext, subTree : SubTree, callback : SimpleCallback) : void
     /**
      * Add a resource to the file system as root.
-     * 
+     *
      * This method is equivalent to the 'fs.create(ctx, '/', resourceType, callback)' method.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param resourceType Type of the resource to add.
      * @param callback Returns an error if one occured.
@@ -1975,7 +1975,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     addSubTree(ctx : RequestContext, resourceType : ResourceType | string | Buffer, callback : SimpleCallback) : void
     /**
      * Add a sub-tree to the file system.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param rootPath Path to which add the sub-tree.
      * @param subTree Sub-tree to add.
@@ -1984,9 +1984,9 @@ export abstract class FileSystem implements ISerializableFileSystem
     addSubTree(ctx : RequestContext, rootPath : Path | string, subTree : SubTree, callback : SimpleCallback) : void
     /**
      * Add a resource to the file system.
-     * 
+     *
      * This method is equivalent to the 'fs.create(ctx, rootPath, resourceType, callback)' method.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param rootPath Path to which add the resource.
      * @param resourceType Type of the resource to add.
@@ -2027,7 +2027,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                 .each(Object.keys(tree), (name, cb) => {
                     const value = tree[name];
                     const childPath = rootPath.getChildPath(name);
-                    if(value.constructor === ResourceType || value.constructor === String || value.constructor === Buffer)
+                    if(value.constructor === ResourceType || typeof value === 'string' || value.constructor === Buffer)
                     {
                         this.addSubTree(ctx, childPath, value, cb)
                     }
@@ -2036,7 +2036,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                         this.addSubTree(ctx, childPath, ResourceType.Directory, (e) => {
                             if(e)
                                 return cb(e);
-                                
+
                             this.addSubTree(ctx, childPath, value, cb);
                         })
                     }
@@ -2048,14 +2048,14 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Search for locks in the parents, starting at the 'startPath' path.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param startPath Path where to start the research of locks.
      */
     listDeepLocksAsync(ctx : RequestContext, startPath : Path | string) : Promise<{ [path : string] : Lock[] }>
     /**
      * Search for locks in the parents, starting at the 'startPath' path.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param startPath Path where to start the research of locks.
      * @param depth Depth to filter out-of-range locks (default = 0) (Infinite = -1).
@@ -2068,7 +2068,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Search for locks in the parents, starting at the 'startPath' path.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param startPath Path where to start the research of locks.
      * @param callback Returns an object { path: lock[] }.
@@ -2076,7 +2076,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     listDeepLocks(ctx : RequestContext, startPath : Path | string, callback : ReturnCallback<{ [path : string] : Lock[] }>)
     /**
      * Search for locks in the parents, starting at the 'startPath' path.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param startPath Path where to start the research of locks.
      * @param depth Depth to filter out-of-range locks (default = 0) (Infinite = -1).
@@ -2088,7 +2088,7 @@ export abstract class FileSystem implements ISerializableFileSystem
         const depth = ensureValue(_callback ? _depth as number : undefined, 0);
         const callback = _callback ? _callback : _depth as ReturnCallback<{ [path : string] : Lock[] }>;
         const pStartPath = new Path(startPath);
-        
+
         this.lockManager(ctx, pStartPath, (e, lm) => {
             if(e === Errors.ResourceNotFound)
             {
@@ -2103,7 +2103,7 @@ export abstract class FileSystem implements ISerializableFileSystem
             {
                 return callback(e);
             }
-            
+
             lm.getLocks((e, locks) => {
                 if(e === Errors.NotEnoughPrivilege)
                 {
@@ -2113,17 +2113,17 @@ export abstract class FileSystem implements ISerializableFileSystem
                 {
                     return callback(e);
                 }
-                
+
                 if(depth !== -1)
                     locks = locks.filter((f) => f.depth === -1 || f.depth >= depth);
-                
+
                 const go = (fs : FileSystem, parentPath : Path) =>
                 {
                     const destDepth = depth === -1 ? -1 : depth + 1;
                     fs.listDeepLocks(ctx, parentPath, destDepth, (e, pLocks) => {
                         if(e)
                             return callback(e);
-                        
+
                         if(locks && locks.length > 0)
                             pLocks[pStartPath.toString()] = locks;
                         callback(null, pLocks);
@@ -2139,7 +2139,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                     this.getFullPath(ctx, (e, fsPath) => {
                         if(e)
                             return callback(e);
-                        
+
                         if(fsPath.isRoot())
                         {
                             const result = {};
@@ -2147,7 +2147,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                                 result[pStartPath.toString()] = locks;
                             return callback(null, result);
                         }
-                        
+
                         ctx.server.getFileSystem(fsPath.getParent(), (fs, _, subPath) => {
                             go(fs, subPath);
                         })
@@ -2159,15 +2159,15 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Get the root based file system path. This can also be understood as getting the mount path of the file system.
-     * 
+     *
      * @param ctx Context of the operation.
      */
     getFullPathAsync(ctx : RequestContext) : Promise<Path>
     /**
      * Get the root based path.
-     * 
+     *
      * @example If the file system is mounted on '/folder1', resolving '/folder2/folder3' will result to '/folder1/folder2/folder3'.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path to resolve.
      */
@@ -2179,16 +2179,16 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Get the root based file system path. This can also be understood as getting the mount path of the file system.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param callback Returns the full path (root based).
      */
     getFullPath(ctx : RequestContext, callback : ReturnCallback<Path>) : void
     /**
      * Get the root based path.
-     * 
+     *
      * @example If the file system is mounted on '/folder1', resolving '/folder2/folder3' will result to '/folder1/folder2/folder3'.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path to resolve.
      * @param callback Returns the root based path.
@@ -2198,7 +2198,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     {
         const path = !_path || typeof _path === 'function' ? undefined : new Path(_path as Path | string);
         const callback = _callback ? _callback : _path as ReturnCallback<Path>;
-        
+
         ctx.server.getFileSystemPath(this, (fsPath) => {
             callback(null, path ? fsPath.getChildPath(path) : fsPath);
         })
@@ -2206,7 +2206,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * From the global paths (root based), retrieve the file system local paths (file system based).
-     * 
+     *
      * @example If the file system is mounted on '/folder1', the path '/folder1/folder2/folder3' will be returned as '/folder2/folder3'.
      * @param ctx Context of the operation.
      * @param fullPath The path or the list of paths to localize in the file system.
@@ -2223,7 +2223,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * From the global paths (root based), retrieve the file system local paths (file system based).
-     * 
+     *
      * @example If the file system is mounted on '/folder1', the path '/folder1/folder2/folder3' will be returned as '/folder2/folder3'.
      * @param ctx Context of the operation.
      * @param fullPath The path or the list of paths to localize in the file system.
@@ -2239,7 +2239,7 @@ export abstract class FileSystem implements ISerializableFileSystem
         this.getFullPath(ctx, (e, fsFullPath) => {
             if(e)
                 return callback(e);
-            
+
             const paths = fullPath.constructor === Array ? fullPath as any[] : [ fullPath as any ];
 
             callback(null, paths
@@ -2254,7 +2254,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Check if the user in the current context (ctx) has ALL privileges requested.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param privilege Privilege or list of privileges to check.
@@ -2272,7 +2272,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Check if the user in the current context (ctx) has ALL privileges requested.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param privilege Privilege or list of privileges to check.
@@ -2288,12 +2288,12 @@ export abstract class FileSystem implements ISerializableFileSystem
     {
         if(privileges.constructor === String)
             privileges = [ privileges as string ];
-        
+
         this.getFullPath(ctx, path, (e, fullPath) => {
             this.privilegeManager(ctx, path, (e, privilegeManager) => {
                 if(e)
                     return callback(e);
-                
+
                 const resource = this.resource(ctx, new Path(path));
                 privilegeManager.can(fullPath, resource, privileges as string[], callback);
             })
@@ -2303,7 +2303,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     /**
      * Get the privilege manager to use to authorize actions for a user.
      * By default, it returns the value in the server options, but it can be overrided by implementing the '_privilegeManager' method.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      */
@@ -2315,7 +2315,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     /**
      * Get the privilege manager to use to authorize actions for a user.
      * By default, it returns the value in the server options, but it can be overrided by implementing the '_privilegeManager' method.
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param callback Returns the privilege manager representing the requested resource.
@@ -2324,7 +2324,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     {
         if(!this._privilegeManager)
             return callback(null, ctx.server.options.privilegeManager);
-        
+
         this._privilegeManager(new Path(path), {
             context: ctx
         }, callback);
@@ -2335,7 +2335,7 @@ export abstract class FileSystem implements ISerializableFileSystem
      * Get if a resource is locked by another user than the one in the context argument or if the user has rights to write to the resource.
      * If the user has locked the resource and there is no conflicting lock, so the resource is considered as "not locked".
      * If the user didn't locked the resource and is not administrator, then the resource is considered as "locked".
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      */
@@ -2350,7 +2350,7 @@ export abstract class FileSystem implements ISerializableFileSystem
      * Get if a resource is locked by another user than the one in the context argument or if the user has rights to write to the resource.
      * If the user has locked the resource and there is no conflicting lock, so the resource is considered as "not locked".
      * If the user didn't locked the resource and is not administrator, then the resource is considered as "locked".
-     * 
+     *
      * @param ctx Context of the operation.
      * @param path Path of the resource.
      * @param callback Returns if the resource is locked or not (true = locked, cannot write to it ; false = not locked) or returns an error.
@@ -2364,7 +2364,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
         if(ctx.user && ctx.user.isAdministrator)
             return callback(null, false);
-        
+
         const pPath = new Path(path);
 
         const checkThis = () => {
@@ -2379,15 +2379,15 @@ export abstract class FileSystem implements ISerializableFileSystem
                         return callback(null, false);
                     if(e)
                         return callback(e);
-                    
+
                     locks = locks.filter((l) => l.depth === -1 || l.depth >= depth);
-                    
+
                     if(!ctx.user)
                         return callback(null, locks.length > 0);
 
                     if(locks.some((l) => ctx.user.uid !== l.userUid && l.lockKind.scope.isSame(LockScope.Exclusive)))
                         return callback(null, true);
-                            
+
                     let isShared = false;
                     for(const lock of locks)
                     {
@@ -2403,7 +2403,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                 })
             })
         }
-        
+
         this.getFullPath(ctx, pPath, (e, fullPath) => {
             if(fullPath.isRoot())
                 return checkThis();
@@ -2412,7 +2412,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                 fs.isLocked(ctx, subPath, depth + 1, (e, locked) => {
                     if(e || locked)
                         return callback(e, locked);
-                    
+
                     checkThis();
                 })
             })
@@ -2429,7 +2429,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Serialize the file system based on the 'this.serializer()' value.
-     * 
+     *
      * @param callback Returns the serialized data or an error.
      */
     serialize(callback : ReturnCallback<any>) : void
@@ -2437,13 +2437,13 @@ export abstract class FileSystem implements ISerializableFileSystem
         const serializer = this.serializer();
         if(!serializer)
             return callback();
-        
+
         serializer.serialize(this, callback);
     }
 
     /**
      * Attach a listener to an event.
-     * 
+     *
      * @param server Server in which the event can happen.
      * @param event Name of the event.
      * @param listener Listener of the event.
@@ -2451,7 +2451,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     on(server : WebDAVServer, event : FileSystemEvent, listener : (ctx : RequestContext, path : Path, data ?: any) => void) : this
     /**
      * Attach a listener to an event.
-     * 
+     *
      * @param server Server in which the event can happen.
      * @param event Name of the event.
      * @param listener Listener of the event.
@@ -2459,7 +2459,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     on(server : WebDAVServer, event : string, listener : (ctx : RequestContext, path : Path, data ?: any) => void) : this
     /**
      * Attach a listener to an event.
-     * 
+     *
      * @param ctx Context containing the server in which the event can happen.
      * @param event Name of the event.
      * @param listener Listener of the event.
@@ -2467,7 +2467,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     on(ctx : RequestContext, event : FileSystemEvent, listener : (ctx : RequestContext, path : Path, data ?: any) => void) : this
     /**
      * Attach a listener to an event.
-     * 
+     *
      * @param ctx Context containing the server in which the event can happen.
      * @param event Name of the event.
      * @param listener Listener of the event.
@@ -2485,7 +2485,7 @@ export abstract class FileSystem implements ISerializableFileSystem
 
     /**
      * Trigger an event.
-     * 
+     *
      * @param event Name of the event.
      * @param ctx Context of the event.
      * @param path Path of the resource on which the event happened.
