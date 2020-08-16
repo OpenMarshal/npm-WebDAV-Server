@@ -31,16 +31,16 @@ export class HTTPBasicAuthentication implements HTTPAuthentication
             onError(Errors.MissingAuthorisationHeader)
             return;
         }
-        if(!/^Basic \s*[a-zA-Z0-9]+=*\s*$/.test(authHeader))
+        if(!/^Basic /.test(authHeader))
         {
             onError(Errors.WrongHeaderFormat);
             return;
         }
 
-        const value = Buffer.from(/^Basic \s*([a-zA-Z0-9]+=*)\s*$/.exec(authHeader)[1], 'base64').toString().split(':', 2);
+        const value = Buffer.from(authHeader.slice(6).trim(), 'base64').toString().split(':', 2);
         const username = value[0];
         const password = value[1];
-        
+
         this.userManager.getUserByNamePassword(username, password, (e, user) => {
             if(e)
                 onError(Errors.BadAuthentication);
