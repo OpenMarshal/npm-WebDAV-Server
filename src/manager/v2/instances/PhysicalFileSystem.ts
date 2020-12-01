@@ -217,7 +217,7 @@ export class PhysicalFileSystem extends FileSystem
         const rename = (overwritten) => {
             fs.rename(realPathFrom, realPathTo, (e) => {
                 if(e)
-                    return callback(e);
+                    return callback(Errors_1.Errors.ResourceNotFound);
 
                 this.resources[realPathTo] = this.resources[realPathFrom];
                 delete this.resources[realPathFrom];
