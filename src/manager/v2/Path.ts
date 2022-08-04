@@ -28,7 +28,12 @@ export class Path
 
     decode() : void
     {
-        this.paths = this.paths.map(decodeURIComponent);
+        // FIX: crash when paths contains invalid path, example '%NETHOOD%'
+        try {
+            this.paths = this.paths.map(decodeURIComponent);
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     isRoot() : boolean
