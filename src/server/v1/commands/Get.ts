@@ -99,7 +99,7 @@ export function method(arg : MethodCallArgs, callback)
                                         arg.response.setHeader('Accept-Ranges', 'bytes')
                                         arg.response.setHeader('Content-Type', mimeType)
                                         arg.response.setHeader('Content-Length', (max - min).toString())
-                                        arg.response.setHeader('Content-Range', 'bytes ' + min + '-' + max + '/*')
+                                        arg.response.setHeader('Content-Range', 'bytes ' + min + '-' + max + '/'+ (max - min).toString())
 
                                         rstream.on('end', callback);
                                         rstream.pipe(new RangedStream(min, max)).pipe(arg.response);
