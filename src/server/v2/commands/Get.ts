@@ -216,7 +216,7 @@ export default class implements HTTPMethod
                                                 if(ranges.length <= 1)
                                                 {
                                                     ctx.response.setHeader('Content-Type', mimeType)
-                                                    ctx.response.setHeader('Content-Range', `bytes ${ranges[0].min}-${ranges[0].max}/${len.toString()}`)
+                                                    ctx.response.setHeader('Content-Range', `bytes ${ranges[0].min}-${ranges[0].max}/${size}`)
                                                     rstream.on('end', callback);
                                                     return rstream.pipe(new RangedStream(ranges[0].min, ranges[0].max)).pipe(ctx.response);
                                                 }

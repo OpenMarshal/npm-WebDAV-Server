@@ -91,18 +91,26 @@ export function method(arg : MethodCallArgs, callback)
                                     const range = arg.findHeader('Range');
                                     if(range)
                                     {
-                                        const rex = /([0-9]+)/g;
-                                        const min = parseInt(rex.exec(range)[1], 10);
-                                        const max = parseInt(rex.exec(range)[1], 10);
+                                        r.size(targetSource, (e, totalSize) => {
+                                            if(e)
+                                            {
+                                                arg.setCode(HTTPCodes.InternalServerError)
+                                                callback();
+                                                return;
+                                            }
+                                            const rex = /([0-9]+)/g;
+                                            const min = parseInt(rex.exec(range)[1], 10);
+                                            const max = parseInt(rex.exec(range)[1], 10);
 
-                                        arg.setCode(HTTPCodes.PartialContent);
-                                        arg.response.setHeader('Accept-Ranges', 'bytes')
-                                        arg.response.setHeader('Content-Type', mimeType)
-                                        arg.response.setHeader('Content-Length', (max - min).toString())
-                                        arg.response.setHeader('Content-Range', 'bytes ' + min + '-' + max + '/'+ (max - min).toString())
+                                            arg.setCode(HTTPCodes.PartialContent);
+                                            arg.response.setHeader('Accept-Ranges', 'bytes')
+                                            arg.response.setHeader('Content-Type', mimeType)
+                                            arg.response.setHeader('Content-Length', (max - min).toString())
+                                            arg.response.setHeader('Content-Range', 'bytes ' + min + '-' + max + '/'+totalSize.toString())
 
-                                        rstream.on('end', callback);
-                                        rstream.pipe(new RangedStream(min, max)).pipe(arg.response);
+                                            rstream.on('end', callback);
+                                            rstream.pipe(new RangedStream(min, max)).pipe(arg.response);
+                                        });
                                     }
                                     else
                                     {
