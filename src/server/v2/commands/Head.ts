@@ -52,7 +52,7 @@ export default class implements HTTPMethod
                                             if(ranges.length <= 1)
                                             {
                                                 ctx.response.setHeader('Content-Type', mimeType)
-                                                ctx.response.setHeader('Content-Range', `bytes ${ranges[0].min}-${ranges[0].max}/*`)
+                                                ctx.response.setHeader('Content-Range', `bytes ${ranges[0].min}-${ranges[0].max}/${size}`)
                                             }
                                             else
                                                 ctx.response.setHeader('Content-Type', `multipart/byteranges; boundary=${separator}`)

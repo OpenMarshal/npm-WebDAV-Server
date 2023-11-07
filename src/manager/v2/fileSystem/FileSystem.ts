@@ -2027,7 +2027,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                 .each(Object.keys(tree), (name, cb) => {
                     const value = tree[name];
                     const childPath = rootPath.getChildPath(name);
-                    if(value.constructor === ResourceType || value.constructor === String || value.constructor === Buffer)
+                    if(value.constructor === ResourceType || typeof value === 'string' || value.constructor === Buffer)
                     {
                         this.addSubTree(ctx, childPath, value, cb)
                     }
