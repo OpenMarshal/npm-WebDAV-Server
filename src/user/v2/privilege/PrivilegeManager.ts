@@ -39,7 +39,7 @@ export class PrivilegeManager
         if(resource.context.overridePrivileges || user && user.isAdministrator)
             return callback(null, true);
         
-        if(_privilege.constructor !== String)
+        if(typeof _privilege !== "string")
         {
             new Workflow()
                 .each(_privilege as string[], (privilege, cb) => this.can(_fullPath, resource, privilege, cb))

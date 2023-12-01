@@ -10,18 +10,18 @@ export class Path
 
     constructor(path : Path | string[] | string)
     {
-        if(path.constructor === String)
+        if(typeof path === "string")
         {
-            let sPath = path as string;
+            let sPath = path;
             let doubleIndex : number;
             while((doubleIndex = sPath.indexOf('//')) !== -1)
-                sPath = sPath.substr(0, doubleIndex) + sPath.substr(doubleIndex + 1);
+                sPath = sPath.slice(0, doubleIndex) + sPath.slice(doubleIndex + 1);
             this.paths = sPath.replace(/(^\/|\/$)/g, '').split('/');
         }
-        else if(path.constructor === Path)
-            this.paths = (path as Path).paths.filter((x) => true); // clone
+        else if(Array.isArray(path))
+            this.paths = path;
         else
-            this.paths = path as string[];
+            this.paths = path.paths.slice(0); // clone
         
         this.paths = this.paths.filter((p) => p.length > 0);
     }

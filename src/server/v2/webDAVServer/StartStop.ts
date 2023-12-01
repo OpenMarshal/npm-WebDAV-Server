@@ -45,8 +45,8 @@ export function executeRequest(req : http.IncomingMessage, res : http.ServerResp
                 const data = Buffer.alloc(base.headers.contentLength);
                 let index = 0;
                 req.on('data', (chunk) => {
-                    if(chunk.constructor === String)
-                        chunk = Buffer.from(chunk as string);
+                    if(typeof chunk === "string")
+                        chunk = Buffer.from(chunk);
                     
                     for(let i = 0; i < chunk.length && index < data.length; ++i, ++index)
                         data[index] = (chunk as Buffer)[i];

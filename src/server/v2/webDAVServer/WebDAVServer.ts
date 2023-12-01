@@ -272,9 +272,9 @@ export class WebDAVServer
     removeFileSystemSync(fs_path : Path | string | FileSystem, checkByReference : boolean = true) : number
     {
         let nb = 0;
-        if(fs_path.constructor === Path || fs_path.constructor === String)
+        if(fs_path.constructor === Path || typeof fs_path === "string")
         {
-            const path = new Path(fs_path as (Path | string)).toString();
+            const path = new Path(fs_path).toString();
             if(this.fileSystems[path] !== undefined)
             {
                 delete this.fileSystems[path];
@@ -725,7 +725,7 @@ export class WebDAVServer
         if(!this.events[event])
             return;
 
-        this.events[event].forEach((l) => process.nextTick(() => l(ctx, fs, path.constructor === String ? new Path(path as string) : path as Path, data)));
+        this.events[event].forEach((l) => process.nextTick(() => l(ctx, fs, typeof path === "string" ? new Path(path) : path, data)));
     }
 
     /**

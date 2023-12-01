@@ -188,7 +188,7 @@ export default class implements HTTPMethod
 
         function displayValue(values : string[] | string, fn : () => void)
         {
-            if(values.constructor === String ? tags[values as string].value : (values as string[]).some((n) => tags[n].value))
+            if(typeof values === "string" ? tags[values].value : values.some((n) => tags[n].value))
             {
                 ++nb;
                 process.nextTick(fn);
