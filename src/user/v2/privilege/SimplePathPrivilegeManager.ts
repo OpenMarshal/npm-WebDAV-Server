@@ -1,6 +1,5 @@
 import { BasicPrivilege, PrivilegeManager, PrivilegeManagerCallback } from './PrivilegeManager'
 import { Resource, Path } from '../../../manager/v2/export'
-import { startsWith } from '../../../helper/JSCompatibility'
 import { Errors } from '../../../Errors'
 import { IUser } from '../IUser'
 
@@ -88,7 +87,7 @@ export class SimplePathPrivilegeManager extends PrivilegeManager
         const rights = {};
         for(const superPath in allRights)
         {
-            if(startsWith(path, superPath))
+            if(path.startsWith(superPath))
             {
                 for(const right of allRights[superPath])
                     rights[right] = true;
