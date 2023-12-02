@@ -628,7 +628,7 @@ export abstract class FileSystem implements ISerializableFileSystem
             if(obj && obj.constructor === Function)
                 callbackFinal = obj as Return2Callback<Writable, boolean>;
         
-        const mode = _mode && _mode.constructor === String ? _mode as OpenWriteStreamMode : 'mustExist';
+        const mode: OpenWriteStreamMode = _mode && typeof _mode === "string" ? _mode : 'mustExist';
         const path = new Path(_path);
         let created = false;
 
@@ -1677,7 +1677,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                         if(paths.length === 0)
                             return callback(null, base);
                         
-                        if(paths[0].constructor === String)
+                        if(typeof paths[0] === "string")
                             base = base.concat((paths as string[]).map((s) => pPath.getChildPath(s)));
                         else
                             base = base.concat(paths as Path[]);
@@ -2005,9 +2005,9 @@ export abstract class FileSystem implements ISerializableFileSystem
         {
             this.create(ctx, rootPath, tree as ResourceType, callback);
         }
-        else if(tree.constructor === String || tree.constructor === Buffer)
+        else if(typeof tree === "string" || tree.constructor === Buffer)
         {
-            const data : String | Buffer = tree as any;
+            const data : string | Buffer = tree as any;
             this.openWriteStream(ctx, rootPath, 'mustCreate', true, data.length, (e, w, created) => {
                 if(e)
                     return callback(e);
@@ -2027,7 +2027,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                 .each(Object.keys(tree), (name, cb) => {
                     const value = tree[name];
                     const childPath = rootPath.getChildPath(name);
-                    if(value.constructor === ResourceType || value.constructor === String || value.constructor === Buffer)
+                    if(value.constructor === ResourceType || typeof value === "string" || value.constructor === Buffer)
                     {
                         this.addSubTree(ctx, childPath, value, cb)
                     }
@@ -2286,8 +2286,8 @@ export abstract class FileSystem implements ISerializableFileSystem
     checkPrivilege(ctx : RequestContext, path : Path | string, privileges : string | string[], callback : ReturnCallback<boolean>)
     checkPrivilege(ctx : RequestContext, path : Path | string, privileges : string | string[] | BasicPrivilege | BasicPrivilege[], callback : ReturnCallback<boolean>)
     {
-        if(privileges.constructor === String)
-            privileges = [ privileges as string ];
+        if(typeof privileges === "string")
+            privileges = [ privileges ];
         
         this.getFullPath(ctx, path, (e, fullPath) => {
             this.privilegeManager(ctx, path, (e, privilegeManager) => {
