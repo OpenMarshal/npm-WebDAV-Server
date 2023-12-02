@@ -2,7 +2,6 @@ import { md5, parseHTTPAuthHeader } from '../../CommonFunctions'
 import { HTTPAuthentication } from './HTTPAuthentication'
 import { HTTPRequestContext } from '../../../server/v2/RequestContext'
 import { IListUserManager } from '../userManager/IListUserManager'
-import { startsWith } from '../../../helper/JSCompatibility'
 import { Errors } from '../../../Errors'
 import { IUser } from '../IUser'
 
@@ -72,11 +71,11 @@ export class HTTPDigestAuthentication implements HTTPAuthentication
                 switch(digestUri.length - requestedUri.length)
                 {
                     case -1:
-                        uriMismatch = !startsWith(requestedUri, digestUri) || requestedUri[digestUri.length] !== '/';
+                        uriMismatch = !requestedUri.startsWith(digestUri) || requestedUri[digestUri.length] !== '/';
                         break;
 
                     case 1:
-                        uriMismatch = !startsWith(digestUri, requestedUri) || digestUri[requestedUri.length] !== '/';
+                        uriMismatch = !digestUri.startsWith(requestedUri) || digestUri[requestedUri.length] !== '/';
                         break;
 
                     default:

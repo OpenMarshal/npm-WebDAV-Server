@@ -1,7 +1,6 @@
 import { HTTPCodes, HTTPMethod, HTTPRequestContext } from '../WebDAVRequest'
 import { StandardMethods } from '../../../manager/v2/fileSystem/StandardMethods'
 import { ResourceType } from '../../../manager/v2/fileSystem/CommonTypes'
-import { startsWith } from '../../../helper/JSCompatibility'
 import { Errors } from '../../../Errors'
 import { Path } from '../../../manager/v2/Path'
 
@@ -25,7 +24,7 @@ export function execute(ctx : HTTPRequestContext, methodName : string, privilege
                     destination = destination.substring(startIndex + '://'.length)
                     destination = destination.substring(destination.indexOf('/')) // Remove the hostname + port
                 }
-                if(ctx.rootPath && startsWith(destination, ctx.rootPath))
+                if (ctx.rootPath && destination.startsWith(ctx.rootPath))
                 {
                     destination = destination.substring(ctx.rootPath.length);
                 }
@@ -40,7 +39,7 @@ export function execute(ctx : HTTPRequestContext, methodName : string, privilege
                     ctx.setCode(HTTPCodes.Forbidden);
                     return callback();
                 }
-                if(startsWith(sDest, sSource))
+                if(sDest.startsWith(sSource))
                 {
                     ctx.setCode(HTTPCodes.BadGateway);
                     return callback();

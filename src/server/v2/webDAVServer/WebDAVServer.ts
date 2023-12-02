@@ -4,7 +4,6 @@ import { HTTPAuthentication } from '../../../user/v2/authentication/HTTPAuthenti
 import { PrivilegeManager } from '../../../user/v2/privilege/PrivilegeManager'
 import { ReturnCallback } from '../../../manager/v2/fileSystem/CommonTypes'
 import { FileSystem } from '../../../manager/v2/fileSystem/FileSystem'
-import { startsWith } from '../../../helper/JSCompatibility'
 import { HTTPMethod } from '../WebDAVRequest'
 import { Resource } from '../../../manager/v2/fileSystem/Resource'
 import { Path } from '../../../manager/v2/Path'
@@ -362,7 +361,7 @@ export class WebDAVServer
         for(const fsPath in this.fileSystems)
         {
             const pfsPath = new Path(fsPath);
-            if(pfsPath.paths.length === parentPath.paths.length + 1 && startsWith(fsPath, seekPath))
+            if(pfsPath.paths.length === parentPath.paths.length + 1 && fsPath.startsWith(seekPath))
             {
                 results.push({
                     fs: this.fileSystems[fsPath],
