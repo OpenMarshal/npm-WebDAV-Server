@@ -1,5 +1,4 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
-import { IResource, ResourceType } from '../../../resource/v1/IResource'
 import Get from './Get'
 
 export function method(arg : MethodCallArgs, callback)

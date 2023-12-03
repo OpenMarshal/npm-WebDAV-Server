@@ -2,7 +2,6 @@ import { SimplePrivilegeManager, SimpleBasicPrivilege } from './SimplePrivilegeM
 import { MethodCallArgs } from '../../../server/v1/MethodCallArgs'
 import { hasNoWriteLock } from './IPrivilegeManager'
 import { IResource } from '../../../resource/v1/IResource'
-import { LockType } from '../../../resource/v1/lock/LockType'
 import { IUser } from '../IUser'
 
 function standarizePath(path : string)
