@@ -96,7 +96,6 @@ export class PerUserStorageManager implements IStorageManager
         const xml = value as XMLElement;
         const attributesLength = Object.keys(xml.attributes).map((at) => at.length + (xml.attributes[at].length as number)).reduce((p, n) => p + n, 0);
 
-        // tslint:disable-next-line:restrict-plus-operands
         return xml.name.length + attributesLength + (xml.elements && xml.elements.length > 0 ? this.evalPropValue(xml.elements) : 0);
     }
     evaluateProperty(ctx : RequestContext, fs : FileSystem, name : string, value : ResourcePropertyValue, attributes : PropertyAttributes, callback : IStorageManagerEvaluateCallback) : void
