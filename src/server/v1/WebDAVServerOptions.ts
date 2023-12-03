@@ -1,4 +1,3 @@
-import { HTTPBasicAuthentication } from '../../user/v1/authentication/HTTPBasicAuthentication'
 import { HTTPDigestAuthentication } from '../../user/v1/authentication/HTTPDigestAuthentication'
 import { FakePrivilegeManager } from '../../user/v1/privilege/FakePrivilegeManager'
 import { HTTPAuthentication } from '../../user/v1/authentication/HTTPAuthentication'

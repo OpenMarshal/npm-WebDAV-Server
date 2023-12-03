@@ -1,6 +1,5 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
-import { IResource, ResourceType } from '../../../resource/v1/IResource'
-import { FSPath } from '../../../manager/v1/FSManager'
+import { ResourceType } from '../../../resource/v1/IResource'
 import { Errors } from '../../../Errors'
 import * as path from 'path'
 

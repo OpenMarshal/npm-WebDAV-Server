@@ -4,7 +4,6 @@ import { MethodCallArgs } from '../../../server/v1/MethodCallArgs'
 import { IUserManager } from '../IUserManager'
 import { Errors } from '../../../Errors'
 import { IUser } from '../IUser'
-import * as crypto from 'crypto'
 
 export class HTTPDigestAuthentication implements HTTPAuthentication
 {

@@ -1,6 +1,5 @@
-import { IResource, SimpleCallback, ReturnCallback, Return2Callback, ResourceType } from '../IResource'
-import { Readable, ReadableOptions } from 'stream'
-import { FSManager, FSPath } from '../../../manager/v1/FSManager'
+import { IResource } from '../IResource'
+import { FSManager } from '../../../manager/v1/FSManager'
 import { VirtualResource } from '../virtual/VirtualResource'
 
 export abstract class VirtualStoredResource extends VirtualResource

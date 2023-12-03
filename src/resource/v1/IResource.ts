@@ -1,12 +1,8 @@
 import { Readable, Writable } from 'stream'
 import { FSManager, FSPath } from '../../manager/v1/FSManager'
-import { StandardResource } from './std/StandardResource'
 import { RequestContext } from '../../server/v1/MethodCallArgs'
-import { WorkflowUnique } from '../../helper/Workflow'
 import { XMLElement } from 'xml-js-builder'
 import { LockKind } from './lock/LockKind'
-import { LockType } from './lock/LockType'
-import { Errors } from '../../Errors'
 import { Lock } from './lock/Lock'
 import * as crypto from 'crypto'
 

@@ -1,8 +1,5 @@
 import { PrivilegeManagerMethod } from './IPrivilegeManager'
 import { IPrivilegeManager } from './IPrivilegeManager'
-import { MethodCallArgs } from '../../../server/v1/MethodCallArgs'
-import { IResource } from '../../../resource/v1/IResource'
-import { LockType } from '../../../resource/v1/lock/LockType'
 
 export type SimpleBasicPrivilege = 
     'all'

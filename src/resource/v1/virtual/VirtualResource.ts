@@ -1,6 +1,6 @@
 import { IResource, SimpleCallback, ReturnCallback, Return2Callback, ResourceType } from '../IResource'
 import { Readable, Writable } from 'stream'
-import { FSManager, FSPath } from '../../../manager/v1/FSManager'
+import { FSManager } from '../../../manager/v1/FSManager'
 import { VirtualFSManager } from '../../../manager/v1/VirtualFSManager'
 import { StandardResource } from '../std/StandardResource'
 
