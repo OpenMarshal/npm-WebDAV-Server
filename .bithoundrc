@@ -8,7 +8,7 @@
   ],
   "critics": {
     "lint": {
-      "engine": "tslint",
+      "engine": "eslint",
       "wc": { "limit": 5000 }
     }
   }

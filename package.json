@@ -24,7 +24,7 @@
     "prepare": "npm run build",
     "dev": "cd src && tsc --declaration -w",
     "build": "cd src && tsc --declaration",
-    "lint": "tslint --project tslint.json src/**/v2/**/*.ts",
+    "lint": "eslint src/**/v2/**/*.ts",
     "test": "npm run build-test && npm run start-test",
     "start-test": "node test/v2/root.js && node test/v1/root.js",
     "build-test": "cd test/v2/tests.ts && tsc"
@@ -46,11 +46,13 @@
     "@types/mime-types": "^2.1.0",
     "@types/node": "^7.0.64",
     "@types/request": "0.0.44",
+    "@typescript-eslint/eslint-plugin": "^6.13.1",
+    "@typescript-eslint/parser": "^6.13.1",
+    "eslint": "^8.55.0",
     "express": "^4.16.4",
     "form-data": "^3.0.0",
     "request": "^2.85.0",
     "safe-regex": "^1.1.0",
-    "tslint": "^5.20.1",
     "typescript": "^3.7.2",
     "webdav-fs": "^1.10.1",
     "xml-js": "^1.4.1"

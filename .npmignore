@@ -2,7 +2,7 @@ node_modules
 src
 test
 .*
-tslint.json
+.eslintrc.cjs
 *.log
 examples
 experiment
