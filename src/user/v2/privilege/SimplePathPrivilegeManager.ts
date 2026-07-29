@@ -3,30 +3,7 @@ import { Resource, Path } from '../../../manager/v2/export'
 import { startsWith } from '../../../helper/JSCompatibility'
 import { Errors } from '../../../Errors'
 import { IUser } from '../IUser'
-
-function standarizePath(path : string)
-{
-    if(!path)
-        path = '/';
-
-    const startIndex = path.indexOf('://');
-    if(startIndex !== -1)
-    {
-        path = path.substr(startIndex + 3);
-        path = path.substr(path.indexOf('/') + 1);
-    }
-
-    path = path.replace(/\\/g, '/');
-    const rex = /\/\//g;
-    while(rex.test(path))
-        path = path.replace(rex, '/');
-    path = path.replace(/\/$/g, '');
-    path = path.replace(/^([^\/])/g, '/$1');
-    if(path.length === 0)
-        path = '/';
-    
-    return path;
-}
+import { normalizePath } from '../../CommonFunctions'
 
 export class SimplePathPrivilegeManager extends PrivilegeManager
 {
@@ -72,7 +49,7 @@ export class SimplePathPrivilegeManager extends PrivilegeManager
             rs.push('canWriteContentSource');
         }
 
-        this.rights[user.uid][standarizePath(path)] = rights;
+        this.rights[user.uid][normalizePath(path)] = rights;
     }
     getRights(user : IUser, path : string) : string[]
     {
@@ -83,7 +60,7 @@ export class SimplePathPrivilegeManager extends PrivilegeManager
         if(!allRights)
             return [];
             
-        path = standarizePath(path.toString());
+        path = normalizePath(path.toString());
 
         const rights = {};
         for(const superPath in allRights)

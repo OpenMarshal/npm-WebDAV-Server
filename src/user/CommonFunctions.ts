@@ -89,3 +89,31 @@ export function parseHTTPAuthHeader(authHeader : string, prefix : string) : any
     
     return keyValues;    
 }
+
+export function normalizePath(path : string)
+{
+    if(!path)
+        path = '/';
+
+    const startIndex = path.indexOf('://');
+    if(startIndex !== -1)
+    {
+        path = path.substr(startIndex + 3);
+        path = path.substr(path.indexOf('/') + 1);
+    }
+
+    path = path.replace(/\\/g, '/');
+    const rex = /\/\//g;
+    while(rex.test(path))
+        path = path.replace(rex, '/');
+    path = path.replace(/\/$/g, '');
+    path = path.replace(/^([^\/])/g, '/$1');
+    if(path.length === 0)
+        path = '/';
+
+    if(!path.endsWith('/')) {
+        path += '/';
+    }
+    
+    return path;
+}

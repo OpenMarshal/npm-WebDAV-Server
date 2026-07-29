@@ -526,21 +526,21 @@ export class WebDAVServer
      * 
      * @param port Port of the server
      */
-    start(port : number)
+    start(port : number) : void
     /**
      * Start the WebDAV server.
      * 
      * @param callback Callback to call when the server is started
      */
-    start(callback : WebDAVServerStartCallback)
+    start(callback : WebDAVServerStartCallback) : void
     /**
      * Start the WebDAV server.
      * 
      * @param port Port of the server
      * @param callback Callback to call when the server is started
      */
-    start(port : number, callback : WebDAVServerStartCallback)
-    start(port ?: number | WebDAVServerStartCallback, callback ?: WebDAVServerStartCallback)
+    start(port : number, callback : WebDAVServerStartCallback) : void
+    start(port ?: number | WebDAVServerStartCallback, callback ?: WebDAVServerStartCallback) : void
     {
         startStop.start.bind(this)(port, callback);
     }

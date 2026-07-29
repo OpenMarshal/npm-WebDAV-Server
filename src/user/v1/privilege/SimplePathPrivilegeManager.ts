@@ -4,30 +4,7 @@ import { hasNoWriteLock } from './IPrivilegeManager'
 import { IResource } from '../../../resource/v1/IResource'
 import { LockType } from '../../../resource/v1/lock/LockType'
 import { IUser } from '../IUser'
-
-function standarizePath(path : string)
-{
-    if(!path)
-        path = '/';
-
-    const startIndex = path.indexOf('://');
-    if(startIndex !== -1)
-    {
-        path = path.substr(startIndex + 3);
-        path = path.substr(path.indexOf('/') + 1);
-    }
-
-    path = path.replace(/\\/g, '/');
-    const rex = /\/\//g;
-    while(rex.test(path))
-        path = path.replace(rex, '/');
-    path = path.replace(/\/$/g, '');
-    path = path.replace(/^([^\/])/g, '/$1');
-    if(path.length === 0)
-        path = '/';
-    
-    return path;
-}
+import { normalizePath } from '../../CommonFunctions'
 
 function checker(sppm : SimplePathPrivilegeManager, right : SimpleBasicPrivilege)
 {
@@ -59,14 +36,14 @@ export class SimplePathPrivilegeManager extends SimplePrivilegeManager
         if(!this.rights[user.uid])
             this.rights[user.uid] = {};
 
-        this.rights[user.uid][standarizePath(path)] = rights;
+        this.rights[user.uid][normalizePath(path)] = rights;
     }
     getRights(user : IUser, path : string) : SimpleBasicPrivilege[]
     {
         if(!this.rights[user.uid])
             return [];
 
-        return this.rights[user.uid][standarizePath(path)];
+        return this.rights[user.uid][normalizePath(path)];
     }
     can(user : IUser, path : string, right : SimpleBasicPrivilege) : boolean
     {

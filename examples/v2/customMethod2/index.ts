@@ -4,7 +4,7 @@ import * as request from 'request'
 // Server instantiation
 const server = new webdav.WebDAVServer();
 
-const folderNotify = { };
+const folderNotify: any = { };
 server.method('TRACE', {
     unchunked(ctx : webdav.HTTPRequestContext, data : Buffer, cb : () => void)
     {
@@ -22,7 +22,7 @@ server.method('TRACE', {
         if(folderNotify[name][path])
             lastCheck = folderNotify[name][path];
         
-        const list = [];
+        const list: any[] = [];
         
         ctx.getResource((e, r) => {
             r.readDir((e, files) => {
