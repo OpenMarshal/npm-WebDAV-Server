@@ -2,7 +2,11 @@ import Errors from "../../Errors";
 
 export class Path
 {
-    private isResolved = false;
+    /**
+     * true if the path has been resolved with
+     * success in Path.resolve().
+     */
+    private isSuccessfullyResolved = false;
 
     paths : string[]
 
@@ -23,7 +27,7 @@ export class Path
         else if(path.constructor === Path)
         {
             this.paths = path.paths.slice();
-            this.isResolved = path.isResolved;
+            this.isSuccessfullyResolved = path.isSuccessfullyResolved;
         }
         else
         {
@@ -42,6 +46,11 @@ export class Path
 
     resolve() : Error
     {
+        if(this.isSuccessfullyResolved)
+        { // we don't resolve twice to prevent unnecessary work
+            return null;
+        }
+
         const newSegments: string[] = [];
         for(const segment of this.paths) {
             if(segment === '..') {
@@ -57,7 +66,7 @@ export class Path
         }
 
         this.paths = newSegments;
-        this.isResolved = false;
+        this.isSuccessfullyResolved = true;
         return null;
     }
 
