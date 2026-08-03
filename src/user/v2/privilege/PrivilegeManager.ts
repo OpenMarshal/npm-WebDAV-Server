@@ -49,6 +49,12 @@ export class PrivilegeManager
         }
 
         const fullPath = new Path(_fullPath);
+        const resolveError = fullPath.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError, false);
+        }
+
         const privilege = _privilege as string;
 
         if(this._can)

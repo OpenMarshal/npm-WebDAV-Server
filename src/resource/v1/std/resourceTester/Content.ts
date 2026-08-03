@@ -1,3 +1,4 @@
+import { Writable } from 'stream';
 import { ResourceTesterTestCallback } from './Types'
 
 // ****************************** Content ****************************** //
@@ -34,18 +35,20 @@ export function writeRead(callback : ResourceTesterTestCallback)
     }
 
     this.producer(false, (r1) => {
-        r1.write(true, (e, w) => {
+        r1.write(true, (e, w: Writable) => {
             callback(e, !e, 'write error', undefined, () => {
                 write(w, () => {
                     w.end();
-                    r1.read(true, (e, r) => {
-                        callback(e, !e, 'read error', undefined, () => {
-                            let fdata = '';
-                            r.on('data', (data) => {
-                                fdata += data.toString();
-                            })
-                            r.on('end', () => {
-                                callback(null, fdata && fdata === value, 'The read value must be the same as the written value');
+                    w.on('close', () => {
+                        r1.read(true, (e, r) => {
+                            callback(e, !e, 'read error', undefined, () => {
+                                let fdata = '';
+                                r.on('data', (data) => {
+                                    fdata += data.toString();
+                                })
+                                r.on('end', () => {
+                                    callback(null, fdata && fdata === value, 'The read value must be the same as the written value');
+                                })
                             })
                         })
                     })
@@ -81,14 +84,16 @@ export function size(callback : ResourceTesterTestCallback)
     const value = 'test';
 
     this.producer(false, (r1) => {
-        r1.write(true, (e, w) => {
+        r1.write(true, (e, w: Writable) => {
             callback(e, !e, 'write error', this.options.canWrite, () => {
                 w.end(value, (e) => {
                     callback(e, !e, 'Writable write error', this.options.canWrite, () => {
-                        r1.size(true, (e, size) => {
-                            callback(e, !e, 'size error', this.options.canGetSize, () => {
-                                callback(null, size === value.length, 'The size value provided by the size method is invalid');
-                            })
+                    })
+                })
+                w.on('close', () => {
+                    r1.size(true, (e, size) => {
+                        callback(e, !e, 'size error', this.options.canGetSize, () => {
+                            callback(null, size === value.length, `The size value provided by the size method is invalid; received ${size} but expected ${value.length}`);
                         })
                     })
                 })

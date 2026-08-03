@@ -120,24 +120,53 @@ function refreshLock(ctx : HTTPRequestContext, lockUUID : string, callback)
             r.lockManager((e, lm) => {
                 if(e)
                 {
-                    if(!ctx.setCodeFromError(e))
-                        ctx.setCode(HTTPCodes.InternalServerError)
+                    ctx.setCodeFromError(e);
                     return callback();
                 }
-                
-                lm.refresh(lockUUID, ctx.server.options.lockTimeout, (e, lock) => {
-                    if(e || !lock)
+
+                const refresh = () =>
+                {
+                    lm.refresh(lockUUID, ctx.server.options.lockTimeout, (e, lock) => {
+                        if(e || !lock)
+                        {
+                            ctx.setCode(HTTPCodes.PreconditionFailed);
+                            callback();
+                            return;
+                        }
+                        
+                        //ctx.invokeEvent('refreshLock', r, lock);
+                        ctx.setCode(HTTPCodes.OK);
+                        ctx.writeBody(createResponse(ctx, lock));
+                        callback();
+                    })
+                }
+
+                lm.getLock(lockUUID, (e, lock) => {
+                    if(e)
                     {
-                        ctx.setCode(HTTPCodes.PreconditionFailed)
-                        callback()
-                        return;
+                        ctx.setCodeFromError(e);
+                        return callback();
                     }
-                    
-                    //ctx.invokeEvent('refreshLock', r, lock);
-                    ctx.setCode(HTTPCodes.OK);
-                    ctx.writeBody(createResponse(ctx, lock));
-                    callback();
-                })
+                    if(!lock)
+                    {
+                        ctx.setCode(HTTPCodes.PreconditionFailed);
+                        return callback();
+                    }
+
+                    if(!lock.userUid)
+                    {
+                        refresh();
+                    }
+                    else if(ctx.user && lock.userUid === ctx.user.uid)
+                    {
+                        refresh();
+                    }
+                    else
+                    {
+                        ctx.setCode(HTTPCodes.Unauthorized);
+                        callback();
+                    }
+                });
             })
         //})
     })

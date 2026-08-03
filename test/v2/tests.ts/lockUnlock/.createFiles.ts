@@ -1,6 +1,7 @@
 import { TestCallback, TestInfo } from '../Type'
 import { v2 } from '../../../../lib/index.js'
 import { XMLElementUtil } from 'xml-js-builder'
+import { Headers } from 'request'
 
 export interface Lock
 {
@@ -83,6 +84,30 @@ export function methodTesterBlocking(info : TestInfo, isValid : TestCallback, ca
     })
 }
 
+export function refreshResourceLock(
+    server : v2.WebDAVServer,
+    info : TestInfo,
+    isValid : TestCallback,
+    user : string,
+    pathNameToUnlock : string,
+    lockToken : string,
+    headers : Headers,
+    expectedResponseCode : number,
+    callback : () => void) : void
+{
+    info.req({
+        url: 'http://localhost:' + server.options.port + '/' + pathNameToUnlock,
+        method: 'LOCK',
+        headers: {
+            'If': '(<' + lockToken + '>)',
+            Authorization: 'Basic ' + user,
+            ...headers
+        }
+    }, expectedResponseCode, () => {
+        callback();
+    })
+}
+
 export function unlockResource(
     server : v2.WebDAVServer,
     info : TestInfo,
@@ -152,11 +177,31 @@ export function lockResource(
     pathNameToLock : string,
     depth : number,
     isExclusive : boolean,
+    expectedResponseCode : number,
+    headers: Headers,
+    callback : (lock : Lock) => void) : void
+export function lockResource(
+    server : v2.WebDAVServer,
+    info : TestInfo,
+    isValid : TestCallback,
+    user : string,
+    pathNameToLock : string,
+    depth : number,
+    isExclusive : boolean,
     _expectedResponseCode : number | ((lock : Lock) => void),
-    _callback ?: (lock : Lock) => void) : void
+    _headers ?: Headers | ((lock : Lock) => void),
+    _callback ?: ((lock : Lock) => void)): void
 {
-    const expectedResponseCode = _callback ? _expectedResponseCode as number : v2.HTTPCodes.OK;
-    const callback = _callback ? _callback : _expectedResponseCode as (lock : Lock) => void;
+    const expectedResponseCode =
+        typeof _expectedResponseCode === 'number' ? _expectedResponseCode as number
+        : v2.HTTPCodes.OK;
+    const headers =
+        typeof _headers === 'object' ? _headers as Headers
+        : {};
+    const callback =
+        typeof _callback === 'function' ? _callback
+        : typeof _headers === 'function' ? _headers as ((lock : Lock) => void)
+        : _expectedResponseCode as ((lock : Lock) => void);
 
     info.reqXML({
         url: 'http://localhost:' + server.options.port + '/' + pathNameToLock,

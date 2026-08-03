@@ -118,21 +118,29 @@ export function extractOneToken(ifHeader : string)
         return match[1];
 }
 
-export function parseIfHeader(ifHeader : string)
+export function parseIfHeader(ifHeader : string) : (ctx: RequestContext, resource: Resource, callback: ReturnCallback<boolean>) => void
 {
     const rex = /(?:<([^>]+)>)?\s*\(([^\)]+)\)/g;
     let match = rex.exec(ifHeader);
 
     const orArray : {
-        path : string,
+        path : Path,
         actions : (resource : Resource, callback : FnReturn) => void
     }[] = [];
-    let oldPath = undefined;
+    let oldPath: Path = undefined;
 
     while(match)
     {
         if(match[1])
-            oldPath = url.parse(match[1]).path;
+        {
+            const sPath = new Path(url.parse(match[1]).path);
+            const resolveError = sPath.resolve();
+            if(resolveError)
+            {
+                return (ctx, resource, callback) => callback(resolveError, false);
+            }
+            oldPath = sPath;
+        }
         
         orArray.push({
             path: oldPath,
@@ -143,11 +151,11 @@ export function parseIfHeader(ifHeader : string)
     }
 
     if(orArray.length === 0)
-        return (ctx : RequestContext, resource : Resource, callback : ReturnCallback<boolean>) => callback(null, true);
+        return (ctx, resource, callback) => callback(null, true);
 
-    return function(ctx : RequestContext, resource : Resource, callback : ReturnCallback<boolean>) {
+    return function(ctx, resource, callback) {
         let nb = orArray.length;
-        function done(error, result)
+        const done = (error, result) =>
         {
             if(nb <= 0)
                 return;
@@ -165,16 +173,19 @@ export function parseIfHeader(ifHeader : string)
             }
         }
 
-        orArray.forEach((a) => {
-            if(!a.path)
-                a.actions(resource, done);
-            else
+        for(const orCondition of orArray)
+        {
+            if(!orCondition.path)
             {
-                const sPath = new Path(a.path);
+                const sPath = orCondition.path;
                 ctx.server.getFileSystem(sPath, (fs, _, sub) => {
-                    a.actions(fs.resource(ctx, sPath), done);
+                    orCondition.actions(fs.resource(ctx, sPath), done);
                 })
             }
-        })
+            else
+            {
+                orCondition.actions(resource, done);
+            }
+        }
     }
 }

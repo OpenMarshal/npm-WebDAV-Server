@@ -135,6 +135,11 @@ export class WebDAVServer
     getResource(ctx : RequestContext, path : Path | string, callback : ReturnCallback<Resource>) : void
     {
         path = new Path(path);
+        const resolveError = path.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
+        }
 
         this.getFileSystem(path, (fs, _, subPath) => {
             callback(null, fs.resource(ctx, subPath));

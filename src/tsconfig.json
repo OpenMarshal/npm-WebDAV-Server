@@ -9,6 +9,6 @@
     "typeRoots": [
       "../node_modules/@types"
     ],
-    "target": "ES5"
+    "target": "esnext"
   }
 }

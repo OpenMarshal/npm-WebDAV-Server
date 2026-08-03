@@ -13,10 +13,7 @@ export function executeRequest(req : http.IncomingMessage, res : http.ServerResp
     HTTPRequestContext.create(this, req, res, rootPath, (e, base) => {
         if(e)
         {
-            if(e === Errors.AuenticationPropertyMissing || e === Errors.MissingAuthorisationHeader || e === Errors.BadAuthentication || e === Errors.WrongHeaderFormat)
-                base.setCode(HTTPCodes.Unauthorized);
-            else
-                base.setCode(HTTPCodes.InternalServerError);
+            base.setCodeFromError(e);
             res.end();
             return;
         }

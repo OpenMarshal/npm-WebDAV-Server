@@ -1,6 +1,9 @@
+import Errors from "../../Errors";
 
 export class Path
 {
+    private isResolved = false;
+
     paths : string[]
 
     static isPath(obj : any) : boolean
@@ -12,23 +15,50 @@ export class Path
     {
         if(path.constructor === String)
         {
-            let sPath = path as string;
-            let doubleIndex : number;
-            while((doubleIndex = sPath.indexOf('//')) !== -1)
-                sPath = sPath.substr(0, doubleIndex) + sPath.substr(doubleIndex + 1);
-            this.paths = sPath.replace(/(^\/|\/$)/g, '').split('/');
+            this.paths = (path as string)
+                .replace(/[\\\/]+/mg, '/')
+                .replace(/(^\/|\/$)/g, '')
+                .split('/');
         }
         else if(path.constructor === Path)
-            this.paths = (path as Path).paths.filter((x) => true); // clone
+        {
+            this.paths = path.paths.slice();
+            this.isResolved = path.isResolved;
+        }
         else
+        {
             this.paths = path as string[];
+        }
         
-        this.paths = this.paths.filter((p) => p.length > 0);
+        this.paths = this.paths.filter(Boolean);
     }
 
     decode() : void
     {
-        this.paths = this.paths.map(decodeURIComponent);
+        this.paths = this.paths
+            .map(decodeURIComponent)
+            .flatMap(e => e.replace(/[\\\/]+/mg, '/').split('/'));
+    }
+
+    resolve() : Error
+    {
+        const newSegments: string[] = [];
+        for(const segment of this.paths) {
+            if(segment === '..') {
+                if(newSegments.length > 0) {
+                    newSegments.pop();
+                } else {
+                    return Errors.IllegalArguments;
+                }
+            } else if(segment === '.') {
+            } else {
+                newSegments.push(segment);
+            }
+        }
+
+        this.paths = newSegments;
+        this.isResolved = false;
+        return null;
     }
 
     isRoot() : boolean

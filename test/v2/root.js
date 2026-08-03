@@ -196,7 +196,23 @@ module.exports = (callback, options) => {
                     try
                     {
                         setTimeout(() => info.exit('Timeout'), options.timeout);
-                        process.nextTick(() => require(fx).default(info, (good, msg, e) => info.isValid(good, msg, e)));
+                        process.nextTick(async () => {
+                            try
+                            {
+                                const testInstance = require(fx);
+                                const promise = testInstance.default(info, (good, msg, e) => info.isValid(good, msg, e));
+
+                                if(promise)
+                                {
+                                    await promise;
+                                }
+                            }
+                            catch(ex)
+                            {
+                                console.error(ex);
+                                info.isValid(false, ex.toString(), ex);
+                            }
+                        });
                     }
                     catch(ex)
                     {

@@ -153,6 +153,12 @@ export abstract class FileSystem implements ISerializableFileSystem
             return callback();
         
         const path = new Path(_path);
+        const resolveError = path.resolve();
+        if(resolveError)
+        {
+            return errorCallback(Errors.Forbidden);
+        }
+
         this._fastExistCheck(ctx, path, (exists) => {
             if(!exists)
                 errorCallback(Errors.ResourceNotFound);
@@ -179,6 +185,12 @@ export abstract class FileSystem implements ISerializableFileSystem
             return callback();
         
         const path = new Path(_path);
+        const resolveError = path.resolve();
+        if(resolveError)
+        {
+            return errorCallback(Errors.Forbidden);
+        }
+
         this._fastExistCheck(ctx, path, (exists) => {
             if(exists)
                 errorCallback(Errors.ResourceAlreadyExists);
@@ -203,6 +215,12 @@ export abstract class FileSystem implements ISerializableFileSystem
             return callback(true);
         
         const path = new Path(_path);
+        const resolveError = path.resolve();
+        if(resolveError)
+        {
+            return callback(false);
+        }
+
         this._fastExistCheck(ctx, path, (exists) => callback(!!exists));
     }
     protected _fastExistCheck?(ctx : RequestContext, path : Path, callback : (exists : boolean) => void) : void
@@ -258,6 +276,12 @@ export abstract class FileSystem implements ISerializableFileSystem
             if(!e)
                 this.emit('create', ctx, path, { type, createIntermediates })
             callbackFinal(e);
+        }
+
+        const resolveError = path.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
         }
 
         if(!this._create)
@@ -352,6 +376,11 @@ export abstract class FileSystem implements ISerializableFileSystem
     etag(ctx : RequestContext, _path : Path | string, callback : ReturnCallback<string>) : void
     {
         const path = new Path(_path);
+        const resolveError = path.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
+        }
 
         issuePrivilegeCheck(this, ctx, path, 'canReadProperties', callback, () => {
             this.fastExistCheckEx(ctx, path, callback, () => {
@@ -420,6 +449,12 @@ export abstract class FileSystem implements ISerializableFileSystem
             if(!e)
                 this.emit('delete', ctx, path, { depth })
             callbackFinal(e);
+        }
+        
+        const resolveError = path.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
         }
 
         if(!this._delete)
@@ -637,6 +672,12 @@ export abstract class FileSystem implements ISerializableFileSystem
                 this.emit('openWriteStream', ctx, path, { targetSource, mode, estimatedSize, created, stream })
             callbackFinal(e, stream, created);
         }
+
+        const resolveError = path.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
+        }
         
         if(!this._openWriteStream)
             return callback(Errors.InvalidOperation);
@@ -836,6 +877,12 @@ export abstract class FileSystem implements ISerializableFileSystem
             callbackFinal(e, stream);
         }
 
+        const resolveError = path.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
+        }
+
         this.emit('before-openReadStream', ctx, path, { targetSource, estimatedSize })
         
         issuePrivilegeCheck(this, ctx, path, targetSource ? 'canReadContentSource' : 'canReadContentTranslated', callback, () => {
@@ -905,6 +952,17 @@ export abstract class FileSystem implements ISerializableFileSystem
             if(!e)
                 this.emit('move', ctx, pathFrom, { pathFrom, pathTo, overwrite, overrided })
             callbackFinal(e, overrided);
+        }
+
+        const resolveErrorFrom = pathFrom.resolve();
+        if(resolveErrorFrom)
+        {
+            return callback(resolveErrorFrom);
+        }
+        const resolveErrorTo = pathTo.resolve();
+        if(resolveErrorTo)
+        {
+            return callback(resolveErrorTo);
         }
 
         this.emit('before-move', ctx, pathFrom, { pathFrom, pathTo, overwrite })
@@ -1039,6 +1097,17 @@ export abstract class FileSystem implements ISerializableFileSystem
             if(!e)
                 this.emit('copy', ctx, pathFrom, { pathTo, overwrite, overrided, depth })
             callbackFinal(e, overrided);
+        }
+
+        const resolveErrorFrom = pathFrom.resolve();
+        if(resolveErrorFrom)
+        {
+            return callback(resolveErrorFrom);
+        }
+        const resolveErrorTo = pathTo.resolve();
+        if(resolveErrorTo)
+        {
+            return callback(resolveErrorTo);
         }
         
         this.emit('before-copy', ctx, pathFrom, { pathTo, overwrite, depth })
@@ -1255,6 +1324,12 @@ export abstract class FileSystem implements ISerializableFileSystem
         const callback = _callback ? _callback : _targetSource as ReturnCallback<string>;
         const path = new Path(_path);
 
+        const resolveError = path.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
+        }
+
         issuePrivilegeCheck(this, ctx, path, targetSource ? 'canReadContentSource' : 'canReadContentTranslated', callback, () => {
             this.fastExistCheckEx(ctx, path, callback, () => {
                 if(this._mimeType)
@@ -1319,6 +1394,11 @@ export abstract class FileSystem implements ISerializableFileSystem
         const targetSource = ensureValue(_callback ? _targetSource as boolean : undefined, false);
         const callback = _callback ? _callback : _targetSource as ReturnCallback<number>;
         const pPath = new Path(path);
+        const resolveError = pPath.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
+        }
 
         issuePrivilegeCheck(this, ctx, pPath, targetSource ? 'canReadContentSource' : 'canReadContentTranslated', callback, () => {
             this.fastExistCheckEx(ctx, pPath, callback, () => {
@@ -1355,6 +1435,11 @@ export abstract class FileSystem implements ISerializableFileSystem
     availableLocks(ctx : RequestContext, path : Path | string, callback : ReturnCallback<LockKind[]>) : void
     {
         const pPath = new Path(path);
+        const resolveError = pPath.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
+        }
 
         issuePrivilegeCheck(this, ctx, pPath, 'canReadLocks', callback, () => {
             this.fastExistCheckEx(ctx, pPath, callback, () => {
@@ -1397,6 +1482,11 @@ export abstract class FileSystem implements ISerializableFileSystem
     lockManager(ctx : RequestContext, path : Path | string, callback : ReturnCallback<ILockManagerAsync>) : void
     {
         const pPath = new Path(path);
+        const resolveError = pPath.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
+        }
 
         this.fastExistCheckEx(ctx, pPath, callback, () => {
             this._lockManager(pPath, {
@@ -1517,6 +1607,11 @@ export abstract class FileSystem implements ISerializableFileSystem
     propertyManager(ctx : RequestContext, path : Path | string, callback : ReturnCallback<IPropertyManager>) : void
     {
         const pPath = new Path(path);
+        const resolveError = pPath.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
+        }
 
         this.fastExistCheckEx(ctx, pPath, callback, () => {
             this._propertyManager(pPath, {
@@ -1662,6 +1757,12 @@ export abstract class FileSystem implements ISerializableFileSystem
             })
         }
 
+        const resolveError = pPath.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
+        }
+
         issuePrivilegeCheck(this, ctx, pPath, 'canReadProperties', callback, () => {
             this.fastExistCheckEx(ctx, pPath, callback, () => {
                 const next = (base : Path[]) => {
@@ -1754,6 +1855,12 @@ export abstract class FileSystem implements ISerializableFileSystem
         const pPath = new Path(path);
         callback = FileSystem.neutralizeEmptyDateCallback(callback);
 
+        const resolveError = pPath.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
+        }
+
         issuePrivilegeCheck(this, ctx, pPath, 'canReadProperties', callback, () => {
             this.fastExistCheckEx(ctx, pPath, callback, () => {
                 if(!this._creationDate && !this._lastModifiedDate)
@@ -1798,6 +1905,12 @@ export abstract class FileSystem implements ISerializableFileSystem
         const pPath = new Path(path);
         callback = FileSystem.neutralizeEmptyDateCallback(callback);
 
+        const resolveError = pPath.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
+        }
+
         issuePrivilegeCheck(this, ctx, pPath, 'canReadProperties', callback, () => {
             this.fastExistCheckEx(ctx, pPath, callback, () => {
                 if(!this._creationDate && !this._lastModifiedDate)
@@ -1834,6 +1947,11 @@ export abstract class FileSystem implements ISerializableFileSystem
     webName(ctx : RequestContext, path : Path | string, callback : ReturnCallback<string>) : void
     {
         const pPath = new Path(path);
+        const resolveError = pPath.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
+        }
 
         issuePrivilegeCheck(this, ctx, pPath, 'canReadProperties', callback, () => {
             this.fastExistCheckEx(ctx, pPath, callback, () => {
@@ -1870,6 +1988,11 @@ export abstract class FileSystem implements ISerializableFileSystem
     displayName(ctx : RequestContext, path : Path | string, callback : ReturnCallback<string>) : void
     {
         const pPath = new Path(path);
+        const resolveError = pPath.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
+        }
 
         issuePrivilegeCheck(this, ctx, pPath, 'canReadProperties', callback, () => {
             this.fastExistCheckEx(ctx, pPath, callback, () => {
@@ -1905,6 +2028,11 @@ export abstract class FileSystem implements ISerializableFileSystem
     type(ctx : RequestContext, path : Path | string, callback : ReturnCallback<ResourceType>) : void
     {
         const pPath = new Path(path);
+        const resolveError = pPath.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
+        }
 
         issuePrivilegeCheck(this, ctx, pPath, 'canReadProperties', callback, () => {
             this.fastExistCheckEx(ctx, pPath, callback, () => {
@@ -2001,6 +2129,12 @@ export abstract class FileSystem implements ISerializableFileSystem
         let callback = _callback ? _callback : _tree as SimpleCallback;
         callback = callback ? callback : () => {};
 
+        const resolveError = rootPath.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
+        }
+
         if(tree.constructor === ResourceType)
         {
             this.create(ctx, rootPath, tree as ResourceType, callback);
@@ -2027,7 +2161,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                 .each(Object.keys(tree), (name, cb) => {
                     const value = tree[name];
                     const childPath = rootPath.getChildPath(name);
-                    if(value.constructor === ResourceType || value.constructor === String || value.constructor === Buffer)
+                    if(typeof value === 'string' || value instanceof ResourceType || value instanceof Buffer)
                     {
                         this.addSubTree(ctx, childPath, value, cb)
                     }
@@ -2088,6 +2222,11 @@ export abstract class FileSystem implements ISerializableFileSystem
         const depth = ensureValue(_callback ? _depth as number : undefined, 0);
         const callback = _callback ? _callback : _depth as ReturnCallback<{ [path : string] : Lock[] }>;
         const pStartPath = new Path(startPath);
+        const resolveError = pStartPath.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
+        }
         
         this.lockManager(ctx, pStartPath, (e, lm) => {
             if(e === Errors.ResourceNotFound)
@@ -2198,6 +2337,12 @@ export abstract class FileSystem implements ISerializableFileSystem
     {
         const path = !_path || typeof _path === 'function' ? undefined : new Path(_path as Path | string);
         const callback = _callback ? _callback : _path as ReturnCallback<Path>;
+
+        const resolveError = path?.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
+        }
         
         ctx.server.getFileSystemPath(this, (fsPath) => {
             callback(null, path ? fsPath.getChildPath(path) : fsPath);
@@ -2288,13 +2433,20 @@ export abstract class FileSystem implements ISerializableFileSystem
     {
         if(privileges.constructor === String)
             privileges = [ privileges as string ];
+
+        const pPath = new Path(path);
+        const resolveError = pPath.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
+        }
         
-        this.getFullPath(ctx, path, (e, fullPath) => {
-            this.privilegeManager(ctx, path, (e, privilegeManager) => {
+        this.getFullPath(ctx, pPath, (e, fullPath) => {
+            this.privilegeManager(ctx, pPath, (e, privilegeManager) => {
                 if(e)
                     return callback(e);
                 
-                const resource = this.resource(ctx, new Path(path));
+                const resource = this.resource(ctx, pPath);
                 privilegeManager.can(fullPath, resource, privileges as string[], callback);
             })
         })
@@ -2324,8 +2476,15 @@ export abstract class FileSystem implements ISerializableFileSystem
     {
         if(!this._privilegeManager)
             return callback(null, ctx.server.options.privilegeManager);
+
+        const pPath = new Path(path);
+        const resolveError = pPath.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
+        }
         
-        this._privilegeManager(new Path(path), {
+        this._privilegeManager(pPath, {
             context: ctx
         }, callback);
     }
@@ -2366,6 +2525,11 @@ export abstract class FileSystem implements ISerializableFileSystem
             return callback(null, false);
         
         const pPath = new Path(path);
+        const resolveError = pPath.resolve();
+        if(resolveError)
+        {
+            return callback(resolveError);
+        }
 
         const checkThis = () => {
             this._lockManager(pPath, { context: ctx }, (e, lm) => {

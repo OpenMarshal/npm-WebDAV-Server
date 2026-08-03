@@ -262,6 +262,11 @@ export class HTTPRequestContext extends RequestContext
             for(const headerName in server.options.headers)
                 response.setHeader(headerName, server.options.headers[headerName]);
         }
+
+        const resolveError = ctx.requested.path.resolve();
+        if(resolveError) {
+            return callback(resolveError, ctx);
+        }
         
         const setAllowHeader = (type ?: ResourceType) =>
         {
@@ -348,7 +353,7 @@ export class HTTPRequestContext extends RequestContext
         parseIfHeader(ifHeader)(this, resource, (e, passed) => {
             if(e)
             {
-                this.setCode(HTTPCodes.InternalServerError);
+                this.setCodeFromError(e);
                 this.exit();
             }
             else if(!passed)
@@ -357,7 +362,9 @@ export class HTTPRequestContext extends RequestContext
                 this.exit();
             }
             else
+            {
                 callback();
+            }
         });
     }
 
@@ -419,11 +426,15 @@ export class HTTPRequestContext extends RequestContext
         { error: Errors.Locked,                         code: HTTPCodes.Locked },
         { error: Errors.BadAuthentication,              code: HTTPCodes.Unauthorized },
         { error: Errors.NotEnoughPrivilege,             code: HTTPCodes.Unauthorized },
+        { error: Errors.AuenticationPropertyMissing,    code: HTTPCodes.Unauthorized },
+        { error: Errors.MissingAuthorisationHeader,     code: HTTPCodes.Unauthorized },
+        { error: Errors.WrongHeaderFormat,              code: HTTPCodes.Unauthorized },
         { error: Errors.ResourceAlreadyExists,          code: HTTPCodes.Conflict },
         { error: Errors.IntermediateResourceMissing,    code: HTTPCodes.Conflict },
         { error: Errors.WrongParentTypeForCreation,     code: HTTPCodes.Conflict },
         { error: Errors.InsufficientStorage,            code: HTTPCodes.InsufficientStorage },
-        { error: Errors.Forbidden,                      code: HTTPCodes.Forbidden }
+        { error: Errors.Forbidden,                      code: HTTPCodes.Forbidden },
+        { error: Errors.IllegalArguments,               code: HTTPCodes.Forbidden },
     ];
 
     static defaultStatusCode(error : Error) : number
@@ -446,9 +457,12 @@ export class HTTPRequestContext extends RequestContext
     {
         const code = HTTPRequestContext.defaultStatusCode(error);
 
-        if(code)
+        if(code) {
             this.setCode(code);
-
-        return !!code;
+            return true;
+        } else {
+            this.setCode(HTTPCodes.InternalServerError);
+            return false;
+        }
     }
 }

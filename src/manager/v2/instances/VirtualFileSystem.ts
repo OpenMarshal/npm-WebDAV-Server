@@ -241,6 +241,12 @@ export class VirtualFileSystem extends FileSystem
             if(startsWith(subPath, base))
             {
                 const pSubPath = new Path(subPath);
+                const resolveError = pSubPath.resolve();
+                if(resolveError)
+                {
+                    return callback(resolveError);
+                }
+
                 if(pSubPath.paths.length === path.paths.length + 1)
                     children.push(pSubPath);
             }

@@ -12,28 +12,33 @@ export function execute(ctx : HTTPRequestContext, methodName : string, privilege
             ctx.checkIfHeader(r, () => {
                 const overwrite = ctx.headers.find('overwrite') === 'T';
 
-                let destination : any = ctx.headers.find('destination');
-                if(!destination)
+                let destinationStr = ctx.headers.find('destination');
+                if(!destinationStr)
                 {
                     ctx.setCode(HTTPCodes.BadRequest);
                     return callback();
                 }
                 
-                const startIndex : number = destination.indexOf('://');
+                const startIndex : number = destinationStr.indexOf('://');
                 if(startIndex !== -1)
                 {
-                    destination = destination.substring(startIndex + '://'.length)
-                    destination = destination.substring(destination.indexOf('/')) // Remove the hostname + port
+                    destinationStr = destinationStr.substring(startIndex + '://'.length)
+                    destinationStr = destinationStr.substring(destinationStr.indexOf('/')) // Remove the hostname + port
                 }
-                if(ctx.rootPath && startsWith(destination, ctx.rootPath))
+                if(ctx.rootPath && startsWith(destinationStr, ctx.rootPath))
                 {
-                    destination = destination.substring(ctx.rootPath.length);
+                    destinationStr = destinationStr.substring(ctx.rootPath.length);
                 }
 
-                destination = new Path(destination);
-                destination.decode();
+                const destinationPath = new Path(destinationStr);
+                destinationPath.decode();
+                const resolveError = destinationPath.resolve();
+                if(resolveError) {
+                    ctx.setCodeFromError(resolveError);
+                    return callback();
+                }
 
-                const sDest = destination.toString(true);
+                const sDest = destinationPath.toString(true);
                 const sSource = ctx.requested.path.toString(true);
                 if(sDest === sSource)
                 {
@@ -62,7 +67,7 @@ export function execute(ctx : HTTPRequestContext, methodName : string, privilege
                     callback();
                 };
 
-                ctx.server.getFileSystem(destination, (destFs, destRootPath, destSubPath) => {
+                ctx.server.getFileSystem(destinationPath, (destFs, destRootPath, destSubPath) => {
                     if(destFs !== r.fs)
                     { // Standard method
                         if(methodName === 'move')

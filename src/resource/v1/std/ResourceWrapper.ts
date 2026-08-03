@@ -138,7 +138,7 @@ export class SimpleResourceWrapper<T> implements IResource
     protected _invoke(name : string, args : any[])
     {
         args.push(this.data);
-        (this.resource[name] as Function).call(this.resource, args);
+        (this.resource[name] as Function).call(this.resource, ...args);
     }
 }
 
@@ -156,6 +156,6 @@ export class ResourceWrapper<T> extends SimpleResourceWrapper<T>
     protected _invoke(name : string, args : any[])
     {
         args.push(this.data);
-        (this.resource[name] as Function).call(this, args);
+        (this.resource[name] as Function).call(this.resource, ...args);
     }
 }
