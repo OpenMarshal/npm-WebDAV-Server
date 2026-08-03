@@ -1,6 +1,5 @@
 import { Test } from '../Type'
 import { v2 } from '../../../../lib/index.js'
-import * as crypto from 'crypto'
 import * as path from 'path'
 import * as fs from 'fs'
 import { Headers } from 'request'
@@ -12,15 +11,18 @@ export default (async (info, isValid) =>
         password: 'password test 1'
     };
 
-    const createTree = (server) => {
+    const createEnv = () => {
         return new Promise<void>((resolve) => {
             fs.mkdir(escapeRoot, () => {
             fs.mkdir(physicalFileSystemRoot, () => {
                 fs.unlink(path.join(physicalFileSystemRoot, '../fileX'), () => {
                 fs.unlink(path.join(physicalFileSystemRoot, 'fileX'), () => {
                 fs.unlink(path.join(physicalFileSystemRoot, 'file1-moved'), () => {
+                fs.unlink(path.join(physicalFileSystemRoot, 'file1'), () => {
                 fs.unlink(path.join(physicalFileSystemRoot, 'file3-moved'), () => {
+                fs.unlink(path.join(physicalFileSystemRoot, 'file3'), () => {
                 fs.unlink(path.join(physicalFileSystemRoot, 'file2-spy'), () => {
+                fs.unlink(path.join(physicalFileSystemRoot, 'file2'), () => {
                 fs.unlink(path.join(escapeRoot, 'file-escaped'), () => {
                     fs.writeFile(path.join(physicalFileSystemRoot, 'file1'), 'data', () => {
                     fs.writeFile(path.join(physicalFileSystemRoot, 'file2'), 'data', () => {
@@ -29,6 +31,9 @@ export default (async (info, isValid) =>
                     })
                     })
                     })
+                })
+                })
+                })
                 })
                 })
                 })
@@ -105,7 +110,7 @@ export default (async (info, isValid) =>
         rootFileSystem: new v2.PhysicalFileSystem(physicalFileSystemRoot),
     });
 
-    await createTree(server);
+    await createEnv();
 
     // Allowed writes
     await write(server, '/fileX', v2.HTTPCodes.Created, 'test');
@@ -120,7 +125,7 @@ export default (async (info, isValid) =>
     await read(server, '/file1', v2.HTTPCodes.OK, 'data');
     await read(server, '/notExisting/../file1', v2.HTTPCodes.OK, 'data');
 
-    // Forbid to leave and come back in the path.
+    // Forbidden to leave and come back in the path.
     // This avoids to spy on the real file system.
     await read(server, '/../fsRoot/file1', v2.HTTPCodes.Forbidden);
 
@@ -148,20 +153,25 @@ export default (async (info, isValid) =>
     await propfind(server, '/file1/../', v2.HTTPCodes.MultiStatus);
     await propfind(server, '/./file1/./../', v2.HTTPCodes.MultiStatus);
 
+    // Forbidden propfinds
     await propfind(server, '/../fsRoot/', v2.HTTPCodes.Forbidden);
     await propfind(server, '/../', v2.HTTPCodes.Forbidden);
 
     // Allowed moves
     await move(server, '/file1', '/file1-moved', v2.HTTPCodes.Created);
     await move(server, '/file3', '/notExisting/../file3-moved', v2.HTTPCodes.Created);
+    await move(server, '/file3-moved', '/./file3', v2.HTTPCodes.Created);
     
-    // Forbid to leave and come back in the path.
+    // Forbidden to leave and come back in the path.
     // This avoids to spy on the real file system.
     await move(server, '/file2', `/../fsRoot/file2-spy`, v2.HTTPCodes.Forbidden);
     await move(server, '/file2', `/../fsRootWrong/file2-spy`, v2.HTTPCodes.Forbidden);
 
-    // Forbid to escape.
+    // Forbidden to escape.
     await move(server, '/file2', '/../file-escaped', v2.HTTPCodes.Forbidden);
+    await move(server, '/file2', '/notExisting/../../file-escaped', v2.HTTPCodes.Forbidden);
+    await move(server, '/file2', '/..%5Cfile-escaped', v2.HTTPCodes.Forbidden);
+    await move(server, '/file2', '/..\\file-escaped', v2.HTTPCodes.Forbidden);
 
     isValid(true);
 
