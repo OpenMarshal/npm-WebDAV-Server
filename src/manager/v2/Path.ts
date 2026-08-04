@@ -17,7 +17,11 @@ export class Path
 
     constructor(path : Path | string[] | string)
     {
-        if(typeof path === "string")
+        if(path === undefined || path === null)
+        {
+            this.paths = [];
+        }
+        else if(typeof path === "string")
         {
             this.paths = (path as string)
                 .replace(/[\\\/]+/mg, '/')
@@ -31,7 +35,10 @@ export class Path
         }
         else
         {
-            this.paths = path as string[];
+            this.paths = path.flatMap(e => e
+                .replace(/[\\\/]+/mg, '/')
+                .split('/')
+            );
         }
         
         this.paths = this.paths.filter(Boolean);
@@ -41,7 +48,11 @@ export class Path
     {
         this.paths = this.paths
             .map(decodeURIComponent)
-            .flatMap(e => e.replace(/[\\\/]+/mg, '/').split('/'));
+            .flatMap(e => e
+                .replace(/[\\\/]+/mg, '/')
+                .split('/')
+                .filter(Boolean)
+            );
     }
 
     resolve() : Error
@@ -115,8 +126,7 @@ export class Path
         const subPath = new Path(childPath);
 
         const path = this.clone();
-        for(const subName of subPath.paths)
-            path.paths.push(subName);
+        path.paths.push(...subPath.paths);
         return path;
     }
 
