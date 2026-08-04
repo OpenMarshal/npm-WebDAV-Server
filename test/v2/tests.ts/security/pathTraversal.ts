@@ -23,14 +23,18 @@ export default (async (info, isValid) =>
                 fs.unlink(path.join(physicalFileSystemRoot, 'file3'), () => {
                 fs.unlink(path.join(physicalFileSystemRoot, 'file2-spy'), () => {
                 fs.unlink(path.join(physicalFileSystemRoot, 'file2'), () => {
+                fs.unlink(path.join(physicalFileSystemRoot, '..／file4-moved'), () => {
                 fs.unlink(path.join(escapeRoot, 'file-escaped'), () => {
                     fs.writeFile(path.join(physicalFileSystemRoot, 'file1'), 'data', () => {
                     fs.writeFile(path.join(physicalFileSystemRoot, 'file2'), 'data', () => {
                     fs.writeFile(path.join(physicalFileSystemRoot, 'file3'), 'data', () => {
+                    fs.writeFile(path.join(physicalFileSystemRoot, 'file4'), 'data', () => {
                         resolve();
                     })
                     })
                     })
+                    })
+                })
                 })
                 })
                 })
@@ -156,11 +160,13 @@ export default (async (info, isValid) =>
     // Forbidden propfinds
     await propfind(server, '/../fsRoot/', v2.HTTPCodes.Forbidden);
     await propfind(server, '/../', v2.HTTPCodes.Forbidden);
+    await propfind(server, '/%2e%2e/', v2.HTTPCodes.Forbidden);
 
     // Allowed moves
     await move(server, '/file1', '/file1-moved', v2.HTTPCodes.Created);
     await move(server, '/file3', '/notExisting/../file3-moved', v2.HTTPCodes.Created);
     await move(server, '/file3-moved', '/./file3', v2.HTTPCodes.Created);
+    await move(server, '/file4', encodeURIComponent('/..／file4-moved'), v2.HTTPCodes.Created);
     
     // Forbidden to leave and come back in the path.
     // This avoids to spy on the real file system.
