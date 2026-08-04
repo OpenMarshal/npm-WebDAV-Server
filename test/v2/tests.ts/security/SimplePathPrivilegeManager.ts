@@ -1,6 +1,7 @@
 import { Test } from '../Type'
 import { v2 } from '../../../../lib/index.js'
 import * as crypto from 'crypto'
+import { WebDAVServer } from '../../../../lib/index.v2';
 
 export default (async (info, isValid) =>
 {
@@ -15,15 +16,17 @@ export default (async (info, isValid) =>
 
     const fileContent = 'Hello!';
 
-    const createTree = async (server) => {
+    const createTree = async (server: WebDAVServer) => {
         return new Promise<void>((resolve, reject) => {
             const userManager = new v2.SimpleUserManager();
             const user = userManager.addUser(validUser.username, validUser.password, false);
-
             server.httpAuthentication = new v2.HTTPDigestAuthentication(userManager);
-            server.privilegeManager = new v2.SimplePathPrivilegeManager();
-            server.options.privilegeManager = server.privilegeManager;
-            server.privilegeManager.setRights(user, '/folder1', [ 'all' ]);
+
+            const privilegeManager = new v2.SimplePathPrivilegeManager();
+            privilegeManager.setRights(user, '/folder1', [ 'all' ]);
+
+            server.privilegeManager = privilegeManager;
+            server.options.privilegeManager = privilegeManager;
 
             server.rootFileSystem().addSubTree(v2.ExternalRequestContext.create(server), {
                 'folder1': {
@@ -111,6 +114,15 @@ export default (async (info, isValid) =>
         username: invalidUser.username,
         password: invalidUser.password
     }, '/folder1test', v2.HTTPCodes.Unauthorized);
+
+    await checkRequest(server, {
+        username: validUser.username,
+        password: validUser.password
+    }, '/folder1/file2', v2.HTTPCodes.MultiStatus);
+    await checkRequest(server, {
+        username: invalidUser.username,
+        password: invalidUser.password
+    }, '/folder1/file2', v2.HTTPCodes.Unauthorized);
 
     isValid(true);
 
