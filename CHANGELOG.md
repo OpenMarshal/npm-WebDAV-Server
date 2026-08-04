@@ -1,5 +1,170 @@
 # Changelog
 
+# 2.6.3
+
+* Added cache to Path.resolve 
+* Added more cases for pathTraversal test 
+* Security patch for path traversal 
+* Security patch for SimplePathPrivilegeManager #144
+
+### Credits
+
+* Shakir Mahmood Shakir, [GitHub @drengir1](https://github.com/drengir1) - for the discovery of the path traversal vulnerability, and for assistance
+* funghoyin44, [GitHub @funghoyin44](https://github.com/funghoyin44) - for the discovery of the vulnerability on SimplePathPrivilegeManager
+
+# 2.6.2
+
+* Merge pull request #68 from srguiwiz/improve-respondWithPaths 
+* Improve respondWithPaths 
+* Fixes wrong paths in propfind if respondWithPaths while mounted 
+* at subpath e.g. in Express. 
+* Fixed compilations (src and tests) for node version 4.9 
+* Updated the Travis config file to use the prepare script for npm versions prior to 4 
+* Changed the compilation policy to precompile the library when cloning and before publishing instead of storing the precompiled version on GitHub 
+* Updated the author email address 
+* Added typescript and tslint in devDependencies 
+
+# 2.6.1
+
+* Added some async methods/classes (promise based) 
+* Fixed the parser of the If header for MS Office software usage 
+* Replaced the default version value of the webdav server by a reading of the version in package.json 
+
+# 2.6.0
+
+* Removed some useless imports from some tests 
+* Added automated tests for the custom headers in the server options 
+* Added an option to the server to define the headers to inject in all the responses 
+* Added a fix to not crash when writing a message to the response stream after its end 
+* Fixed errors leading to the application crash when the Readable stream from the GET method throw an error 
+
+# 2.5.2
+
+* Removed windows from the CI Travis 
+* Increased the timeout for the tests 
+* Removed the uri encoding of the property 'displayName' 
+* Added the 'HTTPRequestContext' to the method 'askForAuthentication' in HTTPAuthentication classes 
+* Added async methods in order to ease the usage of the library (methodName + 'Async' return Promise<...>) 
+* Added 'yarn.lock' and 'package-lock.json' to the ignore files (git and npm) 
+
+# 2.5.1
+
+* Fixed #59 to remove the wrong special case of the '.url' resources in the PhysicalFileSystem 
+* Added new versions of node to CI Travis + Changed the lastest version keyword of node for CI Travis from 'stable' to 'node' 
+* Added windows to the CI Travis 
+* Added the precompiled tests to the repository 
+
+# 2.5.0
+
+* Fixed a bug with PROPFIND when some resources are listed but unaccessible (404) directly 
+* Added a way to remove a listener (event) 
+* Fixed the Buffer warnings about 'new Buffer()' 
+* Fixed some compilation errors due to the difference between Buffer and Int8Array 
+* Added tests for the extension Express 
+* Fixed the 404 response with the MOVE method when mounted on a sub path of Express because of the header Destination 
+
+# 2.4.6
+
+* Updated the version of the server in the default options 
+* Changed the name or added comments to specify the units of timeouts 
+* Merge branch 'master' of https://github.com/OpenMarshal/npm-WebDAV-Server 
+* Decreased the Cognitive Complexity of some methods 
+* Merge pull request #54 from srguiwiz/fix-lock-refresh 
+* Multiply lock refresh * 1000 for milliseconds from seconds + Refresh locks using Date.now() 
+* Refresh from now 
+* Multiply lock refresh * 1000 for milliseconds from seconds 
+
+# 2.4.5
+
+* Implemented the TypeScript code for the pull-request #53 
+* Merge pull request #53 from innovajs/office-header 
+* MSOffice: Fix to show remote save button. 
+* Merge branch 'master' of https://github.com/OpenMarshal/npm-WebDAV-Server 
+* Compiled commit d18c1568b04d1be4dadd619efa4ee0786fab5e1b - issue #51 
+* Implement option respondWithPaths 
+* Fixe #50 
+* Added the up to date compilation for HTTPBasicAuthentication.ts 
+* Implemented tests to match the case of the issue #50 
+* Fixed the types in the tests V2 
+* Merge pull request #52 from srguiwiz/respond-with-paths 
+* Implement option respondWithPaths - issue #51 
+* MSOffice: Fix to show remote save button. 
+* Implement option respondWithPaths 
+* Fixed the Digest Auth test to use correctly the privilege manager 
+
+# 2.4.4
+
+* Added a new compiled version of the project (from ArchLinux) 
+* Added tests for the digest authentication 
+* Added async/await support for the tests of the v2 
+* Send bad authentication response code when the user is not found in the authentication system 
+* Fixing some TypeScript errors with the last version of the compiler + Fixing a case error with an import path 
+* Merge pull request #49 from srguiwiz/fix-20190117 
+* Fix defective fix of commit 179ce2d 
+
+# 2.4.3
+
+* Added tests for the propfind depth header 
+* Implemented the depth management of the propfind for values greater than 1 and lower than 0 
+* Fixed the propfindDirectory test 
+* Merge pull request #47 from srguiwiz/fix-20190112 
+* Fix an oversight related to discussion at pull request #44 
+
+# 2.4.2
+
+* Removed Windows as a test environment for Travis CI 
+* Compiled pull-requests 
+* Merge branch 'master' of https://github.com/OpenMarshal/npm-WebDAV-Server 
+* Fix #43 - Making the Digest authentication use the uri provided in the header instead of the requested resource 
+* Fixed the TS Lint 
+* Added MacOS and Windows in the travis testing 
+* Merge pull request #42 from srguiwiz/fix-20181023 
+* Use floor instead of ceil for correctness 
+* Fixes #45 - Quota not being freed properly on resource delete operation 
+* Use floor instead of ceil to show 01:30 for 90 minutes 
+* Use floor instead of ceil to get 0..255 
+
+# 2.4.1
+
+* Fixed a wrong information in the README (about logs: arg.uri => arg.requested.uri) 
+* Fixed a bug with the rename method of a file system calling the move method everytime instead of being called only when the method _rename doesn't exist 
+* Added the ability to ask the autoSave system to save right now 
+* Removed BitHound from the README because BitHound closed their doors - thanks for the journey 
+
+# 2.4.0
+
+* Fixed #37 
+* Fixed the Express addon to match the root folder of the sub path 
+
+# 2.3.22
+
+* Added a neutralization of the date provided by the FileSystem in case it is NaN 
+
+# 2.3.21
+
+* Fixed the bug with the encoding/decoding of the '%' symbol in the names 
+* Fixed the readDir/propfindDirectory test by decoding the files name 
+* Added more information to the error message when the reponse status of the server is not the expected one in the tests 
+* Updated the dependencies 
+
+# 2.3.20
+
+* Added the option 'enableLocationTag = true' to the test cases 
+* Made the tag 'location' in the XML responses of 'PROPFIND' optional (excluded by default) to give time to find why it is making trouble with 'Finder' of OS X 
+* Fixed the response body of PROPPATCH with namespace items 
+* Added a test for properties with a name containing a namespace 
+* Added some tests for the resources name with a symbol '%' 
+* Removed the 'package-lock.json' file 
+* Fixed a security issue from 'hoek' (upgraded its version) 
+
+# 2.3.19
+
+* Updated the package xml-js-builder 
+* Fixed a test in the v1 which was calling 'fs.unlink' instead of 'fs.unlinkSync' 
+* Fixed a missed tslint error 
+* Fixed lint errors 
+* Updated changelog 
+
 # 2.3.18
 
 ### Bug fix
