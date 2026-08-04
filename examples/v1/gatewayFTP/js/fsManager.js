@@ -44,7 +44,7 @@ module.exports.FTPFSManager = function(config)
 
     fsManager.newResource = function(fullPath, name, type, parent)
     {
-        const parentRemotePath = parent.constructor === ftpGateway.FTPGateway ? parent.rootPath : parent .remotePath;
+        const parentRemotePath = parent instanceof ftpGateway.FTPGateway ? parent.rootPath : parent.remotePath;
         let remotepath;
         if(parentRemotePath.lastIndexOf('/') === parentRemotePath.length - 1)
             remotepath = parentRemotePath + name;
@@ -52,7 +52,7 @@ module.exports.FTPFSManager = function(config)
             remotepath = parentRemotePath + '/' + name;
         
         let gateway = parent;
-        while(gateway && gateway.constructor !== ftpGateway.FTPGateway)
+        while(gateway && !(gateway instanceof ftpGateway.FTPGateway))
             gateway = gateway.parent;
 
         if(type.isFile)

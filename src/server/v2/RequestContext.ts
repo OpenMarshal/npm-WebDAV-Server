@@ -191,8 +191,8 @@ export class ExternalRequestContext extends RequestContext
     {
         const defaultValues = new DefaultRequestContextExternalOptions();
 
-        const options = _options && _options.constructor !== Function ? _options as RequestContextExternalOptions : defaultValues;
-        const callback = _callback ? _callback : _options && _options.constructor === Function ? _options as ((error : Error, ctx : ExternalRequestContext) => void) : () => {};
+        const options = _options && typeof _options !== 'function' ? _options : defaultValues;
+        const callback = _callback ? _callback : typeof _options === 'function' ? _options : () => {};
 
         if(defaultValues !== options)
         {

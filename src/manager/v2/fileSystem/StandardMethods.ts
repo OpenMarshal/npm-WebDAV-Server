@@ -51,8 +51,8 @@ export abstract class StandardMethods
     public static standardCopy(ctx : RequestContext, subPathFrom : Path, fsFrom : FileSystem, subPathTo : Path, fsTo : FileSystem, overwrite : boolean, depth : number, callback : ReturnCallback<boolean>) : void
     public static standardCopy(ctx : RequestContext, subPathFrom : Path, fsFrom : FileSystem, subPathTo : Path, fsTo : FileSystem, _overwrite : boolean | number | ReturnCallback<boolean>, _depth ?: number | ReturnCallback<boolean>, _callback ?: ReturnCallback<boolean>) : void
     {
-        const overwrite = _overwrite.constructor === Boolean ? _overwrite as boolean : false;
-        const depth = _callback ? _depth as number : (!_depth ? -1 : (_overwrite.constructor === Number ? _overwrite as number : -1));
+        const overwrite = typeof _overwrite === 'boolean' ? _overwrite : false;
+        const depth = _callback ? _depth as number : (!_depth ? -1 : (typeof _overwrite === 'number' ? _overwrite : -1));
         const callback = _callback ? _callback : (_depth ? _depth as ReturnCallback<boolean> : _overwrite as ReturnCallback<boolean>);
 
         if(subPathFrom.isRoot())
@@ -214,19 +214,18 @@ export abstract class StandardMethods
     public static standardMimeType(ctx : RequestContext, fs : FileSystem, path : Path, targetSource : boolean, defaultMimeType : string, useWebName : boolean, callback : ReturnCallback<string>)
     public static standardMimeType(ctx : RequestContext, fs : FileSystem, path : Path, targetSource : boolean, _defaultMimeType : boolean | string | ReturnCallback<string>, _useWebName ?: boolean | ReturnCallback<string>, _callback ?: ReturnCallback<string>)
     {
-        let callback;
+        let callback : ReturnCallback<string>;
         let useWebName = false;
         let defaultMimeType = 'application/octet-stream';
 
-        if(_defaultMimeType.constructor === Function)
+        if(typeof _defaultMimeType === 'function')
         {
-            callback = _defaultMimeType as ReturnCallback<string>;
+            callback = _defaultMimeType;
         }
-        else if(_defaultMimeType.constructor === Boolean)
+        else if(typeof _defaultMimeType === 'boolean')
         {
             callback = _useWebName as ReturnCallback<string>;
-            if(_defaultMimeType !== undefined && _defaultMimeType !== null)
-                useWebName = _defaultMimeType as boolean;
+            useWebName = _defaultMimeType;
         }
         else
         {

@@ -650,20 +650,20 @@ export abstract class FileSystem implements ISerializableFileSystem
     {
         let targetSource = false;
         for(const obj of [ _mode, _targetSource ])
-            if(obj && obj.constructor === Boolean)
-                targetSource = obj as boolean;
+            if(typeof obj === 'boolean')
+                targetSource = obj;
 
         let estimatedSize = -1;
         for(const obj of [ _mode, _targetSource, _estimatedSize ])
-            if(obj && obj.constructor === Number)
-                estimatedSize = obj as number;
+            if(typeof obj === 'number')
+                estimatedSize = obj;
 
-        let callbackFinal;
+        let callbackFinal : Return2Callback<Writable, boolean>;
         for(const obj of [ _mode, _targetSource, _estimatedSize, _callback ])
-            if(obj && obj.constructor === Function)
-                callbackFinal = obj as Return2Callback<Writable, boolean>;
+            if(typeof obj === 'function')
+                callbackFinal = obj;
         
-        const mode = _mode && _mode.constructor === String ? _mode as OpenWriteStreamMode : 'mustExist';
+        const mode: OpenWriteStreamMode = _mode && typeof _mode === "string" ? _mode : 'mustExist';
         const path = new Path(_path);
         let created = false;
 
@@ -702,7 +702,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                 {
                     this.size(ctx, path, true, (e, size) => {
                         ctx.server.options.storageManager.evaluateContent(ctx, this, size, (sizeStored) => {
-                            if(estimatedSize === undefined || estimatedSize === null || estimatedSize.constructor === Number && estimatedSize <= 0)
+                            if(estimatedSize === undefined || estimatedSize === null || typeof estimatedSize === 'number' && estimatedSize <= 0)
                             {
                                 ctx.server.options.storageManager.available(ctx, this, (available) => {
                                     if(available === -1)
@@ -866,7 +866,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     openReadStream(ctx : RequestContext, path : Path | string, targetSource : boolean, estimatedSize : number, callback : ReturnCallback<Readable>) : void
     openReadStream(ctx : RequestContext, _path : Path | string, _targetSource : boolean | number | ReturnCallback<Readable>, _estimatedSize ?: number | ReturnCallback<Readable>, _callback ?: ReturnCallback<Readable>) : void
     {
-        const targetSource = ensureValue(_targetSource.constructor === Boolean ? _targetSource as boolean : undefined, false);
+        const targetSource = ensureValue(typeof _targetSource === 'boolean' ? _targetSource : undefined, false);
         const estimatedSize = ensureValue(_callback ? _estimatedSize as number : _estimatedSize ? _targetSource as number : undefined, -1);
         const callbackFinal = _callback ? _callback : _estimatedSize ? _estimatedSize as ReturnCallback<Readable> : _targetSource as ReturnCallback<Readable>;
         const path = new Path(_path);
@@ -1087,8 +1087,8 @@ export abstract class FileSystem implements ISerializableFileSystem
     copy(ctx : RequestContext, pathFrom : Path | string, pathTo : Path | string, overwrite : boolean, depth : number, callback : ReturnCallback<boolean>) : void
     copy(ctx : RequestContext, _pathFrom : Path | string, _pathTo : Path | string, _overwrite : boolean | number | ReturnCallback<boolean>, _depth ?: number | ReturnCallback<boolean>, _callback ?: ReturnCallback<boolean>) : void
     {
-        const overwrite = ensureValue(_overwrite.constructor === Boolean ? _overwrite as boolean : undefined, false);
-        const depth = ensureValue(_callback ? _depth as number : !_depth ? -1 : _overwrite.constructor === Number ? _overwrite as number : undefined, -1);
+        const overwrite = ensureValue(typeof _overwrite === 'boolean' ? _overwrite : undefined, false);
+        const depth = ensureValue(_callback ? _depth as number : !_depth ? -1 : typeof _overwrite === 'number' ? _overwrite : undefined, -1);
         const callbackFinal = _callback ? _callback : _depth ? _depth as ReturnCallback<boolean> : _overwrite as ReturnCallback<boolean>;
         const pathFrom = new Path(_pathFrom);
         const pathTo = new Path(_pathTo);
@@ -1778,7 +1778,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                         if(paths.length === 0)
                             return callback(null, base);
                         
-                        if(paths[0].constructor === String)
+                        if(typeof paths[0] === "string")
                             base = base.concat((paths as string[]).map((s) => pPath.getChildPath(s)));
                         else
                             base = base.concat(paths as Path[]);
@@ -2135,13 +2135,13 @@ export abstract class FileSystem implements ISerializableFileSystem
             return callback(resolveError);
         }
 
-        if(tree.constructor === ResourceType)
+        if(tree instanceof ResourceType)
         {
             this.create(ctx, rootPath, tree as ResourceType, callback);
         }
-        else if(tree.constructor === String || tree.constructor === Buffer)
+        else if(typeof tree === "string" || tree instanceof Buffer)
         {
-            const data : String | Buffer = tree as any;
+            const data : string | Buffer = tree as any;
             this.openWriteStream(ctx, rootPath, 'mustCreate', true, data.length, (e, w, created) => {
                 if(e)
                     return callback(e);
@@ -2385,7 +2385,7 @@ export abstract class FileSystem implements ISerializableFileSystem
             if(e)
                 return callback(e);
             
-            const paths = fullPath.constructor === Array ? fullPath as any[] : [ fullPath as any ];
+            const paths = Array.isArray(fullPath) ? fullPath as any[] : [ fullPath as any ];
 
             callback(null, paths
                 .map((p) => new Path(p))
@@ -2431,8 +2431,8 @@ export abstract class FileSystem implements ISerializableFileSystem
     checkPrivilege(ctx : RequestContext, path : Path | string, privileges : string | string[], callback : ReturnCallback<boolean>)
     checkPrivilege(ctx : RequestContext, path : Path | string, privileges : string | string[] | BasicPrivilege | BasicPrivilege[], callback : ReturnCallback<boolean>)
     {
-        if(privileges.constructor === String)
-            privileges = [ privileges as string ];
+        if(typeof privileges === 'string')
+            privileges = [ privileges ];
 
         const pPath = new Path(path);
         const resolveError = pPath.resolve();

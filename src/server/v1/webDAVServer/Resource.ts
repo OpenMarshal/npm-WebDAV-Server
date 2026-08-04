@@ -16,13 +16,9 @@ export function getResourceFromPath(arg : MethodCallArgs, path : FSPath | string
     else
         rootResource = callbackOrRootResource;
 
-    let paths : FSPath
-    if(path.constructor === FSPath)
-        paths = path as FSPath;
-    else
-        paths = new FSPath(path);
+    const paths = new FSPath(path);
     
-    if(rootResource.gateway && rootResource.gateway.constructor === Function)
+    if(typeof rootResource.gateway === 'function')
     {
         rootResource.gateway(arg, paths, (e, r) => callback(e ? Errors.ResourceNotFound : null, r));
         return;
@@ -98,9 +94,9 @@ export function addResourceTree(_rootResource : IResource | ResourceTreeNode, _r
             cb(e);
     }
 
-    if(resoureceTree.constructor === Array)
+    if(Array.isArray(resoureceTree))
     {
-        const array = resoureceTree as any[];
+        const array = resoureceTree;
         if(array.length === 0)
         {
             callback(null);
@@ -108,8 +104,7 @@ export function addResourceTree(_rootResource : IResource | ResourceTreeNode, _r
         }
 
         let nb = array.length;
-        const doneArray = function(e)
-        {
+        const doneArray = (e) => {
             if(nb <= 0)
                 return;
             if(e)
@@ -141,7 +136,7 @@ export function addResourceTree(_rootResource : IResource | ResourceTreeNode, _r
                 return;
             }
 
-            if(children && children.constructor !== Array)
+            if(children && !Array.isArray(children))
             {
                 this.addResourceTree(resource, children, callback)
                 return;

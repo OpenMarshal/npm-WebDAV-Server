@@ -12,19 +12,19 @@ export class Path
 
     static isPath(obj : any) : boolean
     {
-        return typeof obj === 'string' || obj && obj.constructor === Path;
+        return typeof obj === 'string' || obj instanceof Path;
     }
 
     constructor(path : Path | string[] | string)
     {
-        if(path.constructor === String)
+        if(typeof path === "string")
         {
             this.paths = (path as string)
                 .replace(/[\\\/]+/mg, '/')
                 .replace(/(^\/|\/$)/g, '')
                 .split('/');
         }
-        else if(path.constructor === Path)
+        else if(path instanceof Path)
         {
             this.paths = path.paths.slice();
             this.isSuccessfullyResolved = path.isSuccessfullyResolved;

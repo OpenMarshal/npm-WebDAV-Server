@@ -106,7 +106,7 @@ export class PhysicalGateway extends PhysicalFolder
                         }
 
                         actualChildren
-                            .filter((c) => c.constructor !== PhysicalResource && c.constructor !== PhysicalFile && c.constructor !== PhysicalFolder)
+                            .filter((c) => !(c instanceof PhysicalResource) && !(c instanceof PhysicalFile) && !(c instanceof PhysicalFolder))
                             .forEach((c) => children.push(c));
                             
                         (parent as PhysicalFolder).children.children = children;
@@ -144,7 +144,7 @@ export class PhysicalGateway extends PhysicalFolder
                 if(!e)
                 {
                     (r as PhysicalFolder).children.children
-                        .filter((c) => c.constructor !== PhysicalResource && c.constructor !== PhysicalFile && c.constructor !== PhysicalFolder)
+                        .filter((c) => !(c instanceof PhysicalResource) && !(c instanceof PhysicalFile) && !(c instanceof PhysicalFolder))
                         .forEach((c) => (children as IResource[]).push(c));
                         
                     (r as PhysicalFolder).children.children = children;

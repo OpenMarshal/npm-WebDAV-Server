@@ -7,7 +7,7 @@ export class PhysicalGFSManager extends PhysicalFSManager
     
     serialize(resource : any, obj : SerializedObject) : object
     {
-        if(resource.constructor !== PhysicalGateway)
+        if(!(resource instanceof PhysicalGateway))
             return null;
 
         return {
