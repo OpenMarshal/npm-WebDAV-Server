@@ -2454,7 +2454,7 @@ export abstract class FileSystem implements ISerializableFileSystem
                     return callback(e);
                 
                 const resource = this.resource(ctx, pPath);
-                privilegeManager.can(fullPath, resource, privileges, callback);
+                privilegeManager.can(fullPath, resource, privileges as string[], callback);
             })
         })
     }
