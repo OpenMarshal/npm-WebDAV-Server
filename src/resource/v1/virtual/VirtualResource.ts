@@ -11,10 +11,12 @@ export abstract class VirtualResource extends StandardResource
     constructor(name : string, parent ?: IResource, fsManager ?: FSManager)
     {
         if(!fsManager)
-            if(parent && parent.fsManager && parent.fsManager.constructor === VirtualFSManager)
+        {
+            if(parent && parent.fsManager instanceof VirtualFSManager)
                 fsManager = parent.fsManager;
             else
                 fsManager = new VirtualFSManager();
+        }
 
         super(parent, fsManager);
 

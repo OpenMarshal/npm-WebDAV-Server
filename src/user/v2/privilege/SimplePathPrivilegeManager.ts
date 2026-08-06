@@ -18,9 +18,9 @@ export class SimplePathPrivilegeManager extends PrivilegeManager
 
     setRights(user : IUser, path : string, rights : BasicPrivilege[] | string[])
     {
-        if(!user)
+        if(!this.userValidator.isUserValid(user))
             throw Errors.IllegalArguments;
-        
+
         if(!this.rights[user.uid])
             this.rights[user.uid] = {};
         
@@ -53,12 +53,14 @@ export class SimplePathPrivilegeManager extends PrivilegeManager
     }
     getRights(user : IUser, path : string) : string[]
     {
-        if(!user)
-            return [];
+        if(!this.userValidator.isUserValid(user))
+            throw Errors.IllegalArguments;
         
         const allRights = this.rights[user.uid];
         if(!allRights)
+        { // user is unknown by the current PrivilegeManager
             return [];
+        }
             
         path = normalizePath(path.toString());
 
@@ -77,9 +79,6 @@ export class SimplePathPrivilegeManager extends PrivilegeManager
 
     _can(fullPath : Path, user : IUser, resource : Resource, privilege : BasicPrivilege | string, callback : PrivilegeManagerCallback) : void
     {
-        if(!user)
-            return callback(null, false);
-        
         const rights = this.getRights(user, fullPath.toString());
         const can = !!rights && rights.some((r) => r === 'all' || r === privilege);
         callback(null, can);

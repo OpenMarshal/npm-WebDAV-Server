@@ -166,7 +166,7 @@ export default (async (info, isValid) =>
     await move(server, '/file1', '/file1-moved', v2.HTTPCodes.Created);
     await move(server, '/file3', '/notExisting/../file3-moved', v2.HTTPCodes.Created);
     await move(server, '/file3-moved', '/./file3', v2.HTTPCodes.Created);
-    await move(server, '/file4', encodeURIComponent('/..／file4-moved'), v2.HTTPCodes.Created);
+    await move(server, '/file4', '/..%EF%BC%8Ffile4-moved', v2.HTTPCodes.Created);
     
     // Forbidden to leave and come back in the path.
     // This avoids to spy on the real file system.

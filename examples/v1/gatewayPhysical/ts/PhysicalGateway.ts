@@ -99,7 +99,7 @@ export class PhysicalGateway extends webdav.PhysicalFolder
                         }
 
                         actualChildren
-                            .filter((c) => c.constructor !== webdav.PhysicalResource && c.constructor !== webdav.PhysicalFile && c.constructor !== webdav.PhysicalFolder)
+                            .filter((c) => !(c instanceof webdav.PhysicalResource) && !(c instanceof webdav.PhysicalFile) && !(c instanceof webdav.PhysicalFolder))
                             .forEach((c) => children.push(c));
                             
                         (parent as webdav.PhysicalFolder).children.children = children;
@@ -137,7 +137,7 @@ export class PhysicalGateway extends webdav.PhysicalFolder
                 if(!e)
                 {
                     (r as webdav.PhysicalFolder).children.children
-                        .filter((c) => c.constructor !== webdav.PhysicalResource && c.constructor !== webdav.PhysicalFile && c.constructor !== webdav.PhysicalFolder)
+                        .filter((c) => !(c instanceof webdav.PhysicalResource) && !(c instanceof webdav.PhysicalFile) && !(c instanceof webdav.PhysicalFolder))
                         .forEach((c) => (children as webdav.IResource[]).push(c));
                         
                     (r as webdav.PhysicalFolder).children.children = children;

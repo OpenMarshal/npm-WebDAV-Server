@@ -76,7 +76,7 @@ export class FTPGateway extends webdav.VirtualFolder
                         }
                         
                         parent.children.children
-                            .filter((c) => c.constructor !== FTPResource && c.constructor !== FTPFile && c.constructor !== FTPFolder)
+                            .filter((c) => !(c instanceof FTPResource) && !(c instanceof FTPFile) && !(c instanceof FTPFolder))
                             .forEach((c) => (children as webdav.IResource[]).push(c));
                             
                         parent.children.children = children;
@@ -126,7 +126,7 @@ export class FTPGateway extends webdav.VirtualFolder
                 if(!e)
                 {
                     r.children.children
-                        .filter((c) => c.constructor !== FTPResource && c.constructor !== FTPFile && c.constructor !== FTPFolder)
+                        .filter((c) => !(c instanceof FTPResource) && !(c instanceof FTPFile) && !(c instanceof FTPFolder))
                         .forEach((c) => (children as webdav.IResource[]).push(c));
                         
                     r.children.children = children;

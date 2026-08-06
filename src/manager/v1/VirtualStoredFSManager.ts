@@ -39,7 +39,7 @@ export abstract class VirtualStoredContentManager implements IVirtualStoredConte
         let _options : any;
         let _callback : ReturnCallback<string>;
 
-        if(options.constructor === Function)
+        if(typeof options === 'function')
         {
             _options = { };
             _callback = options;

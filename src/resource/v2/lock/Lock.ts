@@ -53,7 +53,7 @@ export class Lock
         this.owner = owner;
         this.depth = depth === undefined || depth === null ? -1 : depth;
         this.uuid = Lock.generateUUID(this.expirationDate);
-        this.userUid = user ? user.constructor === String ? user as string : (user as IUser).uid : null;
+        this.userUid = user ? typeof user === "string" ? user : user.uid : null;
     }
 
     isSame(lock : Lock) : boolean

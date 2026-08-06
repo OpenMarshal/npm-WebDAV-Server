@@ -1,5 +1,5 @@
 "use strict";
-var webdav = require('../../../lib/index.js')
+var webdav = require('../../../lib/index.js').v1;
 
 module.exports = (test, options, index) => test('resource tester on the virtual resources', (isValid, server) =>
 {

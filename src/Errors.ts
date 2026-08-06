@@ -52,6 +52,7 @@ export const Errors = {
     WrongParentTypeForCreation: new Error('Cannot create a child resource to a non directory resource.'),
     NotEnoughPrivilege: new Error('Not enough privilege.'),
     Forbidden: new Error('Forbidden operation.'),
+    ProgrammingError: new Error('Forbidden operation.'),
 
     None: null
 };

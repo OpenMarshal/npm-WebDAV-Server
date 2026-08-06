@@ -131,7 +131,7 @@ module.exports = (callback, options) => {
 
                             if(name !== undefined)
                             {
-                                if(name.constructor === String)
+                                if(typeof name === "string")
                                 {
                                     info.name = name;
                                     info.startServer(undefined, autoStart);

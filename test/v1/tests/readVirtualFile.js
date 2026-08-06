@@ -1,5 +1,5 @@
 "use strict";
-var webdav = require('../../../lib/index.js'),
+var webdav = require('../../../lib/index.js').v1,
     Client = require('webdav-fs')
 
 module.exports = (test, options, index) => test('read a virtual file', (isValid, server) =>

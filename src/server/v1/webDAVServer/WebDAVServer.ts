@@ -117,7 +117,7 @@ export class WebDAVServer
     on(event : events.EventsName, eventName : string, listener : events.Listener)
     on(event : events.EventsName, eName_listener : string | (events.Listener), listener ?: events.Listener)
     {
-        if(eName_listener.constructor === Function)
+        if(typeof eName_listener === 'function')
             events.register.bind(this)(event, eName_listener);
         else
             events.registerWithName.bind(this)(event, eName_listener, listener);
@@ -134,7 +134,7 @@ export class WebDAVServer
     removeEvent(event : events.EventsName, eventName : string)
     removeEvent(event : events.EventsName, eName_listener : string | (events.Listener))
     {
-        if(eName_listener.constructor === Function)
+        if(typeof eName_listener === 'function')
             events.remove.bind(this)(event, eName_listener);
         else
             events.removeByName.bind(this)(event, eName_listener);

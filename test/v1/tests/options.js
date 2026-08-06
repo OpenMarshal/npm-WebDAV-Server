@@ -1,5 +1,5 @@
 "use strict";
-var webdav = require('../../../lib/index.js'),
+var webdav = require('../../../lib/index.js').v1,
     request = require('request')
 
 module.exports = (test, options, index) => test('OPTIONS method', (isValid, server) =>

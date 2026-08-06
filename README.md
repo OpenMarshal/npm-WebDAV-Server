@@ -1,14 +1,11 @@
 # WebDAV Server for npm
 
-[![Build Status](https://travis-ci.org/OpenMarshal/npm-WebDAV-Server.svg?branch=master)](https://travis-ci.org/OpenMarshal/npm-WebDAV-Server)
 [![Code Climate Rate](https://codeclimate.com/github/OpenMarshal/npm-WebDAV-Server/badges/gpa.svg)](https://codeclimate.com/github/OpenMarshal/npm-WebDAV-Server)
-[![Dependencies Status](https://img.shields.io/david/OpenMarshal/npm-WebDAV-Server.svg)](https://david-dm.org/OpenMarshal/npm-WebDAV-Server.svg)
 [![License](https://img.shields.io/npm/l/webdav-server.svg)](http://unlicense.org/)
 [![npm Version](https://img.shields.io/npm/v/webdav-server.svg)](https://www.npmjs.com/package/webdav-server)
 
 [![Join the chat at https://gitter.im/npm-WebDAV-Server/Lobby](https://badges.gitter.im/npm-WebDAV-Server/Lobby.svg)](https://gitter.im/npm-WebDAV-Server/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Join the chat at https://gitter.im/npm-WebDAV-Server/help-v2](https://img.shields.io/badge/chat-help%20v2-blue.svg)](https://gitter.im/npm-WebDAV-Server/help-v2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Join the chat at https://gitter.im/npm-WebDAV-Server/help-v1](https://img.shields.io/badge/chat-help%20v1-blue.svg)](https://gitter.im/npm-WebDAV-Server/help-v1?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Join the chat at https://gitter.im/npm-WebDAV-Server/file-systems](https://img.shields.io/badge/chat-%40webdav--server-blue.svg)](https://gitter.im/npm-WebDAV-Server/file-systems?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # Description

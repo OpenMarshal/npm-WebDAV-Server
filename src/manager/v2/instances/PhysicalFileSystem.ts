@@ -37,14 +37,14 @@ export class PhysicalFileSystemResource
         if(!data)
         {
             this.props = new LocalPropertyManager();
-            this.locks = new LocalLockManager();
         }
         else
         {
             const rs = data as PhysicalFileSystemResource;
             this.props = new LocalPropertyManager(rs.props);
-            this.locks = new LocalLockManager();
         }
+
+        this.locks = new LocalLockManager();
     }
 }
 
@@ -67,7 +67,12 @@ export class PhysicalSerializer implements FileSystemSerializer
     {
         // tslint:disable-next-line:no-use-before-declare
         const fs = new PhysicalFileSystem(serializedData.rootPath);
-        fs.resources = serializedData.resources;
+        
+        fs.resources = {};
+        for(const key in serializedData.resources) {
+            fs.resources[key] = new PhysicalFileSystemResource(serializedData.resources[key]);
+        }
+
         callback(null, fs);
     }
 }
@@ -257,7 +262,7 @@ export class PhysicalFileSystem extends FileSystem
      * @param propertyName Name of the property to get from the resource
      * @param callback Callback returning the property object of the resource
      */
-    protected getPropertyFromResource(path : Path, ctx : any, propertyName : string, callback : ReturnCallback<any>) : void
+    protected getPropertyFromResource(path : Path, ctx : any, propertyName : keyof PhysicalFileSystemResource, callback : ReturnCallback<any>) : void
     {
         let resource = this.resources[path.toString()];
         if(!resource)

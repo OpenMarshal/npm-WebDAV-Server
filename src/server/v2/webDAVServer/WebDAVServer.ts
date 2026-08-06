@@ -68,7 +68,14 @@ export class WebDAVServer
     
     protected isSameFileSystem(fs : FileSystem, path : string, checkByReference : boolean) : boolean
     {
-        return checkByReference && this.fileSystems[path] === fs || !checkByReference && this.fileSystems[path].serializer().uid() === fs.serializer().uid();
+        if(checkByReference)
+        {
+            return this.fileSystems[path] === fs;
+        }
+        else
+        {
+            return this.fileSystems[path].serializer().uid() === fs.serializer().uid();
+        }
     }
 
     /**
@@ -277,9 +284,9 @@ export class WebDAVServer
     removeFileSystemSync(fs_path : Path | string | FileSystem, checkByReference : boolean = true) : number
     {
         let nb = 0;
-        if(fs_path.constructor === Path || fs_path.constructor === String)
+        if(fs_path instanceof Path || typeof fs_path === "string")
         {
-            const path = new Path(fs_path as (Path | string)).toString();
+            const path = new Path(fs_path).toString();
             if(this.fileSystems[path] !== undefined)
             {
                 delete this.fileSystems[path];
@@ -288,7 +295,7 @@ export class WebDAVServer
         }
         else
         {
-            const fs = fs_path as FileSystem;
+            const fs = fs_path;
 
             for(const name in this.fileSystems)
             {
@@ -334,11 +341,15 @@ export class WebDAVServer
      */
     getFileSystemPathSync(fs : FileSystem, checkByReference ?: boolean) : Path
     {
-        checkByReference = checkByReference === null || checkByReference === undefined ? true : checkByReference;
+        checkByReference = typeof checkByReference === 'boolean' ? checkByReference : true;
 
         for(const path in this.fileSystems)
+        {
             if(this.isSameFileSystem(fs, path, checkByReference))
+            {
                 return new Path(path);
+            }
+        }
         return null;
     }
 
@@ -730,7 +741,7 @@ export class WebDAVServer
         if(!this.events[event])
             return;
 
-        this.events[event].forEach((l) => process.nextTick(() => l(ctx, fs, path.constructor === String ? new Path(path as string) : path as Path, data)));
+        this.events[event].forEach((l) => process.nextTick(() => l(ctx, fs, typeof path === "string" ? new Path(path) : path, data)));
     }
 
     /**

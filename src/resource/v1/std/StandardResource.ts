@@ -430,23 +430,22 @@ export abstract class StandardResource implements IResource
     public static standardMimeType(resource : IResource, targetSource : boolean, defaultMimeType : string, useWebName : boolean, callback : ReturnCallback<string>)
     public static standardMimeType(resource : IResource, targetSource : boolean, _defaultMimeType : boolean | string | ReturnCallback<string>, _useWebName ?: boolean | ReturnCallback<string>, _callback ?: ReturnCallback<string>)
     {
-        let callback;
+        let callback : ReturnCallback<string>;
         let useWebName = false;
         let defaultMimeType = 'application/octet-stream';
 
-        if(_defaultMimeType.constructor === Function)
+        if(typeof _defaultMimeType === 'function')
         {
-            callback = _defaultMimeType as ReturnCallback<string>;
+            callback = _defaultMimeType;
         }
-        else if(_defaultMimeType.constructor === Boolean)
+        else if(typeof _defaultMimeType === 'boolean')
         {
             callback = _useWebName as ReturnCallback<string>;
-            if(_defaultMimeType !== undefined && _defaultMimeType !== null)
-                useWebName = _defaultMimeType as boolean;
+            useWebName = _defaultMimeType as boolean;
         }
         else
         {
-            callback = _callback as ReturnCallback<string>;
+            callback = _callback;
             if(_useWebName !== undefined && _useWebName !== null)
                 useWebName = _useWebName as boolean;
             if(_defaultMimeType !== undefined && _defaultMimeType !== null)

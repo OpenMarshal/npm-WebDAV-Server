@@ -21,7 +21,7 @@ export class FTPFSManager implements FSManager
     
     serialize(resource : any, obj : SerializedObject) : object
     {
-        if(resource.constructor !== FTPGateway)
+        if(!(resource instanceof FTPGateway))
             return null;
 
         return {
@@ -43,7 +43,7 @@ export class FTPFSManager implements FSManager
 
     newResource(fullPath : string, name : string, type : ResourceType, parent : IResource) : IResource
     {
-        const parentRemotePath = parent.constructor === FTPGateway ? (parent as FTPGateway).rootPath : (parent as FTPResource).remotePath;
+        const parentRemotePath = parent instanceof FTPGateway ? parent.rootPath : parent.remotePath;
         let remotepath;
         if(parentRemotePath.lastIndexOf('/') === parentRemotePath.length - 1)
             remotepath = parentRemotePath + name;
@@ -51,7 +51,7 @@ export class FTPFSManager implements FSManager
             remotepath = parentRemotePath + '/' + name;
         
         let gateway = parent;
-        while(gateway && gateway.constructor !== FTPGateway)
+        while(gateway && !(gateway instanceof FTPGateway))
             gateway = gateway.parent;
 
         if(type.isFile)

@@ -1,5 +1,5 @@
 "use strict";
-var webdav = require('../../../lib/index.js'),
+var webdav = require('../../../lib/index.js').v1,
     request = require('request'),
     xmljs = require('xml-js'),
     path = require('path'),

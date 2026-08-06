@@ -1,5 +1,5 @@
 import { Test } from '../Type'
-import { v2, ResourceType } from '../../../../lib/index.js'
+import { v2 } from '../../../../lib/index.js'
 import * as express from 'express'
 
 export default ((info, isValid) =>
@@ -10,7 +10,7 @@ export default ((info, isValid) =>
 
     const ctx = server.createExternalContext();
     server.rootFileSystem().addSubTree(ctx, {
-        file1: ResourceType.File
+        file1: v2.ResourceType.File
     }, () => {
         app.use(v2.extensions.express('/webdav', server));
     

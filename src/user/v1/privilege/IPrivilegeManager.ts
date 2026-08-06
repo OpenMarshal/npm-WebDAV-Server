@@ -36,7 +36,7 @@ export type BasicPrivilege =
 
 export function requirePrivilege(privilege : string | BasicPrivilege | string[] | BasicPrivilege[], arg : MethodCallArgs, resource : IResource, callback : PrivilegeManagerCallback)
 {
-    const privileges : string[] = privilege.constructor !== Array ? [ privilege as string ] : privilege as string[];
+    const privileges : string[] = !Array.isArray(privilege) ? [ privilege ] : privilege;
     const pm = arg.server.privilegeManager;
 
     go();

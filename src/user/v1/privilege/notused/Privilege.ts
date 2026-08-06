@@ -44,19 +44,19 @@ export class Privilege implements IPrivilege
     {
         this.description = description;
         this.isAbstract = isAbstract;
-        this.isAll = subPrivileges && subPrivileges.constructor === Boolean ? subPrivileges as boolean : false;
+        this.isAll = typeof subPrivileges === 'boolean' ? subPrivileges : false;
 
-        if(!subPrivileges || subPrivileges.constructor !== Array)
+        if(!subPrivileges || !Array.isArray(subPrivileges))
             subPrivileges = [];
-        const subPrivilegesCast = subPrivileges as (string | Privilege)[];
+        const subPrivilegesCast = subPrivileges;
         
-        if(name.constructor === Privilege)
-            this.name = (name as Privilege).name;
+        if(name instanceof Privilege)
+            this.name = name.name;
         else
-            this.name = name as string;
+            this.name = name;
         
         subPrivilegesCast.push(this.name);
-        this.subPrivileges = subPrivilegesCast.map((p) => p.constructor === Privilege ? (p as Privilege).name : p as string);
+        this.subPrivileges = subPrivilegesCast.map((p) => p instanceof Privilege ? p.name : p);
     }
 
     can(operation : string) : boolean

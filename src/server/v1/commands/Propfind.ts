@@ -286,7 +286,7 @@ export function method(arg : MethodCallArgs, callback)
 
                     function displayValue(values : string[] | string, fn : () => void)
                     {
-                        if(values.constructor === String ? tags[values as string].value : (values as string[]).some((n) => tags[n].value))
+                        if(typeof values === 'string' ? tags[values].value : values.some((n) => tags[n].value))
                         {
                             ++nb;
                             process.nextTick(fn);
@@ -377,7 +377,7 @@ export function method(arg : MethodCallArgs, callback)
                                     ++nb;
                                     resource.size(targetSource, (e, size) => process.nextTick(() => {
                                         if(!e)
-                                            tags.getcontentlength.el.add(size === undefined || size === null || size.constructor !== Number ? 0 : size)
+                                            tags.getcontentlength.el.add(size === undefined || size === null || typeof size !== 'number' ? 0 : size)
                                         nbOut(e);
                                     }))
                                 }

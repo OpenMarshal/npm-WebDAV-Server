@@ -12,26 +12,33 @@ export class Path
 
     static isPath(obj : any) : boolean
     {
-        return typeof obj === 'string' || obj && obj.constructor === Path;
+        return typeof obj === 'string' || obj instanceof Path;
     }
 
     constructor(path : Path | string[] | string)
     {
-        if(path.constructor === String)
+        if(path === undefined || path === null)
+        {
+            this.paths = [];
+        }
+        else if(typeof path === "string")
         {
             this.paths = (path as string)
                 .replace(/[\\\/]+/mg, '/')
                 .replace(/(^\/|\/$)/g, '')
                 .split('/');
         }
-        else if(path.constructor === Path)
+        else if(path instanceof Path)
         {
             this.paths = path.paths.slice();
             this.isSuccessfullyResolved = path.isSuccessfullyResolved;
         }
         else
         {
-            this.paths = path as string[];
+            this.paths = path.flatMap(e => e
+                .replace(/[\\\/]+/mg, '/')
+                .split('/')
+            );
         }
         
         this.paths = this.paths.filter(Boolean);
@@ -41,7 +48,11 @@ export class Path
     {
         this.paths = this.paths
             .map(decodeURIComponent)
-            .flatMap(e => e.replace(/[\\\/]+/mg, '/').split('/'));
+            .flatMap(e => e
+                .replace(/[\\\/]+/mg, '/')
+                .split('/')
+                .filter(Boolean)
+            );
     }
 
     resolve() : Error
@@ -115,8 +126,7 @@ export class Path
         const subPath = new Path(childPath);
 
         const path = this.clone();
-        for(const subName of subPath.paths)
-            path.paths.push(subName);
+        path.paths.push(...subPath.paths);
         return path;
     }
 

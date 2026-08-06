@@ -5,18 +5,18 @@ export class FSPath
 
     constructor(path : FSPath | string[] | string)
     {
-        if(path.constructor === String)
+        if(typeof path === 'string')
         {
-            let sPath = (path as string);
+            let sPath = path;
             let doubleIndex;
             while((doubleIndex = sPath.indexOf('//')) !== -1)
                 sPath = sPath.substr(0, doubleIndex) + sPath.substr(doubleIndex + 1);
             this.paths = sPath.replace(/(^\/|\/$)/g, '').split('/');
         }
-        else if(path.constructor === FSPath)
-            this.paths = (path as FSPath).paths.filter((x) => true); // clone
+        else if(path instanceof FSPath)
+            this.paths = path.paths.slice(); // clone
         else
-            this.paths = path as string[];
+            this.paths = path;
     }
 
     isRoot() : boolean
