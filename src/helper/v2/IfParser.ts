@@ -82,7 +82,7 @@ function parseInternal(group : string)
         match = rex.exec(group);
     }
 
-    if(andArray.length)
+    if(andArray.length == 0)
         return (r, callback) => callback(null, true);
 
     return function(resource : Resource, callback : FnReturn) {
