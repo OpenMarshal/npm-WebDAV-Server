@@ -1,8 +1,5 @@
 import { SimplePrivilegeManager } from './SimplePrivilegeManager'
-import { MethodCallArgs } from '../../../server/v1/MethodCallArgs'
 import { hasNoWriteLock } from './IPrivilegeManager'
-import { IResource } from '../../../resource/v1/IResource'
-import { LockType } from '../../../resource/v1/lock/LockType'
 
 export class FakePrivilegeManager extends SimplePrivilegeManager
 {

@@ -1,5 +1,4 @@
 import { ResourceTesterTestCallback } from './Types'
-import { StandardResource } from '../../std/StandardResource'
 import { VirtualFolder } from '../../virtual/VirtualFolder'
 
 // ****************************** Actions ****************************** //

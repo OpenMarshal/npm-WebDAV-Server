@@ -1,6 +1,6 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
-import { IResource, ResourceType } from '../../../resource/v1/IResource'
-import { Readable, Transform } from 'stream'
+import { ResourceType } from '../../../resource/v1/IResource'
+import { Transform } from 'stream'
 
 class RangedStream extends Transform
 {

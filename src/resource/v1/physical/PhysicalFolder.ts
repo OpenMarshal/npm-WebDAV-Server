@@ -1,7 +1,6 @@
 import { IResource, SimpleCallback, ReturnCallback, ResourceType } from '../IResource'
 import { Readable, Writable } from 'stream'
 import { ResourceChildren } from '../std/ResourceChildren'
-import { StandardResource } from '../std/StandardResource'
 import { PhysicalResource } from './PhysicalResource'
 import { PhysicalFile } from './PhysicalFile'
 import { FSManager } from '../../../manager/v1/FSManager'

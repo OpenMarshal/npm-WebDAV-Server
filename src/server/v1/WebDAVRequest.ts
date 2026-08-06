@@ -1,6 +1,5 @@
 import { MethodCallArgs } from './MethodCallArgs'
 import { ResourceType } from '../../resource//v1/IResource'
-import { HTTPError } from '../../Errors'
 
 export { MethodCallArgs } from './MethodCallArgs'
 export { HTTPCodes } from '../HTTPCodes'

@@ -1,16 +1,9 @@
 import { IResource, ReturnCallback, SimpleCallback, Return2Callback, ResourceType, ResourcePropertyValue } from '../IResource'
 import { Readable, Writable } from 'stream'
 import { FSManager, FSPath } from '../../../manager/v1/FSManager'
-import { StandardResource } from './StandardResource'
 import { RequestContext, MethodCallArgs } from '../../../server/v1/MethodCallArgs'
-import { LockScope } from '../lock/LockScope'
-import { Workflow } from '../../../helper/Workflow'
-import { LockType } from '../lock/LockType'
 import { LockKind } from '../lock/LockKind'
-import { LockBag } from '../lock/LockBag'
-import { Errors } from '../../../Errors'
 import { Lock } from '../lock/Lock'
-import * as mimeTypes from 'mime-types'
 
 export interface IWrappableResource<T> extends IResource
 {

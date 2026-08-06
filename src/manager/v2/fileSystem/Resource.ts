@@ -9,7 +9,7 @@ import {
 import { Readable, Writable } from 'stream'
 import { IPropertyManager } from './PropertyManager'
 import { RequestContext } from '../../../server/v2/RequestContext'
-import { ILockManager, ILockManagerAsync } from './LockManager'
+import { ILockManagerAsync } from './LockManager'
 import { FileSystem } from './FileSystem'
 import { LockKind } from '../../../resource/v2/lock/LockKind'
 import { Lock } from '../../../resource/v2/lock/Lock'

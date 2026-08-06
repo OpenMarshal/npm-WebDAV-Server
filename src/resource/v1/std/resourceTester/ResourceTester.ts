@@ -1,4 +1,4 @@
-import { ResourceTesterOptions, ResourceTesterProducer, ResourceTesterProducerCallback, ResourceTesterTestCallback } from './Types'
+import { ResourceTesterOptions, ResourceTesterProducer, ResourceTesterTestCallback } from './Types'
 import { IResource } from '../../IResource'
 import * as actions from './Actions'
 import * as children from './Children'

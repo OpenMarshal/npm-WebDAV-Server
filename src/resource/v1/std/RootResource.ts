@@ -3,7 +3,6 @@ import { Readable, Writable } from 'stream'
 import { StandardResource } from './StandardResource'
 import { ResourceChildren } from './ResourceChildren'
 import { RootFSManager } from '../../../manager/v1/RootFSManager'
-import { FSPath } from '../../../manager/v1/FSManager'
 import { Errors } from '../../../Errors'
 
 export class RootResource extends StandardResource

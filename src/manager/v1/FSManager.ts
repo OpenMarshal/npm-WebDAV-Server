@@ -1,4 +1,4 @@
-import { ISerializer, SerializedObject } from './ISerializer'
+import { ISerializer } from './ISerializer'
 import { IResource, ResourceType } from '../../resource/v1/IResource'
 
 export { FSPath } from './FSPath'

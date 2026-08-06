@@ -1,4 +1,4 @@
-import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
+import { HTTPCodes, MethodCallArgs } from '../WebDAVRequest'
 import { IResource, ResourceType } from '../../../resource/v1/IResource'
 import { extractOneToken } from '../../../helper/v1/IfParser'
 import { LockScope } from '../../../resource/v1/lock/LockScope'

@@ -1,5 +1,5 @@
 import { IResource, ResourceType } from '../../resource/v1/IResource'
-import { Errors, ManagerNotFound } from '../../Errors'
+import { ManagerNotFound } from '../../Errors'
 import { FSManager } from './FSManager'
 
 export class SerializedObject

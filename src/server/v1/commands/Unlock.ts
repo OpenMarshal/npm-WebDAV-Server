@@ -1,12 +1,10 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
-import { IResource, ResourceType } from '../../../resource/v1/IResource'
-import { STATUS_CODES } from 'http'
+import { ResourceType } from '../../../resource/v1/IResource'
 import { LockScope } from '../../../resource/v1/lock/LockScope'
 import { LockKind } from '../../../resource/v1/lock/LockKind'
 import { LockType } from '../../../resource/v1/lock/LockType'
 import { Errors } from '../../../Errors'
 import { Lock } from '../../../resource/v1/lock/Lock'
-import { XML } from 'xml-js-builder'
 
 export function method(arg : MethodCallArgs, callback)
 {

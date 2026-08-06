@@ -1,5 +1,5 @@
 import { HTTPCodes, MethodCallArgs, WebDAVRequest } from '../WebDAVRequest'
-import { IResource, ResourceType } from '../../../resource/v1/IResource'
+import { ResourceType } from '../../../resource/v1/IResource'
 import { STATUS_CODES } from 'http'
 import { EventsName } from '../../../server/v1/webDAVServer/Events'
 import { Workflow } from '../../../helper/Workflow'
