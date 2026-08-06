@@ -2345,6 +2345,10 @@ export abstract class FileSystem implements ISerializableFileSystem
         }
         
         ctx.server.getFileSystemPath(this, (fsPath) => {
+            if(!(fsPath instanceof Path)) {
+                callback(Errors.ProgrammingError);
+            }
+
             callback(null, path ? fsPath.getChildPath(path) : fsPath);
         })
     }
@@ -2442,12 +2446,15 @@ export abstract class FileSystem implements ISerializableFileSystem
         }
         
         this.getFullPath(ctx, pPath, (e, fullPath) => {
+            if(e)
+                return callback(e);
+
             this.privilegeManager(ctx, pPath, (e, privilegeManager) => {
                 if(e)
                     return callback(e);
                 
                 const resource = this.resource(ctx, pPath);
-                privilegeManager.can(fullPath, resource, privileges as string[], callback);
+                privilegeManager.can(fullPath, resource, privileges, callback);
             })
         })
     }
@@ -2502,7 +2509,7 @@ export abstract class FileSystem implements ISerializableFileSystem
     isLockedAsync(ctx : RequestContext, path : Path | string, depth : number) : Promise<boolean>
     isLockedAsync(ctx : RequestContext, path : Path | string, depth ?: number) : Promise<boolean>
     {
-        return promisifyCall((cb) => this.isLockedAsync(ctx, path, depth))
+        return promisifyCall((cb) => this.isLocked(ctx, path, depth, cb))
     }
 
     /**

@@ -68,7 +68,14 @@ export class WebDAVServer
     
     protected isSameFileSystem(fs : FileSystem, path : string, checkByReference : boolean) : boolean
     {
-        return checkByReference && this.fileSystems[path] === fs || !checkByReference && this.fileSystems[path].serializer().uid() === fs.serializer().uid();
+        if(checkByReference)
+        {
+            return this.fileSystems[path] === fs;
+        }
+        else
+        {
+            return this.fileSystems[path].serializer().uid() === fs.serializer().uid();
+        }
     }
 
     /**
@@ -334,11 +341,15 @@ export class WebDAVServer
      */
     getFileSystemPathSync(fs : FileSystem, checkByReference ?: boolean) : Path
     {
-        checkByReference = checkByReference === null || checkByReference === undefined ? true : checkByReference;
+        checkByReference = typeof checkByReference === 'boolean' ? checkByReference : true;
 
         for(const path in this.fileSystems)
+        {
             if(this.isSameFileSystem(fs, path, checkByReference))
+            {
                 return new Path(path);
+            }
+        }
         return null;
     }
 

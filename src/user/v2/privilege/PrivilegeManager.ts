@@ -71,19 +71,25 @@ export class PrivilegeManager
     can(_fullPath : Path | string, resource : Resource, _privilege : BasicPrivilege | string | BasicPrivilege[] | string[], callback : PrivilegeManagerCallback) : void
     {
         if(!resource || !resource.context)
+        {
             return callback(Errors.IllegalArguments, false);
+        }
 
         const user = resource.context.user;
         const isUserValid = this.userValidator.isUserValid(user);
         if(resource.context.overridePrivileges || isUserValid && user.isAdministrator)
+        {
             return callback(null, true);
+        }
         if(!isUserValid)
+        {
             return callback(Errors.IllegalArguments, false);
+        }
         
         if(Array.isArray(_privilege))
         {
             new Workflow()
-                .each(_privilege as string[], (privilege, cb) => this.can(_fullPath, resource, privilege, cb))
+                .each(_privilege, (privilege, cb) => this.can(_fullPath, resource, privilege, cb))
                 .error((e) => callback(e, false))
                 .done((checks) => callback(null, checks.every((b) => !!b)));
             return;
@@ -96,7 +102,7 @@ export class PrivilegeManager
             return callback(resolveError, false);
         }
 
-        const privilege = _privilege as string;
+        const privilege = _privilege;
 
         if(this._can)
             return this._can(fullPath, user, resource, privilege, callback);

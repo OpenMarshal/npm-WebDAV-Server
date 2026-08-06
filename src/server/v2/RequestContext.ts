@@ -435,6 +435,7 @@ export class HTTPRequestContext extends RequestContext
         { error: Errors.InsufficientStorage,            code: HTTPCodes.InsufficientStorage },
         { error: Errors.Forbidden,                      code: HTTPCodes.Forbidden },
         { error: Errors.IllegalArguments,               code: HTTPCodes.Forbidden },
+        { error: Errors.ProgrammingError,               code: HTTPCodes.InternalServerError },
     ];
 
     static defaultStatusCode(error : Error) : number
