@@ -1,4 +1,3 @@
-const sinon = require("sinon");
 const chai = require("chai");
 const expect = chai.expect;
 const { v2 } = require("../../../../../../lib/index");
@@ -10,12 +9,22 @@ describe("SimplePathPrivilegeManager", () => {
     
     [
         (() => {
-            const user = sinon.mock(v2.SimpleUser);
+            const user = new v2.SimpleUser('user', 'password', false, false);
             user.uid = null;
             return user;
         })(),
         (() => {
-            const user = sinon.mock(v2.SimpleUser);
+            const user = new v2.SimpleUser('user', 'password', false, false);
+            user.uid = undefined;
+            return user;
+        })(),
+        (() => {
+            const user = new v2.SimpleUser('admin', 'password', true, false);
+            user.uid = null;
+            return user;
+        })(),
+        (() => {
+            const user = new v2.SimpleUser('admin', 'password', true, false);
             user.uid = undefined;
             return user;
         })(),
@@ -30,8 +39,7 @@ describe("SimplePathPrivilegeManager", () => {
         undefined,
         null
     ].forEach((wrongUser) => it(`success SimplePathPrivilegeManager().setRights(wrong user = ${typeof wrongUser} ${JSON.stringify(wrongUser)}).canAsync()`, async () => {
-        const contextUser = sinon.mock(v2.RequestContext);
-        contextUser.user = wrongUser;
+        const contextUser = { user: wrongUser };
 
         const privilegeManager = new v2.SimplePathPrivilegeManager();
         expect(() => privilegeManager.setRights(wrongUser, '/', ['all'])).to.throw(v2.Errors.IllegalArguments);
@@ -50,11 +58,11 @@ describe("SimplePathPrivilegeManager", () => {
     }));
 
     it(`success SimplePathPrivilegeManager().setRights.getRights`, async () => {
-        const user1 = sinon.mock(v2.SimpleUser);
+        const user1 = new v2.SimpleUser('user1', 'password', false, false);
         user1.uid = 'user1';
-        const user2 = sinon.mock(v2.SimpleUser);
+        const user2 = new v2.SimpleUser('user2', 'password', false, false);
         user2.uid = 'user2';
-        const user3 = sinon.mock(v2.SimpleUser);
+        const user3 = new v2.SimpleUser('user3', 'password', false, false);
         user3.uid = 'user3';
 
         const privilegeManager = new v2.SimplePathPrivilegeManager();
@@ -76,14 +84,12 @@ describe("SimplePathPrivilegeManager", () => {
     });
     
     it(`success SimplePathPrivilegeManager().setRights.can`, async () => {
-        const user1 = sinon.mock(v2.SimpleUser);
+        const user1 = new v2.SimpleUser('user1', 'password', false, false);
         user1.uid = 'user1';
-        const user2 = sinon.mock(v2.SimpleUser);
+        const user2 = new v2.SimpleUser('user2', 'password', false, false);
         user2.uid = 'user2';
-        const contextUser1 = sinon.mock(v2.RequestContext);
-        contextUser1.user = user1;
-        const contextUser2 = sinon.mock(v2.RequestContext);
-        contextUser2.user = user2;
+        const contextUser1 = { user: user1 };
+        const contextUser2 = { user: user2 };
 
         const privilegeManager = new v2.SimplePathPrivilegeManager();
         privilegeManager.setRights(user1, '/', ['all']);

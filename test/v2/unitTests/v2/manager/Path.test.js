@@ -1,4 +1,3 @@
-const sinon = require("sinon");
 const expect = require("chai").expect;
 const { v2 } = require("../../../../../lib/index");
 
