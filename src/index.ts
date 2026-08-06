@@ -1,6 +1,4 @@
 
-export * from './index.v1'
-
 import * as v1 from './index.v1'
 export { v1 }
 
