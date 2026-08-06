@@ -95,7 +95,12 @@ export class AutoSavePool
     protected saving : boolean;
     protected options : IAutoSave;
 
-    imediateSave()
+    /**
+     * @deprecated Previous typo. Use immediateSave instead.
+     */
+    imediateSave = this.immediateSave
+
+    immediateSave()
     {
         this.saveFn((e, data) => {
             if(e)
@@ -152,7 +157,7 @@ export class AutoSavePool
         else
         {
             this.saving = true;
-            this.imediateSave();
+            this.immediateSave();
         }
     }
 
@@ -161,7 +166,7 @@ export class AutoSavePool
         if(this.saveRequested)
         {
             this.saveRequested = false;
-            this.imediateSave();
+            this.immediateSave();
         }
         else
         {
