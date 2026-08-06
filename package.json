@@ -49,6 +49,7 @@
     "@types/node": "^7.0.64",
     "@types/request": "0.0.44",
     "chai": "^6.2.2",
+    "chai-as-promised": "^8.0.2",
     "express": "^4.16.4",
     "form-data": "^3.0.0",
     "mocha": "^11.8.0",

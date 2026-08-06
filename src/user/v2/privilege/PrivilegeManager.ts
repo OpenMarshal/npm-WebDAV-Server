@@ -1,6 +1,9 @@
 import { Resource, Path } from '../../../manager/v2/export'
 import { Workflow } from '../../../helper/Workflow'
 import { IUser } from '../IUser'
+import Errors from '../../../Errors';
+import { SimpleUserValidator } from './SimpleUserValidator';
+import { IUserValidator } from './IUserValidator';
 
 export type PrivilegeManagerCallback = (error : Error, hasAccess : boolean) => void;
 export type PrivilegeManagerMethod = (fullPath : Path, user : IUser, resource : Resource, callback : PrivilegeManagerCallback) => void
@@ -29,17 +32,55 @@ function checkAll(pm : PrivilegeManager, fns : PrivilegeManagerMethod[], fullPat
 
 export class PrivilegeManager
 {
+    private _userValidator: IUserValidator = new SimpleUserValidator();
+
+    protected get userValidator()
+    {
+        return this._userValidator;
+    }
+    protected set userValidator(userValidator: IUserValidator)
+    {
+        if(!userValidator) {
+            throw Errors.IllegalArguments;
+        }
+
+        this._userValidator = userValidator;
+    }
+
+    canAsync(fullPath: Path | string, resource: Resource, privilege: BasicPrivilege): Promise<boolean>
+    canAsync(fullPath: Path | string, resource: Resource, privilege: string): Promise<boolean>
+    canAsync(fullPath: Path | string, resource: Resource, privilege: BasicPrivilege[]): Promise<boolean>
+    canAsync(fullPath: Path | string, resource: Resource, privilege: string[]): Promise<boolean>
+    canAsync(_fullPath : Path | string, resource : Resource, _privilege : BasicPrivilege | string | BasicPrivilege[] | string[]): Promise<boolean>
+    {
+        return new Promise<boolean>((resolve, reject) => {
+            this.can(_fullPath, resource, _privilege as any, (e, hasAccess) => {
+                if(e) {
+                    reject(e);
+                } else {
+                    resolve(hasAccess);
+                }
+            });
+        });
+    }
+
     can(fullPath : Path | string, resource : Resource, privilege : BasicPrivilege, callback : PrivilegeManagerCallback) : void
     can(fullPath : Path | string, resource : Resource, privilege : string, callback : PrivilegeManagerCallback) : void
     can(fullPath : Path | string, resource : Resource, privilege : BasicPrivilege[], callback : PrivilegeManagerCallback) : void
     can(fullPath : Path | string, resource : Resource, privilege : string[], callback : PrivilegeManagerCallback) : void
     can(_fullPath : Path | string, resource : Resource, _privilege : BasicPrivilege | string | BasicPrivilege[] | string[], callback : PrivilegeManagerCallback) : void
     {
+        if(!resource || !resource.context)
+            return callback(Errors.IllegalArguments, false);
+
         const user = resource.context.user;
-        if(resource.context.overridePrivileges || user && user.isAdministrator)
+        const isUserValid = this.userValidator.isUserValid(user);
+        if(resource.context.overridePrivileges || isUserValid && user.isAdministrator)
             return callback(null, true);
+        if(!isUserValid)
+            return callback(Errors.IllegalArguments, false);
         
-        if(typeof _privilege !== "string")
+        if(Array.isArray(_privilege))
         {
             new Workflow()
                 .each(_privilege as string[], (privilege, cb) => this.can(_fullPath, resource, privilege, cb))
