@@ -37,14 +37,14 @@ export class PhysicalFileSystemResource
         if(!data)
         {
             this.props = new LocalPropertyManager();
-            this.locks = new LocalLockManager();
         }
         else
         {
             const rs = data as PhysicalFileSystemResource;
             this.props = new LocalPropertyManager(rs.props);
-            this.locks = new LocalLockManager();
         }
+
+        this.locks = new LocalLockManager();
     }
 }
 
@@ -67,7 +67,11 @@ export class PhysicalSerializer implements FileSystemSerializer
     {
         // tslint:disable-next-line:no-use-before-declare
         const fs = new PhysicalFileSystem(serializedData.rootPath);
-        fs.resources = serializedData.resources;
+        fs.resources = {};
+        for(const key in serializedData.resources) {
+            fs.resources[key] = new PhysicalFileSystemResource(serializedData.resources[key]);
+        }
+        
         callback(null, fs);
     }
 }
